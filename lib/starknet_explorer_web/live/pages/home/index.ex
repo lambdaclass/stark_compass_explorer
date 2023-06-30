@@ -4,7 +4,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   alias StarknetExplorer.DateUtils
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :blocks, list_blocks())}
+    Process.send(self(), :load_blocks, [])
+    {:ok, assign(socket, :blocks, [])}
   end
 
   def render(assigns) do
@@ -31,6 +32,11 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       </tbody>
     </table>
     """
+  end
+
+  @impl true
+  def handle_info(:load_blocks, socket) do
+    {:noreply, assign(socket, :blocks, list_blocks())}
   end
 
   defp get_latest_block_number() do
