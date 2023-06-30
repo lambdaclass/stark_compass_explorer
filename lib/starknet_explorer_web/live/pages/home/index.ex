@@ -1,6 +1,7 @@
 defmodule StarknetExplorerWeb.HomeLive.Index do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorer.Rpc
+  alias StarknetExplorer.DateUtils
 
   def mount(_params, _session, socket) do
     {:ok, assign(socket, :blocks, list_blocks())}
@@ -24,7 +25,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             <td><%= block["block_number"] %></td>
             <td><%= block["block_hash"] %></td>
             <td><%= block["status"] %></td>
-            <td><%= block["timestamp"] %></td>
+            <td><%= get_block_age(block) %></td>
           </tr>
         <% end %>
       </tbody>
@@ -38,7 +39,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   end
 
   defp list_blocks() do
-    list_blocks(get_latest_block_number(), 15, [])
+    Enum.reverse(list_blocks(get_latest_block_number(), 15, []))
   end
 
   defp list_blocks(_block_number, 0, acc) do
@@ -49,5 +50,16 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
     {:ok, block} = Rpc.get_block_by_number(block_number)
     prev_block_number = block_number - 1
     list_blocks(prev_block_number, remaining - 1, [block | acc])
+  end
+
+  defp get_block_age(block) do
+    %{minutes: minutes, hours: hours, days: days} = DateUtils.calculate_time_difference(block["timestamp"])
+    case days do
+      0 -> case hours do
+        0 -> "#{minutes} min"
+        _ -> "#{hours} h"
+      end
+      _ -> "#{days} d"
+    end
   end
 end
