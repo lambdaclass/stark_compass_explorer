@@ -28,30 +28,16 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   def render(%{transaction_view: :overview} = assigns) do
     ~H"""
-    Transaction
-    <hr>
-    Transaction Hash: <%= @transaction["transaction_hash"] %>
-    <hr>
-    Status: <%= @transaction_receipt["status"] %>
-    <hr>
-    Block Hash: <%= @transaction_receipt["block_hash"] %>
-    <hr>
-    Block Number: <%= @transaction_receipt["block_number"] %>
-    <hr>
-    TODO
-    <hr>
-    Transaction Type: <%= @transaction["type"] %>
-    <hr>
-    Sender Address: <%= @transaction["sender_address"] %>
-    <hr>
-    Actual Fee: <%= @transaction["max_fee"] %>
-    <hr>
-    Max Fee: <%= @transaction_receipt["actual_fee"] %>
-    <hr>
-    Nonce: <%= @transaction["nonce"] %>
-    <hr>
-    Input Data (TODO)
-    <hr>
+    Transaction <hr /> Transaction Hash: <%= @transaction["transaction_hash"] %>
+    <hr /> Status: <%= @transaction_receipt["status"] %>
+    <hr /> Block Hash: <%= @transaction_receipt["block_hash"] %>
+    <hr /> Block Number: <%= @transaction_receipt["block_number"] %>
+    <hr /> TODO <hr /> Transaction Type: <%= @transaction["type"] %>
+    <hr /> Sender Address: <%= @transaction["sender_address"] %>
+    <hr /> Actual Fee: <%= @transaction["max_fee"] %>
+    <hr /> Max Fee: <%= @transaction_receipt["actual_fee"] %>
+    <hr /> Nonce: <%= @transaction["nonce"] %>
+    <hr /> Input Data (TODO) <hr />
     <table>
       <thead>
         <tr>
@@ -61,19 +47,19 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </tr>
       </thead>
       <tbody id="transaction-input-data">
-        <tr id={"transaction-input-0"}>
+        <tr id="transaction-input-0">
           <td>to</td>
           <td>felt</td>
           <td>0x11cd02208d6ed241d3fc0dba144f09b70be03003c32e56de2d19aea99b0ca76</td>
         </tr>
-        <tr id={"transaction-input-1"}>
+        <tr id="transaction-input-1">
           <td>token_id</td>
           <td>felt</td>
           <td>1580969</td>
         </tr>
       </tbody>
     </table>
-    <hr>
+    <hr />
     <table>
       <thead>
         <tr>
@@ -90,14 +76,13 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <% end %>
       </tbody>
     </table>
-    <hr>
-    Execution Resources (TODO)
+    <hr /> Execution Resources (TODO)
     """
   end
 
   def mount(%{"transaction_hash" => transaction_hash}, _session, socket) do
     Process.send(self(), :load_transaction, [])
-    
+
     assigns = [
       transaction_hash: transaction_hash,
       transaction: nil,
@@ -113,11 +98,13 @@ defmodule StarknetExplorerWeb.TransactionLive do
         :load_transaction,
         %{assigns: %{transaction_hash: transaction_hash}} = socket
       ) do
-    {:ok, transaction} = Rpc.get_transaction(transaction_hash)
-    |> IO.inspect(label: "Transaction")
+    {:ok, transaction} =
+      Rpc.get_transaction(transaction_hash)
+      |> IO.inspect(label: "Transaction")
 
-    {:ok, transaction_receipt} = Rpc.get_transaction_receipt(transaction_hash)
-    |> IO.inspect(label: "Transaction Receipt")
+    {:ok, transaction_receipt} =
+      Rpc.get_transaction_receipt(transaction_hash)
+      |> IO.inspect(label: "Transaction Receipt")
 
     assigns = [
       transaction: transaction,

@@ -11,9 +11,11 @@ defmodule StarknetExplorer.Rpc do
   def get_block_by_hash(number) when is_binary(number),
     do: send_request("starknet_getBlockWithTxs", [%{block_hash: number}])
 
-  def get_transaction(transaction_hash), do: send_request("starknet_getTransactionByHash", [transaction_hash])
+  def get_transaction(transaction_hash),
+    do: send_request("starknet_getTransactionByHash", [transaction_hash])
 
-  def get_transaction_receipt(transaction_hash), do: send_request("starknet_getTransactionReceipt", [transaction_hash])
+  def get_transaction_receipt(transaction_hash),
+    do: send_request("starknet_getTransactionReceipt", [transaction_hash])
 
   defp send_request(method, args) do
     payload = build_payload(method, args)
