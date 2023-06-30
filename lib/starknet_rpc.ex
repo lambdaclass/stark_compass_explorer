@@ -9,7 +9,7 @@ defmodule StarknetExplorer.Rpc do
   def get_block_by_number(number) when is_integer(number),
     do: send_request("starknet_getBlockWithTxs", [%{block_number: number}])
 
-  def get_block_by_hash(number) when is_string(number),
+  def get_block_by_hash(number) when is_binary(number),
     do: send_request("starknet_getBlockWithTxs", [%{block_hash: number}])
 
   defp send_request(method, args) do
