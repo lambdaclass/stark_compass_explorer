@@ -11,7 +11,7 @@ defmodule StarknetExplorer.Application do
       # Start the Telemetry supervisor
       StarknetExplorerWeb.Telemetry,
       # Start the Ecto repository
-      StarknetExplorer.Repo,
+      # StarknetExplorer.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: StarknetExplorer.PubSub},
       # Start Finch
