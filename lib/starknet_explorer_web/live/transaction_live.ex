@@ -2,33 +2,96 @@ defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorer.Rpc
 
+  defp transaction_header(assigns) do
+    ~H"""
+    Transaction <br />
+    <button
+      class="font-bold py-2 px-4 rounded bg-blue-500 text-white"
+      phx-click="select-view"
+      ,
+      phx-value-view="overview"
+    >
+      Overview
+    </button>
+    <button
+      class="font-bold py-2 px-4 rounded bg-blue-500 text-white"
+      phx-click="select-view"
+      ,
+      phx-value-view="events"
+    >
+      Events
+    </button>
+    <button
+      class="font-bold py-2 px-4 rounded bg-blue-500 text-white"
+      phx-click="select-view"
+      ,
+      phx-value-view="message_logs"
+    >
+      Message Logs
+    </button>
+    <button
+      class="font-bold py-2 px-4 rounded bg-blue-500 text-white"
+      phx-click="select-view"
+      ,
+      phx-value-view="internal_calls"
+    >
+      Internal Calls
+    </button>
+    """
+  end
+
   def render(%{transaction: nil, transaction_receipt: nil} = assigns) do
     ~H"""
-    Transaction
+
     """
   end
 
-  def render(%{transaction_view: :events} = assigns) do
+  def render(%{transaction_view: "events"} = assigns) do
     ~H"""
-    Transaction
+    <%= transaction_header(assigns) %>
+    <table>
+      <thead>
+        <tr>
+          <th>Identifier(TODO)</th>
+          <th>Block Number</th>
+          <th>Transaction Hash</th>
+          <th>Name(TODO)</th>
+          <th>From Address</th>
+          <th>Age(TODO)</th>
+        </tr>
+      </thead>
+      <tbody id="transaction-events-data">
+        <%= for signature <- @transaction_receipt["events"] do %>
+          <tr>
+            <td>TODO</td>
+            <td><%= @transaction_receipt["block_number"] %></td>
+            <td><%= @transaction["transaction_hash"] %></td>
+            <td>TODO</td>
+            <td><%= @transaction["sender_address"] %></td>
+            <td>TODO</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
     """
   end
 
-  def render(%{transaction_view: :messag_logs} = assigns) do
+  def render(%{transaction_view: "message_logs"} = assigns) do
     ~H"""
-    Transaction
+    <%= transaction_header(assigns) %>
     """
   end
 
-  def render(%{transaction_view: :internal_calls} = assigns) do
+  def render(%{transaction_view: "internal_calls"} = assigns) do
     ~H"""
-    Transaction
+    <%= transaction_header(assigns) %>
     """
   end
 
-  def render(%{transaction_view: :overview} = assigns) do
+  def render(%{transaction_view: "overview"} = assigns) do
     ~H"""
-    Transaction <hr /> Transaction Hash: <%= @transaction["transaction_hash"] %>
+    <%= transaction_header(assigns) %>
+    <hr /> Transaction Hash: <%= @transaction["transaction_hash"] %>
     <hr /> Status: <%= @transaction_receipt["status"] %>
     <hr /> Block Hash: <%= @transaction_receipt["block_hash"] %>
     <hr /> Block Number: <%= @transaction_receipt["block_number"] %>
@@ -87,7 +150,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       transaction_hash: transaction_hash,
       transaction: nil,
       transaction_receipt: nil,
-      transaction_view: :overview
+      transaction_view: "overview"
     ]
 
     {:ok, assign(socket, assigns)}
@@ -108,10 +171,17 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
     assigns = [
       transaction: transaction,
-      transaction_receipt: transaction_receipt
+      transaction_receipt: transaction_receipt,
+      transaction_hash: socket.assigns.transaction_hash,
+      transaction_view: socket.assigns.transaction_view
     ]
 
     socket = assign(socket, assigns)
+    {:noreply, socket}
+  end
+
+  def handle_event("select-view", %{"view" => view}, socket) do
+    socket = assign(socket, :transaction_view, view)
     {:noreply, socket}
   end
 end
