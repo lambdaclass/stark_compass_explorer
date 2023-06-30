@@ -18,7 +18,7 @@ defmodule StarknetExplorerWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-    get "/transactions/:transaction_hash", TransactionController, :show
+    live "/transactions/:transaction_hash", TransactionLive
   end
 
   # Other scopes may use custom stacks.
