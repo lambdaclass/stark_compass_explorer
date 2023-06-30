@@ -10,38 +10,37 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
   def render(assigns) do
     ~H"""
-    <table>
-      <thead>
-        <tr>
-          <th>Number</th>
-          <th>Block Hash</th>
-          <th>Status</th>
-          <th>Age</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="blocks">
-        <%= for block <- @blocks do %>
-          <tr id={"block-#{block["block_number"]}"}>
-            <td>
+      <div class="table-block bg-[#182635]">
+          <div>
+            <ul class="grid grid-cols-4 grid-flow-col text-lg gap-20 px-2 text-white/50">
+              <li scope="col" class="py-5">Number</li>
+              <li scope="col" class="py-5">Block Hash</li>
+              <li scope="col" class="py-5">Status</li>
+              <li scope="col" class="py-5">Age</li>
+            </ul>
+          </div>
+        <div id="blocks" class="px-2">
+          <%= for block <- @blocks do %>
+            <ul id={"block-#{block["block_number"]}"} class="grid gap-20 grid-cols-4  auto-cols-[minmax(0,1fr)] border-b-[0.5px] border-gray-600 last:border-none border-spacing-6">
+              <li scope="row" class="py-4">
               <%= live_redirect(to_string(block["block_number"]),
                 to: "/",
-                class: "text-blue-500 hover:text-blue-700 underline font-medium"
+                class: "text-blue-500 hover:text-blue-700 underline-none font-medium"
               ) %>
-            </td>
-            <td>
+            </li>
+              <li scope="row" class="py-4">
               <%= live_redirect(shorten_block_hash(block["block_hash"]),
                 to: "/",
-                class: "text-blue-500 hover:text-blue-700 underline font-medium",
+                class: "text-blue-500 hover:text-blue-700 underline-none font-medium",
                 title: block["block_hash"]
               ) %>
-            </td>
-            <td><%= block["status"] %></td>
-            <td><%= get_block_age(block) %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+            </li>
+              <li scope="row" class="py-4"><%= block["status"] %></li>
+              <li scope="row" class="py-4"><%= get_block_age(block) %></li>
+          </ul>
+          <% end %>
+          </div>
+      </div>
     """
   end
 
