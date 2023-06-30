@@ -38,10 +38,6 @@ defmodule StarknetExplorerWeb.TransactionsLive do
     {:ok, assign(socket, [blocks_with_transactions: blocks_with_transactions])}
   end
 
-  defp get_transaction_type(transaction_hash) do
-    StarknetExplorer.Rpc.get_transaction()
-  end
-
   defp get_transactions_from_last_ten_blocks() do
     for block_number <- get_last_ten_block_numbers() do
       {:ok, block} = StarknetExplorer.Rpc.get_block_by_number(block_number)
