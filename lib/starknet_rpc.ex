@@ -5,6 +5,12 @@ defmodule StarknetExplorer.Rpc do
 
   def get_latest_block(), do: send_request("starknet_getBlockWithTxs", ["latest"])
 
+  def get_block_by_number(number) when is_integer(number),
+    do: send_request("starknet_getBlockWithTxs", [%{block_number: number}])
+
+  def get_block_by_hash(number) when is_string(number),
+    do: send_request("starknet_getBlockWithTxs", [%{block_hash: number}])
+
   defp send_request(method, args) do
     payload = build_payload(method, args)
 
