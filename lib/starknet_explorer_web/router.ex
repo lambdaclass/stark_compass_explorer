@@ -18,6 +18,7 @@ defmodule StarknetExplorerWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    live "/block/:number_or_hash", BlockDetailLive
   end
 
   # Other scopes may use custom stacks.

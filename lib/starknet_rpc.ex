@@ -9,12 +9,11 @@ defmodule StarknetExplorer.Rpc do
   def get_block_by_number(number) when is_integer(number),
     do: send_request("starknet_getBlockWithTxs", [%{block_number: number}])
 
-  def get_block_by_hash(number) when is_string(number),
-    do: send_request("starknet_getBlockWithTxs", [%{block_hash: number}])
+  def get_block_by_hash(hash) when is_binary(hash),
+    do: send_request("starknet_getBlockWithTxs", [%{block_hash: hash}]) 
 
   defp send_request(method, args) do
     payload = build_payload(method, args)
-
     host =
       "https://starknet-goerli.infura.io/v3/" <>
         Application.fetch_env!(:starknet_explorer, :api_key)
