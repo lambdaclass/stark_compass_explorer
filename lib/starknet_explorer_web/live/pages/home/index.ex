@@ -32,7 +32,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             <td>
               <%= live_redirect(shorten_block_hash(block["block_hash"]),
                 to: "/",
-                class: "text-blue-500 hover:text-blue-700 underline font-medium"
+                class: "text-blue-500 hover:text-blue-700 underline font-medium",
+                title: block["block_hash"]
               ) %>
             </td>
             <td><%= block["status"] %></td>
