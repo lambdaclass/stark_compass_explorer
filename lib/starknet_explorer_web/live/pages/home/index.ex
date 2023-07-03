@@ -3,11 +3,13 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   alias StarknetExplorer.Rpc
   alias StarknetExplorer.DateUtils
 
+  @impl true
   def mount(_params, _session, socket) do
     Process.send(self(), :load_blocks, [])
     {:ok, assign(socket, :blocks, [])}
   end
 
+  @impl true
   def render(assigns) do
     ~H"""
     <div class="table-block bg-[#182635]">
