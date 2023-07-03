@@ -163,11 +163,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
       ) do
     {:ok, transaction} =
       Rpc.get_transaction(transaction_hash)
-      |> IO.inspect(label: "Transaction")
 
     {:ok, transaction_receipt} =
       Rpc.get_transaction_receipt(transaction_hash)
-      |> IO.inspect(label: "Transaction Receipt")
 
     assigns = [
       transaction: transaction,
