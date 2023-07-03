@@ -44,6 +44,7 @@ defmodule StarknetExplorerWeb do
 
       import Plug.Conn
       import StarknetExplorerWeb.Gettext
+      import Phoenix.LiveView.Controller
 
       unquote(verified_routes())
     end

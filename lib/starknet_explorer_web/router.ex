@@ -19,6 +19,7 @@ defmodule StarknetExplorerWeb.Router do
 
     get "/", PageController, :home
     live "/transactions", TransactionsLive, :index
+    live "/transactions/:transaction_hash", TransactionLive
   end
 
   # Other scopes may use custom stacks.
