@@ -1,22 +1,1 @@
-<header class="px-4 sm:px-6 lg:px-8 text-white">
-  <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
-    <div class="flex items-center gap-4">
-      <a href="/"><img src={~p"/images/logo.svg"} width="36" /></a>
-      <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
-        v<%= Application.spec(:phoenix, :vsn) %>
-      </p>
-    </div>
-    <div class="flex items-center gap-4 font-semibold leading-6 text-white">
-      <a href="/" class="hover:text-zinc-700"> Home </a>
-      <a href="/blocks" class="hover:text-zinc-700"> Blocks </a>
-      <a href="/transactions" class="hover:text-zinc-700"> Transactions </a>
-    </div>
-  </div>
-</header>
-<div class="flex justify-center items-center pt-14">
-  <h1 class="text-white text-4xl font-mono">Starknet Explorer</h1>
-</div>
-
-<main class="px-4 py-20 sm:px-6 lg:px-8 flex justify-center items-center">
-  <div class=""><.flash_group flash={@flash} /> <%= @inner_content %></div>
-</main>
+<header class="px-4 sm:px-6 lg:px-8 text-white">  <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">    <div class="flex items-center gap-4">      <a href="/"><img src={~p"/images/logo.svg"} width="36" /></a>      <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">        v<%= Application.spec(:phoenix, :vsn) %>      </p>    </div>    <div class="flex items-center gap-4 font-semibold leading-6 text-white">      <a href="/" class="hover:text-zinc-700"> Home </a>      <%= live_render(@socket, StarknetExplorerWeb.SearchLive, id: "search-bar") %>>      <a href="/blocks" class="hover:text-zinc-700"> Blocks </a>      <a href="/transactions" class="hover:text-zinc-700"> Transactions </a>    </div>  </div></header><div class="flex justify-center items-center pt-14">  <h1 class="text-white text-4xl font-mono">Starknet Explorer</h1></div><main class="px-4 py-20 sm:px-6 lg:px-8 flex justify-center items-center">  <div class=""><.flash_group flash={@flash} /> <%= @inner_content %></div></main>
