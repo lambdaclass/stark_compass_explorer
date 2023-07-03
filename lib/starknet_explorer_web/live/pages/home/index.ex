@@ -68,7 +68,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             >
               <li scope="row" class="py-4">
                 <%= live_redirect(shorten_block_hash(transaction["transaction_hash"]),
-                  to: "/transaction/#{transaction["transaction_hash"]}",
+                  to: "/transactions/#{transaction["transaction_hash"]}",
                   class: "text-blue-500 hover:text-blue-700 underline-none font-medium"
                 ) %>
               </li>
