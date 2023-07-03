@@ -28,7 +28,7 @@ config :starknet_explorer, StarknetExplorerWeb.Endpoint,
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
 config :starknet_explorer, StarknetExplorer.Mailer, adapter: Swoosh.Adapters.Local
-config :starknet_explorer, api_key: "fe263d1e73a140cbbe69c1136dccf889"
+config :starknet_explorer, api_key: "a35429ca4d724a8a96352c24091c903a"
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
