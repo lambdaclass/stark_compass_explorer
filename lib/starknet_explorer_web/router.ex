@@ -19,6 +19,8 @@ defmodule StarknetExplorerWeb.Router do
 
     live "/", HomeLive.Index, :index
     live "/block/:number_or_hash", BlockDetailLive
+    live "/transactions", HomeLive.Index
+    live "/transactions/:transaction_hash", TransactionLive
   end
 
   # Other scopes may use custom stacks.
