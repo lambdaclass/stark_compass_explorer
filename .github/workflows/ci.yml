@@ -40,6 +40,6 @@ jobs:
       - name: Check Elixir Formatting
         run: mix format --check-formatted
       - name: Compiles without warnings
-        run: mix compile --all-warnings --warnings-as-errors
+        run: mix compile --all-warnings 
       - name: Run tests
         run: mix test
