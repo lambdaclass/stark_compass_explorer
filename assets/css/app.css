@@ -3,3 +3,8 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+
+
+.table-block {
+    @apply flex flex-col overflow-x-hidden text-base py-3 px-5 justify-between  text-left text-white rounded-lg
+}
