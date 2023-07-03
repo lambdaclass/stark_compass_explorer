@@ -1,12 +1,11 @@
 defmodule StarknetExplorerWeb.BlockDetailLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorer.Rpc
-  alias StarknetExplorer.DateUtils
 
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
   defp num_or_hash(_num), do: :num
 
-  def mount(_params = %{"number_or_hash" => param}, session, socket) do
+  def mount(_params = %{"number_or_hash" => param}, _session, socket) do
     {:ok, block} =
       case num_or_hash(param) do
         :hash ->
@@ -20,7 +19,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     {:ok, assign(socket, :block, block)}
   end
 
-  def render(assigns = %{block: block}) do
+  def render(assigns = %{block: _block}) do
     ~H"""
     <table>
       <thead>
