@@ -35,3 +35,5 @@ starknet_explorer-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Ignore .envrc
+.envrc
