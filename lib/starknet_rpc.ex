@@ -4,6 +4,7 @@ defmodule StarknetExplorer.Rpc do
   plug(Tesla.Middleware.Headers, [{"content-type", "application/json"}])
 
   def get_latest_block(), do: send_request("starknet_getBlockWithTxs", ["latest"])
+  def get_last_n_events(n), do: send_request("starknet_getEvents", [%{"chunk_size" => n}])
 
   def get_block_by_number(number) when is_integer(number),
     do: send_request("starknet_getBlockWithTxs", [%{block_number: number}])
@@ -21,7 +22,7 @@ defmodule StarknetExplorer.Rpc do
     payload = build_payload(method, args)
 
     host =
-      "https://starknet-mainnet.infura.io/v3/" <>
+      "https://starknet-goerli.infura.io/v3/" <>
         Application.fetch_env!(:starknet_explorer, :api_key)
 
     {:ok, rsp} = post(host, payload)
