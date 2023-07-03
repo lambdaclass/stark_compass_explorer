@@ -18,7 +18,12 @@ defmodule StarknetExplorerWeb.TransactionsLive do
         <%= for block <- @blocks_with_transactions do %>
           <%= for {transaction, idx} <- Enum.with_index(block["transactions"]) do %>
             <tr id={"transaction-#{idx}"}>
-              <td><%= transaction["transaction_hash"] %></td>
+            <td>
+            <%= live_redirect(to_string(transaction["transaction_hash"]),
+                to: "/transaction/#{transaction["transaction_hash"]}",
+                class: "text-blue-500 hover:text-blue-700 underline-none font-medium"
+              ) %>
+            </td>
               <td><%= transaction["type"] %></td>
               <td><%= block["status"] %></td>
               <td><%= get_block_age(block) %></td>
