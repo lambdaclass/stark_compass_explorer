@@ -19,7 +19,7 @@ defmodule StarknetExplorerWeb.Router do
 
     live "/", HomeLive.Index, :index
     live "/block/:number_or_hash", BlockDetailLive
-    live "/transactions", TransactionsLive, :index
+    live "/transactions", HomeLive.Index
     live "/transactions/:transaction_hash", TransactionLive
   end
 
