@@ -9,11 +9,14 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   def mount(_params = %{"number_or_hash" => param}, session, socket) do
     {:ok, block} =
       case num_or_hash(param) do
-        :hash -> Rpc.get_block_by_hash(param)
+        :hash ->
+          Rpc.get_block_by_hash(param)
+
         :num ->
           {num, ""} = Integer.parse(param)
           Rpc.get_block_by_number(num)
       end
+
     {:ok, assign(socket, :block, block)}
   end
 
@@ -28,19 +31,16 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <li>Sequencer Address <%= @block["sequencer_address"] %></li>
           <li>Status <%= @block["status"] %></li>
           <li>
-            Timestamp <%=
-            @block["timestamp"]
+            Timestamp <%= @block["timestamp"]
             |> DateTime.from_unix()
             |> then(fn {:ok, time} -> time end) %> UTC
           </li>
         </ul>
       </thead>
       <tbody id="transactions">
-        <h1> Block Transactions </h1>
+        <h1>Block Transactions</h1>
         <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block["transactions"] do %>
-            Type: <%= hash %>
-            Hash: <%= type %>
-            Version: <%= version %>
+          Type: <%= hash %> Hash: <%= type %> Version: <%= version %>
         <% end %>
       </tbody>
     </table>
