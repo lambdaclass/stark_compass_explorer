@@ -1,18 +1,22 @@
 # StarknetExplorer
 
-To start your Phoenix server:
+## Requirements
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+- Erlang/OTP 25
+- Elixir 1.15, compiled with OTP 25
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## Local development
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+To run it locally, you'll need an [Infura](https://www.infura.io/) account and API key. With that done, set the following environment variable with said API key:
 
-## Learn more
+```
+export INFURA_API_KEY=your_api_key
+```
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+then do
+
+```
+make run
+```
+
+This will setup a web app in `localhost:4000`.
