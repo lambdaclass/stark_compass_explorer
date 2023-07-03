@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  MIX_ENV: test
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        elixir: [1.15]
+        otp: [25]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ matrix.elixir }} # Define the elixir version [required]
+          otp-version: ${{ matrix.otp }} # Define the OTP version [required]
+        env:
+          ImageOS: ubuntu20
+      - name: Restore dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: server/deps
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-
+      - name: Install dependencies
+        run: make setup
+      - name: Check Elixir Formatting
+        run: mix format --check-formatted
+      - name: Compiles without warnings
+        run: mix compile --all-warnings --warnings-as-errors
+      - name: Run tests
+        run: mix test
