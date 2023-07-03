@@ -20,7 +20,7 @@ defmodule StarknetExplorerWeb.TransactionsLive do
             <tr id={"transaction-#{idx}"}>
             <td>
             <%= live_redirect(to_string(transaction["transaction_hash"]),
-                to: "/transaction/#{transaction["transaction_hash"]}",
+                to: "/transactions/#{transaction["transaction_hash"]}",
                 class: "text-blue-500 hover:text-blue-700 underline-none font-medium"
               ) %>
             </td>
