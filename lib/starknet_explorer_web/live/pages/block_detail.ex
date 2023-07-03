@@ -21,6 +21,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   def render(assigns = %{block: _block}) do
     ~H"""
+    <div class="flex justify-center items-center pt-14">
+      <h1 class="text-white text-4xl font-mono">Block detail</h1>
+    </div>
     <table>
       <thead>
         <ul>

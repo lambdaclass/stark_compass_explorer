@@ -18,8 +18,9 @@ defmodule StarknetExplorerWeb.Router do
     pipe_through :browser
 
     live "/", HomeLive.Index, :index
+    live "/blocks", BlockIndexLive
     live "/block/:number_or_hash", BlockDetailLive
-    live "/transactions", HomeLive.Index
+    live "/transactions", TransactionIndexLive
     live "/transactions/:transaction_hash", TransactionLive
   end
 

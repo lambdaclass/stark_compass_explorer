@@ -4,7 +4,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   defp transaction_header(assigns) do
     ~H"""
-    Transaction <br />
+    <div class="flex justify-center items-center pt-14">
+      <h1 class="text-white text-4xl font-mono">Transaction detail</h1>
+    </div>
     <button
       class="font-bold py-2 px-4 rounded bg-blue-500 text-white"
       phx-click="select-view"
@@ -40,6 +42,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     """
   end
 
+  @impl true
   def render(%{transaction: nil, transaction_receipt: nil} = assigns) do
     ~H"""
 
