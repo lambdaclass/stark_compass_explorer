@@ -10,37 +10,40 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
   def render(assigns) do
     ~H"""
-      <div class="table-block bg-[#182635]">
-          <div>
-            <ul class="grid grid-cols-4 grid-flow-col text-lg gap-20 px-2 text-white/50">
-              <li scope="col" class="py-5">Number</li>
-              <li scope="col" class="py-5">Block Hash</li>
-              <li scope="col" class="py-5">Status</li>
-              <li scope="col" class="py-5">Age</li>
-            </ul>
-          </div>
-        <div id="blocks" class="px-2">
-          <%= for block <- @blocks do %>
-            <ul id={"block-#{block["block_number"]}"} class="grid gap-20 grid-cols-4  auto-cols-[minmax(0,1fr)] border-b-[0.5px] border-gray-600 last:border-none border-spacing-6">
-              <li scope="row" class="py-4">
+    <div class="table-block bg-[#182635]">
+      <div>
+        <ul class="grid grid-cols-4 grid-flow-col text-lg gap-20 px-2 text-white/50">
+          <li scope="col" class="py-5">Number</li>
+          <li scope="col" class="py-5">Block Hash</li>
+          <li scope="col" class="py-5">Status</li>
+          <li scope="col" class="py-5">Age</li>
+        </ul>
+      </div>
+      <div id="blocks" class="px-2">
+        <%= for block <- @blocks do %>
+          <ul
+            id={"block-#{block["block_number"]}"}
+            class="grid gap-20 grid-cols-4  auto-cols-[minmax(0,1fr)] border-b-[0.5px] border-gray-600 last:border-none border-spacing-6"
+          >
+            <li scope="row" class="py-4">
               <%= live_redirect(to_string(block["block_number"]),
-                to: "/",
+                to: "/block/#{block["block_number"]}",
                 class: "text-blue-500 hover:text-blue-700 underline-none font-medium"
               ) %>
             </li>
-              <li scope="row" class="py-4">
+            <li scope="row" class="py-4">
               <%= live_redirect(shorten_block_hash(block["block_hash"]),
-                to: "/",
+                to: "/block/#{block["block_hash"]}",
                 class: "text-blue-500 hover:text-blue-700 underline-none font-medium",
                 title: block["block_hash"]
               ) %>
             </li>
-              <li scope="row" class="py-4"><%= block["status"] %></li>
-              <li scope="row" class="py-4"><%= get_block_age(block) %></li>
+            <li scope="row" class="py-4"><%= block["status"] %></li>
+            <li scope="row" class="py-4"><%= get_block_age(block) %></li>
           </ul>
-          <% end %>
-          </div>
+        <% end %>
       </div>
+    </div>
     """
   end
 
