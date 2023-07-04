@@ -12,9 +12,6 @@ defmodule StarknetExplorerWeb.SearchLive do
         value={@query}
         placeholder="Search..."
       />
-      <%= for error <- @errors do %>
-        <pre><%= error %></pre>
-      <% end %>
     </form>
     """
   end
@@ -23,7 +20,7 @@ defmodule StarknetExplorerWeb.SearchLive do
     {:ok, assign(socket, query: "", loading: false, matches: [], errors: [])}
   end
 
-  def handle_event("update-input", %{"search-input" => query} , socket) do
+  def handle_event("update-input", %{"search-input" => query}, socket) do
     {:noreply, assign(socket, :query, query)}
   end
 
@@ -34,14 +31,23 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def handle_info({:search, query}, socket) do
     query = String.trim(query)
+
     navigate_fun =
       case try_search(query) do
         {:tx, _tx} ->
           fn -> push_navigate(socket, to: ~p"/transactions/#{query}") end
+
         {:block, _block} ->
           fn -> push_navigate(socket, to: ~p"/block/#{query}") end
-        :noquery -> fn -> assign(socket, errors: ["Couldn't find something matching your query"]) end
+
+        :noquery ->
+          fn ->
+            socket
+            |> put_flash(:error, "No results found")
+            |> push_navigate(to: "/")
+          end
       end
+
     {:noreply, navigate_fun.()}
   end
 
@@ -62,7 +68,9 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def try_by_hash(hash) do
     case Rpc.get_transaction(hash) do
-      {:ok, transaction} -> {:tx, hash}
+      {:ok, transaction} ->
+        {:tx, hash}
+
       {:error, _} ->
         case Rpc.get_block_by_hash(hash) do
           {:ok, block} -> {:block, block}
@@ -72,11 +80,13 @@ defmodule StarknetExplorerWeb.SearchLive do
   end
 
   defp infer_query(query = <<"0x", rest::binary>>), do: :hex
+
   defp infer_query(query) do
     case Integer.parse(query) do
       {parsed, ""} -> {:number, parsed}
       _ -> :noquery
     end
   end
+
   defp infer_query(query), do: :noquery
 end
