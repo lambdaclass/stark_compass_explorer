@@ -5,41 +5,38 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex justify-center items-center pt-14">
-      <h1>Blocks</h1>
-    </div>
-    <div class="table-block bg-[#182635]">
-      <div>
-        <ul class="grid grid-cols-4 grid-flow-col text-lg gap-20 px-2 text-white/50">
-          <li scope="col" class="py-5">Number</li>
-          <li scope="col" class="py-5">Block Hash</li>
-          <li scope="col" class="py-5">Status</li>
-          <li scope="col" class="py-5">Age</li>
-        </ul>
+    <div class="max-w-3xl mx-auto">
+      <div class="table-header">
+        <h2>Blocks</h2>
       </div>
-      <div id="blocks" class="px-2">
-        <%= for block <- @blocks do %>
-          <ul
-            id={"block-#{block["block_number"]}"}
-            class="grid gap-20 grid-cols-4  auto-cols-[minmax(0,1fr)] border-b-[0.5px] border-gray-600 last:border-none border-spacing-6"
-          >
-            <li scope="row" class="py-4">
-              <%= live_redirect(to_string(block["block_number"]),
-                to: "/block/#{block["block_number"]}",
-                class: "text-blue-500 hover:text-blue-700 underline-none font-medium"
-              ) %>
-            </li>
-            <li scope="row" class="py-4">
-              <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
-                to: "/block/#{block["block_hash"]}",
-                class: "text-blue-500 hover:text-blue-700 underline-none font-medium",
-                title: block["block_hash"]
-              ) %>
-            </li>
-            <li scope="row" class="py-4"><%= block["status"] %></li>
-            <li scope="row" class="py-4"><%= Utils.get_block_age(block) %></li>
-          </ul>
-        <% end %>
+      <div class="table-block">
+        <ul class="blocks-grid table-th">
+          <li scope="col">Number</li>
+          <li class="col-span-2" scope="col">Block Hash</li>
+          <li class="col-span-2" scope="col">Status</li>
+          <li scope="col">Age</li>
+        </ul>
+        <div id="blocks">
+          <%= for block <- @blocks do %>
+            <ul id={"block-#{block["block_number"]}"} class="blocks-grid border-t border-gray-600 ">
+              <li scope="row">
+                <%= live_redirect(to_string(block["block_number"]),
+                  to: "/block/#{block["block_number"]}",
+                  class: "text-se-lilac hover:text-se-hover-lilac underline-none"
+                ) %>
+              </li>
+              <li class="col-span-2" scope="row">
+                <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
+                  to: "/block/#{block["block_hash"]}",
+                  class: "text-se-blue hover:text-se-hover-blue underline-none",
+                  title: block["block_hash"]
+                ) %>
+              </li>
+              <li class="col-span-2" scope="row"><%= block["status"] %></li>
+              <li scope="row"><%= Utils.get_block_age(block) %></li>
+            </ul>
+          <% end %>
+        </div>
       </div>
     </div>
     """

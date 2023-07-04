@@ -5,39 +5,36 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex justify-center items-center pt-14">
-      <h1>Transactions</h1>
-    </div>
-    <div class="table-block bg-[#182635]">
-      <div>
-        <ul class="grid grid-cols-4 grid-flow-col text-lg gap-20 px-2 text-white/50">
-          <li scope="col" class="py-5">Transaction Hash</li>
-          <li scope="col" class="py-5">Type</li>
-          <li scope="col" class="py-5">Status</li>
-          <li scope="col" class="py-5">Age</li>
-        </ul>
+    <div class="max-w-3xl mx-auto">
+      <div class="table-header">
+        <h2>Transactions</h2>
       </div>
-      <div id="transactions" class="px-2">
-        <%= for block <- @latest_block do %>
-          <%= for {transaction, idx} <- Enum.with_index(block["transactions"]) do %>
-            <ul
-              id={"transaction-#{idx}"}
-              class="grid gap-20 grid-cols-4  auto-cols-[minmax(0,1fr)] border-b-[0.5px] border-gray-600 last:border-none border-spacing-6"
-            >
-              <li scope="row" class="py-4">
-                <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
-                  to: "/transactions/#{transaction["transaction_hash"]}",
-                  class: "text-blue-500 hover:text-blue-700 underline-none font-medium"
-                ) %>
-              </li>
-              <li scope="row" class="py-4">
-                <%= transaction["type"] %>
-              </li>
-              <li scope="row" class="py-4"><%= block["status"] %></li>
-              <li scope="row" class="py-4"><%= Utils.get_block_age(block) %></li>
-            </ul>
+      <div class="table-block">
+        <ul class="transactions-grid table-th">
+          <li class="col-span-2" scope="col">Transaction Hash</li>
+          <li class="col-span-2" scope="col">Type</li>
+          <li class="col-span-2" scope="col">Status</li>
+          <li scope="col">Age</li>
+        </ul>
+        <div id="transactions">
+          <%= for block <- @latest_block do %>
+            <%= for {transaction, idx} <- Enum.with_index(block["transactions"]) do %>
+              <ul id={"transaction-#{idx}"} class="transactions-grid border-t border-gray-600">
+                <li class="col-span-2" scope="row">
+                  <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
+                    to: "/transactions/#{transaction["transaction_hash"]}",
+                    class: "text-se-blue hover:text-se-hover-blue underline-none"
+                  ) %>
+                </li>
+                <li class="col-span-2" scope="row">
+                  <%= transaction["type"] %>
+                </li>
+                <li class="col-span-2" scope="row"><%= block["status"] %></li>
+                <li scope="row"><%= Utils.get_block_age(block) %></li>
+              </ul>
+            <% end %>
           <% end %>
-        <% end %>
+        </div>
       </div>
     </div>
     """

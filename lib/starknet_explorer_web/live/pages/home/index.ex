@@ -16,6 +16,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
+    <div class="flex flex-col gap-1 justify-center items-center">
+      <h1>Welcome to</h1>
+      <h2>Starknet Explorer</h2>
+    </div>
     <div class="mx-auto max-w-6xl grid grid-cols-2 gap-10 mt-10">
       <div>
         <div class="table-header">
@@ -28,14 +32,12 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           </a>
         </div>
         <div class="table-block">
-          <div class="table-th">
-            <ul class="blocks-grid">
-              <li scope="col">Number</li>
-              <li class="col-span-2" scope="col">Block Hash</li>
-              <li class="col-span-2" scope="col">Status</li>
-              <li scope="col">Age</li>
-            </ul>
-          </div>
+          <ul class="blocks-grid table-th">
+            <li scope="col">Number</li>
+            <li class="col-span-2" scope="col">Block Hash</li>
+            <li class="col-span-2" scope="col">Status</li>
+            <li scope="col">Age</li>
+          </ul>
           <div id="blocks">
             <%= for block <- Enum.take(@blocks, 15) do %>
               <ul id={"block-#{block["block_number"]}"} class="blocks-grid border-t border-gray-600">

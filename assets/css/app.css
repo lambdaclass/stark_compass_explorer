@@ -8,7 +8,7 @@ h1 {
   @apply font-ibm-plex text-4xl uppercase font-semibold;
 }
 h2 {
-  @apply font-ibm-plex text-2xl;
+  @apply font-ibm-plex text-2xl mb-4;
 }
 .blocks-grid {
   @apply grid grid-cols-6 gap-8;
