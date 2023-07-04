@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorer.Rpc
-
+  alias StarknetExplorerWeb.Utils
   defp transaction_header(assigns) do
     ~H"""
     <div class="flex justify-center items-center pt-14">
@@ -43,35 +43,45 @@ defmodule StarknetExplorerWeb.TransactionLive do
   end
 
   @impl true
-  def render(%{transaction: nil, transaction_receipt: nil} = assigns) do
+  def render(assigns) do
     ~H"""
-
+    <%= transaction_header(assigns) %>
+    <%= render_info(assigns) %>
+    """
+  end
+  def render_info(%{transaction: nil, transaction_receipt: nil} = assigns) do
+    ~H"""
+    <%= transaction_header(assigns) %>
     """
   end
 
-  def render(%{transaction_view: "events"} = assigns) do
+  # TODO:
+  # Do not hardcode the following:
+  # Identifier
+  # Name
+  # Age
+  def render_info(%{transaction_view: "events"} = assigns) do
     ~H"""
-    <%= transaction_header(assigns) %>
     <table>
       <thead>
         <tr>
-          <th>Identifier(TODO)</th>
+          <th>Identifier</th>
           <th>Block Number</th>
           <th>Transaction Hash</th>
-          <th>Name(TODO)</th>
+          <th>Name</th>
           <th>From Address</th>
-          <th>Age(TODO)</th>
+          <th>Age</th>
         </tr>
       </thead>
       <tbody id="transaction-events-data">
         <%= for signature <- @transaction_receipt["events"] do %>
           <tr>
-            <td>TODO</td>
+            <td><%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4" |> Utils.shorten_block_hash %> </td>
             <td><%= @transaction_receipt["block_number"] %></td>
-            <td><%= @transaction["transaction_hash"] %></td>
-            <td>TODO</td>
-            <td><%= @transaction["sender_address"] %></td>
-            <td>TODO</td>
+            <td><%= @transaction["transaction_hash"] |> Utils.shorten_block_hash %></td>
+            <td>Transfer</td>
+            <td><%= @transaction["sender_address"] |> Utils.shorten_block_hash %></td>
+            <td>Age: 1h</td>
           </tr>
         <% end %>
       </tbody>
@@ -79,21 +89,71 @@ defmodule StarknetExplorerWeb.TransactionLive do
     """
   end
 
-  def render(%{transaction_view: "message_logs"} = assigns) do
+  # TODO:
+  # Everything here is hardcoded.
+  # I think this information comes from the block.
+  def render_info(%{transaction_view: "message_logs"} = assigns) do
     ~H"""
-    <%= transaction_header(assigns) %>
+    <table>
+      <thead>
+        <tr>
+          <th>Identifier</th>
+          <th>Message Hash</th>
+          <th>Direction</th>
+          <th>Type</th>
+          <th>From Address</th>
+          <th>To Address</th>
+          <th>Transaction Hash</th>
+          <th>Age</th>
+        </tr>
+      </thead>
+      <tbody id="message-logs-data">
+        <tr>
+          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
+          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
+          <td>L2 -> L1</td>
+          <td>Sent On L2</td>
+          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
+          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
+          <td>9min</td>
+        </tr>
+      </tbody>
+    </table>
     """
   end
 
-  def render(%{transaction_view: "internal_calls"} = assigns) do
+  def render_info(%{transaction_view: "internal_calls"} = assigns) do
     ~H"""
-    <%= transaction_header(assigns) %>
+    <table>
+      <thead>
+        <tr>
+          <th>Identifier</th>
+          <th>Transaction Hash</th>
+          <th>Type</th>
+          <th>Name</th>
+          <th>Contract Address</th>
+        </tr>
+      </thead>
+      <tbody id="message-logs-data">
+        <tr>
+          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
+          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
+          <td>Call</td>
+          <td>__execute__</td>
+          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
+        </tr>
+      </tbody>
+    </table>
     """
   end
 
-  def render(%{transaction_view: "overview"} = assigns) do
+  # TODO:
+  # Do not hardcode the following:
+  # Call data
+  # Signatures
+  # Execution resources
+  def render_info(%{transaction_view: "overview"} = assigns) do
     ~H"""
-    <%= transaction_header(assigns) %>
     <hr /> Transaction Hash: <%= @transaction["transaction_hash"] %>
     <hr /> Status: <%= @transaction_receipt["status"] %>
     <hr /> Block Hash: <%= @transaction_receipt["block_hash"] %>
@@ -107,6 +167,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <table>
       <thead>
         <tr>
+          call approve(spender, amount) -> <%= "0x0219209e083275171774dab1df80982e9df2096516f06319c5c6d71ae0a8480c" |> Utils.shorten_block_hash %>
+        </tr>
+        <tr>
           <th>Input</th>
           <th>Type</th>
           <th>Value</th>
@@ -114,14 +177,48 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </thead>
       <tbody id="transaction-input-data">
         <tr id="transaction-input-0">
-          <td>to</td>
+          <td>spender</td>
           <td>felt</td>
-          <td>0x11cd02208d6ed241d3fc0dba144f09b70be03003c32e56de2d19aea99b0ca76</td>
+          <td><%="0x11cd02208d6ed241d3fc0dba144f09b70be03003c32e56de2d19aea99b0ca76" |> Utils.shorten_block_hash %></td>
         </tr>
         <tr id="transaction-input-1">
           <td>token_id</td>
           <td>felt</td>
           <td>1580969</td>
+        </tr>
+      </tbody>
+    </table>
+    <table>
+      <thead>
+        <tr>
+          call swap(pool_id, token_from_addr, amount_from, amount_to_min) -> 0x015543c3708653cda9d418b4ccd3be11368e40636c10c44b18cfe756b6d88b29
+        </tr>
+        <tr>
+          <th>Input</th>
+          <th>Type</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody id="transaction-input-data">
+        <tr id="transaction-input-0">
+          <td>pool_id</td>
+          <td>felt</td>
+          <td>"0x42b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2"</td>
+        </tr>
+        <tr id="transaction-input-1">
+          <td>token_from_addr</td>
+          <td>felt</td>
+          <td>"0x42b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2"</td>
+        </tr>
+        <tr id="transaction-input-1">
+          <td>amount_from</td>
+          <td>Uint256</td>
+          <td>"71587356859985694"</td>
+        </tr>
+        <tr id="transaction-input-1">
+          <td>amount_to_min</td>
+          <td>Uint256</td>
+          <td>"80225122454772041"</td>
         </tr>
       </tbody>
     </table>
@@ -134,6 +231,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </tr>
       </thead>
       <tbody id="signatures">
+        Signature
         <%= for {index, signature} <- Enum.with_index(@transaction["signature"]) do %>
           <tr id={"signature-#{index}"}>
             <td><%= index %></td>
@@ -142,7 +240,14 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <% end %>
       </tbody>
     </table>
-    <hr /> Execution Resources (TODO)
+    <hr />
+    <div>
+      Execution Resources
+      STEPS 5083
+      MEMORY 224
+      PEDERSEN_BUILTIN 21
+      RANGE_CHECK_BUILTIN 224
+    </div>
     """
   end
 
@@ -164,11 +269,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
         :load_transaction,
         %{assigns: %{transaction_hash: transaction_hash}} = socket
       ) do
-    {:ok, transaction} =
-      Rpc.get_transaction(transaction_hash)
+    {:ok, transaction} = Rpc.get_transaction(transaction_hash)
 
-    {:ok, transaction_receipt} =
-      Rpc.get_transaction_receipt(transaction_hash)
+    {:ok, transaction_receipt} = Rpc.get_transaction_receipt(transaction_hash)
 
     assigns = [
       transaction: transaction,
