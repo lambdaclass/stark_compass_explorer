@@ -32,3 +32,9 @@ h2 {
 .table-th {
   @apply font-ibm-plex text-sm pb-2 text-gray-400;
 }
+form {
+  @apply relative;
+}
+input {
+  @apply !bg-[#232331] !border-none !text-se-lilac !pr-10;
+}

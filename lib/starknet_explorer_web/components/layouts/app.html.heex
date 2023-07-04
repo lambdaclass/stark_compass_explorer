@@ -1,3 +1,21 @@
 <main class="min-h-screen py-24">
+  <header class="absolute top-0 left-0 right-0 bg-[#111118]/80 flex justify-between items-center px-10 py-5">
+    <div class="flex justify-center items-center gap-4">
+      <a href="/" class="text-lg">
+        <span class="uppercase">Starknet</span>
+        <span class="font-semibold">Explorer</span>
+      </a>
+    </div>
+    <div class="flex items-center gap-10">
+      <a href="/blocks" class="hover:text-se-blue transition-all duration-300"> Blocks </a>
+      <a href="/transactions" class="hover:text-se-blue transition-all duration-300">
+        Transactions
+      </a>
+      <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
+        id: "search-bar",
+        flash: @flash
+      ) %>
+    </div>
+  </header>
   <div><.flash_group flash={@flash} /> <%= @inner_content %></div>
 </main>

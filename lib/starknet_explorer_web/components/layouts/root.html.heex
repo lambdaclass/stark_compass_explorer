@@ -12,27 +12,8 @@
     </script>
   </head>
   <body class="bg-[#111118] text-white antialiased relative">
-    <header class="px-4 sm:px-6 lg:px-8 text-white">
-      <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
-        <div class="flex items-center gap-4">
-          <a href="/"><img src={~p"/images/logo.svg"} width="36" /></a>
-          <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
-            <%= Application.spec(:phoenix, :vsn) %>
-          </p>
-        </div>
-        <div class="flex items-center gap-4 font-semibold leading-6 text-white">
-          <a href="/" class="hover:text-zinc-700"> Home </a>
-          <%= live_render(@conn, StarknetExplorerWeb.SearchLive,
-            id: "search-bar",
-            flash: @flash
-          ) %>
-          <a href="/blocks" class="hover:text-zinc-700"> Blocks </a>
-          <a href="/transactions" class="hover:text-zinc-700"> Transactions </a>
-        </div>
-      </div>
-    </header>
     <%= @inner_content %>
-    <footer class="absolute bottom-0 left-0 right-0 flex justify-center items-center py-4 text-gray-500">
+    <footer class="absolute bottom-0 left-0 right-0 flex justify-center items-center mt-10 py-4 text-gray-500">
       <p id="copyright"></p>
     </footer>
   </body>
