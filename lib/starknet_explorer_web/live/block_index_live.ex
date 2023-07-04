@@ -6,7 +6,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
   def render(assigns) do
     ~H"""
     <div class="flex justify-center items-center pt-14">
-      <h1 class="text-white text-4xl font-mono">Blocks</h1>
+      <h1>Blocks</h1>
     </div>
     <div class="table-block bg-[#182635]">
       <div>

@@ -6,7 +6,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
   def render(assigns) do
     ~H"""
     <div class="flex justify-center items-center pt-14">
-      <h1 class="text-white text-4xl font-mono">Transactions</h1>
+      <h1>Transactions</h1>
     </div>
     <div class="table-block bg-[#182635]">
       <div>

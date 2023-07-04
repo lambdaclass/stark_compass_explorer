@@ -11,7 +11,25 @@
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
   </head>
-  <body class="bg-[#0e141b] text-white antialiased">
+  <body class="bg-[#111118] text-white antialiased relative">
+    <header class="absolute top-0 left-0 right-0">
+      <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
+        <div class="flex items-center gap-4">
+          <a href="/"><img src={~p"/images/logo.svg"} width="36" /></a>
+          <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
+            v<%= Application.spec(:phoenix, :vsn) %>
+          </p>
+        </div>
+        <div class="flex items-center gap-4 font-semibold leading-6 text-white">
+          <a href="/" class="hover:text-zinc-700"> Home </a>
+          <a href="/blocks" class="hover:text-zinc-700"> Blocks </a>
+          <a href="/transactions" class="hover:text-zinc-700"> Transactions </a>
+        </div>
+      </div>
+    </header>
     <%= @inner_content %>
+    <footer class="absolute bottom-0 left-0 right-0 flex justify-center items-center py-4 text-gray-500">
+      <p id="copyright"></p>
+    </footer>
   </body>
 </html>
