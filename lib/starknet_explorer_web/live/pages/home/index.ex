@@ -20,7 +20,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       <h1>Welcome to</h1>
       <h2>Starknet Explorer</h2>
     </div>
-    <div class="mx-auto max-w-6xl grid grid-cols-2 gap-10 mt-10">
+    <div class="mx-auto max-w-6xl grid lg:grid-cols-2 gap-10 mt-10">
       <div>
         <div class="table-header">
           <div class="table-title">Latest Blocks</div>
@@ -32,33 +32,44 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           </a>
         </div>
         <div class="table-block">
-          <ul class="blocks-grid table-th">
-            <li scope="col">Number</li>
-            <li class="col-span-2" scope="col">Block Hash</li>
-            <li class="col-span-2" scope="col">Status</li>
-            <li scope="col">Age</li>
-          </ul>
+          <div class="blocks-grid table-th">
+            <div scope="col">Number</div>
+            <div class="col-span-2" scope="col">Block Hash</div>
+            <div class="col-span-2" scope="col">Status</div>
+            <div scope="col">Age</div>
+          </div>
           <div id="blocks">
             <%= for block <- Enum.take(@blocks, 15) do %>
-              <ul id={"block-#{block["block_number"]}"} class="blocks-grid border-t border-gray-600">
-                <li scope="row">
+              <div
+                id={"block-#{block["block_number"]}"}
+                class="blocks-grid border-t first-of-type:border-t-0 lg:first-of-type:border-t border-gray-600"
+              >
+                <div scope="row">
+                  <div class="list-h">Number</div>
                   <%= live_redirect(to_string(block["block_number"]),
                     to: "/block/#{block["block_number"]}",
                     class:
-                      "text-se-lilac hover:text-se-hover-lilac transition-all duration-300 underline-none font-medium"
+                      "text-se-lilac hover:text-se-hover-lilac transition-all duration-300 underline-none"
                   ) %>
-                </li>
-                <li class="col-span-2" scope="row">
+                </div>
+                <div class="col-span-2" scope="row">
+                  <div class="list-h">Block Hash</div>
                   <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
                     to: "/block/#{block["block_hash"]}",
                     class:
-                      "text-se-blue hover:text-se-hover-blue transition-all duration-300 underline-none font-medium",
+                      "text-se-blue hover:text-se-hover-blue transition-all duration-300 underline-none",
                     title: block["block_hash"]
                   ) %>
-                </li>
-                <li class="col-span-2" scope="row"><%= block["status"] %></li>
-                <li scope="row"><%= Utils.get_block_age(block) %></li>
-              </ul>
+                </div>
+                <div class="col-span-2" scope="row">
+                  <div class="list-h">Status</div>
+                  <%= block["status"] %>
+                </div>
+                <div scope="row">
+                  <div class="list-h">Age</div>
+                  <%= Utils.get_block_age(block) %>
+                </div>
+              </div>
             <% end %>
           </div>
         </div>
@@ -75,30 +86,38 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </div>
         <div class="table-block">
           <div class="table-th">
-            <ul class="transactions-grid">
-              <li class="col-span-2" scope="col">Transaction Hash</li>
-              <li class="col-span-2" scope="col">Type</li>
-              <li class="col-span-2" scope="col">Status</li>
-              <li scope="col">Age</li>
-            </ul>
+            <div class="transactions-grid">
+              <div class="col-span-2" scope="col">Transaction Hash</div>
+              <div class="col-span-2" scope="col">Type</div>
+              <div class="col-span-2" scope="col">Status</div>
+              <div scope="col">Age</div>
+            </div>
           </div>
           <div id="transactions">
             <%= for block <- @latest_block do %>
               <%= for {transaction, idx} <- Enum.take(Enum.with_index(block["transactions"]), 15) do %>
-                <ul id={"transaction-#{idx}"} class="transactions-grid border-t border-gray-600">
-                  <li class="col-span-2" scope="row">
+                <div id={"transaction-#{idx}"} class="transactions-grid border-t border-gray-600">
+                  <div class="col-span-2" scope="row">
+                    <div class="list-h">Transaction Hash</div>
                     <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
                       to: "/transactions/#{transaction["transaction_hash"]}",
                       class:
-                        "text-se-blue hover:text-se-hover-blue transition-all duration-300 underline-none font-medium"
+                        "text-se-blue hover:text-se-hover-blue transition-all duration-300 underline-none"
                     ) %>
-                  </li>
-                  <li class="col-span-2" scope="row">
+                  </div>
+                  <div class="col-span-2" scope="row">
+                    <div class="list-h">Type</div>
                     <%= transaction["type"] %>
-                  </li>
-                  <li class="col-span-2" scope="row"><%= block["status"] %></li>
-                  <li scope="row"><%= Utils.get_block_age(block) %></li>
-                </ul>
+                  </div>
+                  <div class="col-span-2" scope="row">
+                    <div class="list-h">Status</div>
+                    <%= block["status"] %>
+                  </div>
+                  <div scope="row">
+                    <div class="list-h">Age</div>
+                    <%= Utils.get_block_age(block) %>
+                  </div>
+                </div>
               <% end %>
             <% end %>
           </div>

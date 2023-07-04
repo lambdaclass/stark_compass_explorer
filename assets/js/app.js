@@ -36,6 +36,20 @@ const setYear = () => {
   copyright.innerHTML = `LambdaClass &copy; ${new Date().getFullYear()}`;
 };
 setYear();
+
+// Hamburger menu
+const hamburgerMenu = () => {
+  const hamburger = document.getElementById("hamburger");
+  const options = document.querySelector("#menu-options");
+  hamburger.addEventListener("click", () => {
+    options.classList.toggle("open");
+    options.classList.toggle("opacity-0");
+    options.classList.toggle("pointer-events-none");
+    document.body.classList.toggle("overflow-hidden");
+  });
+};
+hamburgerMenu();
+
 // connect if there are any LiveViews on the page
 liveSocket.connect();
 

@@ -1,21 +1,27 @@
-<main class="min-h-screen py-24">
-  <header class="absolute top-0 left-0 right-0 bg-[#111118]/80 flex justify-between items-center px-10 py-5">
-    <div class="flex justify-center items-center gap-4">
-      <a href="/" class="text-lg">
+<main class="px-5 md:px-10 lg:px-5 min-h-screen py-24">
+  <header>
+    <nav class="absolute top-0 left-0 w-screen flex justify-between items-center px-5 lg:px-10 py-5">
+      <a href="/" class="z-50 text-lg">
         <span class="uppercase">Starknet</span>
         <span class="font-semibold">Explorer</span>
       </a>
-    </div>
-    <div class="flex items-center gap-10">
-      <a href="/blocks" class="hover:text-se-blue transition-all duration-300"> Blocks </a>
-      <a href="/transactions" class="hover:text-se-blue transition-all duration-300">
-        Transactions
-      </a>
-      <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-        id: "search-bar",
-        flash: @flash
-      ) %>
-    </div>
+      <img id="hamburger" class="z-50 lg:hidden" src={~p"/images/menu.svg"} />
+      <div
+        id="menu-options"
+        class="absolute lg:relative top-0 left-0 w-screen lg:w-auto h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 pointer-events-none lg:pointer-events-auto flex flex-col lg:flex-row justify-start items-center gap-5 bg-[#111118]/95 my-16 lg:my-0 py-10 lg:py-0 border-t lg:border-t-0"
+      >
+        <a href="/blocks" class="hover:text-se-blue transition-all duration-300">
+          Blocks
+        </a>
+        <a href="/transactions" class="hover:text-se-blue transition-all duration-300">
+          Transactions
+        </a>
+        <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
+          id: "search-bar",
+          flash: @flash
+        ) %>
+      </div>
+    </nav>
   </header>
   <div><.flash_group flash={@flash} /> <%= @inner_content %></div>
 </main>
