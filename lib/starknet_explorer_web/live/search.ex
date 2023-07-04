@@ -5,13 +5,12 @@ defmodule StarknetExplorerWeb.SearchLive do
   def render(assigns) do
     ~H"""
     <form phx-change="update-input" phx-submit="search">
-      <input
+      <.input
+        phx-change="update-input"
         type="text"
         name="search-input"
         value={@query}
-        list="matches"
         placeholder="Search..."
-        {%{readonly: @loading}}
       />
       <%= for error <- @errors do %>
         <pre><%= error %></pre>
