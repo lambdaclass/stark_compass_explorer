@@ -12,6 +12,9 @@ defmodule StarknetExplorerWeb.SearchLive do
         value={@query}
         placeholder="Search..."
       />
+      <button class="absolute top-1/2 right-2 transform -translate-y-1/2" type="submit">
+        <img src={~p"/images/search.svg"} />
+      </button>
     </form>
     """
   end
