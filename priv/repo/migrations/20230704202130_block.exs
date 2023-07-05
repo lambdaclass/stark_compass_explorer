@@ -13,6 +13,7 @@ defmodule StarknetExplorer.Repo.Migrations.Block do
       add :original_json, :binary, null: false
       timestamps()
     end
+
     create unique_index("blocks", [:number])
   end
 end
