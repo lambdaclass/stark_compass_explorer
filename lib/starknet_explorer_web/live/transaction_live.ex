@@ -2,6 +2,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorer.Rpc
   alias StarknetExplorerWeb.Utils
+
   defp transaction_header(assigns) do
     ~H"""
     <div class="flex justify-center items-center pt-14">
@@ -49,6 +50,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <%= render_info(assigns) %>
     """
   end
+
   def render_info(%{transaction: nil, transaction_receipt: nil} = assigns) do
     ~H"""
     <%= transaction_header(assigns) %>
@@ -76,11 +78,14 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <tbody id="transaction-events-data">
         <%= for signature <- @transaction_receipt["events"] do %>
           <tr>
-            <td><%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4" |> Utils.shorten_block_hash %> </td>
+            <td>
+              <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
+              |> Utils.shorten_block_hash() %>
+            </td>
             <td><%= @transaction_receipt["block_number"] %></td>
-            <td><%= @transaction["transaction_hash"] |> Utils.shorten_block_hash %></td>
+            <td><%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %></td>
             <td>Transfer</td>
-            <td><%= @transaction["sender_address"] |> Utils.shorten_block_hash %></td>
+            <td><%= @transaction["sender_address"] |> Utils.shorten_block_hash() %></td>
             <td>Age: 1h</td>
           </tr>
         <% end %>
@@ -109,12 +114,24 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </thead>
       <tbody id="message-logs-data">
         <tr>
-          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
-          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
+          <td>
+            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+            |> Utils.shorten_block_hash() %>
+          </td>
+          <td>
+            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+            |> Utils.shorten_block_hash() %>
+          </td>
           <td>L2 -> L1</td>
           <td>Sent On L2</td>
-          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
-          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
+          <td>
+            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+            |> Utils.shorten_block_hash() %>
+          </td>
+          <td>
+            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+            |> Utils.shorten_block_hash() %>
+          </td>
           <td>9min</td>
         </tr>
       </tbody>
@@ -136,11 +153,20 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </thead>
       <tbody id="message-logs-data">
         <tr>
-          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
-          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
+          <td>
+            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+            |> Utils.shorten_block_hash() %>
+          </td>
+          <td>
+            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+            |> Utils.shorten_block_hash() %>
+          </td>
           <td>Call</td>
           <td>__execute__</td>
-          <td><%="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d" |> Utils.shorten_block_hash %></td>
+          <td>
+            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+            |> Utils.shorten_block_hash() %>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -167,7 +193,8 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <table>
       <thead>
         <tr>
-          call approve(spender, amount) -> <%= "0x0219209e083275171774dab1df80982e9df2096516f06319c5c6d71ae0a8480c" |> Utils.shorten_block_hash %>
+          call approve(spender, amount) -> <%= "0x0219209e083275171774dab1df80982e9df2096516f06319c5c6d71ae0a8480c"
+          |> Utils.shorten_block_hash() %>
         </tr>
         <tr>
           <th>Input</th>
@@ -179,7 +206,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <tr id="transaction-input-0">
           <td>spender</td>
           <td>felt</td>
-          <td><%="0x11cd02208d6ed241d3fc0dba144f09b70be03003c32e56de2d19aea99b0ca76" |> Utils.shorten_block_hash %></td>
+          <td>
+            <%= "0x11cd02208d6ed241d3fc0dba144f09b70be03003c32e56de2d19aea99b0ca76"
+            |> Utils.shorten_block_hash() %>
+          </td>
         </tr>
         <tr id="transaction-input-1">
           <td>token_id</td>

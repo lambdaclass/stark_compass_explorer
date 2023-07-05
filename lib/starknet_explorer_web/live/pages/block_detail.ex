@@ -15,7 +15,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       phx-click="select-view"
       ,
       phx-value-view="overview"
-      >
+    >
       Overview
     </button>
     <button
@@ -23,11 +23,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       phx-click="select-view"
       ,
       phx-value-view="transactions"
-      >
+    >
       Transactions
     </button>
     """
   end
+
   def mount(_params = %{"number_or_hash" => param}, _session, socket) do
     {:ok, block} =
       case num_or_hash(param) do
@@ -43,8 +44,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       block: block,
       view: "overview"
     ]
+
     {:ok, assign(socket, assigns)}
   end
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -52,33 +55,35 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     <%= render_info(assigns) %>
     """
   end
+
   def render_info(assigns = %{block: block, view: "transactions"}) do
     ~H"""
     <table>
       <tbody id="transactions">
         <h1>Block Transactions</h1>
         <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block["transactions"] do %>
-        <table>
-          <thead>
-            <tr>
-              <th> Type </th>
-              <th> Version </th>
-              <th> Hash </th>
-            </tr>
-          <tbody>
-        <tr>
-        <td> <%= type %> </td>
-        <td> <%= version %> </td>
-        <td> <%= hash |> Utils.shorten_block_hash %> </td>
-        </tr>
-        </tbody>
-        </thead>
-        </table>
+          <table>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Version</th>
+                <th>Hash</th>
+              </tr>
+              <tbody>
+                <tr>
+                  <td><%= type %></td>
+                  <td><%= version %></td>
+                  <td><%= hash |> Utils.shorten_block_hash() %></td>
+                </tr>
+              </tbody>
+            </thead>
+          </table>
         <% end %>
       </tbody>
-      </table>
+    </table>
     """
   end
+
   # TODO:
   # Do not hardcode:
   # - Total Execeution Resources
@@ -89,13 +94,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <thead>
         <ul>
           <li>Block Number <%= @block["block_number"] %></li>
-          <li>Block Hash <%= @block["block_hash"] |> Utils.shorten_block_hash %></li>
+          <li>Block Hash <%= @block["block_hash"] |> Utils.shorten_block_hash() %></li>
           <li>Block Status <%= @block["status"] %></li>
-          <li>State Root <%= @block["new_root"] |> Utils.shorten_block_hash  %></li>
-          <li>Parent Hash <%= @block["parent_hash"] |> Utils.shorten_block_hash  %></li>
+          <li>State Root <%= @block["new_root"] |> Utils.shorten_block_hash() %></li>
+          <li>Parent Hash <%= @block["parent_hash"] |> Utils.shorten_block_hash() %></li>
           <li>Sequencer Address <%= @block["sequencer_address"] %></li>
           <li>Gas Price <%= "0.000000017333948464 ETH" %></li>
-          <li>Total execution resources <%= 543910 %></li>
+          <li>Total execution resources <%= 543_910 %></li>
           <li>
             Timestamp <%= @block["timestamp"]
             |> DateTime.from_unix()
@@ -106,6 +111,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     </table>
     """
   end
+
   def handle_event("select-view", %{"view" => view}, socket) do
     socket = assign(socket, :view, view)
     {:noreply, socket}
