@@ -94,9 +94,16 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
               </tr>
               <tbody>
                 <tr>
-                  <td><%= Utils.shorten_block_hash("0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81") %></td>
+                  <td>
+                    <%= Utils.shorten_block_hash(
+                      "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
+                    ) %>
+                  </td>
                   <td>ERC20</td>
-                  <td><%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2" |> Utils.shorten_block_hash() %></td>
+                  <td>
+                    <%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
+                    |> Utils.shorten_block_hash() %>
+                  </td>
                   <td>22h</td>
                 </tr>
               </tbody>
@@ -124,9 +131,16 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
               </tr>
               <tbody>
                 <tr>
-                  <td><%= Utils.shorten_block_hash("0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81") %></td>
+                  <td>
+                    <%= Utils.shorten_block_hash(
+                      "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
+                    ) %>
+                  </td>
                   <td>ERC20</td>
-                  <td><%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2" |> Utils.shorten_block_hash() %></td>
+                  <td>
+                    <%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
+                    |> Utils.shorten_block_hash() %>
+                  </td>
                   <td>22h</td>
                 </tr>
               </tbody>
@@ -143,9 +157,13 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     <table>
       <thead>
         <ul>
-          <li>Class Hash 0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2 </li>
-          <li>Declared By Contract Address 0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2 </li>
-          <li>Declared At Transaction Hash 0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2 </li>
+          <li>Class Hash 0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2</li>
+          <li>
+            Declared By Contract Address 0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2
+          </li>
+          <li>
+            Declared At Transaction Hash 0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2
+          </li>
           <li>Declared At July 4, 2023 at 7:10:11 PM GMT-3</li>
           <li>Class Version Cairo 1.0</li>
         </ul>

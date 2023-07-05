@@ -34,9 +34,17 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
         <div id="classes">
           <%= for idx <- 0..30 do %>
             <ul id={"class-#{idx}"} class="transactions-grid border-t border-gray-600">
-              <li class="col-span-2" scope="row"> <%= live_redirect(Utils.shorten_block_hash("0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"), to: "/classes/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2", class: "text-se-blue hover:text-se-hover-blue underline-none") %> </li>
-              <li class="col-span-2" scope="row"> ERC721 </li>
-              <li class="col-span-2" scope="row"> 17h </li>
+              <li class="col-span-2" scope="row">
+                <%= live_redirect(
+                  Utils.shorten_block_hash(
+                    "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
+                  ),
+                  to: "/classes/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2",
+                  class: "text-se-blue hover:text-se-hover-blue underline-none"
+                ) %>
+              </li>
+              <li class="col-span-2" scope="row">ERC721</li>
+              <li class="col-span-2" scope="row">17h</li>
             </ul>
           <% end %>
         </div>
