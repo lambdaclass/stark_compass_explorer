@@ -11,13 +11,14 @@ defmodule StarknetExplorer.Application do
       # Start the Telemetry supervisor
       StarknetExplorerWeb.Telemetry,
       # Start the Ecto repository
-      # StarknetExplorer.Repo,
+      StarknetExplorer.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: StarknetExplorer.PubSub},
       # Start Finch
       {Finch, name: StarknetExplorer.Finch},
       # Start the Endpoint (http/https)
-      StarknetExplorerWeb.Endpoint
+      StarknetExplorerWeb.Endpoint,
+      StarknetExplorer.BlockFetcher,
       # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
       # {StarknetExplorer.Worker, arg}
     ]

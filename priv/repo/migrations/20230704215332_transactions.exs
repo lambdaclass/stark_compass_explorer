@@ -13,6 +13,7 @@ defmodule StarknetExplorer.Repo.Migrations.Transactions do
       add :entry_point_selector, :string, null: false
       add :calldata, {:array, :string}, null: false
       add :block_number, references("blocks", column: :number, type: :integer, null: false)
+      timestamps()
     end
 
     create unique_index("transactions", [:hash])

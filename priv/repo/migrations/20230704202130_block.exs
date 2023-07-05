@@ -11,6 +11,7 @@ defmodule StarknetExplorer.Repo.Migrations.Block do
       add :timestamp, :integer, null: false
       add :sequencer_address, :string, null: false
       add :original_json, :binary, null: false
+      timestamps()
     end
     create unique_index("blocks", [:number])
   end
