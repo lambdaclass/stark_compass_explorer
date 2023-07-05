@@ -184,12 +184,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <hr /> Status: <%= @transaction_receipt["status"] %>
     <hr /> Block Hash: <%= @transaction_receipt["block_hash"] %>
     <hr /> Block Number: <%= @transaction_receipt["block_number"] %>
-    <hr /> TODO <hr /> Transaction Type: <%= @transaction["type"] %>
+    <hr /> Transaction Type: <%= @transaction["type"] %>
     <hr /> Sender Address: <%= @transaction["sender_address"] %>
     <hr /> Actual Fee: <%= @transaction["max_fee"] %>
     <hr /> Max Fee: <%= @transaction_receipt["actual_fee"] %>
     <hr /> Nonce: <%= @transaction["nonce"] %>
-    <hr /> Input Data (TODO) <hr />
+    <hr /> Input Data <hr />
     <table>
       <thead>
         <tr>
