@@ -10,28 +10,39 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
         <h2>Transactions</h2>
       </div>
       <div class="table-block">
-        <ul class="transactions-grid table-th">
-          <li class="col-span-2" scope="col">Transaction Hash</li>
-          <li class="col-span-2" scope="col">Type</li>
-          <li class="col-span-2" scope="col">Status</li>
-          <li scope="col">Age</li>
-        </ul>
+        <div class="transactions-grid table-th">
+          <div class="col-span-2" scope="col">Transaction Hash</div>
+          <div class="col-span-2" scope="col">Type</div>
+          <div class="col-span-2" scope="col">Status</div>
+          <div scope="col">Age</div>
+        </div>
         <div id="transactions">
           <%= for block <- @latest_block do %>
             <%= for {transaction, idx} <- Enum.with_index(block["transactions"]) do %>
-              <ul id={"transaction-#{idx}"} class="transactions-grid border-t border-gray-600">
-                <li class="col-span-2" scope="row">
+              <div
+                id={"transaction-#{idx}"}
+                class="transactions-grid border-t first-of-type:border-t-0 md:first-of-type:border-t border-gray-600"
+              >
+                <div class="col-span-2" scope="row">
+                  <div class="list-h">Transaction Hash</div>
                   <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
                     to: "/transactions/#{transaction["transaction_hash"]}",
                     class: "text-se-blue hover:text-se-hover-blue underline-none"
                   ) %>
-                </li>
-                <li class="col-span-2" scope="row">
+                </div>
+                <div class="col-span-2" scope="row">
+                  <div class="list-h">Type</div>
                   <%= transaction["type"] %>
-                </li>
-                <li class="col-span-2" scope="row"><%= block["status"] %></li>
-                <li scope="row"><%= Utils.get_block_age(block) %></li>
-              </ul>
+                </div>
+                <div class="col-span-2" scope="row">
+                  <div class="list-h">Status</div>
+                  <%= block["status"] %>
+                </div>
+                <div scope="row">
+                  <div class="list-h">Age</div>
+                  <%= Utils.get_block_age(block) %>
+                </div>
+              </div>
             <% end %>
           <% end %>
         </div>

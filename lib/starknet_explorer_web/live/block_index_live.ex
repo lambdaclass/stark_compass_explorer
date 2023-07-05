@@ -10,31 +10,42 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
         <h2>Blocks</h2>
       </div>
       <div class="table-block">
-        <ul class="blocks-grid table-th">
-          <li scope="col">Number</li>
-          <li class="col-span-2" scope="col">Block Hash</li>
-          <li class="col-span-2" scope="col">Status</li>
-          <li scope="col">Age</li>
-        </ul>
+        <div class="blocks-grid table-th">
+          <div scope="col">Number</div>
+          <div class="col-span-2" scope="col">Block Hash</div>
+          <div class="col-span-2" scope="col">Status</div>
+          <div scope="col">Age</div>
+        </div>
         <div id="blocks">
           <%= for block <- @blocks do %>
-            <ul id={"block-#{block["block_number"]}"} class="blocks-grid border-t border-gray-600 ">
-              <li scope="row">
+            <div
+              id={"block-#{block["block_number"]}"}
+              class="blocks-grid border-t first-of-type:border-t-0 md:first-of-type:border-t border-gray-600 "
+            >
+              <div scope="row">
+                <div class="list-h">Number</div>
                 <%= live_redirect(to_string(block["block_number"]),
                   to: "/block/#{block["block_number"]}",
                   class: "text-se-lilac hover:text-se-hover-lilac underline-none"
                 ) %>
-              </li>
-              <li class="col-span-2" scope="row">
+              </div>
+              <div class="col-span-2" scope="row">
+                <div class="list-h">Block Hash</div>
                 <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
                   to: "/block/#{block["block_hash"]}",
                   class: "text-se-blue hover:text-se-hover-blue underline-none",
                   title: block["block_hash"]
                 ) %>
-              </li>
-              <li class="col-span-2" scope="row"><%= block["status"] %></li>
-              <li scope="row"><%= Utils.get_block_age(block) %></li>
-            </ul>
+              </div>
+              <div class="col-span-2" scope="row">
+                <div class="list-h">Status</div>
+                <%= block["status"] %>
+              </div>
+              <div scope="row">
+                <div class="list-h">Age</div>
+                <%= Utils.get_block_age(block) %>
+              </div>
+            </div>
           <% end %>
         </div>
       </div>
