@@ -90,9 +90,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   # - Gas Price
   def render_info(assigns = %{block: _block, view: "overview"}) do
     ~H"""
-    <div class="flex justify-center items-center pt-14">
-      <h1>Block detail</h1>
-    </div>
     <table>
       <thead>
         <ul>
