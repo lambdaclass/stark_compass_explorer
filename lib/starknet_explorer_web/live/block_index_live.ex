@@ -31,11 +31,28 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
               </div>
               <div class="col-span-2" scope="row">
                 <div class="list-h">Block Hash</div>
-                <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
-                  to: "/block/#{block["block_hash"]}",
-                  class: "text-se-blue hover:text-se-hover-blue underline-none",
-                  title: block["block_hash"]
-                ) %>
+                <div
+                  class="copy-container flex gap-4 items-center"
+                  id={"copy-bk-#{block["block_number"]}"}
+                  phx-hook="Copy"
+                >
+                  <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
+                    to: "/block/#{block["block_hash"]}",
+                    class: "text-se-blue hover:text-se-hover-blue underline-none",
+                    title: block["block_hash"]
+                  ) %>
+                  <div class="relative">
+                    <img
+                      class="copy-btn copy-text w-4 h-4"
+                      src={~p"/images/copy.svg"}
+                      data-text={block["block_hash"]}
+                    />
+                    <img
+                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                      src={~p"/images/check-square.svg"}
+                    />
+                  </div>
+                </div>
               </div>
               <div class="col-span-2" scope="row">
                 <div class="list-h">Status</div>
