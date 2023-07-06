@@ -4,7 +4,7 @@ defmodule StarknetExplorer.BlockFetcher do
   alias StarknetExplorer.{Rpc, BlockFetcher, Block}
   defstruct [:block_height, :latest_block_fetched]
   # 1 second
-  @fetch_interval 1000
+  @fetch_interval 300
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
   end
@@ -54,7 +54,7 @@ defmodule StarknetExplorer.BlockFetcher do
 
       {:error, _} ->
         Logger.error(
-          "[#{DateTime.utc_now()}] Could not fetch an update block height from RPC module"
+          "[#{DateTime.utc_now()}] Could not update block height from RPC module"
         )
     end
   end
