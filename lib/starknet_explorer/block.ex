@@ -2,7 +2,7 @@ defmodule StarknetExplorer.Block do
   use Ecto.Schema
   import Ecto.Query
   import Ecto.Changeset
-  alias StarknetExplorer.{Repo, Transaction}
+  alias StarknetExplorer.{Repo, Transaction, Block}
   require Logger
   @primary_key {:number, :integer, []}
   schema "blocks" do
@@ -100,5 +100,14 @@ defmodule StarknetExplorer.Block do
       [] -> 0
       [%{number: number}] -> number
     end
+  end
+  @doc """
+  Returns the n latests blocks
+  """
+  def latest_n_blocks(n \\ 20 ) do
+    query = from b in Block,
+      order_by: [desc: b.number],
+      limit: ^n
+    Repo.all(query)
   end
 end

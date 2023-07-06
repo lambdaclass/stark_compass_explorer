@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.BlockIndexLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-
+  alias StarknetExplorer.Block
   @impl true
   def render(assigns) do
     ~H"""
@@ -20,23 +20,23 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
       <div id="blocks" class="px-2">
         <%= for block <- @blocks do %>
           <ul
-            id={"block-#{block["block_number"]}"}
+            id={"block-#{block.number}"}
             class="grid gap-20 grid-cols-4  auto-cols-[minmax(0,1fr)] border-b-[0.5px] border-gray-600 last:border-none border-spacing-6"
           >
             <li scope="row" class="py-4">
-              <%= live_redirect(to_string(block["block_number"]),
-                to: "/block/#{block["block_number"]}",
+              <%= live_redirect(to_string(block.number),
+                to: "/block/#{block.number}",
                 class: "text-blue-500 hover:text-blue-700 underline-none font-medium"
               ) %>
             </li>
             <li scope="row" class="py-4">
-              <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
-                to: "/block/#{block["block_hash"]}",
+              <%= live_redirect(Utils.shorten_block_hash(block.hash),
+                to: "/block/#{block.hash}",
                 class: "text-blue-500 hover:text-blue-700 underline-none font-medium",
-                title: block["block_hash"]
+                title: block.hash
               ) %>
             </li>
-            <li scope="row" class="py-4"><%= block["status"] %></li>
+            <li scope="row" class="py-4"><%= block.status %></li>
             <li scope="row" class="py-4"><%= Utils.get_block_age(block) %></li>
           </ul>
         <% end %>
@@ -58,10 +58,11 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
 
   @impl true
   def handle_info(:load_blocks, socket) do
+    [latest_block | blocks] = Block.latest_n_blocks()
     {:noreply,
      assign(socket,
-       blocks: Utils.list_blocks(),
-       latest_block: Utils.get_latest_block_with_transactions()
+       blocks: blocks,
+       latest_block: latest_block
      )}
   end
 end
