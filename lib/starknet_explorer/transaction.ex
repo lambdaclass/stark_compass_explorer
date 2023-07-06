@@ -102,7 +102,7 @@ defmodule StarknetExplorer.Transaction do
       attrs,
       @fields
     )
-    |> validate_according_to_tx_type(attrs)
+    # |> validate_according_to_tx_type(attrs)
     |> unique_constraint(:hash)
   end
 
@@ -120,12 +120,12 @@ defmodule StarknetExplorer.Transaction do
     |> validate_required(@invoke_tx_fields)
   end
 
-  defp validate_according_to_tx_type(changeset, tx = %{"type" => "DEPLOY", "max_fee" => _}) do
+  defp validate_according_to_tx_type(changeset, _tx = %{"type" => "DEPLOY", "max_fee" => _}) do
     changeset
     |> validate_required(@deploy_account_tx_fields)
   end
 
-  defp validate_according_to_tx_type(changeset, tx = %{"type" => "DEPLOY"}) do
+  defp validate_according_to_tx_type(changeset, _tx = %{"type" => "DEPLOY"}) do
     changeset
     |> validate_required(@deploy_contract_tx_fields)
   end

@@ -1,7 +1,7 @@
 defmodule StarknetExplorer.BlockFetcher do
   use GenServer
   require Logger
-  alias StarknetExplorer.{Rpc, BlockFetcher, Block}
+  alias StarknetExplorer.{Rpc, BlockFetcher, Block, Class}
   defstruct [:block_height, :latest_block_fetched]
   @fetch_interval 300
   def start_link(args) do
@@ -35,7 +35,21 @@ defmodule StarknetExplorer.BlockFetcher do
     if curr_height + 10 >= state.latest_block_fetched do
       case fetch_block(state.latest_block_fetched + 1) do
         {:ok, block = %{"block_number" => new_block_number}} ->
+          {:ok, state_updates} = Rpc.get_state_update(new_block_number)
+          deployed_contracts = state_updates["state_diff"]["deployed_contracts"]
+          declared_classes = state_updates["state_diff"]["declared_classes"]
+
+          declared_classes =
+            Enum.map(declared_classes, fn %{"class_hash" => class_hash} ->
+              {:ok, class} = Rpc.get_class(new_block_number, class_hash)
+
+              Map.put(class, "hash", class_hash)
+              |> Map.put("block_number", new_block_number)
+              |> Map.put("declared_at", block["timestamp"])
+            end)
+
           :ok = Block.insert_from_rpc_response(block)
+          :ok = Class.insert_from_rpc_response(declared_classes)
           Logger.info("Inserted new block: #{new_block_number}")
           Process.send_after(self(), :fetch_and_store, @fetch_interval)
           {:noreply, %{state | block_height: curr_height, latest_block_fetched: new_block_number}}
