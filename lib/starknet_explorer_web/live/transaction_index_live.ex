@@ -25,10 +25,31 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
               >
                 <div class="col-span-2" scope="row">
                   <div class="list-h">Transaction Hash</div>
-                  <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
-                    to: "/transactions/#{transaction["transaction_hash"]}",
-                    class: "text-se-blue hover:text-se-hover-blue underline-none"
-                  ) %>
+                  <div
+                    class="copy-container flex gap-4 items-center"
+                    id={"copy-tsx-#{idx}"}
+                    phx-hook="Copy"
+                  >
+                    <div class="relative">
+                      <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
+                        to: "/transactions/#{transaction["transaction_hash"]}",
+                        class: "text-se-blue hover:text-se-hover-blue underline-none"
+                      ) %>
+                      <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                        <div class="relative">
+                          <img
+                            class="copy-btn copy-text w-4 h-4"
+                            src={~p"/images/copy.svg"}
+                            data-text={transaction["transaction_hash"]}
+                          />
+                          <img
+                            class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                            src={~p"/images/check-square.svg"}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="col-span-2" scope="row">
                   <div class="list-h">Type</div>
