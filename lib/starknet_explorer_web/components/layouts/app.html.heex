@@ -37,6 +37,13 @@
           <img class="md:hidden" src={~p"/images/corner-up-right.svg"} />
           <span>Messages</span>
         </a>
+        <a
+          href="/contracts"
+          class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+        >
+          <img class="md:hidden" src={~p"/images/corner-up-right.svg"} />
+          <span>Contracts</span>
+        </a>
         <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
           id: "search-bar",
           flash: @flash
