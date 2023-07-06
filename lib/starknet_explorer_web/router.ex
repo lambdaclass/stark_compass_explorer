@@ -22,6 +22,14 @@ defmodule StarknetExplorerWeb.Router do
     live "/block/:number_or_hash", BlockDetailLive
     live "/transactions", TransactionIndexLive
     live "/transactions/:transaction_hash", TransactionLive
+    live "/contracts", ContractIndexLive
+    live "/contracts/:address", ContractDetailLive
+    live "/events", EventIndexLive
+    live "/events/:identifier", EventDetailLive
+    live "/messages", MessageIndexLive
+    live "/messages/:identifier", MessageDetailLive
+    live "/classes", ClassIndexLive
+    live "/classes/:hash", ClassDetailLive
   end
 
   # Other scopes may use custom stacks.
