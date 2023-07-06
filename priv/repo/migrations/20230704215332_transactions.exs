@@ -32,9 +32,5 @@ defmodule StarknetExplorer.Repo.Migrations.Transactions do
     end
 
     create unique_index("transactions", [:hash])
-
-    # alter table("blocks") do
-    #   add :transactions, references("transactions", on_delete: :delete_all, with: [:hash])
-    # end
   end
 end
