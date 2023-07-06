@@ -3,7 +3,6 @@ defmodule StarknetExplorer.BlockFetcher do
   require Logger
   alias StarknetExplorer.{Rpc, BlockFetcher, Block}
   defstruct [:block_height, :latest_block_fetched]
-  # 1 second
   @fetch_interval 300
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
@@ -45,6 +44,12 @@ defmodule StarknetExplorer.BlockFetcher do
           {:noreply, state}
       end
     end
+  end
+
+  @impl true
+  def handle_info(:stop, _) do
+    Logger.info("Stopping BlockFetcher")
+    {:stop, :normal, :ok}
   end
 
   defp fetch_block_height() do

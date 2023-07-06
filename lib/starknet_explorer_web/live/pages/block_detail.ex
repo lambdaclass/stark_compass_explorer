@@ -33,7 +33,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <li>Sequencer Address <%= @block["sequencer_address"] %></li>
           <li>Status <%= @block["status"] %></li>
           <li>
-            Timestamp <%= @block["timestamp"]
+            <%= @block["timestamp"]
             |> DateTime.from_unix()
             |> then(fn {:ok, time} -> time end) %> UTC
           </li>

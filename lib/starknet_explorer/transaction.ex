@@ -69,9 +69,13 @@ defmodule StarknetExplorer.Transaction do
     :version
   ]
 
+  @fields @l1_handler_tx_fields ++
+            @invoke_tx_fields ++
+            @declare_tx_fields ++ @deploy_contract_tx_fields ++ @deploy_account_tx_fields
+
   @primary_key {:hash, :string, []}
   schema "transactions" do
-    field :constructor_calldata, :string
+    field :constructor_calldata, {:array, :string}
     field :class_hash, :string
     field :type, :string
     field :max_fee, :string
@@ -96,9 +100,7 @@ defmodule StarknetExplorer.Transaction do
     tx
     |> cast(
       attrs,
-      @invoke_tx_fields ++
-        @deploy_tx_fields ++
-        @declare_tx_fields
+      @fields
     )
     |> validate_according_to_tx_type(attrs)
     |> unique_constraint(:hash)

@@ -15,7 +15,7 @@ defmodule StarknetExplorer.Repo.Migrations.Transactions do
       add :calldata, {:array, :string}
       add :chain_id, {:array, :string}
       add :class_hash, :string
-      add :constructor_calldata, :string
+      add :constructor_calldata, {:array, :string}
       add :contract_address, :string
       add :contract_address_salt, :string
       add :contract_class, :string
