@@ -1,16 +1,38 @@
 defmodule StarknetExplorer.Transaction do
   use Ecto.Schema
   import Ecto.Changeset
-  @primary_key {:hash, :string, []}
-  @invoke_tx_fields [
-    :type,
+
+  @l1_handler_tx_fields [
     :hash,
+    :version,
+    :type,
+    :nonce,
+    :contract_address,
+    :entry_point_selector,
+    :calldata
+  ]
+
+  @invoke_tx_fields [
     :calldata,
     :contract_address,
     :entry_point_selector,
-    :signature,
+    :hash,
     :max_fee,
     :nonce,
+    :signature,
+    :type,
+    :version
+  ]
+
+  @invoke_v1_tx_fields [
+    :calldata,
+    :sender_address,
+    :entry_point_selector,
+    :hash,
+    :max_fee,
+    :nonce,
+    :signature,
+    :type,
     :version
   ]
 
@@ -23,13 +45,32 @@ defmodule StarknetExplorer.Transaction do
     :sender_address,
     :signature
   ]
-  @deploy_tx_fields [
+
+  @deploy_contract_tx_fields [
     :type,
     :hash,
     :class_hash,
     :contract_address_salt,
+    :constructor_calldata,
     :version
   ]
+  
+  @deploy_account_tx_fields [
+    :type,
+    :max_fee,
+    :hash,
+    :class_hash,
+    :contract_address_salt,
+    :constructor_calldata,
+    :version,
+    :signature,
+    :nonce,
+    :type,
+    :contract_address_salt,
+    :constructor_calldata,
+    :class_hash
+  ]
+
   @primary_key {:hash, :string, []}
   schema "transactions" do
     field :constructor_calldata, :string
@@ -69,18 +110,33 @@ defmodule StarknetExplorer.Transaction do
     rpc_tx |> Map.put("hash", th)
   end
 
+  defp validate_according_to_tx_type(changeset, _tx = %{"type" => "INVOKE", "version" => "0x1"}) do
+    changeset
+    |> validate_required(@invoke_v1_tx_fields)
+  end
+
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "INVOKE"}) do
     changeset
     |> validate_required(@invoke_tx_fields)
   end
 
+  defp validate_according_to_tx_type(changeset, tx = %{"type" => "DEPLOY", "max_fee" => _}) do
+    changeset
+    |> validate_required(@deploy_account_tx_fields)
+  end
+
   defp validate_according_to_tx_type(changeset, tx = %{"type" => "DEPLOY"}) do
     changeset
-    |> validate_required(@deploy_tx_fields)
+    |> validate_required(@deploy_contract_tx_fields)
   end
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "DECLARE"}) do
     changeset
     |> validate_required(@declare_tx_fields)
+  end
+
+  defp validate_according_to_tx_type(changeset, _tx = %{"type" => "L1_HANDLER"}) do
+    changeset
+    |> validate_required(@l1_handler_tx_fields)
   end
 end
