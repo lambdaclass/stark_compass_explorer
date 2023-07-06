@@ -29,22 +29,22 @@ const setYear = () => {
 };
 setYear();
 
+let Hooks = {};
+
 // Hamburger menu
-const hamburgerMenu = () => {
-  const hamburger = document.getElementById("hamburger");
-  const options = document.querySelector("#menu-options");
-  hamburger.addEventListener("click", () => {
-    options.classList.toggle("open");
-    options.classList.toggle("opacity-0");
-    options.classList.toggle("pointer-events-none");
-    document.body.classList.toggle("overflow-hidden");
-  });
+Hooks.Nav = {
+  mounted() {
+    const hamburger = document.getElementById("hamburger");
+    const options = document.querySelector("#menu-options");
+    hamburger.addEventListener("click", () => {
+      options.classList.toggle("open");
+      options.classList.toggle("opacity-0");
+      options.classList.toggle("pointer-events-none");
+    });
+  },
 };
-hamburgerMenu();
 
 // Copy to clippboard
-
-let Hooks = {};
 Hooks.Copy = {
   mounted() {
     const copySections = document.querySelectorAll(".copy-container");

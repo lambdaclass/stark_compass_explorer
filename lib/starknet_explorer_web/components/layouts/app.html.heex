@@ -1,11 +1,11 @@
 <main class="px-5 md:px-10 min-h-screen py-32 lg:py-40">
   <header>
-    <nav class="absolute top-0 left-0 w-screen flex justify-between items-center px-5 md:px-10 py-5">
+    <nav class="z-50 absolute top-0 left-0 w-screen flex justify-between items-center px-5 md:px-10 py-5">
       <a href="/" class="z-50 text-xl">
         <span class="uppercase">Starknet</span>
         <span class="font-semibold">Explorer</span>
       </a>
-      <img id="hamburger" class="z-50 md:hidden" src={~p"/images/menu.svg"} />
+      <img id="hamburger" class="z-50 md:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
       <div
         id="menu-options"
         class="absolute md:relative top-0 left-0 w-screen md:w-auto h-screen md:h-auto transition-all duration-300 opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto flex flex-col md:flex-row justify-start items-streach gap-10 bg-[#111118] my-16 md:my-0 py-10 md:py-0 border-t md:border-t-0 px-5 md:px-0"
