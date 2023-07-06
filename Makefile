@@ -15,3 +15,7 @@ stop-db:
 
 deps-get:
 	mix deps.get
+
+db_container := $(shell docker ps -aqf name=starknet_explorer_dev_db)
+seed: db
+	cat ./priv/repo/seed.sql | docker exec -i $(db_container) psql -U postgres -d starknet_explorer_dev
