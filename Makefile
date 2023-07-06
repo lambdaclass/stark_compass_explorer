@@ -1,7 +1,17 @@
-.PHONY: run setup
+.PHONY: run setup deps-get db stop-db
 
-run: setup
+run:
 	iex -S mix phx.server
 
-setup:
+setup: deps-get db
+
+db:
+	docker-compose up -d
+	mix ecto.create
+	mix ecto.migrate
+
+stop-db:
+	docker-compose down
+
+deps-get:
 	mix deps.get

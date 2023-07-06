@@ -2,6 +2,7 @@
 
 ## Requirements
 
+- Docker
 - Erlang/OTP 25
 - Elixir 1.15, compiled with OTP 25
 
@@ -16,7 +17,17 @@ export INFURA_API_KEY=your_api_key
 then do
 
 ```
+make setup run
+```
+
+This will start postgres, create the database and start a web app in `localhost:4000`.
+
+From now on, if you want to restart the app, you can just do:
+```
 make run
 ```
 
-This will setup a web app in `localhost:4000`.
+To stop postgres:
+```
+make stop-db
+```
