@@ -7,6 +7,9 @@ defmodule StarknetExplorer.Application do
 
   @impl true
   def start(_type, _args) do
+    # if_prod do
+    # [StarknetExplorer.BlockFetcher]
+    # else
     children =
       [
         # Start the Telemetry supervisor
@@ -22,11 +25,9 @@ defmodule StarknetExplorer.Application do
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
       ] ++
-        if_prod do
-          [StarknetExplorer.BlockFetcher]
-        else
-          []
-        end
+        []
+
+    # end
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

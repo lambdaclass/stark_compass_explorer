@@ -37,3 +37,6 @@ npm-debug.log
 
 # Ignore .envrc
 .envrc
+
+# Docker compose volume
+.volumes

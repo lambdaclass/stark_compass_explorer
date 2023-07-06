@@ -44,6 +44,8 @@ defmodule StarknetExplorer.Block do
     |> unique_constraint(:hash)
   end
 
+  def list(), do: Repo.all(__MODULE__)
+
   @doc """
   Given a block from the RPC response, insert it into the database.
   """

@@ -21,6 +21,23 @@ defmodule StarknetExplorer.Rpc do
   def get_transaction_receipt(transaction_hash),
     do: send_request("starknet_getTransactionReceipt", [transaction_hash])
 
+  def get_state_update(),
+    do: send_request("starknet_getStateUpdate", ["latest"])
+
+  # We can check deployed contracts on a given block with this method.
+  def get_state_update(block_number) when is_number(block_number),
+    do: send_request("starknet_getStateUpdate", [%{block_number: block_number}])
+
+  def get_state_update(block_hash) when is_binary(block_hash),
+    do: send_request("starknet_getStateUpdate", [%{block_hash: block_hash}])
+
+  # We can parse abis with this method.
+  def get_class(block_number, class_hash),
+    do: send_request("starknet_getClass", [%{block_number: block_number}, class_hash])
+
+  def get_class_at(block_number, contract_address),
+    do: send_request("starknet_getClassAt", [%{block_number: block_number}, contract_address])
+
   defp send_request(method, args) do
     payload = build_payload(method, args)
 
