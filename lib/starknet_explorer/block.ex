@@ -29,7 +29,7 @@ defmodule StarknetExplorer.Block do
       :sequencer_address,
       # :transactions
       :original_json
-        ])
+    ])
     |> validate_required([
       :number,
       :status,
@@ -65,9 +65,9 @@ defmodule StarknetExplorer.Block do
       end)
       |> Map.put("original_json", original_json)
 
-      # Validate each transaction before inserting
-      # the block into postgres. I think
-      # this can be done with cast_assoc.
+    # Validate each transaction before inserting
+    # the block into postgres. I think
+    # this can be done with cast_assoc.
     transactions =
       txs
       |> Enum.map(fn tx ->

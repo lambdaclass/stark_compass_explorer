@@ -37,13 +37,14 @@ defmodule StarknetExplorer.Transaction do
   ]
 
   @declare_tx_fields [
-    :type,
+    :class_hash,
     :hash,
-    :chain_id,
-    :contract_class,
-    :compiled_class_hash,
+    :max_fee,
+    :nonce,
     :sender_address,
-    :signature
+    :signature,
+    :type,
+    :version
   ]
 
   @deploy_contract_tx_fields [
@@ -54,21 +55,18 @@ defmodule StarknetExplorer.Transaction do
     :constructor_calldata,
     :version
   ]
-  
+
   @deploy_account_tx_fields [
-    :type,
-    :max_fee,
-    :hash,
     :class_hash,
-    :contract_address_salt,
     :constructor_calldata,
-    :version,
-    :signature,
+    :contract_address_salt,
+    :hash,
+    :max_fee,
     :nonce,
+    :signature,
     :type,
-    :contract_address_salt,
-    :constructor_calldata,
-    :class_hash
+    :type,
+    :version
   ]
 
   @primary_key {:hash, :string, []}
@@ -99,8 +97,8 @@ defmodule StarknetExplorer.Transaction do
     |> cast(
       attrs,
       @invoke_tx_fields ++
-      @deploy_tx_fields ++
-      @declare_tx_fields
+        @deploy_tx_fields ++
+        @declare_tx_fields
     )
     |> validate_according_to_tx_type(attrs)
     |> unique_constraint(:hash)

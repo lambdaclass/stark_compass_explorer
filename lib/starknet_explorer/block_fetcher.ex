@@ -53,9 +53,7 @@ defmodule StarknetExplorer.BlockFetcher do
         height
 
       {:error, _} ->
-        Logger.error(
-          "[#{DateTime.utc_now()}] Could not update block height from RPC module"
-        )
+        Logger.error("[#{DateTime.utc_now()}] Could not update block height from RPC module")
     end
   end
 
