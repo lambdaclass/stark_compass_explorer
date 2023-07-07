@@ -20,6 +20,8 @@ module.exports = {
         "se-hover-blue": "#b5faff",
         "se-lilac": "#9092ff",
         "se-hover-lilac": "#c6c7ff",
+        "se-pink": "#ff006a",
+        "se-cash-green": "#00E11F",
       },
     },
   },

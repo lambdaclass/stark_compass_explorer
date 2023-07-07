@@ -8,11 +8,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   defp block_detail_header(assigns) do
     ~H"""
     <h2>Block <span class="font-semibold">#<%= @block["block_number"] %></span></h2>
-    <div class="flex gap-5 border-b border-b-gray-600 my-5">
+    <div class="flex gap-5">
       <div
         class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "overview", do: "border-b-se-blue", else: "border-b-transparent"}"}
-        id="overviewTab"
-        phx-hook="Tabs"
         phx-click="select-view"
         ,
         phx-value-view="overview"
@@ -21,8 +19,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       </div>
       <div
         class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "transactions", do: "border-b-se-blue", else: "border-b-transparent"}"}
-        id="transactionsTab"
-        phx-hook="Tabs"
         phx-click="select-view"
         ,
         phx-value-view="transactions"
@@ -96,27 +92,57 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   # - Gas Price
   def render_info(assigns = %{block: _block, view: "overview"}) do
     ~H"""
-    <div class="grid grid-cols-4 gap-10 px-3">
-      <div>Block Hash</div>
-      <div class="col-span-3"><%= @block["block_hash"] %></div>
-      <div>Block Status</div>
-      <div class="col-span-3"><%= @block["status"] %></div>
-      <div>State Root</div>
-      <div class="col-span-3"><%= @block["new_root"] %></div>
-      <div>Parent Hash</div>
-      <div class="col-span-3"><%= @block["parent_hash"] %></div>
-      <div>Sequencer Address</div>
-      <div class="col-span-3"><%= @block["sequencer_address"] %></div>
-      <div>Gas Price</div>
-      <div class="col-span-3"><%= "0.000000017333948464 ETH" %></div>
-      <div>Total execution resources</div>
-      <div class="col-span-3"><%= 543_910 %></div>
-      <div>Timestamp</div>
-      <div>
-        <%= @block["timestamp"]
-        |> DateTime.from_unix()
-        |> then(fn {:ok, time} -> time end)
-        |> Calendar.strftime("%c") %> UTC
+    <div>
+      <div class="block-overview">
+        <div class="block-label">Block Hash</div>
+        <div class="col-span-3 break-all text-se-blue"><%= @block["block_hash"] %></div>
+      </div>
+      <div class="block-overview">
+        <div class="block-label">Block Status</div>
+        <div class="col-span-3">
+          <span class={"#{if @block["status"] == "ACCEPTED_ON_L2", do: "accepted-l2"} #{if @block["status"] == "ACCEPTED_ON_L1", do: "accepted-l1"} #{if @block["status"] == "PENDING", do: "pending"}"}>
+            <%= @block["status"] %>
+          </span>
+        </div>
+      </div>
+      <div class="block-overview">
+        <div class="block-label">State Root</div>
+        <div class="col-span-3 break-all"><%= @block["new_root"] %></div>
+      </div>
+      <div class="block-overview">
+        <div class="block-label">Parent Hash</div>
+        <div class="col-span-3 break-all"><%= @block["parent_hash"] %></div>
+      </div>
+      <div class="block-overview">
+        <div class="block-label">
+          Sequencer Address
+        </div>
+        <div class="col-span-3 break-all"><%= @block["sequencer_address"] %></div>
+      </div>
+      <div class="block-overview">
+        <div class="block-label">
+          Gas Price
+        </div>
+        <div class="col-span-3">
+          <span class="break-all bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1">
+            <%= "0.000000017333948464 ETH" %>
+          </span>
+        </div>
+      </div>
+      <div class="block-overview">
+        <div class="block-label">
+          Total execution resources
+        </div>
+        <div class="col-span-3"><%= 543_910 %></div>
+      </div>
+      <div class="block-overview">
+        <div class="block-label">Timestamp</div>
+        <div class="col-span-3">
+          <%= @block["timestamp"]
+          |> DateTime.from_unix()
+          |> then(fn {:ok, time} -> time end)
+          |> Calendar.strftime("%c") %> UTC
+        </div>
       </div>
     </div>
     """
