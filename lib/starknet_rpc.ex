@@ -41,9 +41,7 @@ defmodule StarknetExplorer.Rpc do
   defp send_request(method, args) do
     payload = build_payload(method, args)
 
-    host =
-      "https://starknet-goerli.infura.io/v3/" <>
-        Application.fetch_env!(:starknet_explorer, :api_key)
+    host = Application.fetch_env!(:starknet_explorer, :rpc_host)
 
     {:ok, rsp} = post(host, payload)
 
