@@ -36,5 +36,6 @@ jobs:
         PHX_HOST: ${{ vars.PHX_HOST }}
         PHX_SERVER: ${{ vars.PHX_SERVER }}
         ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_testing"
+        GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
       run: |
         ansible-playbook -i ansible/inventory.yaml ansible/playbooks/deployment.yaml

@@ -16,7 +16,7 @@
   - name: Clone repo in tmp dir
     ansible.builtin.git:
       repo: git@github.com:lambdaclass/starknet_explorer.git
-      version: hot-fix-prod
+      version: "{{ lookup('ansible.builtin.env', 'GIT_BRANCH') }}"
       dest: /home/starknet_explorer/tmp/starknet_explorer
       ssh_opts: "-o StrictHostKeyChecking=no"
       key_file: /home/starknet_explorer/.ssh/id_ed25519
