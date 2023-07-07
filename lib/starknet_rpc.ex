@@ -6,6 +6,9 @@ defmodule StarknetExplorer.Rpc do
   def get_latest_block(), do: send_request("starknet_getBlockWithTxs", ["latest"])
   def get_last_n_events(n), do: send_request("starknet_getEvents", [%{"chunk_size" => n}])
 
+  def get_block_height(),
+    do: send_request("starknet_blockNumber", [])
+
   def get_block_by_number(number) when is_integer(number),
     do: send_request("starknet_getBlockWithTxs", [%{block_number: number}])
 

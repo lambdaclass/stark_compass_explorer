@@ -20,7 +20,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       <h1>Welcome to</h1>
       <h2>Starknet Explorer</h2>
     </div>
-    <div class="mx-auto max-w-6xl grid lg:grid-cols-2 gap-10 mt-10">
+    <div class="mx-auto max-w-6xl grid lg:grid-cols-2 lg:gap-5 xl:gap-20 mt-16">
       <div>
         <div class="table-header">
           <div class="table-title">Latest Blocks</div>
@@ -54,12 +54,33 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 </div>
                 <div class="col-span-2" scope="row">
                   <div class="list-h">Block Hash</div>
-                  <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
-                    to: "/block/#{block["block_hash"]}",
-                    class:
-                      "text-se-blue hover:text-se-hover-blue transition-all duration-300 underline-none",
-                    title: block["block_hash"]
-                  ) %>
+                  <div
+                    class="copy-container flex gap-4 items-center"
+                    id={"copy-block-#{block["block_number"]}"}
+                    phx-hook="Copy"
+                  >
+                    <div class="relative">
+                      <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
+                        to: "/block/#{block["block_hash"]}",
+                        class:
+                          "text-se-blue hover:text-se-hover-blue transition-all duration-300 underline-none",
+                        title: block["block_hash"]
+                      ) %>
+                      <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                        <div class="relative">
+                          <img
+                            class="copy-btn copy-text w-4 h-4"
+                            src={~p"/images/copy.svg"}
+                            data-text={block["block_hash"]}
+                          />
+                          <img
+                            class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                            src={~p"/images/check-square.svg"}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="col-span-2" scope="row">
                   <div class="list-h">Status</div>
@@ -99,11 +120,32 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <div id={"transaction-#{idx}"} class="transactions-grid border-t border-gray-600">
                   <div class="col-span-2" scope="row">
                     <div class="list-h">Transaction Hash</div>
-                    <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
-                      to: "/transactions/#{transaction["transaction_hash"]}",
-                      class:
-                        "text-se-blue hover:text-se-hover-blue transition-all duration-300 underline-none"
-                    ) %>
+                    <div
+                      class="copy-container flex gap-4 items-center"
+                      id={"copy-transaction-#{idx}"}
+                      phx-hook="Copy"
+                    >
+                      <div class="relative">
+                        <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
+                          to: "/transactions/#{transaction["transaction_hash"]}",
+                          class:
+                            "text-se-blue hover:text-se-hover-blue transition-all duration-300 underline-none"
+                        ) %>
+                        <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                          <div class="relative">
+                            <img
+                              class="copy-btn copy-text w-4 h-4"
+                              src={~p"/images/copy.svg"}
+                              data-text={transaction["transaction_hash"]}
+                            />
+                            <img
+                              class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                              src={~p"/images/check-square.svg"}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div class="col-span-2" scope="row">
                     <div class="list-h">Type</div>

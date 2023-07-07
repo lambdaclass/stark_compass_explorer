@@ -22,14 +22,6 @@ import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
 
-let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
-let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken } });
-
-// Show progress bar on live navigation and form submits
-topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
-window.addEventListener("phx:page-loading-start", (_info) => topbar.show(300));
-window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
-
 // Show copyright
 const setYear = () => {
   const copyright = document.getElementById("copyright");
@@ -37,19 +29,53 @@ const setYear = () => {
 };
 setYear();
 
-// Hamburger menu
-const hamburgerMenu = () => {
-  const hamburger = document.getElementById("hamburger");
-  const options = document.querySelector("#menu-options");
-  hamburger.addEventListener("click", () => {
-    options.classList.toggle("open");
-    options.classList.toggle("opacity-0");
-    options.classList.toggle("pointer-events-none");
-    document.body.classList.toggle("overflow-hidden");
-  });
-};
-hamburgerMenu();
+let Hooks = {};
 
+// Hamburger menu
+Hooks.Nav = {
+  mounted() {
+    const hamburger = document.getElementById("hamburger");
+    const options = document.querySelector("#menu-options");
+    hamburger.addEventListener("click", () => {
+      options.classList.toggle("open");
+      options.classList.toggle("opacity-0");
+      options.classList.toggle("pointer-events-none");
+    });
+  },
+};
+
+// Copy to clippboard
+Hooks.Copy = {
+  mounted() {
+    const copySections = document.querySelectorAll(".copy-container");
+    copySections.forEach((section) => {
+      const copyText = section.querySelector(".copy-text");
+      const copyButton = section.querySelector(".copy-btn");
+      const copyCheck = section.querySelector(".copy-check");
+      copyButton.addEventListener("click", () => {
+        if (copyText.dataset.text != null || copyCheck.dataset.text != undefined) {
+          navigator.clipboard.writeText(copyText.dataset.text);
+        } else {
+          navigator.clipboard.writeText(copyText.innerHTML);
+        }
+        copyButton.style.opacity = "0";
+        copyCheck.style.opacity = "100";
+        setTimeout(() => {
+          copyButton.style.opacity = "100";
+          copyCheck.style.opacity = "0";
+        }, 1000);
+      });
+    });
+  },
+};
+
+let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks });
+
+// Show progress bar on live navigation and form submits
+topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
+window.addEventListener("phx:page-loading-start", (_info) => topbar.show(300));
+window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
 // connect if there are any LiveViews on the page
 liveSocket.connect();
 

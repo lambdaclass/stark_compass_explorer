@@ -4,6 +4,12 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&display=swap");
 
 /* This file is for your main application CSS */
+* {
+  @apply box-border p-0 m-0 scroll-smooth;
+}
+html {
+  @apply overflow-x-hidden;
+}
 h1 {
   @apply font-ibm-plex text-4xl uppercase font-semibold;
 }
@@ -21,7 +27,7 @@ h2 {
   @apply py-2;
 }
 .table-block {
-  @apply flex flex-col overflow-x-hidden text-sm md:py-3 px-5 justify-between text-left text-white rounded-lg bg-[#232331];
+  @apply flex flex-col text-sm md:py-3 px-5 justify-between text-left text-white rounded-lg bg-[#232331];
 }
 .table-header {
   @apply text-sm flex justify-between items-baseline py-2;
