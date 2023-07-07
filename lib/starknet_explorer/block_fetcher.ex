@@ -35,21 +35,36 @@ defmodule StarknetExplorer.BlockFetcher do
     if curr_height + 10 >= state.latest_block_fetched do
       case fetch_block(state.latest_block_fetched + 1) do
         {:ok, block = %{"block_number" => new_block_number}} ->
-          {:ok, state_updates} = Rpc.get_state_update(new_block_number)
-          deployed_contracts = state_updates["state_diff"]["deployed_contracts"]
-          declared_classes = state_updates["state_diff"]["declared_classes"]
+          # TODO: Early on DECLARE transactions did not exist, they were DEPLOY ones.
+          # We need to take that into account
 
-          declared_classes =
-            Enum.map(declared_classes, fn %{"class_hash" => class_hash} ->
-              {:ok, class} = Rpc.get_class(new_block_number, class_hash)
-
-              Map.put(class, "hash", class_hash)
-              |> Map.put("block_number", new_block_number)
-              |> Map.put("declared_at", block["timestamp"])
-            end)
+          # Contracts:
+          # If it's the first time we see the class hash, it's a declare, othwise deploy
 
           :ok = Block.insert_from_rpc_response(block)
-          :ok = Class.insert_from_rpc_response(declared_classes)
+
+          Enum.each(block["transactions"], fn transaction ->
+            case transaction["type"] do
+              "DECLARE" ->
+                {:ok, class} = Rpc.get_class(new_block_number, transaction["class_hash"])
+
+                class =
+                  Map.put(class, "hash", transaction["class_hash"])
+                  |> Map.put("block_number", new_block_number)
+                  |> Map.put("declared_at", block["timestamp"])
+                  |> Map.put("declared_at_tx", transaction["transaction_hash"])
+                  |> Map.put("version", class["contract_class_version"])
+
+                # TODO: Uncomment this line when we have contracts
+                # |> Map.put("declared_by", transaction["sender_address"])
+
+                :ok = Class.insert_from_rpc_response(class)
+
+              _ ->
+                :nothing
+            end
+          end)
+
           Logger.info("Inserted new block: #{new_block_number}")
           Process.send_after(self(), :fetch_and_store, @fetch_interval)
           {:noreply, %{state | block_height: curr_height, latest_block_fetched: new_block_number}}

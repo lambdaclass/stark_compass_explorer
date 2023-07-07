@@ -27,7 +27,7 @@ defmodule StarknetExplorer.Repo.Migrations.AddClasses do
       add :sierra_program, :binary
       add :declared_at, :integer
       add :version, :string
-      add :state_update_json, :binary
+      add :class_json, :binary
       timestamps()
     end
 
