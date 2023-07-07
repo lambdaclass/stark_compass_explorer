@@ -35,6 +35,7 @@ jobs:
         SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         PHX_HOST: ${{ vars.PHX_HOST }}
         PHX_SERVER: ${{ vars.PHX_SERVER }}
+        RPC_API_HOST: ${{ secrets.RPC_API_HOST }}
         ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_testing"
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
       run: |
