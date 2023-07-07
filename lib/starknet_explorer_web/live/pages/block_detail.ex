@@ -7,8 +7,16 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   defp block_detail_header(assigns) do
     ~H"""
-    <h2>Block <span class="font-semibold">#<%= @block["block_number"] %></span></h2>
-    <div class="flex gap-5">
+    <div class="flex flex-col md:flex-row justify-between">
+      <h2>Block <span class="font-semibold">#<%= @block["block_number"] %></span></h2>
+      <div class="text-gray-400">
+        <%= @block["timestamp"]
+        |> DateTime.from_unix()
+        |> then(fn {:ok, time} -> time end)
+        |> Calendar.strftime("%c") %> UTC
+      </div>
+    </div>
+    <div class="flex gap-5 mt-8">
       <div
         class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "overview", do: "border-b-se-blue", else: "border-b-transparent"}"}
         phx-click="select-view"
@@ -51,7 +59,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-4xl mx-auto bg-[#232331] p-5 rounded-md">
+    <div class="max-w-4xl mx-auto bg-[#232331] p-4 md:p-8 rounded-md">
       <%= block_detail_header(assigns) %>
       <%= render_info(assigns) %>
     </div>
@@ -60,29 +68,36 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   def render_info(assigns = %{block: block, view: "transactions"}) do
     ~H"""
-    <table>
-      <tbody id="transactions">
-        <h1>Block Transactions</h1>
-        <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block["transactions"] do %>
-          <table>
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Version</th>
-                <th>Hash</th>
-              </tr>
-              <tbody>
-                <tr>
-                  <td><%= type %></td>
-                  <td><%= version %></td>
-                  <td><%= hash |> Utils.shorten_block_hash() %></td>
-                </tr>
-              </tbody>
-            </thead>
-          </table>
-        <% end %>
-      </tbody>
-    </table>
+    <div>
+      <div class="hidden md:grid grid-cols-3 gap-10 px-3 pt-5 pb-3 font-semibold border-t border-t-gray-500">
+        <div>Hash</div>
+        <div>Type</div>
+        <div>Version</div>
+      </div>
+      <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block["transactions"] do %>
+        <div class="grid md:grid-cols-3 gap-2 md:gap-10 px-3 pt-3 mb-3 border-t border-t-gray-500">
+          <div class="list-h">Hash</div>
+          <div class="flex gap-2 items-center">
+            <div class="break-all text-se-blue"><%= Utils.shorten_block_hash(hash) %></div>
+            <div class="relative">
+              <img class="copy-btn copy-text w-4 h-4" src={~p"/images/copy.svg"} data-text={hash} />
+              <img
+                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                src={~p"/images/check-square.svg"}
+              />
+            </div>
+          </div>
+          <div class="list-h">Type</div>
+          <div>
+            <span class={"#{if type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+              <%= type %>
+            </span>
+          </div>
+          <div class="list-h">Version</div>
+          <div><%= version %></div>
+        </div>
+      <% end %>
+    </div>
     """
   end
 
@@ -95,29 +110,83 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     <div>
       <div class="block-overview">
         <div class="block-label">Block Hash</div>
-        <div class="col-span-3 break-all text-se-blue"><%= @block["block_hash"] %></div>
+        <div class="col-span-3 break-all text-se-blue">
+          <div class="break-all text-se-blue flex gap-2 items-center">
+            <%= Utils.shorten_block_hash(@block["block_hash"]) %>
+            <div class="relative">
+              <img
+                class="copy-btn copy-text w-4 h-4"
+                src={~p"/images/copy.svg"}
+                data-text={@block["block_hash"]}
+              />
+              <img
+                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                src={~p"/images/check-square.svg"}
+              />
+            </div>
+          </div>
+        </div>
       </div>
       <div class="block-overview">
         <div class="block-label">Block Status</div>
         <div class="col-span-3">
-          <span class={"#{if @block["status"] == "ACCEPTED_ON_L2", do: "accepted-l2"} #{if @block["status"] == "ACCEPTED_ON_L1", do: "accepted-l1"} #{if @block["status"] == "PENDING", do: "pending"}"}>
+          <span class={"#{if @block["status"] == "ACCEPTED_ON_L2", do: "green-label"} #{if @block["status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if @block["status"] == "PENDING", do: "pink-label"}"}>
             <%= @block["status"] %>
           </span>
         </div>
       </div>
       <div class="block-overview">
         <div class="block-label">State Root</div>
-        <div class="col-span-3 break-all"><%= @block["new_root"] %></div>
+        <div class="col-span-3 break-all flex gap-2 items-center">
+          <%= Utils.shorten_block_hash(@block["new_root"]) %>
+          <div class="relative">
+            <img
+              class="copy-btn copy-text w-4 h-4"
+              src={~p"/images/copy.svg"}
+              data-text={@block["new_root"]}
+            />
+            <img
+              class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+              src={~p"/images/check-square.svg"}
+            />
+          </div>
+        </div>
       </div>
       <div class="block-overview">
         <div class="block-label">Parent Hash</div>
-        <div class="col-span-3 break-all"><%= @block["parent_hash"] %></div>
+        <div class="col-span-3 break-all flex gap-2 items-center">
+          <%= Utils.shorten_block_hash(@block["parent_hash"]) %>
+          <div class="relative">
+            <img
+              class="copy-btn copy-text w-4 h-4"
+              src={~p"/images/copy.svg"}
+              data-text={@block["parent_hash"]}
+            />
+            <img
+              class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+              src={~p"/images/check-square.svg"}
+            />
+          </div>
+        </div>
       </div>
       <div class="block-overview">
         <div class="block-label">
           Sequencer Address
         </div>
-        <div class="col-span-3 break-all"><%= @block["sequencer_address"] %></div>
+        <div class="col-span-3 break-all text-se-violet flex gap-2 items-center">
+          <%= Utils.shorten_block_hash(@block["sequencer_address"]) %>
+          <div class="relative">
+            <img
+              class="copy-btn copy-text w-4 h-4"
+              src={~p"/images/copy.svg"}
+              data-text={@block["sequencer_address"]}
+            />
+            <img
+              class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+              src={~p"/images/check-square.svg"}
+            />
+          </div>
+        </div>
       </div>
       <div class="block-overview">
         <div class="block-label">
@@ -134,15 +203,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           Total execution resources
         </div>
         <div class="col-span-3"><%= 543_910 %></div>
-      </div>
-      <div class="block-overview">
-        <div class="block-label">Timestamp</div>
-        <div class="col-span-3">
-          <%= @block["timestamp"]
-          |> DateTime.from_unix()
-          |> then(fn {:ok, time} -> time end)
-          |> Calendar.strftime("%c") %> UTC
-        </div>
       </div>
     </div>
     """

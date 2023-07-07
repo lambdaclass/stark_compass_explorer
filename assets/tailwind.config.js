@@ -15,7 +15,7 @@ module.exports = {
       colors: {
         brand: "#FD4F00",
         "se-green": "#88ff00",
-        "se-violet": "#9d00ff",
+        "se-violet": "#b43cff",
         "se-blue": "#00eeff",
         "se-hover-blue": "#b5faff",
         "se-lilac": "#9092ff",

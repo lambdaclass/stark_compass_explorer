@@ -10,12 +10,21 @@
 html {
   @apply overflow-x-hidden;
 }
+
+/* Titles */
 h1 {
   @apply font-ibm-plex text-4xl uppercase font-semibold;
 }
 h2 {
   @apply font-ibm-plex text-2xl mb-4;
 }
+
+a,
+.copy-btn {
+  @apply cursor-pointer;
+}
+
+/* Tables */
 .blocks-grid {
   @apply grid md:grid-cols-6 gap-1 md:gap-8 py-5 md:py-0;
 }
@@ -39,26 +48,41 @@ h2 {
   @apply hidden md:grid font-ibm-plex text-sm pb-2 text-gray-400;
 }
 .list-h {
-  @apply font-ibm-plex text-sm pb-2 text-gray-400 md:hidden;
+  @apply font-ibm-plex text-sm pt-2 text-gray-400 md:hidden;
 }
+
+/* Search bar */
 form {
   @apply relative;
 }
 input {
   @apply !bg-[#232331] !border-none !text-se-lilac !pr-10 xl:!w-80;
 }
+
+/* Detail pages */
 .block-overview {
   @apply grid md:grid-cols-4 items-baseline gap-1 md:gap-5 px-3 pt-4 mb-4 border-t border-t-gray-600;
+}
+.block-tsx {
+  @apply grid md:grid-cols-2 items-baseline gap-1 md:gap-5 px-3 pt-4 mb-4 border-t border-t-gray-600;
 }
 .block-label {
   @apply col-span-full md:col-span-1 text-gray-500 md:text-white;
 }
-.pending {
+
+/* Rounded Labels*/
+.pink-label {
   @apply bg-se-pink/10 text-se-pink px-4 py-1 rounded-full;
 }
-.accepted-l1 {
+.blue-label {
   @apply bg-se-blue/10 text-se-blue px-4 py-1 rounded-full;
 }
-.accepted-l2 {
+.green-label {
   @apply bg-se-green/10 text-se-green px-4 py-1 rounded-full;
+}
+.violet-label {
+  @apply bg-se-violet/10 text-se-violet px-4 py-1 rounded-full;
+}
+.lilac-label {
+  @apply bg-se-lilac/10 text-se-lilac px-4 py-1 rounded-full;
 }
