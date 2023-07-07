@@ -24,7 +24,7 @@ jobs:
         sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > id_ed25519_testing
         chmod 400 id_ed25519_testing
 
-    - name: Test install ansible
+    - name: Install ansible
       run: |
         pip install ansible
 
