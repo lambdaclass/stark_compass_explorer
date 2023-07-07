@@ -1,6 +1,6 @@
 webservers:
   hosts:
-    ordinals1:
+    starknet_testing:
       ansible_host: "157.90.154.208"
       ansible_user: starknet_explorer
       ansible_python_interpreter: /usr/bin/python3
