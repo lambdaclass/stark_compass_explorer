@@ -77,7 +77,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block["transactions"] do %>
         <div class="grid md:grid-cols-3 gap-2 md:gap-10 px-3 pt-3 mb-3 border-t border-t-gray-500">
           <div class="list-h">Hash</div>
-          <div class="flex gap-2 items-center">
+          <div
+            class="flex gap-2 items-center copy-container"
+            id={"copy-transaction-hash-#{@block["block_number"]}"}
+            phx-hook="Copy"
+          >
             <div class="break-all text-se-blue"><%= Utils.shorten_block_hash(hash) %></div>
             <div class="relative">
               <img class="copy-btn copy-text w-4 h-4" src={~p"/images/copy.svg"} data-text={hash} />
@@ -110,20 +114,22 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     <div>
       <div class="block-overview">
         <div class="block-label">Block Hash</div>
-        <div class="col-span-3 break-all text-se-blue">
-          <div class="break-all text-se-blue flex gap-2 items-center">
-            <%= Utils.shorten_block_hash(@block["block_hash"]) %>
-            <div class="relative">
-              <img
-                class="copy-btn copy-text w-4 h-4"
-                src={~p"/images/copy.svg"}
-                data-text={@block["block_hash"]}
-              />
-              <img
-                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                src={~p"/images/check-square.svg"}
-              />
-            </div>
+        <div
+          class="col-span-3 break-all text-se-blue break-all flex gap-2 items-center copy-container"
+          id={"copy-block-hash-#{@block["block_number"]}"}
+          phx-hook="Copy"
+        >
+          <%= Utils.shorten_block_hash(@block["block_hash"]) %>
+          <div class="relative">
+            <img
+              class="copy-btn copy-text w-4 h-4"
+              src={~p"/images/copy.svg"}
+              data-text={@block["block_hash"]}
+            />
+            <img
+              class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+              src={~p"/images/check-square.svg"}
+            />
           </div>
         </div>
       </div>
@@ -137,7 +143,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       </div>
       <div class="block-overview">
         <div class="block-label">State Root</div>
-        <div class="col-span-3 break-all flex gap-2 items-center">
+        <div
+          class="col-span-3 break-all break-all flex gap-2 items-center copy-container"
+          id={"copy-block-root-#{@block["block_number"]}"}
+          phx-hook="Copy"
+        >
           <%= Utils.shorten_block_hash(@block["new_root"]) %>
           <div class="relative">
             <img
@@ -154,7 +164,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       </div>
       <div class="block-overview">
         <div class="block-label">Parent Hash</div>
-        <div class="col-span-3 break-all flex gap-2 items-center">
+        <div
+          class="col-span-3 break-all break-all flex gap-2 items-center copy-container"
+          id={"copy-block-parent-#{@block["block_number"]}"}
+          phx-hook="Copy"
+        >
           <%= Utils.shorten_block_hash(@block["parent_hash"]) %>
           <div class="relative">
             <img
@@ -173,7 +187,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div class="block-label">
           Sequencer Address
         </div>
-        <div class="col-span-3 break-all text-se-violet flex gap-2 items-center">
+        <div
+          class="col-span-3 break-all text-se-violet break-all flex gap-2 items-center copy-container"
+          id={"copy-block-sequencer-#{@block["block_number"]}"}
+          phx-hook="Copy"
+        >
           <%= Utils.shorten_block_hash(@block["sequencer_address"]) %>
           <div class="relative">
             <img
