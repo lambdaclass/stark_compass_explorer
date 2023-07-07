@@ -30,10 +30,6 @@ jobs:
 
     - name: "Deploy with ansible"
       env:
-        SSH_HOST: ${{ secrets.SSH_HOST }}
-        SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-        SSH_KEY: ${{ secrets.SSH_KEY }}
-        SSH_PORT: ${{ secrets.SSH_PORT }}
         MIX_ENV: ${{ vars.MIX_ENV }}
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
         SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
@@ -41,4 +37,4 @@ jobs:
         PHX_SERVER: ${{ vars.PHX_SERVER }}
         ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_testing"
       run: |
-        ansible-playbook -i ansible/inventory.yml ansible/playbooks/deployment.yaml
+        ansible-playbook -i ansible/inventory.yaml ansible/playbooks/deployment.yaml
