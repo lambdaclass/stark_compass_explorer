@@ -1,0 +1,44 @@
+name: Deploy to testing
+on:
+  push:
+    branches:
+      - deploy
+jobs:
+
+  build-deploy:
+    name: Build and deploy to testing
+    runs-on: ubuntu-latest
+    environment:
+      name: testing
+      url: https://starknet-explorer.lambdaclass.com/
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3.3.0
+
+    - name: Create ssh private key file from env var
+      env:
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+      run: |
+        set -ex
+        sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > id_ed25519_testing
+        chmod 400 id_ed25519_testing
+
+    - name: Test install ansible
+      run: |
+        pip install ansible
+
+    - name: "Deploy with ansible"
+      env:
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+        SSH_PORT: ${{ secrets.SSH_PORT }}
+        MIX_ENV: ${{ vars.MIX_ENV }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+        PHX_HOST: ${{ vars.PHX_HOST }}
+        PHX_SERVER: ${{ vars.PHX_SERVER }}
+        ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_testing"
+      run: |
+        ansible-playbook -i ansible/inventory.yml ansible/playbooks/deployment.yaml

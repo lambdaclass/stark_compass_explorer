@@ -1,0 +1,79 @@
+- name: Deploy new version
+  hosts: webservers
+  serial: 1
+  gather_facts: false
+  any_errors_fatal: true
+  become: true
+  become_user: starknet_explorer
+
+  pre_tasks:
+
+  - name: Delete tmp repo
+    file:
+      state: absent
+      path: /home/starknet_explorer/tmp/starknet_explorer
+
+  - name: Clone repo in tmp dir
+    ansible.builtin.git:
+      repo: git@github.com:lambdaclass/starknet_explorer.git
+      version: hot-fix-prod
+      dest: /home/starknet_explorer/tmp/starknet_explorer
+      ssh_opts: "-o StrictHostKeyChecking=no"
+      key_file: /home/starknet_explorer/.ssh/id_ed25519
+
+  - name: Build
+    ansible.builtin.shell: |
+      mix local.hex --force
+      mix local.rebar --force
+      mix deps.get --only $MIX_ENV
+      mix deps.compile
+      mix assets.deploy
+      mix compile
+      mix release
+      mix phx.gen.release
+    environment:
+      MIX_ENV: prod
+    args:
+      chdir: /home/starknet_explorer/tmp/starknet_explorer
+    register: build_output
+
+  - debug: msg="{{ build_output.stdout_lines }}"
+
+  - name: Delete old repo
+    ansible.builtin.file:
+      state: absent
+      path: /home/starknet_explorer/starknet_explorer
+
+  - name: Copy repo from tmp dir
+    ansible.builtin.copy:
+      remote_src: true
+      src: /home/starknet_explorer/tmp/starknet_explorer
+      dest: /home/starknet_explorer/
+
+  - name: Create .env file
+    ansible.builtin.template:
+      src: .env.j2
+      dest: /home/starknet_explorer/.env
+    vars:
+      phx_host: "{{ lookup('ansible.builtin.env', 'PHX_HOST') }}"
+      secret_key_base: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
+      database_url: "{{ lookup('ansible.builtin.env', 'DATABASE_URL') }}"
+      rpc_api_host: "{{ lookup('ansible.builtin.env', 'RPC_API_HOST') }}"
+
+  - name: Create user systemd directory
+    ansible.builtin.file:
+      state: directory
+      path: /home/starknet_explorer/.config/systemd/user
+
+  - name: Install systemd service
+    ansible.builtin.template:
+      src: starknet_explorer.service.j2
+      dest: /home/starknet_explorer/.config/systemd/user/starknet_explorer.service
+
+  - name: Restart starknet_explorer service
+    ansible.builtin.systemd:
+      scope: user
+      state: restarted
+      daemon_reload: true
+      enabled: true
+      name: starknet_explorer
