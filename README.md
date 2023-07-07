@@ -8,10 +8,16 @@
 
 ## Local development
 
-To run it locally, you'll need an [Infura](https://www.infura.io/) account and API key. With that done, set the following environment variable with said API key:
+To run it locally, you'll need to set the RPC API url of the network. If you're using a provider like Infura, this will look something like this:
 
 ```
-export INFURA_API_KEY=your_api_key
+https://starknet-mainnet.infura.io/v3/your_api_key
+```
+
+Set the following environment variable with the url mentioned above
+
+```
+export RPC_API_HOST=your_rpc_hostname
 ```
 
 then do
