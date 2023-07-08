@@ -59,7 +59,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-4xl mx-auto bg-[#232331] p-4 md:p-8 rounded-md">
+    <div class="max-w-4xl mx-auto bg-container p-4 md:p-8 rounded-md">
       <%= block_detail_header(assigns) %>
       <%= render_info(assigns) %>
     </div>
@@ -79,10 +79,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="list-h">Hash</div>
           <div
             class="flex gap-2 items-center copy-container"
-            id={"copy-transaction-hash-#{@block["block_number"]}"}
+            id={"copy-transaction-hash-#{hash}"}
             phx-hook="Copy"
           >
-            <div class="break-all text-se-blue"><%= Utils.shorten_block_hash(hash) %></div>
+            <div class="break-all text-hover-blue"><%= Utils.shorten_block_hash(hash) %></div>
             <div class="relative">
               <img class="copy-btn copy-text w-4 h-4" src={~p"/images/copy.svg"} data-text={hash} />
               <img
@@ -115,7 +115,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="block-overview">
         <div class="block-label">Block Hash</div>
         <div
-          class="col-span-3 break-all text-se-blue break-all flex gap-2 items-center copy-container"
+          class="col-span-3 break-all text-hover-blue break-all flex gap-2 items-center copy-container"
           id={"copy-block-hash-#{@block["block_number"]}"}
           phx-hook="Copy"
         >

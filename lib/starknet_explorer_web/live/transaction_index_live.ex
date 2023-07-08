@@ -33,7 +33,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
                     <div class="relative">
                       <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
                         to: "/transactions/#{transaction["transaction_hash"]}",
-                        class: "text-se-blue hover:text-se-hover-blue underline-none"
+                        class: "text-hover-blue"
                       ) %>
                       <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                         <div class="relative">
@@ -53,11 +53,19 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
                 </div>
                 <div class="col-span-2" scope="row">
                   <div class="list-h">Type</div>
-                  <%= transaction["type"] %>
+                  <div>
+                    <span class={"#{if transaction["type"] == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+                      <%= transaction["type"] %>
+                    </span>
+                  </div>
                 </div>
                 <div class="col-span-2" scope="row">
                   <div class="list-h">Status</div>
-                  <%= block["status"] %>
+                  <div>
+                    <span class={"#{if block["status"] == "ACCEPTED_ON_L2", do: "green-label"} #{if block["status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if block["status"] == "PENDING", do: "pink-label"}"}>
+                      <%= block["status"] %>
+                    </span>
+                  </div>
                 </div>
                 <div scope="row">
                   <div class="list-h">Age</div>

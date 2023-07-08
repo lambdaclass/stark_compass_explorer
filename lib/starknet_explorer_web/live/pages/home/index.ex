@@ -20,7 +20,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       <h1>Welcome to</h1>
       <h2>Starknet Explorer</h2>
     </div>
-    <div class="mx-auto max-w-6xl grid lg:grid-cols-2 lg:gap-5 xl:gap-20 mt-16">
+    <div class="mx-auto max-w-7xl grid lg:grid-cols-2 lg:gap-5 xl:gap-16 mt-16">
       <div>
         <div class="table-header">
           <div class="table-title">Latest Blocks</div>
@@ -48,8 +48,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                   <div class="list-h">Number</div>
                   <%= live_redirect(to_string(block["block_number"]),
                     to: "/block/#{block["block_number"]}",
-                    class:
-                      "text-se-lilac hover:text-se-hover-lilac transition-all duration-300 underline-none"
+                    class: "blue-label"
                   ) %>
                 </div>
                 <div class="col-span-2" scope="row">
@@ -62,8 +61,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                     <div class="relative">
                       <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
                         to: "/block/#{block["block_hash"]}",
-                        class:
-                          "text-se-blue hover:text-se-hover-blue transition-all duration-300 underline-none",
+                        class: "text-hover-blue",
                         title: block["block_hash"]
                       ) %>
                       <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -84,7 +82,11 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 </div>
                 <div class="col-span-2" scope="row">
                   <div class="list-h">Status</div>
-                  <%= block["status"] %>
+                  <div>
+                    <span class={"#{if block["status"] == "ACCEPTED_ON_L2", do: "green-label"} #{if block["status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if block["status"] == "PENDING", do: "pink-label"}"}>
+                      <%= block["status"] %>
+                    </span>
+                  </div>
                 </div>
                 <div scope="row">
                   <div class="list-h">Age</div>
@@ -128,8 +130,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                       <div class="relative">
                         <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
                           to: "/transactions/#{transaction["transaction_hash"]}",
-                          class:
-                            "text-se-blue hover:text-se-hover-blue transition-all duration-300 underline-none"
+                          class: "text-hover-blue"
                         ) %>
                         <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                           <div class="relative">
@@ -149,11 +150,19 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                   </div>
                   <div class="col-span-2" scope="row">
                     <div class="list-h">Type</div>
-                    <%= transaction["type"] %>
+                    <div>
+                      <span class={"#{if transaction["type"] == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+                        <%= transaction["type"] %>
+                      </span>
+                    </div>
                   </div>
                   <div class="col-span-2" scope="row">
                     <div class="list-h">Status</div>
-                    <%= block["status"] %>
+                    <div>
+                      <span class={"#{if block["status"] == "ACCEPTED_ON_L2", do: "green-label"} #{if block["status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if block["status"] == "PENDING", do: "pink-label"}"}>
+                        <%= block["status"] %>
+                      </span>
+                    </div>
                   </div>
                   <div scope="row">
                     <div class="list-h">Age</div>
