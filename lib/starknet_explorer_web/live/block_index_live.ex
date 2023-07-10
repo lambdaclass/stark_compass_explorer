@@ -19,13 +19,13 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
         <div id="blocks">
           <%= for block <- @blocks do %>
             <div
-              id={"block-#{block["block_number"]}"}
+              id={"block-#{block.number}"}
               class="blocks-grid border-t first-of-type:border-t-0 md:first-of-type:border-t border-gray-600 "
             >
               <div scope="row">
                 <div class="list-h">Number</div>
-                <%= live_redirect(to_string(block["block_number"]),
-                  to: "/block/#{block["block_number"]}",
+                <%= live_redirect(to_string(block.number),
+                  to: "/block/#{block.number}",
                   class: "text-se-lilac hover:text-se-hover-lilac underline-none"
                 ) %>
               </div>
@@ -33,21 +33,21 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
                 <div class="list-h">Block Hash</div>
                 <div
                   class="copy-container flex gap-4 items-center"
-                  id={"copy-bk-#{block["block_number"]}"}
+                  id={"copy-bk-#{block.number}"}
                   phx-hook="Copy"
                 >
                   <div class="relative">
-                    <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
-                      to: "/block/#{block["block_hash"]}",
+                    <%= live_redirect(Utils.shorten_block_hash(block.hash),
+                      to: "/block/#{block.hash}",
                       class: "text-se-blue hover:text-se-hover-blue underline-none",
-                      title: block["block_hash"]
+                      title: block.hash
                     ) %>
                     <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                       <div class="relative">
                         <img
                           class="copy-btn copy-text w-4 h-4"
                           src={~p"/images/copy.svg"}
-                          data-text={block["block_hash"]}
+                          data-text={block.hash}
                         />
                         <img
                           class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -60,7 +60,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
               </div>
               <div class="col-span-2" scope="row">
                 <div class="list-h">Status</div>
-                <%= block["status"] %>
+                <%= block.status %>
               </div>
               <div scope="row">
                 <div class="list-h">Age</div>
