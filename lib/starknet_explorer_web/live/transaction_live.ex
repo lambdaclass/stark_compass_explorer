@@ -1,6 +1,6 @@
 defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Rpc
+  alias StarknetExplorer.Transaction
   alias StarknetExplorerWeb.Utils
 
   defp transaction_header(assigns) do
@@ -76,16 +76,16 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </tr>
       </thead>
       <tbody id="transaction-events-data">
-        <%= for signature <- @transaction_receipt["events"] do %>
+        <%= for signature <- @transaction_receipt.events do %>
           <tr>
             <td>
               <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
               |> Utils.shorten_block_hash() %>
             </td>
-            <td><%= @transaction_receipt["block_number"] %></td>
-            <td><%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %></td>
+            <td><%= @transaction_receipt.block_number %></td>
+            <td><%= @transaction.transaction_hash |> Utils.shorten_block_hash() %></td>
             <td>Transfer</td>
-            <td><%= @transaction["sender_address"] |> Utils.shorten_block_hash() %></td>
+            <td><%= @transaction.sender_address |> Utils.shorten_block_hash() %></td>
             <td>Age: 1h</td>
           </tr>
         <% end %>
@@ -178,17 +178,17 @@ defmodule StarknetExplorerWeb.TransactionLive do
   # Call data
   # Signatures
   # Execution resources
-  def render_info(%{transaction_view: "overview"} = assigns) do
+  def render_info(%{transaction_view: "overview", transaction: tx} = assigns) do
     ~H"""
-    <hr /> Transaction Hash: <%= @transaction["transaction_hash"] %>
-    <hr /> Status: <%= @transaction_receipt["status"] %>
-    <hr /> Block Hash: <%= @transaction_receipt["block_hash"] %>
-    <hr /> Block Number: <%= @transaction_receipt["block_number"] %>
-    <hr /> Transaction Type: <%= @transaction["type"] %>
-    <hr /> Sender Address: <%= @transaction["sender_address"] %>
-    <hr /> Actual Fee: <%= @transaction["max_fee"] %>
-    <hr /> Max Fee: <%= @transaction_receipt["actual_fee"] %>
-    <hr /> Nonce: <%= @transaction["nonce"] %>
+    <hr /> Transaction Hash: <%= @transaction.hash %>
+    <hr /> Status: <%= @transaction_receipt.status %>
+    <hr /> Block Hash: <%= @transaction_receipt.block_hash %>
+    <hr /> Block Number: <%= @transaction_receipt.block_number %>
+    <hr /> Transaction Type: <%= @transaction.type %>
+    <hr /> Sender Address: <%= @transaction.sender_address %>
+    <hr /> Actual Fee: <%= @transaction.max_fee %>
+    <hr /> Max Fee: <%= @transaction_receipt.actual_fee %>
+    <hr /> Nonce: <%= @transaction.nonce %>
     <hr /> Input Data <hr />
     <table>
       <thead>
@@ -262,7 +262,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </thead>
       <tbody id="signatures">
         Signature
-        <%= for {index, signature} <- Enum.with_index(@transaction["signature"]) do %>
+        <%= for {index, signature} <- Enum.with_index(@transaction.signature) do %>
           <tr id={"signature-#{index}"}>
             <td><%= index %></td>
             <td><%= signature %></td>
@@ -299,13 +299,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
         :load_transaction,
         %{assigns: %{transaction_hash: transaction_hash}} = socket
       ) do
-    {:ok, transaction} = Rpc.get_transaction(transaction_hash)
 
-    {:ok, transaction_receipt} = Rpc.get_transaction_receipt(transaction_hash)
+    transaction = %Transaction{} = Transaction.get_by_hash_with_receipt(transaction_hash)
 
     assigns = [
       transaction: transaction,
-      transaction_receipt: transaction_receipt,
+      transaction_receipt: transaction.receipt,
       transaction_hash: socket.assigns.transaction_hash,
       transaction_view: socket.assigns.transaction_view
     ]

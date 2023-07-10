@@ -110,12 +110,13 @@ defmodule StarknetExplorer.Transaction do
     |> validate_according_to_tx_type(attrs)
   end
 
-  def get_by_hash(hash) do
+  def get_by_hash_with_receipt(hash) do
     query =
       from tx in Transaction,
-        where: tx.hash == ^hash
+        where: tx.hash == ^hash,
+        preload: [:receipt]
 
-    Repo.one!(query)
+    Repo.one(query)
   end
 
   defp rename_rpc_fields(rpc_tx = %{"transaction_hash" => th}) do
