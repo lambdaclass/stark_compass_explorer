@@ -39,7 +39,7 @@
       chdir: /home/starknet_explorer/tmp/starknet_explorer
     register: build_output
 
-  - debug: msg="{{ build_output.stdout_lines }}"
+  - debug: msg="{{ build_output.stdout_lines + [ build_output.stderr_lines ] }}"
 
   - name: Delete old repo
     ansible.builtin.file:
