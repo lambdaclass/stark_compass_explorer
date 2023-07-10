@@ -46,7 +46,8 @@ defmodule StarknetExplorer.Block do
   end
 
   @doc """
-  Given a block from the RPC response, insert it into the database.
+  Given a block from the RPC response, and transactions receipts
+  insert them into the DB.
   """
   def insert_from_rpc_response(block = %{"transactions" => txs}, receipts) when is_map(block) do
     # Store the original response, in case we need it
