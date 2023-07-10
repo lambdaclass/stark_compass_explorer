@@ -7,7 +7,7 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
   #             <li class="col-span-2" scope="row">
   #               <%= live_redirect(Utils.shorten_block_hash(class.hash),
   #                 to: "/classes/#{class.hash}",
-  #                 class: "text-se-blue hover:text-se-hover-blue underline-none"
+  #                 class: "text-hover-blue"
   #               ) %>
   #             </li>
   #             <li class="col-span-2" scope="row">
@@ -21,7 +21,7 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-7xl mx-auto">
       <div class="table-header">
         <h2>Classes</h2>
       </div>
@@ -40,7 +40,7 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
                     "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
                   ),
                   to: "/classes/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2",
-                  class: "text-se-blue hover:text-se-hover-blue underline-none"
+                  class: "text-hover-blue"
                 ) %>
               </li>
               <li class="col-span-2" scope="row">ERC721</li>

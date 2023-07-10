@@ -5,7 +5,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-7xl mx-auto">
       <div class="table-header">
         <h2>Blocks</h2>
       </div>
@@ -26,7 +26,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
                 <div class="list-h">Number</div>
                 <%= live_redirect(to_string(block["block_number"]),
                   to: "/block/#{block["block_number"]}",
-                  class: "text-se-lilac hover:text-se-hover-lilac underline-none"
+                  class: "blue-label"
                 ) %>
               </div>
               <div class="col-span-2" scope="row">
@@ -39,7 +39,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
                   <div class="relative">
                     <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
                       to: "/block/#{block["block_hash"]}",
-                      class: "text-se-blue hover:text-se-hover-blue underline-none",
+                      class: "text-hover-blue",
                       title: block["block_hash"]
                     ) %>
                     <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -60,7 +60,11 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
               </div>
               <div class="col-span-2" scope="row">
                 <div class="list-h">Status</div>
-                <%= block["status"] %>
+                <div>
+                  <span class={"#{if block["status"] == "ACCEPTED_ON_L2", do: "green-label"} #{if block["status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if block["status"] == "PENDING", do: "pink-label"}"}>
+                    <%= block["status"] %>
+                  </span>
+                </div>
               </div>
               <div scope="row">
                 <div class="list-h">Age</div>

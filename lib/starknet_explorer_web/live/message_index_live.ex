@@ -5,7 +5,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-7xl mx-auto">
       <div class="table-header">
         <h2>Messages</h2>
       </div>
@@ -29,7 +29,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
                     "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
                   ),
                   to: "/messages/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2",
-                  class: "text-se-blue hover:text-se-hover-blue underline-none"
+                  class: "text-hover-blue"
                 ) %>
               </li>
               <li class="col-span-2" scope="row">
@@ -38,7 +38,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
                     "0xd8eda3e8962aa40cab490a11bd6e07e4f2a4b3fd276a6521c9fa2fc39165346b"
                   ),
                   to: "/messages/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2",
-                  class: "text-se-blue hover:text-se-hover-blue underline-none"
+                  class: "text-hover-blue"
                 ) %>
               </li>
               <li class="col-span-2" scope="row">L2 -> L1</li>
@@ -49,7 +49,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
                     "0x073314940630fd6dcda0d772d4c972c4e0a9946bef9dabf4ef84eda8ef542b82"
                   ),
                   to: "/contracts/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2",
-                  class: "text-se-blue hover:text-se-hover-blue underline-none"
+                  class: "text-hover-blue"
                 ) %>
               </li>
               <li class="col-span-2" scope="row">
@@ -57,7 +57,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
                   Utils.shorten_block_hash("0xae0ee0a63a2ce6baeeffe56e7714fb4efe48d419"),
                   to:
                     "/etherscan_contracts/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2",
-                  class: "text-se-blue hover:text-se-hover-blue underline-none"
+                  class: "text-hover-blue"
                 ) %>
               </li>
               <li class="col-span-2" scope="row">
@@ -67,7 +67,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
                   ),
                   to:
                     "/etherscan_transactions/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2",
-                  class: "text-se-blue hover:text-se-hover-blue underline-none"
+                  class: "text-hover-blue"
                 ) %>
               </li>
               <li class="col-span-2" scope="row">5 min</li>

@@ -5,55 +5,87 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   defp transaction_header(assigns) do
     ~H"""
-    <div class="flex justify-center items-center pt-14">
-      <h1>Transaction detail</h1>
+    <div class="flex flex-col md:flex-row justify-between">
+      <div class="flex gap-2 items-baseline">
+        <h2>Transaction</h2>
+        <div
+          class="copy-container flex gap-4 items-center"
+          id={"tsx-header-#{@transaction["transaction_hash"]}"}
+          phx-hook="Copy"
+        >
+          <div class="relative">
+            <div class="font-semibold">
+              <%= @transaction["transaction_hash"] %>
+            </div>
+            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+              <div class="relative">
+                <img
+                  class="copy-btn copy-text w-4 h-4"
+                  src={~p"/images/copy.svg"}
+                  data-text={@transaction["transaction_hash"]}
+                />
+                <img
+                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                  src={~p"/images/check-square.svg"}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <button
-      class="font-bold py-2 px-4 rounded bg-blue-500 text-white"
-      phx-click="select-view"
-      ,
-      phx-value-view="overview"
-    >
-      Overview
-    </button>
-    <button
-      class="font-bold py-2 px-4 rounded bg-blue-500 text-white"
-      phx-click="select-view"
-      ,
-      phx-value-view="events"
-    >
-      Events
-    </button>
-    <button
-      class="font-bold py-2 px-4 rounded bg-blue-500 text-white"
-      phx-click="select-view"
-      ,
-      phx-value-view="message_logs"
-    >
-      Message Logs
-    </button>
-    <button
-      class="font-bold py-2 px-4 rounded bg-blue-500 text-white"
-      phx-click="select-view"
-      ,
-      phx-value-view="internal_calls"
-    >
-      Internal Calls
-    </button>
+    <div class="flex flex-col md:flex-row gap-5 mt-8 mb-10 md:mb-0">
+      <div
+        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.transaction_view == "overview", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        phx-click="select-view"
+        ,
+        phx-value-view="overview"
+      >
+        Overview
+      </div>
+      <div
+        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.transaction_view == "events", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        phx-click="select-view"
+        ,
+        phx-value-view="events"
+      >
+        Events
+      </div>
+      <div
+        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.transaction_view == "message_logs", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        phx-click="select-view"
+        ,
+        phx-value-view="message_logs"
+      >
+        Message Logs
+      </div>
+      <div
+        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.transaction_view == "internal_calls", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        phx-click="select-view"
+        ,
+        phx-value-view="internal_calls"
+      >
+        Internal Calls
+      </div>
+    </div>
     """
   end
 
   @impl true
   def render(assigns) do
     ~H"""
-    <%= transaction_header(assigns) %>
-    <%= render_info(assigns) %>
+    <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
+      <%= transaction_header(assigns) %>
+      <%= render_info(assigns) %>
+    </div>
     """
   end
 
+  # TODO:
+  # find a way to pass ID of copy container so that it isn't the same although you reuse the elements
   def render_info(%{transaction: nil, transaction_receipt: nil} = assigns) do
     ~H"""
-    <%= transaction_header(assigns) %>
+
     """
   end
 
@@ -64,33 +96,33 @@ defmodule StarknetExplorerWeb.TransactionLive do
   # Age
   def render_info(%{transaction_view: "events"} = assigns) do
     ~H"""
-    <table>
-      <thead>
-        <tr>
-          <th>Identifier</th>
-          <th>Block Number</th>
-          <th>Transaction Hash</th>
-          <th>Name</th>
-          <th>From Address</th>
-          <th>Age</th>
-        </tr>
-      </thead>
-      <tbody id="transaction-events-data">
-        <%= for signature <- @transaction_receipt["events"] do %>
-          <tr>
-            <td>
-              <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
-              |> Utils.shorten_block_hash() %>
-            </td>
-            <td><%= @transaction_receipt["block_number"] %></td>
-            <td><%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %></td>
-            <td>Transfer</td>
-            <td><%= @transaction["sender_address"] |> Utils.shorten_block_hash() %></td>
-            <td>Age: 1h</td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+    <div class="hidden md:grid grid-cols-6 gap-10 px-3 pt-5 pb-3 font-semibold border-t border-t-gray-700">
+      <div>Identifier</div>
+      <div>Block Number</div>
+      <div>Transaction Hash</div>
+      <div>Name</div>
+      <div>From Address</div>
+      <div>Age</div>
+    </div>
+    <%= for _signature <- @transaction_receipt["events"] do %>
+      <div class="grid md:grid-cols-6 gap-2 md:gap-10 px-3 pt-3 mb-3 border-t border-t-gray-700">
+        <div class="list-h">Identifier</div>
+        <div>
+          <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
+          |> Utils.shorten_block_hash() %>
+        </div>
+        <div class="list-h">Block Number</div>
+        <div><span class="blue-label"><%= @transaction_receipt["block_number"] %></span></div>
+        <div class="list-h">Transaction Hash</div>
+        <div><%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %></div>
+        <div class="list-h">Name</div>
+        <div><span class="lilac-label">Transfer</span></div>
+        <div class="list-h">From Address</div>
+        <div><%= @transaction["sender_address"] |> Utils.shorten_block_hash() %></div>
+        <div class="list-h">Age</div>
+        <div>1h</div>
+      </div>
+    <% end %>
     """
   end
 
@@ -99,77 +131,82 @@ defmodule StarknetExplorerWeb.TransactionLive do
   # I think this information comes from the block.
   def render_info(%{transaction_view: "message_logs"} = assigns) do
     ~H"""
-    <table>
-      <thead>
-        <tr>
-          <th>Identifier</th>
-          <th>Message Hash</th>
-          <th>Direction</th>
-          <th>Type</th>
-          <th>From Address</th>
-          <th>To Address</th>
-          <th>Transaction Hash</th>
-          <th>Age</th>
-        </tr>
-      </thead>
-      <tbody id="message-logs-data">
-        <tr>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-          <td>L2 -> L1</td>
-          <td>Sent On L2</td>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-          <td>9min</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="hidden lg:grid grid-cols-8 gap-2 px-3 pt-5 pb-3 font-semibold border-t border-t-gray-700">
+      <div>Identifier</div>
+      <div>Message Hash</div>
+      <div>Direction</div>
+      <div>Type</div>
+      <div>From Address</div>
+      <div>To Address</div>
+      <div>Transaction Hash</div>
+      <div>Age</div>
+    </div>
+    <div class="grid lg:grid-cols-8 gap-2 px-3 pt-3 mb-3 border-t border-t-gray-700">
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Identifier</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Message Hash</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Direction</div>
+      <div><span class="green-label">L2</span>><span class="blue-label">L1</span></div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Type</div>
+      <div>Sent On L2</div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">From Address</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">To Address</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Transaction Hash</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Age</div>
+      <div>9min</div>
+    </div>
     """
   end
 
   def render_info(%{transaction_view: "internal_calls"} = assigns) do
     ~H"""
-    <table>
-      <thead>
-        <tr>
-          <th>Identifier</th>
-          <th>Transaction Hash</th>
-          <th>Type</th>
-          <th>Name</th>
-          <th>Contract Address</th>
-        </tr>
-      </thead>
-      <tbody id="message-logs-data">
-        <tr>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-          <td>Call</td>
-          <td>__execute__</td>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="hidden lg:grid grid-cols-5 gap-10 px-3 pt-5 pb-3 font-semibold border-t border-t-gray-700">
+      <div>Identifier</div>
+      <div>Transaction Hash</div>
+      <div>Type</div>
+      <div>Name</div>
+      <div>Contract Address</div>
+    </div>
+    <div class="grid lg:grid-cols-5 gap-2 lg:gap-10 px-3 pt-3 mb-3 border-t border-t-gray-700">
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Identifier</div>
+      <div class="text-hover-blue">
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Transaction Hash</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Type</div>
+      <div><span class="lilac-label">Call</span></div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Name</div>
+      <div><span class="green-label">__execute__</span></div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Contract Address</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+    </div>
     """
   end
 
@@ -180,103 +217,247 @@ defmodule StarknetExplorerWeb.TransactionLive do
   # Execution resources
   def render_info(%{transaction_view: "overview"} = assigns) do
     ~H"""
-    <hr /> Transaction Hash: <%= @transaction["transaction_hash"] %>
-    <hr /> Status: <%= @transaction_receipt["status"] %>
-    <hr /> Block Hash: <%= @transaction_receipt["block_hash"] %>
-    <hr /> Block Number: <%= @transaction_receipt["block_number"] %>
-    <hr /> Transaction Type: <%= @transaction["type"] %>
-    <hr /> Sender Address: <%= @transaction["sender_address"] %>
-    <hr /> Actual Fee: <%= @transaction["max_fee"] %>
-    <hr /> Max Fee: <%= @transaction_receipt["actual_fee"] %>
-    <hr /> Nonce: <%= @transaction["nonce"] %>
-    <hr /> Input Data <hr />
-    <table>
-      <thead>
-        <tr>
-          call approve(spender, amount) -> <%= "0x0219209e083275171774dab1df80982e9df2096516f06319c5c6d71ae0a8480c"
+    <div class="block-overview">
+      <div class="block-label">Transaction Hash</div>
+      <div class="col-span-3 break-all">
+        <div
+          class="copy-container flex gap-4 items-center"
+          id={"tsx-overview-hash-#{@transaction["transaction_hash"]}"}
+          phx-hook="Copy"
+        >
+          <div class="relative">
+            <%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %>
+            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+              <div class="relative">
+                <img
+                  class="copy-btn copy-text w-4 h-4"
+                  src={~p"/images/copy.svg"}
+                  data-text={@transaction["transaction_hash"]}
+                />
+                <img
+                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                  src={~p"/images/check-square.svg"}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="block-overview">
+      <div class="block-label">Transaction Type</div>
+      <div class="col-span-3">
+        <span class={"#{if @transaction["type"] == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+          <%= @transaction["type"] %>
+        </span>
+      </div>
+    </div>
+    <div class="block-overview">
+      <div class="block-label">Status</div>
+      <div class="col-span-3">
+        <span class={"#{if @transaction_receipt["status"] == "ACCEPTED_ON_L2", do: "green-label"} #{if @transaction_receipt["status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if @transaction_receipt["status"] == "PENDING", do: "pink-label"}"}>
+          <%= @transaction_receipt["status"] %>
+        </span>
+      </div>
+    </div>
+    <div class="block-overview">
+      <div class="block-label">Block Number</div>
+      <div class="col-span-3">
+        <span class="blue-label"><%= @transaction_receipt["block_number"] %></span>
+      </div>
+    </div>
+    <div class="block-overview">
+      <div class="block-label">Block Hash</div>
+      <div class="col-span-3 text-hover-blue break-all">
+        <div
+          class="copy-container flex gap-4 items-center"
+          id={"tsx-overview-block-#{@transaction_receipt["block_hash"]}"}
+          phx-hook="Copy"
+        >
+          <div class="relative">
+            <%= @transaction_receipt["block_hash"] |> Utils.shorten_block_hash() %>
+            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+              <div class="relative">
+                <img
+                  class="copy-btn copy-text w-4 h-4"
+                  src={~p"/images/copy.svg"}
+                  data-text={@transaction_receipt["block_hash"]}
+                />
+                <img
+                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                  src={~p"/images/check-square.svg"}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%= if @transaction["sender_address"] do %>
+      <div class="block-overview">
+        <div class="block-label">Sender Address</div>
+        <div class="col-span-3 break-all">
+          <div
+            class="copy-container flex gap-4 items-center"
+            id={"tsx-overview-addres-#{@transaction["sender_address"]}"}
+            phx-hook="Copy"
+          >
+            <div class="relative">
+              <%= @transaction["sender_address"] |> Utils.shorten_block_hash() %>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={@transaction["sender_address"]}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    <div class="block-overview">
+      <div class="block-label">Actual Fee</div>
+      <div class="col-span-3"><%= @transaction_receipt["actual_fee"] %></div>
+    </div>
+    <div class="block-overview">
+      <div class="block-label">Max Fee</div>
+      <div class="col-span-3">
+        <span class="bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1">
+          <%= @transaction["max_fee"] %>
+        </span>
+      </div>
+    </div>
+    <div class="block-overview">
+      <div class="block-label">Nonce</div>
+      <div class="col-span-3"><%= @transaction["nonce"] %></div>
+    </div>
+    <div class="block-overview">
+      <div class="block-label">Input Data</div>
+      <div class="col-span-full">
+        <div class="bg-black/20 p-5 mt-5">
+          call <span class="text-se-violet">approve</span>(<span class="text-blue-400">spender</span>, <span class="text-blue-400">amount</span>)
+          <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(
+            "0x0219209e083275171774dab1df80982e9df2096516f06319c5c6d71ae0a8480c"
+          ) %>
+        </div>
+        <div class="bg-black/10 lg:p-5">
+          <div class="hidden md:grid grid-cols-3 px-5 text-gray-400">
+            <div>Input</div>
+            <div>Type</div>
+            <div>Value</div>
+          </div>
+          <div class="grid md:grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+            <div class="list-h">Input</div>
+            <div>spender</div>
+            <div class="list-h">Type</div>
+            <div>felt</div>
+            <div class="list-h">Value</div>
+            <div class="break-all">
+              <%= Utils.shorten_block_hash(
+                "0x11cd02208d6ed241d3fc0dba144f09b70be03003c32e56de2d19aea99b0ca76"
+              ) %>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+            <div class="list-h">Input</div>
+            <div>token_id</div>
+            <div class="list-h">Type</div>
+            <div>felt</div>
+            <div class="list-h">Value</div>
+            <div>1580969</div>
+          </div>
+        </div>
+        <div class="bg-black/20 p-5 mt-5">
+          call <span class="text-se-violet">swap</span>(<span class="text-blue-400">pool_id</span>, <span class="text-blue-400">token_from_addr</span>, <span class="text-blue-400">amount_from</span>, <span class="text-blue-400">amount_to_min</span>)
+          <span class="text-blue-400">-></span>
+          <%= "0x015543c3708653cda9d418b4ccd3be11368e40636c10c44b18cfe756b6d88b29"
           |> Utils.shorten_block_hash() %>
-        </tr>
-        <tr>
-          <th>Input</th>
-          <th>Type</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-      <tbody id="transaction-input-data">
-        <tr id="transaction-input-0">
-          <td>spender</td>
-          <td>felt</td>
-          <td>
-            <%= "0x11cd02208d6ed241d3fc0dba144f09b70be03003c32e56de2d19aea99b0ca76"
-            |> Utils.shorten_block_hash() %>
-          </td>
-        </tr>
-        <tr id="transaction-input-1">
-          <td>token_id</td>
-          <td>felt</td>
-          <td>1580969</td>
-        </tr>
-      </tbody>
-    </table>
-    <table>
-      <thead>
-        <tr>
-          call swap(pool_id, token_from_addr, amount_from, amount_to_min) -> 0x015543c3708653cda9d418b4ccd3be11368e40636c10c44b18cfe756b6d88b29
-        </tr>
-        <tr>
-          <th>Input</th>
-          <th>Type</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-      <tbody id="transaction-input-data">
-        <tr id="transaction-input-0">
-          <td>pool_id</td>
-          <td>felt</td>
-          <td>"0x42b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2"</td>
-        </tr>
-        <tr id="transaction-input-1">
-          <td>token_from_addr</td>
-          <td>felt</td>
-          <td>"0x42b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2"</td>
-        </tr>
-        <tr id="transaction-input-1">
-          <td>amount_from</td>
-          <td>Uint256</td>
-          <td>"71587356859985694"</td>
-        </tr>
-        <tr id="transaction-input-1">
-          <td>amount_to_min</td>
-          <td>Uint256</td>
-          <td>"80225122454772041"</td>
-        </tr>
-      </tbody>
-    </table>
-    <hr />
-    <table>
-      <thead>
-        <tr>
-          <th>Index</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-      <tbody id="signatures">
-        Signature
+        </div>
+        <div class="bg-black/10 lg:p-5">
+          <div class="hidden md:grid grid-cols-3 px-5 text-gray-400">
+            <div>Input</div>
+            <div>Type</div>
+            <div>Value</div>
+          </div>
+          <div class="grid md:grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+            <div class="list-h">Input</div>
+            <div>pool_id</div>
+            <div class="list-h">Type</div>
+            <div>felt</div>
+            <div class="list-h">Value</div>
+            <div class="break-all">
+              <%= "0x42b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2"
+              |> Utils.shorten_block_hash() %>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+            <div class="list-h">Input</div>
+            <div>token_from_addr</div>
+            <div class="list-h">Type</div>
+            <div>felt</div>
+            <div class="list-h">Value</div>
+            <div class="break-all">
+              <%= "0x42b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2"
+              |> Utils.shorten_block_hash() %>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+            <div class="list-h">Input</div>
+            <div>amount_from</div>
+            <div class="list-h">Type</div>
+            <div>Uint256</div>
+            <div class="list-h">Value</div>
+            <div><%= "71587356859985694" |> Utils.shorten_block_hash() %></div>
+          </div>
+          <div class="grid md:grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+            <div class="list-h">Input</div>
+            <div>amount_to_min</div>
+            <div class="list-h">Type</div>
+            <div>Uint256</div>
+            <div class="list-h">Value</div>
+            <div><%= "80225122454772041" |> Utils.shorten_block_hash() %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="block-overview">
+      <div class="col-span-full">Signature</div>
+      <div class="col-span-full bg-black/10 lg:p-5">
+        <div class="grid grid-cols-3 lg:grid-cols-8 gap-5 px-5 text-gray-400">
+          <div>Index</div>
+          <div class="col-span-2">Value</div>
+        </div>
         <%= for {index, signature} <- Enum.with_index(@transaction["signature"]) do %>
-          <tr id={"signature-#{index}"}>
-            <td><%= index %></td>
-            <td><%= signature %></td>
-          </tr>
+          <div class="grid grid-cols-3 lg:grid-cols-8 gap-5 px-5 border-t border-t-gray-700 pt-4 mt-4">
+            <div class="break-all"><%= signature %></div>
+            <div class="break-all col-span-2"><%= index |> Utils.shorten_block_hash() %></div>
+          </div>
         <% end %>
-      </tbody>
-    </table>
-    <hr />
-    <div>
-      Execution Resources
-      STEPS 5083
-      MEMORY 224
-      PEDERSEN_BUILTIN 21
-      RANGE_CHECK_BUILTIN 224
+      </div>
+    </div>
+    <div class="block-overview">
+      <div class="col-span-full mb-10 md:mb-0">Execution Resources</div>
+      <div class="flex flex-col md:flex-row gap-5">
+        <div class="flex flex-col justify-center items-center gap-2">
+          <span class="blue-label">STEPS</span> 5083
+        </div>
+        <div class="flex flex-col justify-center items-center gap-2">
+          <span class="green-label">MEMORY</span> 224
+        </div>
+        <div class="flex flex-col justify-center items-center gap-2">
+          <span class="pink-label">PEDERSEN_BUILTIN</span> 21
+        </div>
+        <div class="flex flex-col justify-center items-center gap-2">
+          <span class="violet-label">RANGE_CHECK_BUILTIN</span> 224
+        </div>
+      </div>
     </div>
     """
   end
