@@ -22,7 +22,7 @@ module.exports = {
         "se-hover-violet": "#D38EFF",
         "se-blue": "#00eeff",
         "se-hover-blue": "#7BF6FF",
-        "se-lilac": "#BB6FFF",
+        "se-lilac": "#CD95FF",
         "se-hover-lilac": "#D9AEFF",
         "se-pink": "#FF3C98",
         "se-hover-pink": "#FF88C0",

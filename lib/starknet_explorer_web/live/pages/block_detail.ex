@@ -16,7 +16,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         |> Calendar.strftime("%c") %> UTC
       </div>
     </div>
-    <div class="flex gap-5 mt-8">
+    <div class="flex flex-col md:flex-row gap-5 mt-8 mb-10 md:mb-0">
       <div
         class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "overview", do: "border-b-se-blue", else: "border-b-transparent"}"}
         phx-click="select-view"
@@ -59,7 +59,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-4xl mx-auto bg-container p-4 md:p-8 rounded-md">
+    <div class="max-w-6xl mx-auto bg-container p-4 md:p-8 rounded-md">
       <%= block_detail_header(assigns) %>
       <%= render_info(assigns) %>
     </div>

@@ -14,7 +14,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </span>
       </h2>
     </div>
-    <div class="flex gap-5 mt-8">
+    <div class="flex flex-col md:flex-row gap-5 mt-8 mb-10 md:mb-0">
       <div
         class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.transaction_view == "overview", do: "border-b-se-blue", else: "border-b-transparent"}"}
         phx-click="select-view"
@@ -54,7 +54,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-4xl mx-auto bg-container p-4 md:p-8 rounded-md">
+    <div class="max-w-6xl mx-auto bg-container p-4 md:p-8 rounded-md">
       <%= transaction_header(assigns) %>
       <%= render_info(assigns) %>
     </div>
@@ -74,7 +74,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   # Age
   def render_info(%{transaction_view: "events"} = assigns) do
     ~H"""
-    <div class="grid grid-cols-6 gap-5">
+    <div class="hidden md:grid grid-cols-6 gap-10 px-3 pt-5 pb-3 font-semibold border-t border-t-gray-500">
       <div>Identifier</div>
       <div>Block Number</div>
       <div>Transaction Hash</div>
@@ -83,15 +83,21 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div>Age</div>
     </div>
     <%= for _signature <- @transaction_receipt["events"] do %>
-      <div class="grid grid-cols-6 gap-5">
+      <div class="grid md:grid-cols-6 gap-2 md:gap-10 px-3 pt-3 mb-3 border-t border-t-gray-500">
+        <div class="list-h">Identifier</div>
         <div>
           <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
           |> Utils.shorten_block_hash() %>
         </div>
-        <div><%= @transaction_receipt["block_number"] %></div>
+        <div class="list-h">Block Number</div>
+        <div><span class="blue-label"><%= @transaction_receipt["block_number"] %></span></div>
+        <div class="list-h">Transaction Hash</div>
         <div><%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %></div>
-        <div>Transfer</div>
+        <div class="list-h">Name</div>
+        <div><span class="lilac-label">Transfer</span></div>
+        <div class="list-h">From Address</div>
         <div><%= @transaction["sender_address"] |> Utils.shorten_block_hash() %></div>
+        <div class="list-h">Age</div>
         <div>Age: 1h</div>
       </div>
     <% end %>
@@ -245,7 +251,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
             "0x0219209e083275171774dab1df80982e9df2096516f06319c5c6d71ae0a8480c"
           ) %>
         </div>
-        <div class="bg-black/10 p-5">
+        <div class="bg-black/10 lg:p-5">
           <div class="grid grid-cols-3 px-5 text-gray-400">
             <div>Input</div>
             <div>Type</div>
@@ -272,7 +278,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <%= "0x015543c3708653cda9d418b4ccd3be11368e40636c10c44b18cfe756b6d88b29"
           |> Utils.shorten_block_hash() %>
         </div>
-        <div class="bg-black/10  p-5">
+        <div class="bg-black/10 lg:p-5">
           <div class="grid grid-cols-3 px-5 text-gray-400">
             <div>Input</div>
             <div>Type</div>
@@ -309,22 +315,22 @@ defmodule StarknetExplorerWeb.TransactionLive do
     </div>
     <div class="block-overview">
       <div class="col-span-full">Signature</div>
-      <div class="col-span-full bg-black/10 p-5">
-        <div class="grid grid-cols-8 gap-5 px-5 text-gray-400">
+      <div class="col-span-full bg-black/10 lg:p-5">
+        <div class="grid grid-cols-3 lg:grid-cols-8 gap-5 px-5 text-gray-400">
           <div>Index</div>
-          <div class="col-span-7">Value</div>
+          <div class="col-span-2">Value</div>
         </div>
         <%= for {index, signature} <- Enum.with_index(@transaction["signature"]) do %>
-          <div class="grid grid-cols-8 gap-5 px-5 border-t border-t-gray-700 pt-4 mt-4">
+          <div class="grid grid-cols-3 lg:grid-cols-8 gap-5 px-5 border-t border-t-gray-700 pt-4 mt-4">
             <div class="break-all"><%= signature %></div>
-            <div class="break-all col-span-7"><%= index %></div>
+            <div class="break-all col-span-2"><%= index %></div>
           </div>
         <% end %>
       </div>
     </div>
     <div class="block-overview">
-      <div class="col-span-full">Execution Resources</div>
-      <div class="flex gap-10">
+      <div class="col-span-full mb-10">Execution Resources</div>
+      <div class="flex flex-col lg:flex-row gap-5 lg:gap-10">
         <div class="flex flex-col justify-center items-center gap-2">
           <span class="blue-label">STEPS</span> 5083
         </div>
