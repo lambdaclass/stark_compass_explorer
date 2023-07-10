@@ -88,6 +88,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
   @impl true
   def handle_info(:load_blocks, socket) do
     [latest_block | blocks] = Block.latest_n_blocks()
+
     {:noreply,
      assign(socket,
        blocks: blocks,
