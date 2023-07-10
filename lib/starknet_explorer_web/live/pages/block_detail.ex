@@ -61,7 +61,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     <table>
       <tbody id="transactions">
         <h1>Block Transactions</h1>
-        <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block.transactions do %>
+        <%= for tx <- @block.transactions do %>
           <table>
             <thead>
               <tr>
@@ -71,9 +71,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
               </tr>
               <tbody>
                 <tr>
-                  <td><%= type %></td>
-                  <td><%= version %></td>
-                  <td><%= hash |> Utils.shorten_block_hash() %></td>
+                  <td><%= tx.type %></td>
+                  <td><%= tx.version %></td>
+                  <td><%= tx.hash |> Utils.shorten_block_hash() %></td>
                 </tr>
               </tbody>
             </thead>
