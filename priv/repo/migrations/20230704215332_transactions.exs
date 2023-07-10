@@ -2,7 +2,7 @@ defmodule StarknetExplorer.Repo.Migrations.Transactions do
   use Ecto.Migration
 
   def change do
-    create table("transactions", primary_key: false) do
+    create table("transactions") do
       add :block_number,
           references("blocks",
             on_delete: :delete_all,
@@ -22,7 +22,7 @@ defmodule StarknetExplorer.Repo.Migrations.Transactions do
       add :compiled_class_hash, :string
       add :sender_address, :string
       add :entry_point_selector, :string
-      add :hash, :string, primary_key: true
+      add :hash, :string
       add :max_fee, :string
       add :nonce, :string
       add :signature, {:array, :string}

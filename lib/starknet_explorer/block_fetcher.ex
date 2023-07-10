@@ -2,7 +2,7 @@ defmodule StarknetExplorer.BlockFetcher do
   use GenServer
   require Logger
   alias StarknetExplorer.{Rpc, BlockFetcher, Block}
-  defstruct [:block_height, :latest_block_fetched]
+  defstruct [:block_height, :latest_block_fetched, :worker]
   @fetch_interval 300
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
@@ -34,8 +34,15 @@ defmodule StarknetExplorer.BlockFetcher do
     # fetch a new block, else do nothing.
     if curr_height + 10 >= state.latest_block_fetched do
       case fetch_block(state.latest_block_fetched + 1) do
-        {:ok, block = %{"block_number" => new_block_number}} ->
-          :ok = Block.insert_from_rpc_response(block)
+        {:ok, block = %{"block_number" => new_block_number, "transactions" => transactions}} ->
+          receipts =
+            transactions
+            |> Map.new(fn %{"transaction_hash" => tx_hash} ->
+              {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash)
+              {tx_hash, receipt}
+            end)
+
+          :ok = Block.insert_from_rpc_response(block, receipts)
           Logger.info("Inserted new block: #{new_block_number}")
           Process.send_after(self(), :fetch_and_store, @fetch_interval)
           {:noreply, %{state | block_height: curr_height, latest_block_fetched: new_block_number}}
