@@ -54,7 +54,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-6xl mx-auto bg-container p-4 md:p-8 rounded-md">
+    <div class="max-w-7xl mx-auto bg-container p-4 md:p-8 rounded-md">
       <%= transaction_header(assigns) %>
       <%= render_info(assigns) %>
     </div>
@@ -74,7 +74,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   # Age
   def render_info(%{transaction_view: "events"} = assigns) do
     ~H"""
-    <div class="hidden md:grid grid-cols-6 gap-10 px-3 pt-5 pb-3 font-semibold border-t border-t-gray-500">
+    <div class="hidden md:grid grid-cols-6 gap-10 px-3 pt-5 pb-3 font-semibold border-t border-t-gray-700">
       <div>Identifier</div>
       <div>Block Number</div>
       <div>Transaction Hash</div>
@@ -83,7 +83,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div>Age</div>
     </div>
     <%= for _signature <- @transaction_receipt["events"] do %>
-      <div class="grid md:grid-cols-6 gap-2 md:gap-10 px-3 pt-3 mb-3 border-t border-t-gray-500">
+      <div class="grid md:grid-cols-6 gap-2 md:gap-10 px-3 pt-3 mb-3 border-t border-t-gray-700">
         <div class="list-h">Identifier</div>
         <div>
           <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
@@ -109,43 +109,49 @@ defmodule StarknetExplorerWeb.TransactionLive do
   # I think this information comes from the block.
   def render_info(%{transaction_view: "message_logs"} = assigns) do
     ~H"""
-    <table>
-      <thead>
-        <tr>
-          <th>Identifier</th>
-          <th>Message Hash</th>
-          <th>Direction</th>
-          <th>Type</th>
-          <th>From Address</th>
-          <th>To Address</th>
-          <th>Transaction Hash</th>
-          <th>Age</th>
-        </tr>
-      </thead>
-      <tbody id="message-logs-data">
-        <tr>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-          <td>L2 -> L1</td>
-          <td>Sent On L2</td>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-          <td>9min</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="hidden lg:grid grid-cols-8 gap-10 px-3 pt-5 pb-3 font-semibold border-t border-t-gray-700">
+      <div>Identifier</div>
+      <div>Message Hash</div>
+      <div>Direction</div>
+      <div>Type</div>
+      <div>From Address</div>
+      <div>To Address</div>
+      <div>Transaction Hash</div>
+      <div>Age</div>
+    </div>
+    <div class="grid lg:grid-cols-8 gap-2 lg:gap-10 px-3 pt-3 mb-3 border-t border-t-gray-700">
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Identifier</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Message Hash</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Direction</div>
+      <div><span class="green-label">L2</span>><span class="blue-label">L1</span></div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Type</div>
+      <div>Sent On L2</div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">From Address</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">To Address</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Transaction Hash</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Age</div>
+      <div>9min</div>
+    </div>
     """
   end
 
@@ -329,8 +335,8 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </div>
     </div>
     <div class="block-overview">
-      <div class="col-span-full mb-10">Execution Resources</div>
-      <div class="flex flex-col lg:flex-row gap-5 lg:gap-10">
+      <div class="col-span-full mb-10 md:mb-0">Execution Resources</div>
+      <div class="flex flex-col md:flex-row gap-5">
         <div class="flex flex-col justify-center items-center gap-2">
           <span class="blue-label">STEPS</span> 5083
         </div>

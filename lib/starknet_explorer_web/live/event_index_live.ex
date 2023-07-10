@@ -5,7 +5,7 @@ defmodule StarknetExplorerWeb.EventIndexLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-7xl mx-auto">
       <div class="table-header">
         <h2>Events</h2>
       </div>

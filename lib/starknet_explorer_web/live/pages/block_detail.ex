@@ -59,7 +59,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-6xl mx-auto bg-container p-4 md:p-8 rounded-md">
+    <div class="max-w-7xl mx-auto bg-container p-4 md:p-8 rounded-md">
       <%= block_detail_header(assigns) %>
       <%= render_info(assigns) %>
     </div>

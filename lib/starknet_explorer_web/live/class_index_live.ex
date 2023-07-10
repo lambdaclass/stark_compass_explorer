@@ -21,7 +21,7 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-7xl mx-auto">
       <div class="table-header">
         <h2>Classes</h2>
       </div>
