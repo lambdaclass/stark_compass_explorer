@@ -6,13 +6,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
   defp transaction_header(assigns) do
     ~H"""
     <div class="flex flex-col md:flex-row justify-between">
-      <h2>
-        Transaction
-        <span class="font-semibold">
-          <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-          |> Utils.shorten_block_hash() %>
-        </span>
-      </h2>
+      <div class="flex gap-2 items-baseline">
+        <h2>Transaction</h2>
+        <div class="font-semibold">
+          <%= @transaction["transaction_hash"] %>
+        </div>
+      </div>
     </div>
     <div class="flex flex-col md:flex-row gap-5 mt-8 mb-10 md:mb-0">
       <div
@@ -54,7 +53,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-7xl mx-auto bg-container p-4 md:p-8 rounded-md">
+    <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <%= transaction_header(assigns) %>
       <%= render_info(assigns) %>
     </div>
@@ -85,20 +84,91 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <%= for _signature <- @transaction_receipt["events"] do %>
       <div class="grid md:grid-cols-6 gap-2 md:gap-10 px-3 pt-3 mb-3 border-t border-t-gray-700">
         <div class="list-h">Identifier</div>
-        <div>
-          <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
-          |> Utils.shorten_block_hash() %>
+        <div
+          class="copy-container flex gap-4 items-center"
+          id={"tsx-overview-identifier-#{@transaction_receipt["block_number"]}"}
+          phx-hook="Copy"
+        >
+          <div class="relative">
+            <div>
+              <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
+              |> Utils.shorten_block_hash() %>
+            </div>
+            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+              <div class="relative">
+                <img
+                  class="copy-btn copy-text w-4 h-4"
+                  src={~p"/images/copy.svg"}
+                  data-text="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
+                />
+                <img
+                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                  src={~p"/images/check-square.svg"}
+                />
+              </div>
+            </div>
+          </div>
         </div>
         <div class="list-h">Block Number</div>
         <div><span class="blue-label"><%= @transaction_receipt["block_number"] %></span></div>
         <div class="list-h">Transaction Hash</div>
-        <div><%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %></div>
+        <div>
+          <div
+            class="copy-container flex gap-4 items-center"
+            id={"tsx-overview-hash-#{@transaction["transaction_hash"]}"}
+            phx-hook="Copy"
+          >
+            <div class="relative">
+              <div>
+                <%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %>
+              </div>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={@transaction["transaction_hash"]}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="list-h">Name</div>
         <div><span class="lilac-label">Transfer</span></div>
         <div class="list-h">From Address</div>
-        <div><%= @transaction["sender_address"] |> Utils.shorten_block_hash() %></div>
+        <div>
+          <div
+            class="copy-container flex gap-4 items-center"
+            id={"tsx-overview-sender-#{@transaction["sender_address"]}"}
+            phx-hook="Copy"
+          >
+            <div class="relative">
+              <div>
+                <%= @transaction["sender_address"] |> Utils.shorten_block_hash() %>
+              </div>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={@transaction["sender_address"]}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="list-h">Age</div>
-        <div>Age: 1h</div>
+        <div>1h</div>
       </div>
     <% end %>
     """
@@ -198,7 +268,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="block-overview">
       <div class="block-label">Transaction Hash</div>
       <div class="col-span-3 break-all">
-        <%= @transaction["transaction_hash"] %>
+        <%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %>
       </div>
     </div>
     <div class="block-overview">
@@ -226,22 +296,26 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="block-overview">
       <div class="block-label">Block Hash</div>
       <div class="col-span-3 text-hover-blue break-all">
-        <%= @transaction_receipt["block_hash"] %>
+        <%= @transaction_receipt["block_hash"] |> Utils.shorten_block_hash() %>
       </div>
     </div>
     <div class="block-overview">
       <div class="block-label">Sender Address</div>
       <div class="col-span-3 break-all">
-        <%= @transaction["sender_address"] %>
+        <%= @transaction["sender_address"] |> Utils.shorten_block_hash() %>
       </div>
     </div>
     <div class="block-overview">
       <div class="block-label">Actual Fee</div>
-      <div class="col-span-3"><%= @transaction["max_fee"] %></div>
+      <div class="col-span-3"><%= @transaction_receipt["actual_fee"] %></div>
     </div>
     <div class="block-overview">
       <div class="block-label">Max Fee</div>
-      <div class="col-span-3"><%= @transaction_receipt["actual_fee"] %></div>
+      <div class="col-span-3">
+        <span class="bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1">
+          <%= @transaction["max_fee"] %>
+        </span>
+      </div>
     </div>
     <div class="block-overview">
       <div class="block-label">Nonce</div>
@@ -257,23 +331,29 @@ defmodule StarknetExplorerWeb.TransactionLive do
           ) %>
         </div>
         <div class="bg-black/10 lg:p-5">
-          <div class="grid grid-cols-3 px-5 text-gray-400">
+          <div class="hidden md:grid grid-cols-3 px-5 text-gray-400">
             <div>Input</div>
             <div>Type</div>
             <div>Value</div>
           </div>
-          <div class="grid grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+          <div class="grid md:grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+            <div class="list-h">Input</div>
             <div>spender</div>
+            <div class="list-h">Type</div>
             <div>felt</div>
+            <div class="list-h">Value</div>
             <div class="break-all">
               <%= Utils.shorten_block_hash(
                 "0x11cd02208d6ed241d3fc0dba144f09b70be03003c32e56de2d19aea99b0ca76"
               ) %>
             </div>
           </div>
-          <div class="grid grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+          <div class="grid md:grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+            <div class="list-h">Input</div>
             <div>token_id</div>
+            <div class="list-h">Type</div>
             <div>felt</div>
+            <div class="list-h">Value</div>
             <div>1580969</div>
           </div>
         </div>
@@ -284,35 +364,47 @@ defmodule StarknetExplorerWeb.TransactionLive do
           |> Utils.shorten_block_hash() %>
         </div>
         <div class="bg-black/10 lg:p-5">
-          <div class="grid grid-cols-3 px-5 text-gray-400">
+          <div class="hidden md:grid grid-cols-3 px-5 text-gray-400">
             <div>Input</div>
             <div>Type</div>
             <div>Value</div>
           </div>
-          <div class="grid grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+          <div class="grid md:grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+            <div class="list-h">Input</div>
             <div>pool_id</div>
+            <div class="list-h">Type</div>
             <div>felt</div>
+            <div class="list-h">Value</div>
             <div class="break-all">
               <%= "0x42b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2"
               |> Utils.shorten_block_hash() %>
             </div>
           </div>
-          <div class="grid grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+          <div class="grid md:grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+            <div class="list-h">Input</div>
             <div>token_from_addr</div>
+            <div class="list-h">Type</div>
             <div>felt</div>
+            <div class="list-h">Value</div>
             <div class="break-all">
               <%= "0x42b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2"
               |> Utils.shorten_block_hash() %>
             </div>
           </div>
-          <div class="grid grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+          <div class="grid md:grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+            <div class="list-h">Input</div>
             <div>amount_from</div>
+            <div class="list-h">Type</div>
             <div>Uint256</div>
+            <div class="list-h">Value</div>
             <div><%= "71587356859985694" |> Utils.shorten_block_hash() %></div>
           </div>
-          <div class="grid grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+          <div class="grid md:grid-cols-3 px-5 border-t border-t-gray-700 mt-3 pt-2">
+            <div class="list-h">Input</div>
             <div>amount_to_min</div>
+            <div class="list-h">Type</div>
             <div>Uint256</div>
+            <div class="list-h">Value</div>
             <div><%= "80225122454772041" |> Utils.shorten_block_hash() %></div>
           </div>
         </div>
@@ -328,7 +420,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <%= for {index, signature} <- Enum.with_index(@transaction["signature"]) do %>
           <div class="grid grid-cols-3 lg:grid-cols-8 gap-5 px-5 border-t border-t-gray-700 pt-4 mt-4">
             <div class="break-all"><%= signature %></div>
-            <div class="break-all col-span-2"><%= index %></div>
+            <div class="break-all col-span-2"><%= index |> Utils.shorten_block_hash() %></div>
           </div>
         <% end %>
       </div>
