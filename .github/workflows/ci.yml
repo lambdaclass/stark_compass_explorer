@@ -15,7 +15,7 @@ permissions:
 jobs:
   build:
     env: 
-      INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
+      RPC_API_HOST: ${{ secrets.RPC_API_HOST }}
     name: Build and test
     runs-on: ubuntu-latest
     services:

@@ -20,13 +20,13 @@ if System.get_env("PHX_SERVER") do
   config :starknet_explorer, StarknetExplorerWeb.Endpoint, server: true
 end
 
-api_key =
-  System.get_env("INFURA_API_KEY") ||
+rpc_host =
+  System.get_env("RPC_API_HOST") ||
     raise """
-    environment variable INFURA_API_KEY is missing.
+    environment variable RPC_API_HOST is missing.
     """
 
-config :starknet_explorer, api_key: api_key
+config :starknet_explorer, rpc_host: rpc_host
 
 if config_env() == :prod do
   database_url =

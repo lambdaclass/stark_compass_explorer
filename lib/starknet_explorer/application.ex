@@ -23,7 +23,9 @@ defmodule StarknetExplorer.Application do
         # {StarknetExplorer.Worker, arg}
       ] ++
         if_prod do
-          [StarknetExplorer.BlockFetcher]
+          # TODO: Uncomment when it's ready
+          # [StarknetExplorer.BlockFetcher]
+          []
         else
           []
         end
