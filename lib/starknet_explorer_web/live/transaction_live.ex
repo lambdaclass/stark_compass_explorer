@@ -8,8 +8,29 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="flex flex-col md:flex-row justify-between">
       <div class="flex gap-2 items-baseline">
         <h2>Transaction</h2>
-        <div class="font-semibold">
-          <%= @transaction["transaction_hash"] %>
+        <div
+          class="copy-container flex gap-4 items-center"
+          id={"tsx-header-#{@transaction["transaction_hash"]}"}
+          phx-hook="Copy"
+        >
+          <div class="relative">
+            <div class="font-semibold">
+              <%= @transaction["transaction_hash"] %>
+            </div>
+            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+              <div class="relative">
+                <img
+                  class="copy-btn copy-text w-4 h-4"
+                  src={~p"/images/copy.svg"}
+                  data-text={@transaction["transaction_hash"]}
+                />
+                <img
+                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                  src={~p"/images/check-square.svg"}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -60,9 +81,11 @@ defmodule StarknetExplorerWeb.TransactionLive do
     """
   end
 
+  # TODO:
+  # find a way to pass ID of copy container so that it isn't the same although you reuse the elements
   def render_info(%{transaction: nil, transaction_receipt: nil} = assigns) do
     ~H"""
-    <%= transaction_header(assigns) %>
+
     """
   end
 
@@ -84,89 +107,18 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <%= for _signature <- @transaction_receipt["events"] do %>
       <div class="grid md:grid-cols-6 gap-2 md:gap-10 px-3 pt-3 mb-3 border-t border-t-gray-700">
         <div class="list-h">Identifier</div>
-        <div
-          class="copy-container flex gap-4 items-center"
-          id={"tsx-overview-identifier-#{@transaction_receipt["block_number"]}"}
-          phx-hook="Copy"
-        >
-          <div class="relative">
-            <div>
-              <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
-              |> Utils.shorten_block_hash() %>
-            </div>
-            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-              <div class="relative">
-                <img
-                  class="copy-btn copy-text w-4 h-4"
-                  src={~p"/images/copy.svg"}
-                  data-text="0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
-                />
-                <img
-                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                  src={~p"/images/check-square.svg"}
-                />
-              </div>
-            </div>
-          </div>
+        <div>
+          <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
+          |> Utils.shorten_block_hash() %>
         </div>
         <div class="list-h">Block Number</div>
         <div><span class="blue-label"><%= @transaction_receipt["block_number"] %></span></div>
         <div class="list-h">Transaction Hash</div>
-        <div>
-          <div
-            class="copy-container flex gap-4 items-center"
-            id={"tsx-overview-hash-#{@transaction["transaction_hash"]}"}
-            phx-hook="Copy"
-          >
-            <div class="relative">
-              <div>
-                <%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %>
-              </div>
-              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                <div class="relative">
-                  <img
-                    class="copy-btn copy-text w-4 h-4"
-                    src={~p"/images/copy.svg"}
-                    data-text={@transaction["transaction_hash"]}
-                  />
-                  <img
-                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                    src={~p"/images/check-square.svg"}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div><%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %></div>
         <div class="list-h">Name</div>
         <div><span class="lilac-label">Transfer</span></div>
         <div class="list-h">From Address</div>
-        <div>
-          <div
-            class="copy-container flex gap-4 items-center"
-            id={"tsx-overview-sender-#{@transaction["sender_address"]}"}
-            phx-hook="Copy"
-          >
-            <div class="relative">
-              <div>
-                <%= @transaction["sender_address"] |> Utils.shorten_block_hash() %>
-              </div>
-              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                <div class="relative">
-                  <img
-                    class="copy-btn copy-text w-4 h-4"
-                    src={~p"/images/copy.svg"}
-                    data-text={@transaction["sender_address"]}
-                  />
-                  <img
-                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                    src={~p"/images/check-square.svg"}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div><%= @transaction["sender_address"] |> Utils.shorten_block_hash() %></div>
         <div class="list-h">Age</div>
         <div>1h</div>
       </div>
@@ -268,7 +220,28 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="block-overview">
       <div class="block-label">Transaction Hash</div>
       <div class="col-span-3 break-all">
-        <%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %>
+        <div
+          class="copy-container flex gap-4 items-center"
+          id={"tsx-overview-hash-#{@transaction["transaction_hash"]}"}
+          phx-hook="Copy"
+        >
+          <div class="relative">
+            <%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %>
+            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+              <div class="relative">
+                <img
+                  class="copy-btn copy-text w-4 h-4"
+                  src={~p"/images/copy.svg"}
+                  data-text={@transaction["transaction_hash"]}
+                />
+                <img
+                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                  src={~p"/images/check-square.svg"}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="block-overview">
@@ -296,13 +269,55 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="block-overview">
       <div class="block-label">Block Hash</div>
       <div class="col-span-3 text-hover-blue break-all">
-        <%= @transaction_receipt["block_hash"] |> Utils.shorten_block_hash() %>
+        <div
+          class="copy-container flex gap-4 items-center"
+          id={"tsx-overview-block-#{@transaction_receipt["block_hash"]}"}
+          phx-hook="Copy"
+        >
+          <div class="relative">
+            <%= @transaction_receipt["block_hash"] |> Utils.shorten_block_hash() %>
+            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+              <div class="relative">
+                <img
+                  class="copy-btn copy-text w-4 h-4"
+                  src={~p"/images/copy.svg"}
+                  data-text={@transaction_receipt["block_hash"]}
+                />
+                <img
+                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                  src={~p"/images/check-square.svg"}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="block-overview">
       <div class="block-label">Sender Address</div>
       <div class="col-span-3 break-all">
-        <%= @transaction["sender_address"] |> Utils.shorten_block_hash() %>
+        <div
+          class="copy-container flex gap-4 items-center"
+          id={"tsx-overview-addres-#{@transaction["sender_address"]}"}
+          phx-hook="Copy"
+        >
+          <div class="relative">
+            <%= @transaction["sender_address"] |> Utils.shorten_block_hash() %>
+            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+              <div class="relative">
+                <img
+                  class="copy-btn copy-text w-4 h-4"
+                  src={~p"/images/copy.svg"}
+                  data-text={@transaction["sender_address"]}
+                />
+                <img
+                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                  src={~p"/images/check-square.svg"}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="block-overview">
