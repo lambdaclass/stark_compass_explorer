@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.BlockDetailLive do
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Rpc
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.Block
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
   defp num_or_hash(_num), do: :num
 
@@ -30,14 +30,14 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   end
 
   def mount(_params = %{"number_or_hash" => param}, _session, socket) do
-    {:ok, block} =
+    block =
       case num_or_hash(param) do
         :hash ->
-          Rpc.get_block_by_hash(param)
+          Block.get_by_hash_with_txs(param)
 
         :num ->
           {num, ""} = Integer.parse(param)
-          Rpc.get_block_by_number(num)
+          Block.get_by_num_with_txs(num)
       end
 
     assigns = [
@@ -56,12 +56,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     """
   end
 
-  def render_info(assigns = %{block: block, view: "transactions"}) do
+  def render_info(assigns = %{block: %Block{}, view: "transactions"}) do
     ~H"""
     <table>
       <tbody id="transactions">
         <h1>Block Transactions</h1>
-        <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block["transactions"] do %>
+        <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block.transactions do %>
           <table>
             <thead>
               <tr>
@@ -88,21 +88,21 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   # Do not hardcode:
   # - Total Execeution Resources
   # - Gas Price
-  def render_info(assigns = %{block: _block, view: "overview"}) do
+  def render_info(assigns = %{block: %Block{}, view: "overview"}) do
     ~H"""
     <table>
       <thead>
         <ul>
-          <li>Block Number <%= @block["block_number"] %></li>
-          <li>Block Hash <%= @block["block_hash"] |> Utils.shorten_block_hash() %></li>
-          <li>Block Status <%= @block["status"] %></li>
-          <li>State Root <%= @block["new_root"] |> Utils.shorten_block_hash() %></li>
-          <li>Parent Hash <%= @block["parent_hash"] |> Utils.shorten_block_hash() %></li>
-          <li>Sequencer Address <%= @block["sequencer_address"] %></li>
+          <li>Block Number <%= @block.number %></li>
+          <li>Block Hash <%= @block.hash |> Utils.shorten_block_hash() %></li>
+          <li>Block Status <%= @block.status %></li>
+          <li>State Root <%= @block.new_root |> Utils.shorten_block_hash() %></li>
+          <li>Parent Hash <%= @block.parent_hash |> Utils.shorten_block_hash() %></li>
+          <li>Sequencer Address <%= @block.sequencer_address %></li>
           <li>Gas Price <%= "0.000000017333948464 ETH" %></li>
           <li>Total execution resources <%= 543_910 %></li>
           <li>
-            Timestamp <%= @block["timestamp"]
+            Timestamp <%= @block.timestamp
             |> DateTime.from_unix()
             |> then(fn {:ok, time} -> time end) %> UTC
           </li>

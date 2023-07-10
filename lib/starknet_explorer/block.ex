@@ -135,4 +135,22 @@ defmodule StarknetExplorer.Block do
 
     Repo.all(query) |> Repo.preload(:transactions)
   end
+
+  def get_by_hash_with_txs(hash) do
+    query =
+      from b in Block,
+        where: b.hash == ^hash,
+        preload: :transactions
+
+    Repo.one(query)
+  end
+
+  def get_by_num_with_txs(number) do
+    query =
+      from b in Block,
+        where: b.number == ^number,
+        preload: :transactions
+
+    Repo.one(query)
+  end
 end
