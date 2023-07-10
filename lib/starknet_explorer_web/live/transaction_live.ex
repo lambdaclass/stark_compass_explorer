@@ -109,7 +109,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   # I think this information comes from the block.
   def render_info(%{transaction_view: "message_logs"} = assigns) do
     ~H"""
-    <div class="hidden lg:grid grid-cols-8 gap-10 px-3 pt-5 pb-3 font-semibold border-t border-t-gray-700">
+    <div class="hidden lg:grid grid-cols-8 gap-2 px-3 pt-5 pb-3 font-semibold border-t border-t-gray-700">
       <div>Identifier</div>
       <div>Message Hash</div>
       <div>Direction</div>
@@ -119,7 +119,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div>Transaction Hash</div>
       <div>Age</div>
     </div>
-    <div class="grid lg:grid-cols-8 gap-2 lg:gap-10 px-3 pt-3 mb-3 border-t border-t-gray-700">
+    <div class="grid lg:grid-cols-8 gap-2 px-3 pt-3 mb-3 border-t border-t-gray-700">
       <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Identifier</div>
       <div>
         <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
@@ -157,35 +157,34 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   def render_info(%{transaction_view: "internal_calls"} = assigns) do
     ~H"""
-    <table>
-      <thead>
-        <tr>
-          <th>Identifier</th>
-          <th>Transaction Hash</th>
-          <th>Type</th>
-          <th>Name</th>
-          <th>Contract Address</th>
-        </tr>
-      </thead>
-      <tbody id="message-logs-data">
-        <tr>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-          <td>Call</td>
-          <td>__execute__</td>
-          <td>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-            |> Utils.shorten_block_hash() %>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="hidden lg:grid grid-cols-5 gap-10 px-3 pt-5 pb-3 font-semibold border-t border-t-gray-700">
+      <div>Identifier</div>
+      <div>Transaction Hash</div>
+      <div>Type</div>
+      <div>Name</div>
+      <div>Contract Address</div>
+    </div>
+    <div class="grid lg:grid-cols-5 gap-2 lg:gap-10 px-3 pt-3 mb-3 border-t border-t-gray-700">
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Identifier</div>
+      <div class="text-hover-blue">
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Transaction Hash</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Type</div>
+      <div><span class="lilac-label">Call</span></div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Name</div>
+      <div><span class="green-label">__execute__</span></div>
+      <div class="font-ibm-plex text-sm pt-2 text-gray-400 lg:hidden">Contract Address</div>
+      <div>
+        <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
+        |> Utils.shorten_block_hash() %>
+      </div>
+    </div>
     """
   end
 
