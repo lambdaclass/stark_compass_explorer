@@ -293,33 +293,35 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </div>
       </div>
     </div>
-    <div class="block-overview">
-      <div class="block-label">Sender Address</div>
-      <div class="col-span-3 break-all">
-        <div
-          class="copy-container flex gap-4 items-center"
-          id={"tsx-overview-addres-#{@transaction["sender_address"]}"}
-          phx-hook="Copy"
-        >
-          <div class="relative">
-            <%= @transaction["sender_address"] |> Utils.shorten_block_hash() %>
-            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-              <div class="relative">
-                <img
-                  class="copy-btn copy-text w-4 h-4"
-                  src={~p"/images/copy.svg"}
-                  data-text={@transaction["sender_address"]}
-                />
-                <img
-                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                  src={~p"/images/check-square.svg"}
-                />
+    <%= if @transaction["sender_address"] do %>
+      <div class="block-overview">
+        <div class="block-label">Sender Address</div>
+        <div class="col-span-3 break-all">
+          <div
+            class="copy-container flex gap-4 items-center"
+            id={"tsx-overview-addres-#{@transaction["sender_address"]}"}
+            phx-hook="Copy"
+          >
+            <div class="relative">
+              <%= @transaction["sender_address"] |> Utils.shorten_block_hash() %>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={@transaction["sender_address"]}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    <% end %>
     <div class="block-overview">
       <div class="block-label">Actual Fee</div>
       <div class="col-span-3"><%= @transaction_receipt["actual_fee"] %></div>
