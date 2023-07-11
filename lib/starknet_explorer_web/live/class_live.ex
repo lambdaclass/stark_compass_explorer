@@ -7,6 +7,10 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
 
   defp class_detail_header(assigns) do
     ~H"""
+    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
+      id: "search-bar",
+      flash: @flash
+    ) %>
     <div class="flex justify-center items-center pt-14">
       <h1 class="text-white text-4xl font-mono">Class Detail</h1>
     </div>
