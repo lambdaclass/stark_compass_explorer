@@ -10,16 +10,17 @@ defmodule StarknetExplorerWeb.ContractIndexLive do
         <h2>Contracts</h2>
       </div>
       <div class="table-block">
-        <ul class="transactions-grid table-th">
-          <li class="col-span-2" scope="col">Contract Address</li>
-          <li class="col-span-2" scope="col">Type</li>
-          <li class="col-span-2" scope="col">Class Hash</li>
-          <li class="col-span-2" scope="col">Deployed At</li>
-        </ul>
+        <div class="grid-4 table-th">
+          <div>Contract Address</div>
+          <div>Type</div>
+          <div>Class Hash</div>
+          <div>Deployed At</div>
+        </div>
         <div id="contracts">
           <%= for idx <- 0..30 do %>
-            <ul id={"contract-#{idx}"} class="transactions-grid border-t border-gray-600">
-              <li class="col-span-2" scope="row">
+            <div id={"contract-#{idx}"} class="grid-4 custom-list-item">
+              <div>
+                <div class="list-h">Contract Address</div>
                 <%= live_redirect(
                   Utils.shorten_block_hash(
                     "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
@@ -27,9 +28,13 @@ defmodule StarknetExplorerWeb.ContractIndexLive do
                   to: "/contracts/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2",
                   class: "text-hover-blue"
                 ) %>
-              </li>
-              <li class="col-span-2" scope="row">PROXY ACCOUNT</li>
-              <li class="col-span-2" scope="row">
+              </div>
+              <div>
+                <div class="list-h">Type</div>
+                <div><span class="violet-label">PROXY ACCOUNT</span></div>
+              </div>
+              <div>
+                <div class="list-h">Class Hash</div>
                 <%= live_redirect(
                   Utils.shorten_block_hash(
                     "0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918"
@@ -37,9 +42,12 @@ defmodule StarknetExplorerWeb.ContractIndexLive do
                   to: "/classes/0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918",
                   class: "text-hover-blue"
                 ) %>
-              </li>
-              <li class="col-span-2" scope="row">10 min</li>
-            </ul>
+              </div>
+              <div>
+                <div class="list-h">Deployed At</div>
+                <div>10 min</div>
+              </div>
+            </div>
           <% end %>
         </div>
       </div>

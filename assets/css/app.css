@@ -39,16 +39,6 @@ a,
 }
 
 /* Tables */
-.blocks-grid {
-  @apply grid md:grid-cols-6 gap-1 md:gap-8 py-5 md:py-0;
-}
-.transactions-grid {
-  @apply grid md:grid-cols-7 gap-1 md:gap-8 py-5 md:py-0;
-}
-.blocks-grid > div,
-.transactions-grid > div {
-  @apply py-2;
-}
 .table-block {
   @apply flex flex-col text-sm md:py-3 px-5 justify-between text-left text-white rounded-lg bg-container;
 }
@@ -58,27 +48,62 @@ a,
 .table-title {
   @apply font-semibold text-lg;
 }
-.table-th {
-  @apply hidden md:grid font-ibm-plex text-sm pb-2 text-gray-400;
+.custom-list-item {
+  @apply pt-3 mb-3 border-t border-t-gray-700;
 }
-.list-h {
-  @apply font-ibm-plex text-sm pt-2 text-gray-400 md:hidden;
+.custom-list-item > div {
+  @apply my-3 md:my-0 flex flex-col gap-2 items-start;
+}
+.grid-3 {
+  @apply md:grid grid-cols-3 items-center gap-1 md:gap-5;
+}
+.grid-4 {
+  @apply md:grid grid-cols-4 items-center gap-1 md:gap-5;
+}
+.grid-5 {
+  @apply md:grid grid-cols-5 items-center gap-1 md:gap-5;
+}
+.grid-6 {
+  @apply md:grid grid-cols-6 items-center gap-1 md:gap-5;
+}
+.grid-7 {
+  @apply md:grid grid-cols-7 items-center gap-1 md:gap-5;
+}
+.grid-8 {
+  @apply lg:grid grid-cols-8 items-center gap-1 lg:gap-5;
+}
+.grid-9 {
+  @apply lg:grid grid-cols-9 items-center gap-1 lg:gap-5;
+}
+.grid-3 .list-h,
+.grid-4 .list-h,
+.grid-5 .list-h,
+.grid-6 .list-h,
+.grid-7 .list-h {
+  @apply font-ibm-plex text-sm pt-2 text-gray-600 md:hidden;
+}
+.grid-8 .list-h,
+.grid-9 .list-h {
+  @apply font-ibm-plex text-sm pt-2 text-gray-600 lg:hidden;
 }
 
+.grid-3.table-th,
+.grid-4.table-th,
+.grid-5.table-th,
+.grid-6.table-th,
+.grid-7.table-th {
+  @apply hidden md:grid font-ibm-plex text-sm pt-2 pb-4 text-gray-400;
+}
+.grid-8.table-th,
+.grid-9.table-th {
+  @apply hidden lg:grid font-ibm-plex text-sm pt-2 pb-4 text-gray-400;
+}
 /* Search bar */
 form {
   @apply relative;
 }
 input {
   @apply !bg-[#232331] !border-none !text-se-lilac !pr-10 xl:!w-80;
-}
-
-/* Detail pages */
-.block-overview {
-  @apply grid md:grid-cols-4 items-baseline gap-1 md:gap-5 px-3 pt-4 mb-4 border-t border-t-gray-700;
-}
-.block-tsx {
-  @apply grid md:grid-cols-2 items-baseline gap-1 md:gap-5 px-3 pt-4 mb-4 border-t border-t-gray-700;
 }
 .block-label {
   @apply col-span-full md:col-span-1 text-gray-500 md:text-white;

@@ -68,40 +68,48 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   def render_info(assigns = %{block: block, view: "transactions"}) do
     ~H"""
-    <div>
-      <div class="hidden md:grid grid-cols-3 gap-10 px-3 pt-5 pb-3 font-semibold border-t border-t-gray-500">
-        <div>Hash</div>
-        <div>Type</div>
-        <div>Version</div>
-      </div>
-      <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block["transactions"] do %>
-        <div class="grid md:grid-cols-3 gap-2 md:gap-10 px-3 pt-3 mb-3 border-t border-t-gray-500">
+    <div class="grid-3 table-th !pt-7 border-t border-gray-700">
+      <div>Hash</div>
+      <div>Type</div>
+      <div>Version</div>
+    </div>
+    <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block["transactions"] do %>
+      <div class="grid-3 custom-list-item">
+        <div>
           <div class="list-h">Hash</div>
           <div
             class="flex gap-2 items-center copy-container"
             id={"copy-transaction-hash-#{hash}"}
             phx-hook="Copy"
           >
-            <div class="break-all text-hover-blue"><%= Utils.shorten_block_hash(hash) %></div>
             <div class="relative">
-              <img class="copy-btn copy-text w-4 h-4" src={~p"/images/copy.svg"} data-text={hash} />
-              <img
-                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                src={~p"/images/check-square.svg"}
-              />
+              <div class="break-all text-hover-blue"><%= Utils.shorten_block_hash(hash) %></div>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img class="copy-btn copy-text w-4 h-4" src={~p"/images/copy.svg"} data-text={hash} />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
             </div>
           </div>
+        </div>
+        <div>
           <div class="list-h">Type</div>
           <div>
             <span class={"#{if type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
               <%= type %>
             </span>
           </div>
+        </div>
+        <div>
           <div class="list-h">Version</div>
           <div><%= version %></div>
         </div>
-      <% end %>
-    </div>
+      </div>
+    <% end %>
     """
   end
 
@@ -111,117 +119,131 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   # - Gas Price
   def render_info(assigns = %{block: _block, view: "overview"}) do
     ~H"""
-    <div>
-      <div class="block-overview">
-        <div class="block-label">Block Hash</div>
-        <div
-          class="col-span-3 break-all text-hover-blue break-all flex gap-2 items-center copy-container"
-          id={"copy-block-hash-#{@block["block_number"]}"}
-          phx-hook="Copy"
-        >
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Block Hash</div>
+      <div
+        class="copy-container col-span-3 text-hover-blue"
+        id={"copy-block-hash-#{@block["block_number"]}"}
+        phx-hook="Copy"
+      >
+        <div class="relative">
           <%= Utils.shorten_block_hash(@block["block_hash"]) %>
-          <div class="relative">
-            <img
-              class="copy-btn copy-text w-4 h-4"
-              src={~p"/images/copy.svg"}
-              data-text={@block["block_hash"]}
-            />
-            <img
-              class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-              src={~p"/images/check-square.svg"}
-            />
+          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+            <div class="relative">
+              <img
+                class="copy-btn copy-text w-4 h-4"
+                src={~p"/images/copy.svg"}
+                data-text={@block["block_hash"]}
+              />
+              <img
+                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                src={~p"/images/check-square.svg"}
+              />
+            </div>
           </div>
         </div>
       </div>
-      <div class="block-overview">
-        <div class="block-label">Block Status</div>
-        <div class="col-span-3">
-          <span class={"#{if @block["status"] == "ACCEPTED_ON_L2", do: "green-label"} #{if @block["status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if @block["status"] == "PENDING", do: "pink-label"}"}>
-            <%= @block["status"] %>
-          </span>
-        </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Block Status</div>
+      <div class="col-span-3">
+        <span class={"#{if @block["status"] == "ACCEPTED_ON_L2", do: "green-label"} #{if @block["status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if @block["status"] == "PENDING", do: "pink-label"}"}>
+          <%= @block["status"] %>
+        </span>
       </div>
-      <div class="block-overview">
-        <div class="block-label">State Root</div>
-        <div
-          class="col-span-3 break-all break-all flex gap-2 items-center copy-container"
-          id={"copy-block-root-#{@block["block_number"]}"}
-          phx-hook="Copy"
-        >
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">State Root</div>
+      <div
+        class="copy-container col-span-3"
+        id={"copy-block-root-#{@block["block_number"]}"}
+        phx-hook="Copy"
+      >
+        <div class="relative">
           <%= Utils.shorten_block_hash(@block["new_root"]) %>
-          <div class="relative">
-            <img
-              class="copy-btn copy-text w-4 h-4"
-              src={~p"/images/copy.svg"}
-              data-text={@block["new_root"]}
-            />
-            <img
-              class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-              src={~p"/images/check-square.svg"}
-            />
+          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+            <div class="relative">
+              <img
+                class="copy-btn copy-text w-4 h-4"
+                src={~p"/images/copy.svg"}
+                data-text={@block["new_root"]}
+              />
+              <img
+                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                src={~p"/images/check-square.svg"}
+              />
+            </div>
           </div>
         </div>
       </div>
-      <div class="block-overview">
-        <div class="block-label">Parent Hash</div>
-        <div
-          class="col-span-3 break-all break-all flex gap-2 items-center copy-container"
-          id={"copy-block-parent-#{@block["block_number"]}"}
-          phx-hook="Copy"
-        >
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Parent Hash</div>
+      <div
+        class="copy-container col-span-3"
+        id={"copy-block-parent-#{@block["block_number"]}"}
+        phx-hook="Copy"
+      >
+        <div class="relative">
           <%= Utils.shorten_block_hash(@block["parent_hash"]) %>
-          <div class="relative">
-            <img
-              class="copy-btn copy-text w-4 h-4"
-              src={~p"/images/copy.svg"}
-              data-text={@block["parent_hash"]}
-            />
-            <img
-              class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-              src={~p"/images/check-square.svg"}
-            />
+          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+            <div class="relative">
+              <img
+                class="copy-btn copy-text w-4 h-4"
+                src={~p"/images/copy.svg"}
+                data-text={@block["parent_hash"]}
+              />
+              <img
+                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                src={~p"/images/check-square.svg"}
+              />
+            </div>
           </div>
         </div>
       </div>
-      <div class="block-overview">
-        <div class="block-label">
-          Sequencer Address
-        </div>
-        <div
-          class="col-span-3 break-all text-se-violet break-all flex gap-2 items-center copy-container"
-          id={"copy-block-sequencer-#{@block["block_number"]}"}
-          phx-hook="Copy"
-        >
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">
+        Sequencer Address
+      </div>
+      <div
+        class="copy-container col-span-3 text-hover-blue"
+        id={"copy-block-sequencer-#{@block["block_number"]}"}
+        phx-hook="Copy"
+      >
+        <div class="relative">
           <%= Utils.shorten_block_hash(@block["sequencer_address"]) %>
-          <div class="relative">
-            <img
-              class="copy-btn copy-text w-4 h-4"
-              src={~p"/images/copy.svg"}
-              data-text={@block["sequencer_address"]}
-            />
-            <img
-              class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-              src={~p"/images/check-square.svg"}
-            />
+          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+            <div class="relative">
+              <img
+                class="copy-btn copy-text w-4 h-4"
+                src={~p"/images/copy.svg"}
+                data-text={@block["sequencer_address"]}
+              />
+              <img
+                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                src={~p"/images/check-square.svg"}
+              />
+            </div>
           </div>
         </div>
       </div>
-      <div class="block-overview">
-        <div class="block-label">
-          Gas Price
-        </div>
-        <div class="col-span-3">
-          <span class="break-all bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1">
-            <%= "0.000000017333948464 ETH" %>
-          </span>
-        </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">
+        Gas Price
       </div>
-      <div class="block-overview">
-        <div class="block-label">
-          Total execution resources
-        </div>
-        <div class="col-span-3"><%= 543_910 %></div>
+      <div class="col-span-3">
+        <span class="break-all bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1">
+          <%= "0.000000017333948464 ETH" %>
+        </span>
       </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">
+        Total execution resources
+      </div>
+      <div class="col-span-3"><%= 543_910 %></div>
     </div>
     """
   end
