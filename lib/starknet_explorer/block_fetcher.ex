@@ -2,7 +2,7 @@ defmodule StarknetExplorer.BlockFetcher do
   use GenServer
   require Logger
   alias StarknetExplorer.{Rpc, BlockFetcher, Block}
-  defstruct [:block_height, :latest_block_fetched, :worker]
+  defstruct [:block_height, :latest_block_fetched]
   @fetch_interval 300
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
