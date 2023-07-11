@@ -9,10 +9,10 @@ database_url =
 
 # Configure your database
 config :starknet_explorer, StarknetExplorer.Repo,
-  #username: "postgres",
-  #password: "postgres",
-  #hostname: "localhost",
-  #database: "starknet_explorer_dev",
+  # username: "postgres",
+  # password: "postgres",
+  # hostname: "localhost",
+  # database: "starknet_explorer_dev",
   url: database_url,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
