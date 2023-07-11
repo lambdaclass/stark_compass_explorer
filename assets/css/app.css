@@ -100,10 +100,10 @@ a,
 }
 /* Search bar */
 form {
-  @apply relative;
+  @apply relative !w-full !max-w-7xl !mx-auto !mb-10;
 }
 input {
-  @apply !bg-[#232331] !border-none !text-se-lilac !pr-10 xl:!w-80;
+  @apply !bg-[#232331] !border-none !text-se-lilac !pr-10 !w-full text-ellipsis;
 }
 .block-label {
   @apply col-span-full md:col-span-1 text-gray-500 md:text-white;

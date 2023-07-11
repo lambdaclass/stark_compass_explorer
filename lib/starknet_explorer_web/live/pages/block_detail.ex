@@ -7,6 +7,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   defp block_detail_header(assigns) do
     ~H"""
+    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
+      id: "search-bar",
+      flash: @flash
+    ) %>
     <div class="flex flex-col md:flex-row justify-between">
       <h2>Block <span class="font-semibold">#<%= @block["block_number"] %></span></h2>
       <div class="text-gray-400">

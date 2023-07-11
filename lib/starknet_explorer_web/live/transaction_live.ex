@@ -5,6 +5,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   defp transaction_header(assigns) do
     ~H"""
+    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
+      id: "search-bar",
+      flash: @flash
+    ) %>
     <div class="flex flex-col md:flex-row justify-between">
       <div class="flex flex-col lg:flex-row gap-2 items-baseline">
         <h2>Transaction</h2>

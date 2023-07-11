@@ -5,6 +5,10 @@ defmodule StarknetExplorerWeb.EventIndexLive do
   @impl true
   def render(assigns) do
     ~H"""
+    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
+      id: "search-bar",
+      flash: @flash
+    ) %>
     <div class="max-w-7xl mx-auto">
       <div class="table-header">
         <h2>Events</h2>

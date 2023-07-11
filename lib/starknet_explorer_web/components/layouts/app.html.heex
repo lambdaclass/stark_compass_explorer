@@ -8,7 +8,7 @@
       <img id="hamburger" class="z-50 lg:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
       <div
         id="menu-options"
-        class="absolute lg:relative top-0 left-0 w-screen lg:w-auto h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 pointer-events-none lg:pointer-events-auto flex flex-col lg:flex-row justify-start items-streach gap-10 bg-[#111118] my-16 lg:my-0 py-10 lg:py-0 border-t lg:border-t-0 px-5 lg:px-0"
+        class="absolute lg:relative top-0 left-0 w-screen lg:w-auto h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 pointer-events-none lg:pointer-events-auto flex flex-col lg:flex-row justify-start items-streach gap-10 bg-[#111118] my-16 lg:my-0 py-10 lg:py-0 border-t lg:border-t-0 px-5"
       >
         <a
           href="/blocks"
@@ -51,10 +51,6 @@
           <img class="lg:hidden" src={~p"/images/corner-up-right.svg"} />
           <span>Events</span>
         </a>
-        <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-          id: "search-bar",
-          flash: @flash
-        ) %>
       </div>
     </nav>
   </header>

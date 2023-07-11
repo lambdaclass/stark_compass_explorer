@@ -20,6 +20,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       <h1>Welcome to</h1>
       <h2>Starknet Explorer</h2>
     </div>
+    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
+      id: "search-bar",
+      flash: @flash
+    ) %>
     <div class="mx-auto max-w-7xl grid lg:grid-cols-2 lg:gap-5 xl:gap-16 mt-16">
       <div>
         <div class="table-header">
