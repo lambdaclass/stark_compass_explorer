@@ -100,7 +100,7 @@ a,
 }
 /* Search bar */
 form {
-  @apply relative !w-full !max-w-7xl !mx-auto !mb-10;
+  @apply relative !w-full !max-w-7xl !mx-auto !my-10;
 }
 input {
   @apply !bg-[#232331] !border-none !text-se-lilac !pr-10 !w-full text-ellipsis;

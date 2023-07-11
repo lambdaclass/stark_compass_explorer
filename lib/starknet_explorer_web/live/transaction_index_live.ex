@@ -79,7 +79,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    Process.send(self(), :load_blocks, [])
+    Process.send_after(self(), :load_blocks, 100, [])
 
     {:ok,
      assign(socket,
