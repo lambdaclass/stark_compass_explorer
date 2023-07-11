@@ -83,7 +83,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
               |> Utils.shorten_block_hash() %>
             </td>
             <td><%= @transaction_receipt.block_number %></td>
-            <td><%= @transaction.transaction_hash |> Utils.shorten_block_hash() %></td>
+            <td><%= @transaction.hash |> Utils.shorten_block_hash() %></td>
             <td>Transfer</td>
             <td><%= @transaction.sender_address |> Utils.shorten_block_hash() %></td>
             <td>Age: 1h</td>
