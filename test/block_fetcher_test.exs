@@ -75,7 +75,6 @@ defmodule StarknetExplorer.BlockFetcher.Test do
           |> Rpc.get_transaction_receipt()
 
         for {key, value} when key not in ["transaction_hash"] <- receipt do
-          key_atom = String.to_existing_atom(key)
           assert value == Map.get(db_receipt, String.to_existing_atom(key))
         end
       end
