@@ -69,6 +69,191 @@ Hooks.Copy = {
   },
 };
 
+// Apex Chart for Stats
+let randomizeArray = function (arg) {
+  let array = arg.slice();
+  let currentIndex = array.length,
+    temporaryValue,
+    randomIndex;
+
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+};
+// data for the sparklines that appear below header area
+let sparklineData = [47, 45, 54, 38, 56, 24, 65, 31, 37, 39, 62, 51, 35, 41, 35, 27, 93, 53, 61, 27, 54, 43, 19, 46, 61, 27, 54, 43, 19, 46];
+
+let transactions = {
+  chart: {
+    id: "transactions",
+    type: "area",
+    height: 160,
+    background: "#1A1A24",
+    sparkline: {
+      enabled: true,
+    },
+  },
+  tooltip: {
+    theme: "dark",
+  },
+  stroke: {
+    curve: "straight",
+  },
+  fill: {
+    opacity: 1,
+  },
+  series: [
+    {
+      name: "Transactions",
+      data: randomizeArray(sparklineData),
+    },
+  ],
+  labels: [...Array(30).keys()].map((n) => `2018-09-0${n + 1}`),
+  yaxis: {
+    min: 0,
+  },
+  xaxis: {
+    type: "datetime",
+    categories: ["01 Jan", "02 Jan", "03 Jan", "04 Jan", "05 Jan", "06 Jan", "07 Jan", "08 Jan", "09 Jan", "10 Jan", "11 Jan", "12 Jan"],
+  },
+  colors: ["#b43cff"],
+  title: {
+    text: "424,652",
+    offsetX: 20,
+    style: {
+      fontSize: "24px",
+      cssClass: "apexcharts-yaxis-title",
+      color: "white",
+    },
+  },
+  subtitle: {
+    text: "last month",
+    offsetX: 20,
+    style: {
+      fontSize: "14px",
+      cssClass: "apexcharts-yaxis-title",
+      color: "#6B7280",
+    },
+  },
+};
+let fees = {
+  chart: {
+    id: "fees",
+    type: "area",
+    height: 160,
+    background: "#1A1A24",
+    sparkline: {
+      enabled: true,
+    },
+  },
+  tooltip: {
+    theme: "dark",
+  },
+  stroke: {
+    curve: "straight",
+  },
+  fill: {
+    opacity: 1,
+  },
+  series: [
+    {
+      name: "fee",
+      data: randomizeArray(sparklineData),
+    },
+  ],
+  labels: [...Array(30).keys()].map((n) => `2018-09-0${n + 1}`),
+  yaxis: {
+    min: 0,
+  },
+  xaxis: {
+    type: "datetime",
+    categories: ["01 Jan", "02 Jan", "03 Jan", "04 Jan", "05 Jan", "06 Jan", "07 Jan", "08 Jan", "09 Jan", "10 Jan", "11 Jan", "12 Jan"],
+  },
+  colors: ["#b43cff"],
+  title: {
+    text: "33.83653 ETH",
+    offsetX: 20,
+    style: {
+      fontSize: "24px",
+      cssClass: "apexcharts-yaxis-title",
+      color: "white",
+    },
+  },
+  subtitle: {
+    text: "last month",
+    offsetX: 20,
+    style: {
+      fontSize: "14px",
+      cssClass: "apexcharts-yaxis-title",
+      color: "#6B7280",
+    },
+  },
+};
+let tvl = {
+  chart: {
+    id: "tvl",
+    type: "area",
+    height: 160,
+    background: "#1A1A24",
+    sparkline: {
+      enabled: true,
+    },
+  },
+  tooltip: {
+    theme: "dark",
+  },
+  stroke: {
+    curve: "straight",
+  },
+  fill: {
+    opacity: 1,
+  },
+  series: [
+    {
+      name: "tvl",
+      data: randomizeArray(sparklineData),
+    },
+  ],
+  labels: [...Array(30).keys()].map((n) => `2018-09-0${n + 1}`),
+  yaxis: {
+    min: 0,
+  },
+  xaxis: {
+    type: "datetime",
+    categories: ["01 Jan", "02 Jan", "03 Jan", "04 Jan", "05 Jan", "06 Jan", "07 Jan", "08 Jan", "09 Jan", "10 Jan", "11 Jan", "12 Jan"],
+  },
+  colors: ["#b43cff"],
+  title: {
+    text: "$ 57,920,345",
+    offsetX: 20,
+    style: {
+      fontSize: "24px",
+      cssClass: "apexcharts-yaxis-title",
+      color: "white",
+    },
+  },
+  subtitle: {
+    text: "last month",
+    offsetX: 20,
+    style: {
+      fontSize: "14px",
+      cssClass: "apexcharts-yaxis-title",
+      color: "#6B7280",
+    },
+  },
+};
+
+new ApexCharts(document.querySelector("#transactions-chart"), transactions).render();
+new ApexCharts(document.querySelector("#fees"), fees).render();
+new ApexCharts(document.querySelector("#tvl"), tvl).render();
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks });
 
