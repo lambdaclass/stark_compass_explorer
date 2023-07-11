@@ -13,7 +13,7 @@ config :starknet_explorer, StarknetExplorer.Repo,
   #password: "postgres",
   #hostname: "localhost",
   #database: "starknet_explorer_dev",
-  database_url: database_url,
+  url: database_url,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
