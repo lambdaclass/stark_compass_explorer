@@ -6,7 +6,8 @@ run:
 setup: deps-get db
 
 db:
-	docker-compose up -d
+	export DATABASE_URL="ecto://postgres:postgres@localhost:5432/starknet_explorer_dev"
+	docker-compose up -d postgres pgadmin
 	mix ecto.create
 	mix ecto.migrate
 
