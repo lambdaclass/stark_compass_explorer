@@ -76,16 +76,15 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </tr>
       </thead>
       <tbody id="transaction-events-data">
-        <%= for signature <- @transaction_receipt.events do %>
+        <%= for %{"keys" => [identifier | _ ], "from_address" => from_address} <- @transaction_receipt.events do %>
           <tr>
             <td>
-              <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
-              |> Utils.shorten_block_hash() %>
+              <%= identifier |> Utils.shorten_block_hash() %>
             </td>
             <td><%= @transaction_receipt.block_number %></td>
             <td><%= @transaction.hash |> Utils.shorten_block_hash() %></td>
             <td>Transfer</td>
-            <td><%= @transaction.sender_address |> Utils.shorten_block_hash() %></td>
+            <td><%= from_address |> Utils.shorten_block_hash() %></td>
             <td>Age: 1h</td>
           </tr>
         <% end %>
@@ -304,7 +303,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
     assigns = [
       transaction: transaction,
-      transaction_receipt: transaction.receipt,
+      transaction_receipt: transaction.receipt |> IO.inspect(label: Receipt),
       transaction_hash: socket.assigns.transaction_hash,
       transaction_view: socket.assigns.transaction_view
     ]
