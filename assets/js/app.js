@@ -254,7 +254,7 @@ new ApexCharts(document.querySelector("#transactions-chart"), transactions).rend
 new ApexCharts(document.querySelector("#fees"), fees).render();
 new ApexCharts(document.querySelector("#tvl"), tvl).render();
 
-// Tippy.js for Toolkit
+// Tippy.js for Tooltip
 tippy("#tps", {
   content: "The avarage transactions per second",
 });

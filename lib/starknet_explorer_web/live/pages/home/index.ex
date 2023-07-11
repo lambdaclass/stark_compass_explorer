@@ -28,7 +28,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           <div>101,752</div>
         </div>
       </div>
-      <div id="tps" class="flex items-start gap-3 bg-container p-4 md:p-5">
+      <div class="relative flex items-start gap-3 bg-container p-4 md:p-5">
+        <img id="tps" class="absolute top-2 right-2 w-5 h-5" src={~p"/images/help-circle.svg"} />
         <img src={~p"/images/zap.svg"} />
         <div class="text-sm">
           <div>TPS</div>
