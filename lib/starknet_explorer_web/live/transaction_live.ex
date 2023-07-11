@@ -303,7 +303,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
     assigns = [
       transaction: transaction,
-      transaction_receipt: transaction.receipt |> IO.inspect(label: Receipt),
+      transaction_receipt: transaction.receipt,
       transaction_hash: socket.assigns.transaction_hash,
       transaction_view: socket.assigns.transaction_view
     ]
