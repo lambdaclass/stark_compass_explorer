@@ -36,8 +36,8 @@ defmodule StarknetExplorerWeb.Utils do
         %{"timestamp" => time} -> time
         _ -> block.timestamp
       end
-    %{minutes: minutes, hours: hours, days: days} =
-      DateUtils.calculate_time_difference(timestamp)
+
+    %{minutes: minutes, hours: hours, days: days} = DateUtils.calculate_time_difference(timestamp)
 
     case days do
       0 ->

@@ -298,7 +298,6 @@ defmodule StarknetExplorerWeb.TransactionLive do
         :load_transaction,
         %{assigns: %{transaction_hash: transaction_hash}} = socket
       ) do
-
     transaction = %Transaction{} = Transaction.get_by_hash_with_receipt(transaction_hash)
 
     assigns = [
