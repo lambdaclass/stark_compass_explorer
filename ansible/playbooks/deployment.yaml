@@ -20,6 +20,10 @@
       dest: /home/starknet_explorer/tmp/starknet_explorer
       ssh_opts: "-o StrictHostKeyChecking=no"
       key_file: /home/starknet_explorer/.ssh/id_ed25519
+    register: clone_output
+
+  - name: Print clone repo output
+    debug: msg="{{ clone_output }}"
 
   - name: Build
     ansible.builtin.shell: |
