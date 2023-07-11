@@ -2,7 +2,9 @@ name: Deploy to testing
 on:
   push:
     branches:
-      - deploy
+      - main
+  workflow_dispatch:
+
 jobs:
 
   build-deploy:
