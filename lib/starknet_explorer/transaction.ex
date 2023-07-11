@@ -29,7 +29,6 @@ defmodule StarknetExplorer.Transaction do
   @invoke_v1_tx_fields [
     :calldata,
     :sender_address,
-    :entry_point_selector,
     :hash,
     :max_fee,
     :nonce,
@@ -66,7 +65,6 @@ defmodule StarknetExplorer.Transaction do
     :max_fee,
     :nonce,
     :signature,
-    :type,
     :type,
     :version
   ]
@@ -133,6 +131,11 @@ defmodule StarknetExplorer.Transaction do
   end
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "DEPLOY", "max_fee" => _}) do
+    changeset
+    |> validate_required(@deploy_account_tx_fields)
+  end
+
+  defp validate_according_to_tx_type(changeset, _tx = %{"type" => "DEPLOY_ACCOUNT"}) do
     changeset
     |> validate_required(@deploy_account_tx_fields)
   end
