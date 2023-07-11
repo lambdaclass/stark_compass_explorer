@@ -65,7 +65,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </div>
       </div>
     </div>
-    <div class="mx-auto max-w-7xl grid md:grid-cols-3 gap-5 my-10">
+    <div class="mx-auto max-w-7xl grid md:grid-cols-3 gap-5 my-10" phx-hook="Stats" id="stats_table">
       <div class="pt-5 bg-container">
         <div class="ml-7 text-gray-500">Transactions</div>
         <div id="transactions-chart"></div>

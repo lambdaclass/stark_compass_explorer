@@ -69,6 +69,20 @@ Hooks.Copy = {
   },
 };
 
+Hooks.Stats = {
+  mounted() {
+    new ApexCharts(document.querySelector("#transactions-chart"), transactions).render();
+    new ApexCharts(document.querySelector("#fees"), fees).render();
+    new ApexCharts(document.querySelector("#tvl"), tvl).render();
+  },
+
+  updated() {
+    new ApexCharts(document.querySelector("#transactions-chart"), transactions).render();
+    new ApexCharts(document.querySelector("#fees"), fees).render();
+    new ApexCharts(document.querySelector("#tvl"), tvl).render();
+  }
+};
+
 // Apex Chart for Stats
 let randomizeArray = function (arg) {
   let array = arg.slice();
@@ -249,10 +263,6 @@ let tvl = {
     },
   },
 };
-
-new ApexCharts(document.querySelector("#transactions-chart"), transactions).render();
-new ApexCharts(document.querySelector("#fees"), fees).render();
-new ApexCharts(document.querySelector("#tvl"), tvl).render();
 
 // Tippy.js for Tooltip
 tippy("#tps", {
