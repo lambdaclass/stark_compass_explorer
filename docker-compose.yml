@@ -1,11 +1,25 @@
 version: '3.8'
 
 services:
+  starknet-explorer:
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      - RPC_API_HOST=http://host.docker.internal:9944
+      - DATABASE_URL=ecto://postgres:postgres@host.docker.internal:5432/starknet_explorer_dev
+    depends_on:
+      - postgres
+    networks:
+      default:
+        aliases:
+          - explorer
+
   postgres:
     container_name: starknet_explorer_dev_db
     image: postgres:15.3
     ports:
-      - 127.0.0.1:5432:5432
+      - 5432:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -25,9 +39,9 @@ services:
         - PGADMIN_DEFAULT_EMAIL=lambda@email.com
         - PGADMIN_DEFAULT_PASSWORD=pgadmin
     ports:
-        - 127.0.0.1:5050:80
+        - 5050:80
     volumes:
-      - 'pgadmin_data:/var/lib/pgadmin'
+      - pgadmin_data:/var/lib/pgadmin
     networks:
       default:
         aliases:

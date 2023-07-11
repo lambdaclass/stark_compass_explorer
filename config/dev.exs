@@ -1,11 +1,19 @@
 import Config
 
+database_url =
+  System.get_env("DATABASE_URL") ||
+    raise """
+    environment variable DATABASE_URL is missing.
+    For example: ecto://USER:PASS@HOST/DATABASE
+    """
+
 # Configure your database
 config :starknet_explorer, StarknetExplorer.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "starknet_explorer_dev",
+  #username: "postgres",
+  #password: "postgres",
+  #hostname: "localhost",
+  #database: "starknet_explorer_dev",
+  database_url: database_url,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -19,7 +27,7 @@ config :starknet_explorer, StarknetExplorer.Repo,
 config :starknet_explorer, StarknetExplorerWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
