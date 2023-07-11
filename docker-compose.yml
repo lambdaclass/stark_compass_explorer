@@ -12,7 +12,7 @@ services:
       - POSTGRES_DB=starknet_explorer_dev
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - ./.volumes/postgres/data:/var/lib/postgresql/data/
+      - pg_data:/var/lib/postgresql/data/
     networks:
       default:
         aliases:
@@ -39,5 +39,6 @@ networks:
     driver: bridge
 
 volumes:
+  pg_data:
   pgadmin_data:
 
