@@ -254,6 +254,11 @@ new ApexCharts(document.querySelector("#transactions-chart"), transactions).rend
 new ApexCharts(document.querySelector("#fees"), fees).render();
 new ApexCharts(document.querySelector("#tvl"), tvl).render();
 
+// Tippy.js for Toolkit
+tippy("#tps", {
+  content: "The avarage transactions per second",
+});
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks });
 
