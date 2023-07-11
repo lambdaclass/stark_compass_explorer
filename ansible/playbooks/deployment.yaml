@@ -28,7 +28,6 @@
       mix local.rebar --force
       mix deps.get --only $MIX_ENV
       mix deps.compile
-      npm run --prefix ./assets deploy
       mix assets.deploy
       mix phx.digest
       mix compile
