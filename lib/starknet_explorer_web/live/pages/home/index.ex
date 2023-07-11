@@ -172,10 +172,11 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def handle_info(:load_blocks, socket) do
     [latest_block | blocks] = Block.latest_n_blocks_with_txs(15)
+
     {:noreply,
      assign(socket,
        blocks: blocks,
-       latest_block: latest_block 
+       latest_block: latest_block
      )}
   end
 end
