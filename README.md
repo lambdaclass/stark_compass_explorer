@@ -28,6 +28,11 @@ make setup run
 ```
 
 This will start postgres, create the database and start a web app in `localhost:4000`.
+For local development, you can seed the db with
+
+```
+make seed
+```
 
 From now on, if you want to restart the app, you can just do:
 ```
