@@ -5,6 +5,10 @@ defmodule StarknetExplorerWeb.EventDetailLive do
 
   def render(assigns) do
     ~H"""
+    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
+      id: "search-bar",
+      flash: @flash
+    ) %>
     <div class="flex justify-center items-center pt-14">
       <h1 class="text-white text-4xl font-mono">Event Detail</h1>
     </div>
@@ -23,18 +27,18 @@ defmodule StarknetExplorerWeb.EventDetailLive do
           Event Data
           <div class="table-block">
             <ul class="transactions-grid table-th">
-              <li class="col-span-2" scope="col">Input</li>
-              <li class="col-span-2" scope="col">Type</li>
-              <li class="col-span-2" scope="col">Value</li>
+              <li class="col-span-2">Input</li>
+              <li class="col-span-2">Type</li>
+              <li class="col-span-2">Value</li>
             </ul>
             <div id="classes">
               <%= for idx <- 0..0 do %>
                 <ul id={"message-#{idx}"} class="transactions-grid border-t border-gray-600">
-                  <li class="col-span-2" scope="row">
+                  <li class="col-span-2">
                     from_
                   </li>
-                  <li class="col-span-2" scope="row">felt</li>
-                  <li class="col-span-2" scope="row">
+                  <li class="col-span-2">felt</li>
+                  <li class="col-span-2">
                     "0x4c97c4d367b88df2f29887043750ff189f539c28fe1fed331d3359b403a8bad">
                   </li>
                 </ul>
