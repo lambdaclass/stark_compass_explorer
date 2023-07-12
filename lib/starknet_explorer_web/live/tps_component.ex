@@ -45,13 +45,11 @@ defmodule StarknetExplorerWeb.TPSComponent do
     block_time_avg = calculate_block_time_avg(blocks, amount_of_blocks)
 
     # Tx per second = (average number of tx per block) / (average block time)
-    tx_per_second =
-      (avg_tx_per_block / block_time_avg)
-      |> :erlang.float_to_binary(decimals: 2)
+    tx_per_second = avg_tx_per_block / block_time_avg
 
     {:noreply,
      assign(socket,
-       tx_per_second: tx_per_second
+       tx_per_second: tx_per_second |> :erlang.float_to_binary(decimals: 2)
      )}
   end
 
