@@ -14,19 +14,19 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <h2>Transaction</h2>
         <div
           class="copy-container break-all pr-10 lg:pr-0"
-          id={"tsx-header-#{@transaction["transaction_hash"]}"}
+          id={"tsx-header-#{@transaction.hash}"}
           phx-hook="Copy"
         >
           <div class="relative">
             <div class="font-semibold">
-              <%= @transaction["transaction_hash"] %>
+              <%= @transaction.hash %>
             </div>
             <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
               <div class="relative">
                 <img
                   class="copy-btn copy-text w-4 h-4"
                   src={~p"/images/copy.svg"}
-                  data-text={@transaction["transaction_hash"]}
+                  data-text={@transaction.hash}
                 />
                 <img
                   class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -110,8 +110,8 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <% end %>
       <div>Age</div>
     </div>
-    <%= for %{"keys" => [identifier | _ ], "from_address" => from_address} <- @transaction_receipt["events"] do %>
-      <div class={"custom-list-item #{if @transaction["sender_address"], do: "grid-6", else: "grid-5"}"}>
+    <%= for %{"keys" => [identifier | _ ], "from_address" => from_address} <- @transaction_receipt.events do %>
+      <div class={"custom-list-item #{if @transaction.sender_address, do: "grid-6", else: "grid-5"}"}>
         <div>
           <div class="list-h">Identifier</div>
           <div>
@@ -300,7 +300,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Status</div>
       <div class="col-span-3">
-        <span class={"#{if @transaction_receipt.status == "ACCEPTED_ON_L2", do: "green-label"} #{if @transaction_receipt["status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if @transaction_receipt["status"] == "PENDING", do: "pink-label"}"}>
+        <span class={"#{if @transaction_receipt.status == "ACCEPTED_ON_L2", do: "green-label"} #{if @transaction_receipt.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if @transaction_receipt.status == "PENDING", do: "pink-label"}"}>
           <%= @transaction_receipt.status %>
         </span>
       </div>
@@ -326,7 +326,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
                 <img
                   class="copy-btn copy-text w-4 h-4"
                   src={~p"/images/copy.svg"}
-                  data-text={@transaction_receipt["block_hash"]}
+                  data-text={@transaction_receipt.block_hash}
                 />
                 <img
                   class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"

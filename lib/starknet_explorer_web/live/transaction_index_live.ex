@@ -60,7 +60,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
                 <div class="col-span-2">
                   <div class="list-h">Status</div>
                   <div>
-                    <span class={"#{if block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if block["status"] == "PENDING", do: "pink-label"}"}>
+                    <span class={"#{if block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if block.status == "PENDING", do: "pink-label"}"}>
                       <%= block.status %>
                     </span>
                   </div>
