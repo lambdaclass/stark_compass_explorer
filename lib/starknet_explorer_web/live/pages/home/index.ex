@@ -197,7 +197,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                   <div class="list-h">Type</div>
                   <div>
                     <span class={"#{if transaction.type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
-                      <%= transaction.type%>
+                      <%= transaction.type %>
                     </span>
                   </div>
                 </div>
@@ -230,7 +230,6 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
      assign(socket,
        blocks: latest_blocks,
        latest_block: latest_blocks |> hd
-     )
-    }
+     )}
   end
 end

@@ -148,7 +148,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   # TODO:
   # Everything here is hardcoded.
   # I think this information comes from the block.
-  def render_info(%{transaction_view: "message_logs"} = assigns) do
+  def render_info(%{transaction_view: "message_logs", transaction: %{receipt: receipt}} = assigns) do
     ~H"""
     <div class="grid-8 table-th !pt-7 border-t border-gray-700">
       <div>Identifier</div>

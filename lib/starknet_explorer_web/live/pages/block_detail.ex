@@ -158,11 +158,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">State Root</div>
-      <div
-        class="copy-container col-span-3"
-        id={"copy-block-root-#{@block.number}"}
-        phx-hook="Copy"
-      >
+      <div class="copy-container col-span-3" id={"copy-block-root-#{@block.number}"} phx-hook="Copy">
         <div class="relative">
           <%= Utils.shorten_block_hash(@block.new_root) %>
           <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -183,11 +179,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Parent Hash</div>
-      <div
-        class="copy-container col-span-3"
-        id={"copy-block-parent-#{@block.number}"}
-        phx-hook="Copy"
-      >
+      <div class="copy-container col-span-3" id={"copy-block-parent-#{@block.number}"} phx-hook="Copy">
         <div class="relative">
           <%= Utils.shorten_block_hash(@block.hash) %>
           <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
