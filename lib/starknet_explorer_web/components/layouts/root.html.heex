@@ -13,7 +13,7 @@
   </head>
   <body class="bg-se-black text-white relative">
     <header class="z-50 absolute top-0 left-0">
-      <nav class="w-screen flex items-center justify-between p-5">
+      <nav class="w-screen flex items-center justify-between p-5 lg:px-16">
         <a href="/" class="z-50 text-xl">
           <span class="uppercase">Starknet</span>
           <span class="font-semibold">Explorer</span>
@@ -64,7 +64,7 @@
             <img class="lg:hidden" src={~p"/images/calendar.svg"} />
             <span>Events</span>
           </a>
-          <div class="relative">
+          <div class="relative pr-5">
             <button
               class="relative w-min-full w-32 cursor-pointer rounded-md border border-black bg-container hover:bg-se-violet/80 py-2 pl-3 pr-10 text-left shadow-sm"
               type="button"
@@ -86,7 +86,7 @@
             </button>
             <ul
               id="networkOptions"
-              class="hidden absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-container py-1 text-base text-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+              class="hidden absolute z-10 mt-1 max-h-60 overflow-auto rounded-md bg-container py-1 text-base text-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
             >
               <li class="network-option mainnet">
                 <a href="#" class="flex h-1.5 w-1.5" target="_blank" rel="noreferrer">
