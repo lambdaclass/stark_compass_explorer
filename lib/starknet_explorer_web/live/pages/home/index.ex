@@ -37,7 +37,9 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <img src={~p"/images/zap.svg"} />
         <div class="text-sm">
           <div>TPS</div>
-          <div>2.15</div>
+          <div>
+          <%= live_render(@socket, StarknetExplorerWeb.TPSComponent, id: "tps-number") %>
+          </div>
         </div>
       </div>
       <div class="flex items-start gap-3 bg-container p-4 md:p-5">
