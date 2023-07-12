@@ -1,60 +1,56 @@
 <main class="px-5 md:px-10 min-h-screen py-32 lg:py-40">
   <header>
-    <nav class="z-50 absolute top-0 left-0 w-screen flex justify-between items-center px-5 md:px-10 py-5">
+    <nav class="z-50 absolute top-0 left-0 w-screen flex justify-between items-center px-5 lg:px-10 py-5">
       <a href="/" class="z-50 text-xl">
         <span class="uppercase">Starknet</span>
         <span class="font-semibold">Explorer</span>
       </a>
-      <img id="hamburger" class="z-50 md:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
+      <img id="hamburger" class="z-50 lg:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
       <div
         id="menu-options"
-        class="absolute md:relative top-0 left-0 w-screen md:w-auto h-screen md:h-auto transition-all duration-300 opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto flex flex-col md:flex-row justify-start items-streach gap-10 bg-[#111118] my-16 md:my-0 py-10 md:py-0 border-t md:border-t-0 px-5 md:px-0"
+        class="absolute lg:relative top-0 left-0 w-screen lg:w-auto h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 pointer-events-none lg:pointer-events-auto flex flex-col lg:flex-row justify-start items-streach gap-10 bg-[#111118] my-16 lg:my-0 py-10 lg:py-0 border-t lg:border-t-0 px-5"
       >
         <a
           href="/blocks"
           class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
         >
-          <img class="md:hidden" src={~p"/images/box.svg"} /> <span>Blocks</span>
+          <img class="lg:hidden" src={~p"/images/box.svg"} /> <span>Blocks</span>
         </a>
         <a
           href="/transactions"
           class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
         >
-          <img class="md:hidden" src={~p"/images/corner-up-right.svg"} />
+          <img class="lg:hidden" src={~p"/images/corner-up-right.svg"} />
           <span>Transactions</span>
         </a>
         <a
           href="/classes"
           class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
         >
-          <img class="md:hidden" src={~p"/images/corner-up-right.svg"} />
+          <img class="lg:hidden" src={~p"/images/corner-up-right.svg"} />
           <span>Classes</span>
         </a>
         <a
           href="/messages"
           class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
         >
-          <img class="md:hidden" src={~p"/images/corner-up-right.svg"} />
+          <img class="lg:hidden" src={~p"/images/corner-up-right.svg"} />
           <span>Messages</span>
         </a>
         <a
           href="/contracts"
           class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
         >
-          <img class="md:hidden" src={~p"/images/corner-up-right.svg"} />
+          <img class="lg:hidden" src={~p"/images/corner-up-right.svg"} />
           <span>Contracts</span>
         </a>
         <a
           href="/events"
           class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
         >
-          <img class="md:hidden" src={~p"/images/corner-up-right.svg"} />
+          <img class="lg:hidden" src={~p"/images/corner-up-right.svg"} />
           <span>Events</span>
         </a>
-        <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-          id: "search-bar",
-          flash: @flash
-        ) %>
       </div>
     </nav>
   </header>

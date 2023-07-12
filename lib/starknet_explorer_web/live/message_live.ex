@@ -5,6 +5,10 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
 
   def render(assigns) do
     ~H"""
+    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
+      id: "search-bar",
+      flash: @flash
+    ) %>
     <div class="flex justify-center items-center pt-14">
       <h1 class="text-white text-4xl font-mono">Message Detail</h1>
     </div>

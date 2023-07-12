@@ -6,35 +6,32 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-3xl mx-auto">
+    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
+      id: "search-bar",
+      flash: @flash
+    ) %>
+    <div class="max-w-7xl mx-auto">
       <div class="table-header">
         <h2>Transactions</h2>
       </div>
       <div class="table-block">
-        <div class="transactions-grid table-th">
-          <div class="col-span-2" scope="col">Transaction Hash</div>
-          <div class="col-span-2" scope="col">Type</div>
-          <div class="col-span-2" scope="col">Status</div>
-          <div scope="col">Age</div>
+        <div class="grid-7 table-th">
+          <div class="col-span-2">Transaction Hash</div>
+          <div class="col-span-2">Type</div>
+          <div class="col-span-2">Status</div>
+          <div>Age</div>
         </div>
         <div id="transactions">
           <%= for block <- @latest_block do %>
             <%= for {transaction, idx} <- Enum.with_index(block.transactions) do %>
-              <div
-                id={"transaction-#{idx}"}
-                class="transactions-grid border-t first-of-type:border-t-0 md:first-of-type:border-t border-gray-600"
-              >
-                <div class="col-span-2" scope="row">
+              <div id={"transaction-#{idx}"} class="grid-7 custom-list-item">
+                <div class="col-span-2">
                   <div class="list-h">Transaction Hash</div>
-                  <div
-                    class="copy-container flex gap-4 items-center"
-                    id={"copy-tsx-#{idx}"}
-                    phx-hook="Copy"
-                  >
+                  <div class="copy-container" id={"copy-tsx-#{idx}"} phx-hook="Copy">
                     <div class="relative">
                       <%= live_redirect(Utils.shorten_block_hash(transaction.hash),
                         to: "/transactions/#{transaction.hash}",
-                        class: "text-se-blue hover:text-se-hover-blue underline-none"
+                        class: "text-hover-blue"
                       ) %>
                       <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                         <div class="relative">
@@ -52,15 +49,23 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
                     </div>
                   </div>
                 </div>
-                <div class="col-span-2" scope="row">
+                <div class="col-span-2">
                   <div class="list-h">Type</div>
-                  <%= transaction.type %>
+                  <div>
+                    <span class={"#{if transaction.type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+                      <%= transaction.type %>
+                    </span>
+                  </div>
                 </div>
-                <div class="col-span-2" scope="row">
+                <div class="col-span-2">
                   <div class="list-h">Status</div>
-                  <%= block.status %>
+                  <div>
+                    <span class={"#{if block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if block["status"] == "PENDING", do: "pink-label"}"}>
+                      <%= block.status %>
+                    </span>
+                  </div>
                 </div>
-                <div scope="row">
+                <div>
                   <div class="list-h">Age</div>
                   <%= Utils.get_block_age(block) %>
                 </div>
@@ -75,7 +80,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    Process.send(self(), :load_blocks, [])
+    Process.send_after(self(), :load_blocks, 100, [])
 
     {:ok,
      assign(socket,
