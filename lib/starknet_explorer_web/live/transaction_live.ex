@@ -115,7 +115,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <div>
           <div class="list-h">Identifier</div>
           <div>
-              <%= identifier |> Utils.shorten_block_hash() %>
+            <%= identifier |> Utils.shorten_block_hash() %>
           </div>
         </div>
         <div>
@@ -265,11 +265,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Transaction Hash</div>
       <div class="col-span-3 break-all">
-        <div
-          class="copy-container"
-          id={"tsx-overview-hash-#{@transaction.hash}"}
-          phx-hook="Copy"
-        >
+        <div class="copy-container" id={"tsx-overview-hash-#{@transaction.hash}"} phx-hook="Copy">
           <div class="relative">
             <%= @transaction.hash |> Utils.shorten_block_hash() %>
             <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -293,7 +289,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="block-label">Transaction Type</div>
       <div class="col-span-3">
         <span class={"#{if @transaction.type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
-          <%= @transaction.type%>
+          <%= @transaction.type %>
         </span>
       </div>
     </div>
@@ -549,35 +545,23 @@ defmodule StarknetExplorerWeb.TransactionLive do
     """
   end
 
-  def mount(%{"transaction_hash" => transaction_hash}, _session, socket) do
-    Process.send(self(), :load_transaction, [])
-
-    assigns = [
-      transaction_hash: transaction_hash,
-      transaction: nil,
-      transaction_receipt: nil,
-      transaction_view: "overview"
-    ]
-
-    {:ok, assign(socket, assigns)}
-  end
-
   @impl true
-  def handle_info(
-        :load_transaction,
-        %{assigns: %{transaction_hash: transaction_hash}} = socket
-      ) do
+  def handle_params(%{"transaction_hash" => transaction_hash}, _uri, socket) do
     transaction = %Transaction{} = Transaction.get_by_hash_with_receipt(transaction_hash)
 
     assigns = [
+      transaction_hash: transaction_hash,
       transaction: transaction,
       transaction_receipt: transaction.receipt,
-      transaction_hash: socket.assigns.transaction_hash,
-      transaction_view: socket.assigns.transaction_view
+      transaction_view: "overview"
     ]
 
-    socket = assign(socket, assigns)
-    {:noreply, socket}
+    {:noreply, assign(socket, assigns)}
+  end
+
+  @impl true
+  def mount(%{"transaction_hash" => transaction_hash}, _session, socket) do
+    {:ok, socket}
   end
 
   def handle_event("select-view", %{"view" => view}, socket) do
