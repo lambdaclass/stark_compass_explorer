@@ -24,7 +24,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
           <div id={"block-#{block.number}"} class="grid-6 custom-list-item">
             <div>
               <div class="list-h">Number</div>
-              <%= live_redirect(to_string(block["block_number"]),
+              <%= live_redirect(to_string(block.number),
                 to: "/block/#{block.number}"
               ) %>
             </div>
@@ -56,7 +56,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
             <div class="col-span-2">
               <div class="list-h">Status</div>
               <div>
-                <span class={"#{if block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if block["status"] == "PENDING", do: "pink-label"}"}>
+                <span class={"#{if block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if block.status == "PENDING", do: "pink-label"}"}>
                   <%= block.status %>
                 </span>
               </div>

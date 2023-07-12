@@ -124,7 +124,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </div>
         <div>
           <div class="list-h">Transaction Hash</div>
-          <div><%= @transaction.transaction_hash |> Utils.shorten_block_hash() %></div>
+          <div><%= @transaction.hash |> Utils.shorten_block_hash() %></div>
         </div>
         <div>
           <div class="list-h">Name</div>
