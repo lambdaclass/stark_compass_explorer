@@ -12,9 +12,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       flash: @flash
     ) %>
     <div class="flex flex-col md:flex-row justify-between">
-      <h2>Block <span class="font-semibold">#<%= @block["block_number"] %></span></h2>
+      <h2>Block <span class="font-semibold">#<%= @block.number %></span></h2>
       <div class="text-gray-400">
-        <%= @block["timestamp"]
+        <%= @block.timestamp
         |> DateTime.from_unix()
         |> then(fn {:ok, time} -> time end)
         |> Calendar.strftime("%c") %> UTC
@@ -151,7 +151,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Status</div>
       <div class="col-span-3">
-        <span class={"#{if @block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if @block["status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if @block.status == "PENDING", do: "pink-label"}"}>
+        <span class={"#{if @block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if @block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if @block.status == "PENDING", do: "pink-label"}"}>
           <%= @block.status %>
         </span>
       </div>
