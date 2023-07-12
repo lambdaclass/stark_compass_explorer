@@ -38,6 +38,10 @@ a,
   @apply cursor-pointer;
 }
 
+.network-option {
+  @apply text-white bg-container hover:bg-se-violet/80 relative select-none py-2 pl-3 pr-9 w-full cursor-pointer flex items-center;
+}
+
 /* Tables */
 .blocks-grid {
   @apply grid md:grid-cols-6 gap-1 md:gap-8 py-5 md:py-0;
@@ -65,12 +69,18 @@ a,
   @apply font-ibm-plex text-sm pt-2 text-gray-400 md:hidden;
 }
 
-/* Search bar */
+/* Search bar and Dropdown*/
 form {
   @apply relative;
 }
 input {
   @apply !bg-[#232331] !border-none !text-se-lilac !pr-10 xl:!w-80;
+}
+select {
+  @apply !bg-[#232331] !border-none !text-se-lilac !pr-10 xl:!w-80;
+}
+select * {
+  @apply hover:!bg-red-400;
 }
 
 /* Detail pages */

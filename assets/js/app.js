@@ -36,10 +36,12 @@ Hooks.Nav = {
   mounted() {
     const hamburger = document.getElementById("hamburger");
     const options = document.querySelector("#menu-options");
+    const main = document.querySelector("main");
     hamburger.addEventListener("click", () => {
       options.classList.toggle("open");
       options.classList.toggle("opacity-0");
       options.classList.toggle("pointer-events-none");
+      main.classList.toggle("hidden");
     });
   },
 };
@@ -80,7 +82,7 @@ Hooks.Stats = {
     new ApexCharts(document.querySelector("#transactions-chart"), transactions).render();
     new ApexCharts(document.querySelector("#fees"), fees).render();
     new ApexCharts(document.querySelector("#tvl"), tvl).render();
-  }
+  },
 };
 
 // Apex Chart for Stats
@@ -268,6 +270,36 @@ let tvl = {
 tippy("#tps", {
   content: "The avarage transactions per second",
 });
+
+//
+Hooks.Network = {
+  mounted() {
+    const btn = document.querySelector("#networkBtn");
+    const options = document.querySelector("#networkOptions");
+    const selected = document.querySelector("#networkSelected");
+    const listItems = document.querySelectorAll(".network-option");
+    btn.addEventListener("click", () => {
+      options.classList.toggle("hidden");
+    });
+    listItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        console.log(item);
+        if (item.classList.contains("mainnet")) {
+          selected.innerHTML = "Mainnet";
+        }
+        if (item.classList.contains("testnet")) {
+          selected.innerHTML = "Testnet";
+        }
+        if (item.classList.contains("testnet-2")) {
+          selected.innerHTML = "Testnet 2";
+        }
+        setTimeout(() => {
+          options.classList.add("hidden");
+        }, 2);
+      });
+    });
+  },
+};
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks });

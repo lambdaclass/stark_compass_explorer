@@ -12,6 +12,108 @@
     </script>
   </head>
   <body class="bg-se-black text-white relative">
+    <header class="z-50 absolute top-0 left-0">
+      <nav class="w-screen flex items-center justify-between p-5">
+        <a href="/" class="z-50 text-xl">
+          <span class="uppercase">Starknet</span>
+          <span class="font-semibold">Explorer</span>
+        </a>
+        <img id="hamburger" class="z-50 lg:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
+        <div
+          id="menu-options"
+          class="pointer-events-none lg:pointer-events-auto absolute lg:relative top-0 left-0 w-screen lg:w-auto h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 flex flex-col lg:flex-row justify-start items-streach gap-7 lg:gap-10 bg-[#111118] my-16 lg:my-0 py-10 lg:py-0 border-t lg:border-t-0 px-5 lg:px-0"
+        >
+          <a
+            href="/blocks"
+            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+          >
+            <img class="lg:hidden" src={~p"/images/box.svg"} /> <span>Blocks</span>
+          </a>
+          <a
+            href="/transactions"
+            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+          >
+            <img class="lg:hidden" src={~p"/images/corner-up-right.svg"} />
+            <span>Transactions</span>
+          </a>
+          <a
+            href="/classes"
+            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+          >
+            <img class="lg:hidden" src={~p"/images/code.svg"} />
+            <span>Classes</span>
+          </a>
+          <a
+            href="/messages"
+            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+          >
+            <img class="lg:hidden" src={~p"/images/message-square.svg"} />
+            <span>Messages</span>
+          </a>
+          <a
+            href="/contracts"
+            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+          >
+            <img class="lg:hidden" src={~p"/images/file.svg"} />
+            <span>Contracts</span>
+          </a>
+          <a
+            href="/events"
+            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+          >
+            <img class="lg:hidden" src={~p"/images/calendar.svg"} />
+            <span>Events</span>
+          </a>
+          <div class="relative">
+            <button
+              class="relative w-min-full w-32 cursor-pointer rounded-md border border-black bg-container hover:bg-se-violet/80 py-2 pl-3 pr-10 text-left shadow-sm"
+              type="button"
+              id="networkBtn"
+              phx-hook="Network"
+            >
+              <span class="flex items-center">
+                <div>
+                  <a href="#" class="flex" target="_blank" rel="noreferrer">
+                    <span class="animate-ping absolute inline-flex rounded-full opacity-75 bg-green-400">
+                    </span><span class="flex-shrink-0 rounded-full bg-green-400"></span>
+                  </a>
+                </div>
+                <span id="networkSelected" class="ml-3 block truncate">Mainnet</span>
+              </span>
+              <span class="absolute inset-y-0 right-0 flex items-center pr-2">
+                <img class="transform rotate-90 w-4 h-4" src={~p"/images/dropdown.svg"} />
+              </span>
+            </button>
+            <ul
+              id="networkOptions"
+              class="hidden absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-container py-1 text-base text-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+            >
+              <li class="network-option mainnet">
+                <a href="#" class="flex h-1.5 w-1.5" target="_blank" rel="noreferrer">
+                  <span class="animate-ping absolute inline-flex h-1.5 w-1.5 rounded-full opacity-75 bg-green-400">
+                  </span><span class="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                </a>
+                <span class="font-semibold ml-3 block w-full">Mainnet</span>
+              </li>
+              <li class="network-option testnet">
+                <a href="#" class="flex h-1.5 w-1.5" target="_blank" rel="noreferrer">
+                  <span class="animate-ping absolute inline-flex h-1.5 w-1.5 rounded-full opacity-75 bg-green-400">
+                  </span><span class="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                </a>
+                <span class="font-normal ml-3 block w-full">Testnet</span>
+              </li>
+              <li class="network-option testnet-2">
+                <a href="#" class="flex h-1.5 w-1.5" target="_blank" rel="noreferrer">
+                  <span class="animate-ping absolute inline-flex h-1.5 w-1.5 rounded-full opacity-75 bg-green-400">
+                  </span><span class="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                </a>
+                <span class="font-normal ml-3 block w-full">Testnet 2</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
     <%= @inner_content %>
     <footer class="absolute bottom-0 left-0 right-0 flex justify-center items-center mt-10 py-4 text-gray-500">
       <p id="copyright"></p>
