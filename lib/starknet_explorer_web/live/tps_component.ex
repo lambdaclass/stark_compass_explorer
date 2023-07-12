@@ -1,4 +1,4 @@
-defmodule StarknetExplorerWeb.TPSComponent do
+defmodule StarknetExplorerWeb.Component.TransactionsPerSecond do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorer.Rpc
   @impl true
@@ -34,7 +34,7 @@ defmodule StarknetExplorerWeb.TPSComponent do
 
     # Fetch 100 blocks
     # below the block height.
-    blocks = fetch_blocks(amount_of_blocks, block_lower_bound, block_height)
+    blocks = fetch_blocks(block_lower_bound, block_height)
 
     # Calculate the average amount
     # of transactions per block.
@@ -53,7 +53,7 @@ defmodule StarknetExplorerWeb.TPSComponent do
      )}
   end
 
-  defp fetch_blocks(amount_of_blocks, lower_bound, upper_bound) do
+  defp fetch_blocks(lower_bound, upper_bound) do
     lower_bound..upper_bound
     |> Enum.map(fn block ->
       Task.async(fn ->

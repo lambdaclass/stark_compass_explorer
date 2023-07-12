@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.HomeLive.Index do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-
+  alias StarknetExplorerWeb.Component.TransactionsPerSecond, as: TPSComponent
   @impl true
   def mount(_params, _session, socket) do
     Process.send_after(self(), :load_blocks, 100, [])
@@ -38,7 +38,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <div class="text-sm">
           <div>TPS</div>
           <div>
-          <%= live_render(@socket, StarknetExplorerWeb.TPSComponent, id: "tps-number") %>
+          <%= live_render(@socket, TPSComponent id: "tps-number") %>
           </div>
         </div>
       </div>
