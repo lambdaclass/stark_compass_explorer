@@ -7,10 +7,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   defp block_detail_header(assigns) do
     ~H"""
-    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-      id: "search-bar",
-      flash: @flash
-    ) %>
     <div class="flex flex-col md:flex-row justify-between">
       <h2>Block <span class="font-semibold">#<%= @block["block_number"] %></span></h2>
       <div class="text-gray-400">
@@ -63,6 +59,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   @impl true
   def render(assigns) do
     ~H"""
+    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
+      id: "search-bar",
+      flash: @flash
+    ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <%= block_detail_header(assigns) %>
       <%= render_info(assigns) %>
@@ -238,9 +238,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         Gas Price
       </div>
       <div class="col-span-3">
-        <span class="break-all bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1">
-          <%= "0.000000017333948464 ETH" %>
-        </span>
+        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+          <div class="gray-label text-sm">Mocked</div>
+          <div class="break-all bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1">
+            <%= "0.000000017333948464 ETH" %>
+          </div>
+        </div>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
