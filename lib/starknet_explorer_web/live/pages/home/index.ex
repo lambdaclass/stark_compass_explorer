@@ -19,7 +19,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
     ~H"""
     <div class="flex flex-col gap-1 justify-center items-center">
       <h1>Welcome to</h1>
-      <h2>Starknet Explorer</h2>
+      <h2>Madara Starknet Explorer</h2>
     </div>
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
       id: "search-bar",
