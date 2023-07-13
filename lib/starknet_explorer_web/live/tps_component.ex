@@ -1,4 +1,3 @@
-
 defmodule StarknetExplorerWeb.Component.TransactionsPerSecond do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorer.Rpc
@@ -29,16 +28,18 @@ defmodule StarknetExplorerWeb.Component.TransactionsPerSecond do
   def handle_info(:calculate_tps, socket) do
     # Fetch the current block height
     # and set a lower bound.
-    {:ok, latest = %{"block_number" => height, "timestamp" => curr_block_timestamp}} = Rpc.get_latest_block()
+    {:ok, latest = %{"block_number" => height, "timestamp" => curr_block_timestamp}} =
+      Rpc.get_latest_block()
+
     {:ok, _prev_block = %{"timestamp" => prev_block_time}} = Rpc.get_block_by_number(height - 1)
 
-    curr_block_time = (curr_block_timestamp - prev_block_time)
+    curr_block_time = curr_block_timestamp - prev_block_time
 
     tx_amount = Enum.count(latest["transactions"])
 
     {:noreply,
      assign(socket,
-       tx_per_second: (tx_amount/curr_block_time)  |> :erlang.float_to_binary(decimals: 2)
+       tx_per_second: (tx_amount / curr_block_time) |> :erlang.float_to_binary(decimals: 2)
      )}
   end
 end
