@@ -20,7 +20,6 @@ defmodule StarknetExplorer.Application do
         {Finch, name: StarknetExplorer.Finch},
         # Start the Endpoint (http/https)
         StarknetExplorerWeb.Endpoint,
-        {Task.Supervisor, name: StarknetExplorer.TaskSupervisor},
         # Active block cache
         Supervisor.child_spec(
           Cachex.child_spec(
