@@ -26,8 +26,9 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
       flash: @flash
     ) %>
     <div class="max-w-7xl mx-auto">
-      <div class="table-header">
+      <div class="table-header !justify-start gap-5">
         <h2>Classes</h2>
+        <span class="gray-label text-sm">Mocked</span>
       </div>
       <div class="table-block">
         <div class="grid-3 table-th">
