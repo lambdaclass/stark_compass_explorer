@@ -37,6 +37,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     """
   end
 
+  @impl true
   def mount(_params = %{"number_or_hash" => param}, _session, socket) do
     {:ok, block} =
       case num_or_hash(param) do
@@ -70,7 +71,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     """
   end
 
-  def render_info(assigns = %{block: block, view: "transactions"}) do
+  def render_info(assigns = %{block: _, view: "transactions"}) do
     ~H"""
     <div class="grid-3 table-th !pt-7 border-t border-gray-700">
       <div>Hash</div>
@@ -260,6 +261,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     """
   end
 
+  @impl true
   def handle_event("select-view", %{"view" => view}, socket) do
     socket = assign(socket, :view, view)
     {:noreply, socket}

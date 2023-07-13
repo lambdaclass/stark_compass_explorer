@@ -556,6 +556,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     """
   end
 
+  @impl true
   def mount(%{"transaction_hash" => transaction_hash}, _session, socket) do
     Process.send(self(), :load_transaction, [])
 
@@ -589,6 +590,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     {:noreply, socket}
   end
 
+  @impl true
   def handle_event("select-view", %{"view" => view}, socket) do
     socket = assign(socket, :transaction_view, view)
     {:noreply, socket}
