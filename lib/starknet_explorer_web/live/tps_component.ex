@@ -1,3 +1,4 @@
+
 defmodule StarknetExplorerWeb.Component.TransactionsPerSecond do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorer.Rpc
@@ -28,60 +29,16 @@ defmodule StarknetExplorerWeb.Component.TransactionsPerSecond do
   def handle_info(:calculate_tps, socket) do
     # Fetch the current block height
     # and set a lower bound.
-    {:ok, block_height} = StarknetExplorer.Rpc.get_block_height()
-    amount_of_blocks = 100
-    block_lower_bound = block_height - amount_of_blocks
+    {:ok, latest = %{"block_number" => height, "timestamp" => curr_block_timestamp}} = Rpc.get_latest_block()
+    {:ok, _prev_block = %{"timestamp" => prev_block_time}} = Rpc.get_block_by_number(height - 1)
 
-    # Fetch 100 blocks
-    # below the block height.
-    blocks = fetch_blocks(block_lower_bound, block_height)
+    curr_block_time = (curr_block_timestamp - prev_block_time)
 
-    # Calculate the average amount
-    # of transactions per block.
-    avg_tx_per_block = calculate_avg_tx_per_block(blocks, amount_of_blocks)
-
-    # Calculate average block time.
-    #  block time = (current block timestamp) - (previous block timestamp)
-    block_time_avg = calculate_block_time_avg(blocks, amount_of_blocks)
-
-    # Tx per second = (average number of tx per block) / (average block time)
-    tx_per_second = avg_tx_per_block / block_time_avg
+    tx_amount = Enum.count(latest["transactions"])
 
     {:noreply,
      assign(socket,
-       tx_per_second: tx_per_second |> :erlang.float_to_binary(decimals: 2)
+       tx_per_second: (tx_amount/curr_block_time)  |> :erlang.float_to_binary(decimals: 2)
      )}
-  end
-
-  defp fetch_blocks(lower_bound, upper_bound) do
-    lower_bound..upper_bound
-    |> Enum.map(fn block ->
-      Task.async(fn ->
-        Rpc.get_block_by_number(block)
-      end)
-    end)
-    |> Task.await_many()
-    |> Enum.map(fn {:ok, block} -> block end)
-  end
-
-  defp calculate_avg_tx_per_block(blocks, amount_of_blocks) do
-    blocks
-    # Sum number of txs per block
-    |> Enum.reduce(0, fn
-      block, txs_in_total -> length(block["transactions"]) + txs_in_total
-    end)
-    # Divide to get average.
-    |> then(fn total_txs -> total_txs / amount_of_blocks end)
-  end
-
-  defp calculate_block_time_avg(blocks, amount_of_blocks) do
-    blocks
-    # Sort blocks by block number
-    |> Enum.sort_by(fn %{"block_number" => block_number} -> block_number end, :asc)
-    # Group each 2 blocks, to then calculate block time
-    |> Enum.chunk_every(2, 1, :discard)
-    |> Enum.map(fn [%{"timestamp" => time_1}, %{"timestamp" => time_2}] -> time_2 - time_1 end)
-    |> Enum.sum()
-    |> then(fn block_time_total -> block_time_total / amount_of_blocks end)
   end
 end
