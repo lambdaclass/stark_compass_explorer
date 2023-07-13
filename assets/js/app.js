@@ -268,7 +268,7 @@ let tvl = {
 
 // Tippy.js for Tooltip
 tippy("#tps", {
-  content: "The avarage transactions per second",
+  content: "The average transactions per second",
 });
 
 //
