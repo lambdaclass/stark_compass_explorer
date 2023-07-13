@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
     <.live_title suffix=" · Phoenix Framework">
-      <%= assigns[:page_title] || "StarknetExplorer" %>
+      <%= assigns[:page_title] || "MadaraExplorer" %>
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
@@ -15,7 +15,7 @@
     <header class="z-50 absolute top-0 left-0">
       <nav class="w-screen flex items-center justify-between p-5 lg:px-16">
         <a href="/" class="z-50 text-xl">
-          <span class="uppercase">Starknet</span>
+          <span class="uppercase">Madara</span>
           <span class="font-semibold">Explorer</span>
         </a>
         <img id="hamburger" class="z-50 lg:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
