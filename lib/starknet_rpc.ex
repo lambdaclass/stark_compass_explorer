@@ -34,7 +34,7 @@ defmodule StarknetExplorer.Rpc do
         {:ok, rsp} = post(host, payload)
         response = handle_response(rsp)
 
-        Logger.info("Cache miss!: #{inspect({method, args})}")
+        # Logger.info("Cache miss!: #{inspect({method, args})}")
 
         # Cache miss, so save this result.
         case handle_response(rsp) do
@@ -47,9 +47,9 @@ defmodule StarknetExplorer.Rpc do
 
         response
 
-       # Cache hit, so use that value
+      # Cache hit, so use that value
       {:ok, cached_value} ->
-        Logger.info("Cache hit!: #{inspect({method, args})}")
+        # Logger.info("Cache hit!: #{inspect({method, args})}")
         {:ok, cached_value}
     end
   end

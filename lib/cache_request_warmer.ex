@@ -10,8 +10,7 @@ defmodule StarknetExplorer.Cache.BlockWarmer do
     # Fetch the highest block number,
     # invalidate cache so that we're sure that
     # we're using fresh data.
-    {:ok,
-     latest_block = %{"block_number" => latest_block_num, "block_hash" => latest_hash}} =
+    {:ok, latest_block = %{"block_number" => latest_block_num, "block_hash" => latest_hash}} =
       Rpc.get_latest_block(:no_cache)
 
     # Request blocks that fall in the range
@@ -19,8 +18,7 @@ defmodule StarknetExplorer.Cache.BlockWarmer do
     # what we mostly show on the home page.
     block_requests =
       Enum.map((latest_block_num - 20)..(latest_block_num - 1), fn block_num ->
-        {:ok, block = %{"transactions" => transactions}} =
-          Rpc.get_block_by_number(block_num)
+        {:ok, block = %{"transactions" => transactions}} = Rpc.get_block_by_number(block_num)
 
         tx_by_hash =
           transactions
