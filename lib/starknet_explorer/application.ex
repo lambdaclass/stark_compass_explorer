@@ -21,13 +21,32 @@ defmodule StarknetExplorer.Application do
         # Start the Endpoint (http/https)
         StarknetExplorerWeb.Endpoint,
         {Task.Supervisor, name: StarknetExplorer.TaskSupervisor},
-        # Start the request_cache
-        {Cachex,
-         name: :block_cache,
-         warmers: [
-           warmer(module: StarknetExplorer.Cache.BlockWarmer, state: %{})
-         ]}
-        # {Cachex, name: :tx_cache}
+        # Active block cache
+        Supervisor.child_spec(
+          Cachex.child_spec(
+            name: :block_cache,
+            limit: 1000,
+            id: :block_cache,
+            warmers: [
+              warmer(module: StarknetExplorer.Cache.BlockWarmer, state: %{})
+            ]
+          ),
+          id: :block_cache
+        ),
+        Supervisor.child_spec(
+          Cachex.child_spec(name: :tx_cache, limit: 5000, id: :tx_cache),
+          id: :tx_cache
+        ),
+        # Passive cache for general requests
+        Supervisor.child_spec(
+          Cachex.child_spec(
+            name: :request_cache,
+            limit: 5000,
+            id: :request_cache,
+            policy: Cachex.Policy.LRW
+          ),
+          id: :request_cache
+        )
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
       ] ++
