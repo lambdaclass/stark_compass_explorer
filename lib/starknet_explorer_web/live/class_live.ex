@@ -7,45 +7,50 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
 
   defp class_detail_header(assigns) do
     ~H"""
-    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-      id: "search-bar",
-      flash: @flash
-    ) %>
-    <div class="flex justify-center items-center pt-14">
-      <h1 class="text-white text-4xl font-mono">Class Detail</h1>
+    <div class="flex flex-col lg:flex-row gap-2 items-baseline">
+      <h2>Class</h2>
+      <div class="relative">
+        <div class="font-semibold">
+          <%= Utils.shorten_block_hash(
+            "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
+          ) %>
+        </div>
+      </div>
     </div>
-    <button
-      class="font-bold py-2 px-4 rounded bg-blue-500 text-white"
-      phx-click="select-view"
-      ,
-      phx-value-view="overview"
-    >
-      Overview
-    </button>
-    <button
-      class="font-bold py-2 px-4 rounded bg-blue-500 text-white"
-      phx-click="select-view"
-      ,
-      phx-value-view="deployed-contracts"
-    >
-      Deployed Contracts
-    </button>
-    <button
-      class="font-bold py-2 px-4 rounded bg-blue-500 text-white"
-      phx-click="select-view"
-      ,
-      phx-value-view="proxied-contracts"
-    >
-      Proxied Contracts
-    </button>
-    <button
-      class="font-bold py-2 px-4 rounded bg-blue-500 text-white"
-      phx-click="select-view"
-      ,
-      phx-value-view="code"
-    >
-      Code
-    </button>
+    <div class="flex flex-col md:flex-row gap-5 mt-8 mb-10 md:mb-0">
+      <div
+        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "overview", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        phx-click="select-view"
+        ,
+        phx-value-view="overview"
+      >
+        Overview
+      </div>
+      <div
+        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "deployed-contracts", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        phx-click="select-view"
+        ,
+        phx-value-view="deployed-contracts"
+      >
+        Deployed Contracts
+      </div>
+      <div
+        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "proxied-contracts", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        phx-click="select-view"
+        ,
+        phx-value-view="proxied-contracts"
+      >
+        Proxied Contracts
+      </div>
+      <div
+        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "code", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        phx-click="select-view"
+        ,
+        phx-value-view="code"
+      >
+        Code
+      </div>
+    </div>
     """
   end
 
@@ -77,114 +82,106 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <%= class_detail_header(assigns) %>
-    <%= render_info(assigns) %>
+    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
+      id: "search-bar",
+      flash: @flash
+    ) %>
+    <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
+      <%= class_detail_header(assigns) %>
+      <%= render_info(assigns) %>
+    </div>
     """
   end
 
   def render_info(assigns = %{class: class, view: "deployed-contracts"}) do
     ~H"""
-    <table>
-      <tbody id="deployed-contracts">
-        <h1>Deployed Contracts</h1>
-        <%= for _ <- 0..10 do %>
-          <table>
-            <thead>
-              <tr>
-                <th>Contract Address</th>
-                <th>Type</th>
-                <th>Class Hash</th>
-                <th>Deployed At</th>
-              </tr>
-              <tbody>
-                <tr>
-                  <td>
-                    <%= Utils.shorten_block_hash(
-                      "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
-                    ) %>
-                  </td>
-                  <td>ERC20</td>
-                  <td>
-                    <%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-                    |> Utils.shorten_block_hash() %>
-                  </td>
-                  <td>22h</td>
-                </tr>
-              </tbody>
-            </thead>
-          </table>
-        <% end %>
-      </tbody>
-    </table>
+    <div class="table-th !pt-7 border-t border-gray-700 grid-4">
+      <div>Contract Address</div>
+      <div>Type</div>
+      <div>Class Hash</div>
+      <div>Deployed At</div>
+    </div>
+    <%= for _ <- 0..10 do %>
+      <div class="grid-4 custom-list-item">
+        <div>
+          <%= Utils.shorten_block_hash(
+            "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
+          ) %>
+        </div>
+        <div>ERC20</div>
+        <div>
+          <%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
+          |> Utils.shorten_block_hash() %>
+        </div>
+        <div>22h</div>
+      </div>
+    <% end %>
     """
   end
 
   def render_info(assigns = %{class: class, view: "proxied-contracts"}) do
     ~H"""
-    <table>
-      <tbody id="proxied-contracts">
-        <h1>Proxied Contracts</h1>
-        <%= for _ <- 0..10 do %>
-          <table>
-            <thead>
-              <tr>
-                <th>Contract Address</th>
-                <th>Type</th>
-                <th>Class Hash</th>
-                <th>Deployed At</th>
-              </tr>
-              <tbody>
-                <tr>
-                  <td>
-                    <%= Utils.shorten_block_hash(
-                      "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
-                    ) %>
-                  </td>
-                  <td>ERC20</td>
-                  <td>
-                    <%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-                    |> Utils.shorten_block_hash() %>
-                  </td>
-                  <td>22h</td>
-                </tr>
-              </tbody>
-            </thead>
-          </table>
-        <% end %>
-      </tbody>
-    </table>
+    <div class="table-th !pt-7 border-t border-gray-700 grid-4">
+      <div>Contract Address</div>
+      <div>Type</div>
+      <div>Class Hash</div>
+      <div>Deployed At</div>
+    </div>
+    <%= for _ <- 0..10 do %>
+      <div class="grid-4 custom-list-item">
+        <div>
+          <%= Utils.shorten_block_hash(
+            "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
+          ) %>
+        </div>
+        <div>ERC20</div>
+        <div>
+          <%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
+          |> Utils.shorten_block_hash() %>
+        </div>
+        <div>22h</div>
+      </div>
+    <% end %>
     """
   end
 
   def render_info(assigns = %{class: _block, view: "overview"}) do
     ~H"""
-    <table>
-      <thead>
-        <ul>
-          <li>Class Hash 0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2</li>
-          <li>
-            Declared By Contract Address 0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2
-          </li>
-          <li>
-            Declared At Transaction Hash 0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2
-          </li>
-          <li>Declared At July 4, 2023 at 7:10:11 PM GMT-3</li>
-          <li>Class Version Cairo 1.0</li>
-        </ul>
-      </thead>
-    </table>
+    <div class="grid-4 custom-list-item">
+      <div>Class Hash</div>
+      <div class="cols-span-3">
+        <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
+        |> Utils.shorten_block_hash() %>
+      </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div>Declared By Contract Address</div>
+      <div class="cols-span-3">
+        <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
+        |> Utils.shorten_block_hash() %>
+      </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div>Declared At Transaction Hash</div>
+      <div class="cols-span-3">
+        <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
+        |> Utils.shorten_block_hash() %>
+      </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div>Declared At</div>
+      <div class="cols-span-3">July 4, 2023 at 7:10:11 PM GMT-3</div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div>Class Version</div>
+      <div class="cols-span-3">Cairo 1.0</div>
+    </div>
     """
   end
 
   def render_info(assigns = %{class: _block, view: "code"}) do
     ~H"""
-    <table>
-      <thead>
-        <ul>
-          TODO
-        </ul>
-      </thead>
-    </table>
+    <div class="text-gray-500 text-xl border-t border-t-gray-700 pt-5">In development</div>
     """
   end
 

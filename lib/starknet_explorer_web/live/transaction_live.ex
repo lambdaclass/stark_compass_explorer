@@ -5,30 +5,28 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   defp transaction_header(assigns) do
     ~H"""
-    <div class="flex flex-col md:flex-row justify-between">
-      <div class="flex flex-col lg:flex-row gap-2 items-baseline">
-        <h2>Transaction</h2>
-        <div
-          class="copy-container break-all pr-10 lg:pr-0"
-          id={"tsx-header-#{@transaction["transaction_hash"]}"}
-          phx-hook="Copy"
-        >
-          <div class="relative">
-            <div class="font-semibold">
-              <%= @transaction["transaction_hash"] %>
-            </div>
-            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-              <div class="relative">
-                <img
-                  class="copy-btn copy-text w-4 h-4"
-                  src={~p"/images/copy.svg"}
-                  data-text={@transaction["transaction_hash"]}
-                />
-                <img
-                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                  src={~p"/images/check-square.svg"}
-                />
-              </div>
+    <div class="flex flex-col lg:flex-row gap-2 items-baseline">
+      <h2>Transaction</h2>
+      <div
+        class="copy-container break-all pr-10 lg:pr-0"
+        id={"tsx-header-#{@transaction["transaction_hash"]}"}
+        phx-hook="Copy"
+      >
+        <div class="relative">
+          <div class="font-semibold">
+            <%= @transaction["transaction_hash"] %>
+          </div>
+          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+            <div class="relative">
+              <img
+                class="copy-btn copy-text w-4 h-4"
+                src={~p"/images/copy.svg"}
+                data-text={@transaction["transaction_hash"]}
+              />
+              <img
+                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                src={~p"/images/check-square.svg"}
+              />
             </div>
           </div>
         </div>
