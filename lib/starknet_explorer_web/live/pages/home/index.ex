@@ -227,6 +227,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def handle_info(:load_blocks, socket) do
     latest_block = Utils.get_latest_block_with_transactions()
+
     {:noreply,
      assign(socket,
        blocks: Utils.list_blocks(),
