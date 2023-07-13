@@ -4,9 +4,23 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title suffix=" · Phoenix Framework">
-      <%= assigns[:page_title] || "MadaraExplorer" %>
-    </.live_title>
+    <!-- Primary Meta Tags -->
+    <title>Madara Explorer</title>
+    <meta name="title" content="Madara Explorer" />
+    <meta name="description" content="A Starknet Explorer." />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://madarastark.com/" />
+    <meta property="og:title" content="Madara Explorer" />
+    <meta property="og:description" content="A Starknet Explorer." />
+    <meta property="og:image" content={~p"/images/preview.webp"} />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://madarastark.com/" />
+    <meta property="twitter:title" content="Madara Explorer" />
+    <meta property="twitter:description" content="A Starknet Explorer." />
+    <meta property="twitter:image" content={~p"/images/preview.webp"} />
+
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
