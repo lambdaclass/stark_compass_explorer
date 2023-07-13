@@ -393,7 +393,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
             "0x0219209e083275171774dab1df80982e9df2096516f06319c5c6d71ae0a8480c"
           ) %>
         </div>
-        <div class="w-full bg-black/10 lg:p-5">
+        <div class="w-full bg-black/10 p-5">
           <div class="grid-3 table-th">
             <div>Input</div>
             <div>Type</div>
@@ -438,7 +438,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <%= "0x015543c3708653cda9d418b4ccd3be11368e40636c10c44b18cfe756b6d88b29"
           |> Utils.shorten_block_hash() %>
         </div>
-        <div class="w-full bg-black/10 lg:p-5">
+        <div class="w-full bg-black/10 p-5">
           <div class="grid-3 table-th">
             <div>Input</div>
             <div>Type</div>
@@ -513,7 +513,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
         <span>Signature</span><span class="gray-label text-sm">Mocked</span>
       </div>
-      <div class="bg-black/10 lg:p-5">
+      <div class="bg-black/10 p-5">
         <div class="w-full grid-8 table-th">
           <div>Index</div>
           <div class="col-span-7">Value</div>

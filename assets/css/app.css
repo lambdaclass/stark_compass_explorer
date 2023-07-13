@@ -84,11 +84,11 @@ a,
 .grid-5 .list-h,
 .grid-6 .list-h,
 .grid-7 .list-h {
-  @apply font-ibm-plex text-sm pt-2 text-gray-600 md:hidden;
+  @apply font-ibm-plex text-sm pt-2 text-gray-500 md:hidden;
 }
 .grid-8 .list-h,
 .grid-9 .list-h {
-  @apply font-ibm-plex text-sm pt-2 text-gray-600 lg:hidden;
+  @apply font-ibm-plex text-sm pt-2 text-gray-500 lg:hidden;
 }
 
 .grid-3.table-th,

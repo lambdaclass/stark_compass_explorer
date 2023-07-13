@@ -9,12 +9,10 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     ~H"""
     <div class="flex flex-col lg:flex-row gap-2 items-baseline">
       <h2>Class</h2>
-      <div class="relative">
-        <div class="font-semibold">
-          <%= Utils.shorten_block_hash(
-            "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
-          ) %>
-        </div>
+      <div class="font-semibold">
+        <%= Utils.shorten_block_hash(
+          "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
+        ) %>
       </div>
     </div>
     <div class="flex flex-col md:flex-row gap-5 mt-8 mb-10 md:mb-0">
@@ -104,16 +102,24 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     <%= for _ <- 0..10 do %>
       <div class="grid-4 custom-list-item">
         <div>
+          <div class="list-h">Contract Address</div>
           <%= Utils.shorten_block_hash(
             "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
           ) %>
         </div>
-        <div>ERC20</div>
         <div>
+          <div class="list-h">Type</div>
+          <div>ERC20</div>
+        </div>
+        <div>
+          <div class="list-h">Class Hash</div>
           <%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
           |> Utils.shorten_block_hash() %>
         </div>
-        <div>22h</div>
+        <div>
+          <div class="list-h">Deployed At</div>
+          <div>22h</div>
+        </div>
       </div>
     <% end %>
     """
