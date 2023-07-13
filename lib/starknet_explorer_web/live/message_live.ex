@@ -1,5 +1,6 @@
 defmodule StarknetExplorerWeb.MessageDetailLive do
   use StarknetExplorerWeb, :live_view
+
   def render(assigns) do
     ~H"""
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
