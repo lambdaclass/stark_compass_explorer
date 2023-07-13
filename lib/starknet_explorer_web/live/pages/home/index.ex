@@ -25,14 +25,14 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       flash: @flash
     ) %>
     <div class="mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 my-5">
-      <div class="flex items-start gap-3 bg-container p-4 md:p-5">
+      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5">
         <img src={~p"/images/box.svg"} />
         <div class="text-sm">
           <div>Blocks Height</div>
           <div>101,752</div>
         </div>
       </div>
-      <div class="relative flex items-start gap-3 bg-container p-4 md:p-5">
+      <div class="relative flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5">
         <img id="tps" class="absolute top-2 right-2 w-5 h-5" src={~p"/images/help-circle.svg"} />
         <img src={~p"/images/zap.svg"} />
         <div class="text-sm">
@@ -42,32 +42,32 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           </div>
         </div>
       </div>
-      <div class="flex items-start gap-3 bg-container p-4 md:p-5 relative">
-        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
+      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
+        <div class="absolute top-2 right-2 gray-label text-[.7rem]">Mocked</div>
         <img src={~p"/images/code.svg"} />
         <div class="text-sm">
           <div>Classes</div>
           <div>4,536</div>
         </div>
       </div>
-      <div class="flex items-start gap-3 bg-container p-4 md:p-5 relative">
-        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
+      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
+        <div class="absolute top-2 right-2 gray-label text-[.7rem]">Mocked</div>
         <img src={~p"/images/message-square.svg"} />
         <div class="text-sm">
           <div>Messages</div>
           <div>905,510</div>
         </div>
       </div>
-      <div class="flex items-start gap-3 bg-container p-4 md:p-5 relative">
-        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
+      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
+        <div class="absolute top-2 right-2 gray-label text-[.7rem]">Mocked</div>
         <img src={~p"/images/file.svg"} />
         <div class="text-sm">
           <div>Contracts</div>
           <div>1,525,792</div>
         </div>
       </div>
-      <div class="flex items-start gap-3 bg-container p-4 md:p-5 relative">
-        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
+      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
+        <div class="absolute top-2 right-2 gray-label text-[.7rem]">Mocked</div>
         <img src={~p"/images/calendar.svg"} />
         <div class="text-sm">
           <div>Events</div>
