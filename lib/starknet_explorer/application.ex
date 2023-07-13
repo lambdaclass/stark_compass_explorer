@@ -18,7 +18,9 @@ defmodule StarknetExplorer.Application do
         # Start Finch
         {Finch, name: StarknetExplorer.Finch},
         # Start the Endpoint (http/https)
-        StarknetExplorerWeb.Endpoint
+        StarknetExplorerWeb.Endpoint,
+        # Start the request_cache
+        {Cachex, name: :request_cache}
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
       ] ++

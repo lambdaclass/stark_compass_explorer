@@ -1,6 +1,12 @@
 defmodule StarknetExplorer.Rpc do
   use Tesla
 
+  @request_types [
+    :starknet_blockNumber,
+    :starknet_getBlockWithTxs,
+    :starknet_getTransactionByHash,
+    :starknet_getTransactionReceipt
+  ]
   plug(Tesla.Middleware.Headers, [{"content-type", "application/json"}])
 
   def get_latest_block(), do: send_request("starknet_getBlockWithTxs", ["latest"])
@@ -21,14 +27,28 @@ defmodule StarknetExplorer.Rpc do
   def get_transaction_receipt(transaction_hash),
     do: send_request("starknet_getTransactionReceipt", [transaction_hash])
 
+  def cache_lookup(method, args) do
+    request = String.to_existing_atom(method)
+
+    Cachex.get!(:request_cache, {request, args})
+  end
+
   defp send_request(method, args) do
     payload = build_payload(method, args)
 
-    host = Application.fetch_env!(:starknet_explorer, :rpc_host)
+    case Cachex.get!(:request_cache, {method, args}) do
+      nil ->
+        nil
+        # Do the request
+        host = Application.fetch_env!(:starknet_explorer, :rpc_host)
 
-    {:ok, rsp} = post(host, payload)
+        {:ok, rsp} = post(host, payload)
 
-    handle_response(rsp)
+        handle_response(rsp)
+
+      cached_value ->
+        {:ok, cached_value}
+    end
   end
 
   defp build_payload(method, params) do
