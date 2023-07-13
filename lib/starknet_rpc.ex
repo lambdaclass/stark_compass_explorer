@@ -1,6 +1,5 @@
 defmodule StarknetExplorer.Rpc do
   use Tesla
-  require Logger
   plug(Tesla.Middleware.Headers, [{"content-type", "application/json"}])
 
   def get_latest_block(:no_cache),
@@ -34,8 +33,6 @@ defmodule StarknetExplorer.Rpc do
         {:ok, rsp} = post(host, payload)
         response = handle_response(rsp)
 
-        # Logger.info("Cache miss!: #{inspect({method, args})}")
-
         # Cache miss, so save this result.
         case handle_response(rsp) do
           {:ok, result} ->
@@ -49,7 +46,6 @@ defmodule StarknetExplorer.Rpc do
 
       # Cache hit, so use that value
       {:ok, cached_value} ->
-        # Logger.info("Cache hit!: #{inspect({method, args})}")
         {:ok, cached_value}
     end
   end
