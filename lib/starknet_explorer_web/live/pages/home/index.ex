@@ -61,7 +61,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           <div>1,525,792</div>
         </div>
       </div>
-      <div class="flex items-start gap-3 bg-container p-4 md:p-5">
+      <div class="flex items-start gap-3 bg-container p-4 md:p-5 relative">
+        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
         <img src={~p"/images/calendar.svg"} />
         <div class="text-sm">
           <div>Events</div>
@@ -78,7 +79,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <div class="ml-7 text-gray-500">Transaction Fees</div>
         <div id="fees"></div>
       </div>
-      <div class="pt-5 bg-container">
+      <div class="pt-5 bg-container relative">
+        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
         <div class="ml-7 text-gray-500">TVL</div>
         <div id="tvl"></div>
       </div>
