@@ -9,7 +9,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
     {:ok,
      assign(socket,
        blocks: [],
-       latest_block: []
+       latest_block: [],
+       block_height: "Loading..."
      )}
   end
 
@@ -18,7 +19,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
     ~H"""
     <div class="flex flex-col gap-1 justify-center items-center">
       <h1>Welcome to</h1>
-      <h2>Madara Explorer</h2>
+      <h2>Madara Starknet Explorer</h2>
     </div>
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
       id: "search-bar",
@@ -29,7 +30,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <img src={~p"/images/box.svg"} />
         <div class="text-sm">
           <div>Blocks Height</div>
-          <div>101,752</div>
+          <div><%= assigns.block_height %></div>
         </div>
       </div>
       <div class="relative flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5">
@@ -234,10 +235,13 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
   @impl true
   def handle_info(:load_blocks, socket) do
+    latest_block = Utils.get_latest_block_with_transactions()
+
     {:noreply,
      assign(socket,
        blocks: Utils.list_blocks(),
-       latest_block: Utils.get_latest_block_with_transactions()
+       latest_block: latest_block,
+       block_height: latest_block |> hd |> Map.get("block_number")
      )}
   end
 end
