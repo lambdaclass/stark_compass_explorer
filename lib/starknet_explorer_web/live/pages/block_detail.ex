@@ -250,7 +250,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="block-label">
         Total execution resources
       </div>
-      <div class="col-span-3"><%= 543_910 %></div>
+      <div class="col-span-3">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+          <div class="gray-label text-sm">Mocked</div>
+          <%= 543_910 %>
+        </div>
+      </div>
     </div>
     """
   end

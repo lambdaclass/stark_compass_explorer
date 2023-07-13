@@ -49,7 +49,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         ,
         phx-value-view="events"
       >
-        Events
+        Events <span class="gray-label text-sm">Mocked</span>
       </div>
       <div
         class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.transaction_view == "message_logs", do: "border-b-se-blue", else: "border-b-transparent"}"}
@@ -57,7 +57,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         ,
         phx-value-view="message_logs"
       >
-        Message Logs
+        Message Logs <span class="gray-label text-sm">Mocked</span>
       </div>
       <div
         class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.transaction_view == "internal_calls", do: "border-b-se-blue", else: "border-b-transparent"}"}
@@ -65,7 +65,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         ,
         phx-value-view="internal_calls"
       >
-        Internal Calls
+        Internal Calls <span class="gray-label text-sm">Mocked</span>
       </div>
     </div>
     """
@@ -385,7 +385,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="col-span-3"><%= @transaction["nonce"] %></div>
     </div>
     <div class="custom-list-item">
-      <div class="mb-5 text-gray-500 md:text-white">Input Data</div>
+      <div class="mb-5 text-gray-500 md:text-white !flex-row gap-2">
+        <span>Input Data</span><span class="gray-label text-sm">Mocked</span>
+      </div>
       <div class="col-span-full">
         <div class="w-full bg-black/20 p-5 mt-5">
           call <span class="text-se-violet">approve</span>(<span class="text-blue-400">spender</span>, <span class="text-blue-400">amount</span>)
@@ -510,7 +512,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </div>
     </div>
     <div class="custom-list-item">
-      <div class="mb-5 text-gray-500 md:text-white">Signature</div>
+      <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
+        <span>Signature</span><span class="gray-label text-sm">Mocked</span>
+      </div>
       <div class="bg-black/10 lg:p-5">
         <div class="w-full grid-8 table-th">
           <div>Index</div>
@@ -531,7 +535,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </div>
     </div>
     <div class="pt-3 mb-3 border-t border-t-gray-700">
-      <div class="mb-5 text-gray-500 md:text-white">Execution Resources</div>
+      <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
+        <span>Execution Resources</span><span class="gray-label text-sm">Mocked</span>
+      </div>
       <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
         <div class="flex flex-col justify-center items-center gap-2">
           <span class="blue-label">STEPS</span> 5083
