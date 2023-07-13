@@ -10,12 +10,13 @@ defmodule StarknetExplorerWeb.EventDetailLive do
       flash: @flash
     ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
-      <div class="flex flex-col lg:flex-row lg:gap-2 items-baseline pb-5">
+      <div class="flex flex-col lg:flex-row gap-2 items-baseline pb-5">
         <h2>Event</h2>
         <div class="font-semibold">
           <%= "0x01b4d24a461851e8eb9924369b5d9e23e79e8bbea6abc93eae4323462a25ddac_1"
           |> Utils.shorten_block_hash() %>
         </div>
+        <span class="gray-label text-sm">Mocked</span>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Event ID</div>

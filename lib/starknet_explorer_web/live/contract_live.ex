@@ -5,8 +5,11 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
 
   defp contract_detail_header(assigns) do
     ~H"""
-    <div class="flex flex-col lg:flex-row lg:gap-2 items-baseline pb-5">
-      <h2>Contract Detail</h2>
+    <div class="flex flex-col lg:flex-row gap-2 items-baseline pb-5">
+      <h2>Contract</h2>
+      <%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
+      |> Utils.shorten_block_hash() %>
+      <span class="gray-label text-sm">Mocked</span>
     </div>
     <div class="flex flex-col md:flex-row mt-2 mb-10 md:mb-0">
       <div

@@ -14,6 +14,7 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
           "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
         ) %>
       </div>
+      <span class="gray-label text-sm">Mocked</span>
     </div>
     <div class="flex flex-col md:flex-row mt-2 mb-10 md:mb-0">
       <div

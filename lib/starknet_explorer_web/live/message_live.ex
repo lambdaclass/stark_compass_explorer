@@ -10,12 +10,13 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
       flash: @flash
     ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
-      <div class="flex flex-col lg:flex-row lg:gap-2 items-baseline pb-5">
+      <div class="flex flex-col lg:flex-row gap-2 items-baseline pb-5">
         <h2>Message</h2>
         <div class="font-semibold">
           <%= "0x5d29af220b92806d04896b6aabe719bf3da66da7bcdc4136ab78b0fefce08b26"
           |> Utils.shorten_block_hash() %>
         </div>
+        <span class="gray-label text-sm">Mocked</span>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Message Log ID</div>
