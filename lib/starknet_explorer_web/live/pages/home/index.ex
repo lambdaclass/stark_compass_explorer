@@ -42,21 +42,24 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           </div>
         </div>
       </div>
-      <div class="flex items-start gap-3 bg-container p-4 md:p-5">
+      <div class="flex items-start gap-3 bg-container p-4 md:p-5 relative">
+        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
         <img src={~p"/images/code.svg"} />
         <div class="text-sm">
           <div>Classes</div>
           <div>4,536</div>
         </div>
       </div>
-      <div class="flex items-start gap-3 bg-container p-4 md:p-5">
+      <div class="flex items-start gap-3 bg-container p-4 md:p-5 relative">
+        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
         <img src={~p"/images/message-square.svg"} />
         <div class="text-sm">
           <div>Messages</div>
           <div>905,510</div>
         </div>
       </div>
-      <div class="flex items-start gap-3 bg-container p-4 md:p-5">
+      <div class="flex items-start gap-3 bg-container p-4 md:p-5 relative">
+        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
         <img src={~p"/images/file.svg"} />
         <div class="text-sm">
           <div>Contracts</div>
@@ -73,11 +76,13 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       </div>
     </div>
     <div class="mx-auto max-w-7xl grid md:grid-cols-3 gap-5 mb-10" phx-hook="Stats" id="stats_table">
-      <div class="pt-5 bg-container">
+      <div class="pt-5 bg-container relative">
+        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
         <div class="ml-7 text-gray-500">Transactions</div>
         <div id="transactions-chart"></div>
       </div>
-      <div class="pt-5 bg-container">
+      <div class="pt-5 bg-container relative">
+        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
         <div class="ml-7 text-gray-500">Transaction Fees</div>
         <div id="fees"></div>
       </div>
