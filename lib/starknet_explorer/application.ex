@@ -3,6 +3,7 @@ defmodule StarknetExplorer.Application do
   # for more information on OTP Applications
   @moduledoc false
   import StarknetExplorer.Utils
+  import Cachex.Spec
   use Application
 
   @impl true
@@ -19,8 +20,14 @@ defmodule StarknetExplorer.Application do
         {Finch, name: StarknetExplorer.Finch},
         # Start the Endpoint (http/https)
         StarknetExplorerWeb.Endpoint,
+        {Task.Supervisor, name: StarknetExplorer.TaskSupervisor},
         # Start the request_cache
-        {Cachex, name: :request_cache}
+        {Cachex,
+         name: :block_cache,
+         warmers: [
+           warmer(module: StarknetExplorer.Cache.BlockWarmer, state: %{})
+         ]}
+        # {Cachex, name: :tx_cache}
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
       ] ++

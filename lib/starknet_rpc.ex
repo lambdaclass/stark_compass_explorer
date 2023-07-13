@@ -1,12 +1,6 @@
 defmodule StarknetExplorer.Rpc do
   use Tesla
-
-  @request_types [
-    :starknet_blockNumber,
-    :starknet_getBlockWithTxs,
-    :starknet_getTransactionByHash,
-    :starknet_getTransactionReceipt
-  ]
+  require Logger
   plug(Tesla.Middleware.Headers, [{"content-type", "application/json"}])
 
   def get_latest_block(), do: send_request("starknet_getBlockWithTxs", ["latest"])
@@ -27,26 +21,36 @@ defmodule StarknetExplorer.Rpc do
   def get_transaction_receipt(transaction_hash),
     do: send_request("starknet_getTransactionReceipt", [transaction_hash])
 
-  def cache_lookup(method, args) do
-    request = String.to_existing_atom(method)
+  defp cache_lookup("starknet_getBlockWithTxs", [%{block_number: number}]) do
+    case Cachex.get(:block_cache, number) do
+      {:ok, nil} ->
+        :cache_miss
 
-    Cachex.get!(:request_cache, {request, args})
+      {:ok, value} ->
+        {:ok, value}
+
+      {:error, _} ->
+        :cache_miss
+    end
   end
+
+  defp cache_lookup(_, _), do: :cache_miss
 
   defp send_request(method, args) do
     payload = build_payload(method, args)
 
-    case Cachex.get!(:request_cache, {method, args}) do
-      nil ->
-        nil
-        # Do the request
+    case cache_lookup(method, args) do
+      :cache_miss ->
         host = Application.fetch_env!(:starknet_explorer, :rpc_host)
+
+        Logger.info("Cache miss!")
 
         {:ok, rsp} = post(host, payload)
 
         handle_response(rsp)
 
-      cached_value ->
+      {:ok, cached_value}->
+        Logger.info("Cache hit!")
         {:ok, cached_value}
     end
   end
