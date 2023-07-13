@@ -1,9 +1,8 @@
 defmodule StarknetExplorerWeb.ClassDetailLive do
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Rpc
   alias StarknetExplorerWeb.Utils
-  defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
-  defp num_or_hash(_num), do: :num
+  # defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
+  # defp num_or_hash(_num), do: :num
 
   defp class_detail_header(assigns) do
     ~H"""
@@ -49,7 +48,8 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     """
   end
 
-  def mount(_params = %{"hash" => hash}, _session, socket) do
+  @impl true
+  def mount(_params = %{"hash" => _hash}, _session, socket) do
     # {:ok, block} =
     #   case num_or_hash(param) do
     #     :hash ->
@@ -82,7 +82,7 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     """
   end
 
-  def render_info(assigns = %{class: class, view: "deployed-contracts"}) do
+  def render_info(assigns = %{class: _, view: "deployed-contracts"}) do
     ~H"""
     <table>
       <tbody id="deployed-contracts">
@@ -119,7 +119,7 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     """
   end
 
-  def render_info(assigns = %{class: class, view: "proxied-contracts"}) do
+  def render_info(assigns = %{class: _, view: "proxied-contracts"}) do
     ~H"""
     <table>
       <tbody id="proxied-contracts">

@@ -1,7 +1,6 @@
 defmodule StarknetExplorerWeb.BlockIndexLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.Block
   @impl true
   def render(assigns) do
     ~H"""
