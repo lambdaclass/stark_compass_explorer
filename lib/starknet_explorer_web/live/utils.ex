@@ -1,7 +1,6 @@
 defmodule StarknetExplorerWeb.Utils do
   alias StarknetExplorer.Rpc
   alias StarknetExplorer.DateUtils
-
   def shorten_block_hash(block_hash) do
     "#{String.slice(block_hash, 0, 6)}...#{String.slice(block_hash, -4, 4)}"
   end
@@ -12,7 +11,7 @@ defmodule StarknetExplorerWeb.Utils do
   end
 
   def get_latest_block_number() do
-    {:ok, latest_block} = Rpc.get_latest_block()
+    {:ok, latest_block} = Rpc.get_latest_block(:no_cache)
     latest_block["block_number"]
   end
 
