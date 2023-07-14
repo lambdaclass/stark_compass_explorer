@@ -5,36 +5,34 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   defp transaction_header(assigns) do
     ~H"""
-    <div class="flex flex-col md:flex-row justify-between">
-      <div class="flex flex-col lg:flex-row gap-2 items-baseline">
-        <h2>Transaction</h2>
-        <div
-          class="copy-container break-all pr-10 lg:pr-0"
-          id={"tsx-header-#{@transaction["transaction_hash"]}"}
-          phx-hook="Copy"
-        >
-          <div class="relative">
-            <div class="font-semibold">
-              <%= @transaction["transaction_hash"] %>
-            </div>
-            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-              <div class="relative">
-                <img
-                  class="copy-btn copy-text w-4 h-4"
-                  src={~p"/images/copy.svg"}
-                  data-text={@transaction["transaction_hash"]}
-                />
-                <img
-                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                  src={~p"/images/check-square.svg"}
-                />
-              </div>
+    <div class="flex flex-col lg:flex-row gap-2 items-baseline">
+      <h2>Transaction</h2>
+      <div
+        class="copy-container break-all pr-10 lg:pr-0"
+        id={"tsx-header-#{@transaction["transaction_hash"]}"}
+        phx-hook="Copy"
+      >
+        <div class="relative">
+          <div class="font-semibold">
+            <%= @transaction["transaction_hash"] %>
+          </div>
+          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+            <div class="relative">
+              <img
+                class="copy-btn copy-text w-4 h-4"
+                src={~p"/images/copy.svg"}
+                data-text={@transaction["transaction_hash"]}
+              />
+              <img
+                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                src={~p"/images/check-square.svg"}
+              />
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="flex flex-col md:flex-row gap-5 mt-8 mb-10 md:mb-0">
+    <div class="flex flex-col md:flex-row mt-2 mb-10 md:mb-0">
       <div
         class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.transaction_view == "overview", do: "border-b-se-blue", else: "border-b-transparent"}"}
         phx-click="select-view"
@@ -395,7 +393,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
             "0x0219209e083275171774dab1df80982e9df2096516f06319c5c6d71ae0a8480c"
           ) %>
         </div>
-        <div class="w-full bg-black/10 lg:p-5">
+        <div class="w-full bg-black/10 p-5">
           <div class="grid-3 table-th">
             <div>Input</div>
             <div>Type</div>
@@ -440,7 +438,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <%= "0x015543c3708653cda9d418b4ccd3be11368e40636c10c44b18cfe756b6d88b29"
           |> Utils.shorten_block_hash() %>
         </div>
-        <div class="w-full bg-black/10 lg:p-5">
+        <div class="w-full bg-black/10 p-5">
           <div class="grid-3 table-th">
             <div>Input</div>
             <div>Type</div>
@@ -515,7 +513,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
         <span>Signature</span><span class="gray-label text-sm">Mocked</span>
       </div>
-      <div class="bg-black/10 lg:p-5">
+      <div class="bg-black/10 p-5">
         <div class="w-full grid-8 table-th">
           <div>Index</div>
           <div class="col-span-7">Value</div>
@@ -556,6 +554,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     """
   end
 
+  @impl true
   def mount(%{"transaction_hash" => transaction_hash}, _session, socket) do
     Process.send(self(), :load_transaction, [])
 
@@ -589,6 +588,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     {:noreply, socket}
   end
 
+  @impl true
   def handle_event("select-view", %{"view" => view}, socket) do
     socket = assign(socket, :transaction_view, view)
     {:noreply, socket}

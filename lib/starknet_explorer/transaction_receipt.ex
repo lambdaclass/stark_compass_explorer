@@ -109,7 +109,7 @@ defmodule StarknetExplorer.TransactionReceipt do
   end
 
   # TODO: Use the proper changeset function
-  def changeset_for_assoc(attrs = %{"transaction_hash" => hash}) do
+  def changeset_for_assoc(attrs = %{"transaction_hash" => _}) do
     %TransactionReceipt{}
     |> Ecto.Changeset.change()
     |> cast(

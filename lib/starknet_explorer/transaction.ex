@@ -90,7 +90,7 @@ defmodule StarknetExplorer.Transaction do
     field :chain_id, :string
     field :sender_address, :string
     field :calldata, {:array, :string}
-    belongs_to :block, StarknetExplorer.Block, foreign_key: :block_number
+    belongs_to :block, StarknetExplorer.Block, foreign_key: :block_number, references: :hash
     has_one :receipt, TransactionReceipt
     timestamps()
   end

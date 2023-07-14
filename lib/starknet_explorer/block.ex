@@ -14,7 +14,11 @@ defmodule StarknetExplorer.Block do
     field :timestamp, :integer
     field :sequencer_address, :string
     field :original_json, :binary, load_in_query: false
-    has_many :transactions, StarknetExplorer.Transaction, foreign_key: :block_number
+
+    has_many :transactions, StarknetExplorer.Transaction,
+      foreign_key: :block_number,
+      references: :number
+
     timestamps()
   end
 

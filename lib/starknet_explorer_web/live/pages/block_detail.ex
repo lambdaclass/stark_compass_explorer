@@ -16,7 +16,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         |> Calendar.strftime("%c") %> UTC
       </div>
     </div>
-    <div class="flex flex-col md:flex-row gap-5 mt-8 mb-10 md:mb-0">
+    <div class="flex flex-col md:flex-row mt-2 mb-10 md:mb-0">
       <div
         class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "overview", do: "border-b-se-blue", else: "border-b-transparent"}"}
         phx-click="select-view"
@@ -37,6 +37,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     """
   end
 
+  @impl true
   def mount(_params = %{"number_or_hash" => param}, _session, socket) do
     {:ok, block} =
       case num_or_hash(param) do
@@ -70,7 +71,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     """
   end
 
-  def render_info(assigns = %{block: block, view: "transactions"}) do
+  def render_info(assigns = %{block: _, view: "transactions"}) do
     ~H"""
     <div class="grid-3 table-th !pt-7 border-t border-gray-700">
       <div>Hash</div>
@@ -260,6 +261,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     """
   end
 
+  @impl true
   def handle_event("select-view", %{"view" => view}, socket) do
     socket = assign(socket, :view, view)
     {:noreply, socket}
