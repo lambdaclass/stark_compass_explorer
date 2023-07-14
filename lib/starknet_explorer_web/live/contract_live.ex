@@ -4,15 +4,29 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
 
   defp contract_detail_header(assigns) do
     ~H"""
-    <div class="flex flex-col lg:flex-row gap-2 items-baseline pb-5">
-      <h2>Contract</h2>
-      <%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-      |> Utils.shorten_block_hash() %>
-      <span class="gray-label text-sm">Mocked</span>
+    <div class="flex flex-row justify-between lg:justify-start gap-5 items-baseline pb-5 lg:pb-0">
+      <div class="flex flex-col lg:flex-row items-baseline gap-2">
+        <h2>Contract</h2>
+        <%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
+        |> Utils.shorten_block_hash() %>
+      </div>
+      <div class="">
+        <span class="gray-label text-sm">Mocked</span>
+      </div>
     </div>
-    <div class="flex flex-col md:flex-row mt-2 mb-10 md:mb-0">
+    <div
+      id="dropdown"
+      class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
+      phx-hook="Network"
+    >
+      <span class="networkSelected capitalize"><%= assigns.view %></span>
+      <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
+        <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
+      </span>
+    </div>
+    <div class="options hidden">
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "overview", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.view == "overview", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="overview"
@@ -20,7 +34,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Overview
       </div>
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "transactions", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.view == "transactions", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="transactions"
@@ -28,7 +42,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Transactions
       </div>
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "events", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.view == "events", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="events"
@@ -36,7 +50,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Events
       </div>
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "account-calls", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.view == "account-calls", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="account-calls"
@@ -44,7 +58,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Account Calls
       </div>
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "message-logs", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.view == "message-logs", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="message-logs"
@@ -52,7 +66,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Message Logs
       </div>
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "portfolio", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.view == "portfolio", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="portfolio"
@@ -60,7 +74,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Portfolio
       </div>
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "class-code-history", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.view == "class-code-history", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="class-code-history"
@@ -68,7 +82,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Class Code/History
       </div>
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "read-write-contract", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.view == "read-write-contract", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="read-write-contract"
@@ -76,7 +90,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Read/Write Contract
       </div>
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "token-transfers", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.view == "token-transfers", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="token-transfers"
