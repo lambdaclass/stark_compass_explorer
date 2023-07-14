@@ -78,7 +78,7 @@ defmodule StarknetExplorer.BlockFetcher.Test do
           key_atom = String.to_existing_atom(key)
 
           assert value ==
-            Map.get(db_receipt, key_atom, "#{key_atom} is missing")
+                   Map.get(db_receipt, key_atom, "#{key_atom} is missing")
         end
       end
     end
