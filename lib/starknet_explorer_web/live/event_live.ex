@@ -69,7 +69,7 @@ defmodule StarknetExplorerWeb.EventDetailLive do
             <div>Value</div>
           </div>
           <%= for _idx <- 0..0 do %>
-          <div class="grid-3 w-full custom-list-item">
+            <div class="grid-3 w-full custom-list-item">
               <div>
                 <div class="list-h">Input</div>
                 <div>from_</div>
