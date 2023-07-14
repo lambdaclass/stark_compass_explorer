@@ -1,5 +1,6 @@
 defmodule StarknetExplorerWeb.MessageDetailLive do
   use StarknetExplorerWeb, :live_view
+  alias StarknetExplorerWeb.Utils
 
   def render(assigns) do
     ~H"""

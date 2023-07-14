@@ -1,6 +1,6 @@
 defmodule StarknetExplorerWeb.EventDetailLive do
   use StarknetExplorerWeb, :live_view
-
+  alias StarknetExplorerWeb.Utils
   @impl true
   def render(assigns) do
     ~H"""
@@ -68,8 +68,8 @@ defmodule StarknetExplorerWeb.EventDetailLive do
             <div>Type</div>
             <div>Value</div>
           </div>
-          <%= for idx <- 0..0 do %>
-            <div class="grid-3 w-full custom-list-item">
+          <%= for _idx <- 0..0 do %>
+          <div class="grid-3 w-full custom-list-item">
               <div>
                 <div class="list-h">Input</div>
                 <div>from_</div>
