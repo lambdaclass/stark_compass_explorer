@@ -1,6 +1,5 @@
 defmodule StarknetExplorerWeb.ContractDetailLive do
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Rpc
   alias StarknetExplorerWeb.Utils
 
   defp contract_detail_header(assigns) do
@@ -88,7 +87,8 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
     """
   end
 
-  def mount(_params = %{"address" => address}, _session, socket) do
+  @impl true
+  def mount(_params = %{"address" => _}, _session, socket) do
     assigns = [
       contract: nil,
       view: "overview"
@@ -111,7 +111,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
     """
   end
 
-  def render_info(assigns = %{contract: contract, view: "overview"}) do
+  def render_info(assigns = %{contract: _contract, view: "overview"}) do
     ~H"""
     <div>
       <div class="grid-4 custom-list-item">
@@ -162,7 +162,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
     """
   end
 
-  def render_info(assigns = %{contract: contract, view: "transactions"}) do
+  def render_info(assigns = %{contract: _, view: "transactions"}) do
     ~H"""
     <div class="table-th !pt-7 border-t border-gray-700 grid-7">
       <div>Transaction Hash</div>

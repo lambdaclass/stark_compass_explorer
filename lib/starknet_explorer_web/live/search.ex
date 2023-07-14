@@ -64,14 +64,14 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def try_by_number(number) do
     case Rpc.get_block_by_number(number) do
-      {:ok, block} -> {:block, number}
+      {:ok, _block} -> {:block, number}
       {:error, :not_found} -> :noquery
     end
   end
 
   def try_by_hash(hash) do
     case Rpc.get_transaction(hash) do
-      {:ok, transaction} ->
+      {:ok, _transaction} ->
         {:tx, hash}
 
       {:error, _} ->
@@ -82,7 +82,7 @@ defmodule StarknetExplorerWeb.SearchLive do
     end
   end
 
-  defp infer_query(query = <<"0x", rest::binary>>), do: :hex
+  defp infer_query(_query = <<"0x", _rest::binary>>), do: :hex
 
   defp infer_query(query) do
     case Integer.parse(query) do
@@ -90,6 +90,4 @@ defmodule StarknetExplorerWeb.SearchLive do
       _ -> :noquery
     end
   end
-
-  defp infer_query(query), do: :noquery
 end

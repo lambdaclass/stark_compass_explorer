@@ -1,7 +1,5 @@
 defmodule StarknetExplorerWeb.MessageDetailLive do
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Rpc
-  alias StarknetExplorerWeb.Utils
 
   def render(assigns) do
     ~H"""
@@ -113,7 +111,7 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
     """
   end
 
-  def mount(_params = %{"identifier" => identifier}, _session, socket) do
+  def mount(_params = %{"identifier" => _}, _session, socket) do
     assigns = [
       message: nil
     ]

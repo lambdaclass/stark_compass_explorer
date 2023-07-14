@@ -1,8 +1,7 @@
 defmodule StarknetExplorerWeb.EventDetailLive do
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Rpc
-  alias StarknetExplorerWeb.Utils
 
+  @impl true
   def render(assigns) do
     ~H"""
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
@@ -92,7 +91,8 @@ defmodule StarknetExplorerWeb.EventDetailLive do
     """
   end
 
-  def mount(_params = %{"identifier" => identifier}, _session, socket) do
+  @impl true
+  def mount(_params = %{"identifier" => _identifier}, _session, socket) do
     assigns = [
       event: nil
     ]
