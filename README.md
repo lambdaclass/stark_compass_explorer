@@ -1,5 +1,5 @@
 # StarknetExplorer
-![image](https://github.com/lambdaclass/starknet_explorer/assets/569014/4f3f5795-33ac-4592-8ba8-804df964016a)
+![image](./priv/static/images/explorer_preview.png)
 
 ## Requirements
 
