@@ -3,6 +3,7 @@ defmodule StarknetExplorer.Application do
   # for more information on OTP Applications
   @moduledoc false
   import StarknetExplorer.Utils
+  import Cachex.Spec
   use Application
 
   @impl true
@@ -18,7 +19,33 @@ defmodule StarknetExplorer.Application do
         # Start Finch
         {Finch, name: StarknetExplorer.Finch},
         # Start the Endpoint (http/https)
-        StarknetExplorerWeb.Endpoint
+        StarknetExplorerWeb.Endpoint,
+        # Active block cache
+        Supervisor.child_spec(
+          Cachex.child_spec(
+            name: :block_cache,
+            limit: 1000,
+            id: :block_cache,
+            warmers: [
+              warmer(module: StarknetExplorer.Cache.BlockWarmer, state: %{})
+            ]
+          ),
+          id: :block_cache
+        ),
+        Supervisor.child_spec(
+          Cachex.child_spec(name: :tx_cache, limit: 5000, id: :tx_cache),
+          id: :tx_cache
+        ),
+        # Passive cache for general requests
+        Supervisor.child_spec(
+          Cachex.child_spec(
+            name: :request_cache,
+            limit: 5000,
+            id: :request_cache,
+            policy: Cachex.Policy.LRW
+          ),
+          id: :request_cache
+        )
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
       ] ++

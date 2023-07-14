@@ -62,7 +62,7 @@ defmodule StarknetExplorer.BlockFetcher.Test do
 
         for {key, value} when key not in ["transaction_hash"] <- tx do
           key_atom = String.to_existing_atom(key)
-          assert value == Map.get(db_tx, key_atom)
+          assert value == Map.get(db_tx, key_atom, "#{key_atom} is missing")
         end
 
         db_receipt =
@@ -75,7 +75,10 @@ defmodule StarknetExplorer.BlockFetcher.Test do
           |> Rpc.get_transaction_receipt()
 
         for {key, value} when key not in ["transaction_hash"] <- receipt do
-          assert value == Map.get(db_receipt, String.to_existing_atom(key))
+          key_atom = String.to_existing_atom(key)
+
+          assert value ==
+                   Map.get(db_receipt, key_atom, "#{key_atom} is missing")
         end
       end
     end

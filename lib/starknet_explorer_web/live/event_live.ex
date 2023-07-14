@@ -1,7 +1,6 @@
 defmodule StarknetExplorerWeb.EventDetailLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-
   @impl true
   def render(assigns) do
     ~H"""
