@@ -5,7 +5,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   defp transaction_header(assigns) do
     ~H"""
-    <div class="flex flex-col lg:flex-row gap-2 items-baseline">
+    <div class="flex flex-col lg:flex-row gap-2 items-baseline mb-5 lg:mb-0">
       <h2>Transaction</h2>
       <div
         class="copy-container break-all pr-10 lg:pr-0"
@@ -32,9 +32,19 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </div>
       </div>
     </div>
-    <div class="flex flex-col md:flex-row mt-2 mb-10 md:mb-0">
+    <div
+      id="dropdown"
+      class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
+      phx-hook="Network"
+    >
+      <span class="networkSelected capitalize"><%= assigns.transaction_view %></span>
+      <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
+        <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
+      </span>
+    </div>
+    <div class="options hidden">
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.transaction_view == "overview", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "overview", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="overview"
@@ -42,7 +52,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         Overview
       </div>
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.transaction_view == "events", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "events", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="events"
@@ -50,7 +60,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         Events <span class="gray-label text-sm">Mocked</span>
       </div>
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.transaction_view == "message_logs", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "message_logs", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="message_logs"
@@ -58,7 +68,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         Message Logs <span class="gray-label text-sm">Mocked</span>
       </div>
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.transaction_view == "internal_calls", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "internal_calls", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="internal_calls"
