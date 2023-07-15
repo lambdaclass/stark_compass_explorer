@@ -17,7 +17,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col gap-1 justify-center items-center">
+    <div class="flex flex-col gap-1 justify-center items-center mt-16 lg:mt-10">
       <h1>Welcome to</h1>
       <h2>Madara Starknet Explorer</h2>
     </div>

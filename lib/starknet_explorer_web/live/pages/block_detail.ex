@@ -7,7 +7,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   defp block_detail_header(assigns) do
     ~H"""
-    <div class="flex flex-col md:flex-row justify-between">
+    <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
       <h2>Block <span class="font-semibold">#<%= @block["block_number"] %></span></h2>
       <div class="text-gray-400">
         <%= @block["timestamp"]
@@ -16,9 +16,19 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         |> Calendar.strftime("%c") %> UTC
       </div>
     </div>
-    <div class="flex flex-col md:flex-row mt-2 mb-10 md:mb-0">
+    <div
+      id="dropdown"
+      class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
+      phx-hook="Network"
+    >
+      <span class="networkSelected capitalize"><%= assigns.view %></span>
+      <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
+        <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
+      </span>
+    </div>
+    <div class="options hidden">
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "overview", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.view == "overview", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="overview"
@@ -26,7 +36,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         Overview
       </div>
       <div
-        class={"btn border-b pb-3 px-3 transition-all duration-300 #{if assigns.view == "transactions", do: "border-b-se-blue", else: "border-b-transparent"}"}
+        class={"option #{if assigns.view == "transactions", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="transactions"
