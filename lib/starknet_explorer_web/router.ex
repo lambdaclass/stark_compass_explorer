@@ -1,5 +1,6 @@
 defmodule StarknetExplorerWeb.Router do
   use StarknetExplorerWeb, :router
+  alias Plug.Conn
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -8,34 +9,50 @@ defmodule StarknetExplorerWeb.Router do
     plug :put_root_layout, html: {StarknetExplorerWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    # plug :network_selector
+  end
+
+  def network_selector(conn = %Conn{}, _opts) do
+    case conn.path_params do
+      %{"network" => network} when network in ["mainnet", "testnet", "testnet2"] ->
+        network =
+          network
+          |> String.to_existing_atom()
+
+        conn
+        |> assign(:network, network)
+
+      _ ->
+        conn
+        |> redirect(to: "/mainnet")
+    end
   end
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
-  scope "/", StarknetExplorerWeb do
-    pipe_through :browser
+  live_session :default, on_mount: {StarknetExplorerWeb.Live.CommonAssigns, :network} do
+    scope "/:network", StarknetExplorerWeb do
+      pipe_through :browser
 
-    live "/", HomeLive.Index, :index
-    live "/blocks", BlockIndexLive
-    live "/block/:number_or_hash", BlockDetailLive
-    live "/transactions", TransactionIndexLive
-    live "/transactions/:transaction_hash", TransactionLive
-    live "/contracts", ContractIndexLive
-    live "/contracts/:address", ContractDetailLive
-    live "/events", EventIndexLive
-    live "/events/:identifier", EventDetailLive
-    live "/messages", MessageIndexLive
-    live "/messages/:identifier", MessageDetailLive
-    live "/classes", ClassIndexLive
-    live "/classes/:hash", ClassDetailLive
+      live "/", HomeLive.Index, :index
+      live "/blocks", BlockIndexLive
+      live "/block/:number_or_hash", BlockDetailLive
+      live "/transactions", TransactionIndexLive
+      live "/transactions/:transaction_hash", TransactionLive
+      live "/contracts", ContractIndexLive
+      live "/contracts/:address", ContractDetailLive
+      live "/events", EventIndexLive
+      live "/events/:identifier", EventDetailLive
+      live "/messages", MessageIndexLive
+      live "/messages/:identifier", MessageDetailLive
+      live "/classes", ClassIndexLive
+      live "/classes/:hash", ClassDetailLive
+    end
+
+    forward "/", StarknetExplorerWeb.Plug.Redirect
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", StarknetExplorerWeb do
-  #   pipe_through :api
-  # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:starknet_explorer, :dev_routes) do
