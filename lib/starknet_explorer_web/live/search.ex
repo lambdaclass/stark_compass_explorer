@@ -20,7 +20,16 @@ defmodule StarknetExplorerWeb.SearchLive do
   end
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, query: "", loading: false, matches: [], errors: [])}
+    new_assigns = [query: "", loading: false, matches: [], errors: []]
+
+    socket =
+      socket
+      |> assign(new_assigns)
+      # This will take the parent liveview's network assign
+      # and reuse it here.
+      |> assign_new(:network, fn -> nil end)
+
+    {:ok, socket}
   end
 
   def handle_event("update-input", %{"search-input" => query}, socket) do
@@ -38,16 +47,18 @@ defmodule StarknetExplorerWeb.SearchLive do
     navigate_fun =
       case try_search(query) do
         {:tx, _tx} ->
-          fn -> push_navigate(socket, to: ~p"/transactions/#{query}") end
+          fn ->
+            push_navigate(socket, to: ~p"/#{socket.assigns.network}/transactions/#{query}")
+          end
 
         {:block, _block} ->
-          fn -> push_navigate(socket, to: ~p"/block/#{query}") end
+          fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/block/#{query}") end
 
         :noquery ->
           fn ->
             socket
             |> put_flash(:error, "No results found")
-            |> push_navigate(to: "/")
+            |> push_navigate(to: "/#{socket.assigns.network}")
           end
       end
 
