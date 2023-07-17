@@ -1,20 +1,6 @@
 version: '3.8'
 
 services:
-  starknet-explorer:
-    build: .
-    ports:
-      - "4000:4000"
-    environment:
-      - RPC_API_HOST=http://host.docker.internal:9944
-      - DATABASE_URL=ecto://postgres:postgres@postgres:5432/starknet_explorer_dev
-    depends_on:
-      - postgres
-    networks:
-      default:
-        aliases:
-          - explorer
-
   postgres:
     container_name: starknet_explorer_dev_db
     image: postgres:15.3
@@ -26,7 +12,7 @@ services:
       - POSTGRES_DB=starknet_explorer_dev
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - pg_data:/var/lib/postgresql/data/
+      - ./.volumes/postgres/data:/var/lib/postgresql/data/
     networks:
       default:
         aliases:
@@ -53,6 +39,5 @@ networks:
     driver: bridge
 
 volumes:
-  pg_data:
   pgadmin_data:
 
