@@ -1,7 +1,7 @@
 defmodule StarknetExplorer.DateUtils do
   def calculate_time_difference(timestamp) do
-    current_timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    difference = round((current_timestamp - timestamp) / 1000)
+    current_timestamp = DateTime.utc_now() |> DateTime.to_unix()
+    difference = current_timestamp - timestamp
 
     minutes = div(difference, 60)
     hours = div(minutes, 60)
