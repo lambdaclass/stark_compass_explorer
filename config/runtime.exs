@@ -21,12 +21,27 @@ if System.get_env("PHX_SERVER") do
 end
 
 rpc_host =
-  System.get_env("RPC_API_HOST") ||
-    raise """
-    environment variable RPC_API_HOST is missing.
-    """
+  System.get_env("MAINNET_RPC_API_HOST") ||
+  raise """
+  environment variable RPC_API_HOST is missing.
+  """
 
-config :starknet_explorer, rpc_host: rpc_host
+testnet_rpc_host =
+  System.get_env("TESTNET_RPC_API_HOST") ||
+  raise """
+  environment variable for testnet is missing.
+  """
+
+testnet_2_rpc_host =
+  System.get_env("TESTNET_2_RPC_API_HOST") ||
+  raise """
+  environment variable for testnet 2 is missing.
+  """
+
+config :starknet_explorer,
+  rpc_host: rpc_host,
+  testnet_host: testnet_rpc_host,
+  testnet_2_host: testnet_2_rpc_host
 
 if config_env() == :prod do
   database_url =
