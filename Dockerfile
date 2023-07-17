@@ -1,23 +1,28 @@
-FROM hexpm/elixir:1.15.2-erlang-26.0.2-debian-bullseye-20230612-slim
+FROM elixir:1.14.5-otp-25 as builder
 
-# should be overwritten inline/docker-compose
-ENV RPC_API_HOST="http://localhost:4000"
-ENV DATABASE_URL="ecto://postgres:postgres@localhost:5432/starknet_explorer_dev"
+ENV MIX_ENV=prod
 
-RUN mix local.hex --force \
-    && mix archive.install --force hex phx_new \
-    && apt-get update \
-    && curl -sL https://deb.nodesource.com/setup_lts.x | bash \
-    && apt-get install -y apt-utils \
-    && apt-get install -y nodejs \
-    && apt-get install -y build-essential \
-    && apt-get install -y inotify-tools \
-    && mix local.rebar --force
-
+WORKDIR /explorer
 COPY . .
 
-RUN mix local.hex --force
-RUN mix deps.get
+RUN mix local.hex --force \
+    && mix local.rebar --force \
+    && mix archive.install --force hex phx_new \
+    && mix deps.get --only $MIX_ENV \
+    && mix deps.compile \
+    && mix assets.deploy \
+    && mix phx.digest \
+    && mix compile \
+    && mix release \
+    && mix phx.gen.release
 
-CMD mix ecto.create && mix ecto.migrate && mix phx.server
+FROM elixir:1.14.5-otp-25
+ENV MIX_ENV=prod
 
+WORKDIR /explorer
+
+COPY --from=builder /explorer/_build/$MIX_ENV/rel/starknet_explorer .
+
+EXPOSE 4000
+
+CMD ["/explorer/bin/starknet_explorer", "start"]
