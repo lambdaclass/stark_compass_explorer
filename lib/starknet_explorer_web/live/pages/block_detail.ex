@@ -11,7 +11,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <h2>Block <span class="font-semibold">#<%= @block["block_number"] %></span></h2>
       <div class="text-gray-400">
         <%= @block["timestamp"]
-        |> DateTime.from_unix(:millisecond)
+        |> DateTime.from_unix()
         |> then(fn {:ok, time} -> time end)
         |> Calendar.strftime("%c") %> UTC
       </div>
