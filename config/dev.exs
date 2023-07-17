@@ -1,19 +1,11 @@
 import Config
 
-database_url =
-  System.get_env("DATABASE_URL") ||
-    raise """
-    environment variable DATABASE_URL is missing.
-    For example: ecto://USER:PASS@HOST/DATABASE
-    """
-
 # Configure your database
 config :starknet_explorer, StarknetExplorer.Repo,
-  # username: "postgres",
-  # password: "postgres",
-  # hostname: "localhost",
-  # database: "starknet_explorer_dev",
-  url: database_url,
+  username: "postgres",
+  password: "postgres",
+  hostname: "localhost",
+  database: "starknet_explorer_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
