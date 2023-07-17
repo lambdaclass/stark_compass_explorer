@@ -9,23 +9,6 @@ defmodule StarknetExplorerWeb.Router do
     plug :put_root_layout, html: {StarknetExplorerWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    # plug :network_selector
-  end
-
-  def network_selector(conn = %Conn{}, _opts) do
-    case conn.path_params do
-      %{"network" => network} when network in ["mainnet", "testnet", "testnet2"] ->
-        network =
-          network
-          |> String.to_existing_atom()
-
-        conn
-        |> assign(:network, network)
-
-      _ ->
-        conn
-        |> redirect(to: "/mainnet")
-    end
   end
 
   pipeline :api do
