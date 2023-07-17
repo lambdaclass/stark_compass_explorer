@@ -24,6 +24,10 @@ defmodule StarknetExplorerWeb.Utils do
     acc
   end
 
+  def list_blocks(block_number, _remaining, acc) when block_number < 0 do
+    acc
+  end
+
   def list_blocks(block_number, remaining, acc) do
     {:ok, block} = Rpc.get_block_by_number(block_number)
     prev_block_number = block_number - 1
