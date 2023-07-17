@@ -12,8 +12,10 @@ defmodule StarknetExplorerWeb.Utils do
   end
 
   def get_latest_block_number(network) do
-    {:ok, latest_block} = Rpc.get_latest_block(network)
-    latest_block["block_number"]
+    {:ok, latest_block = %{"block_number" => block_number}} =
+      Rpc.get_latest_block_no_cache(network)
+
+    block_number
   end
 
   def list_blocks(network) do

@@ -29,16 +29,16 @@ defmodule StarknetExplorer.Rpc do
   defp send_request(method, args, network) when network in [:mainnet, :testnet, :testnet2] do
     payload = build_payload(method, args)
 
-    case cache_lookup(method, args) do
+    case cache_lookup(method, args, network) do
       :cache_miss ->
-        host = Application.fetch_env!(:starknet_explorer, :rpc_host)
+        host = fetch_rpc_host(network)
         {:ok, rsp} = post(host, payload)
         response = handle_response(rsp)
 
         # Cache miss, so save this result.
         case handle_response(rsp) do
           {:ok, result} ->
-            Cachex.put(:request_cache, {method, args}, result)
+            Cachex.put(:"#{network}_request_cache", {method, args}, result)
 
           _ ->
             nil
@@ -55,47 +55,53 @@ defmodule StarknetExplorer.Rpc do
   defp send_request_no_cache(method, args, network)
        when network in [:mainnet, :testnet, :testnet2] do
     payload = build_payload(method, args)
-    host = Application.fetch_env!(:starknet_explorer, :rpc_host)
+    host = fetch_rpc_host(network)
     {:ok, rsp} = post(host, payload)
     handle_response(rsp)
   end
 
-       defp build_payload(method, params) do
-         %{
-           jsonrpc: "2.0",
-           id: Enum.random(1..9_999_999),
-           method: method,
-           params: params
-         }
-         |> Jason.encode!()
-       end
+  defp fetch_rpc_host(:mainnet), do: Application.fetch_env!(:starknet_explorer, :rpc_host)
+  defp fetch_rpc_host(:testnet), do: Application.fetch_env!(:starknet_explorer, :testnet_host)
+  defp fetch_rpc_host(:testnet2), do: Application.fetch_env!(:starknet_explorer, :testnet_2_host)
 
-       defp handle_response(rsp) do
-         case Jason.decode!(rsp.body) do
-           %{"result" => result} ->
-             {:ok, result}
+  defp build_payload(method, params) do
+    %{
+      jsonrpc: "2.0",
+      id: Enum.random(1..9_999_999),
+      method: method,
+      params: params
+    }
+    |> Jason.encode!()
+  end
 
-           %{"error" => error} ->
-             {:error, error}
-         end
-       end
+  defp handle_response(rsp) do
+    case Jason.decode!(rsp.body) do
+      %{"result" => result} ->
+        {:ok, result}
 
-       defp cache_lookup("starknet_getBlockWithTxs", [%{block_number: number}]),
-    do: do_cache_lookup(:block_cache, number)
+      %{"error" => error} ->
+        {:error, error}
+    end
+  end
 
-  defp cache_lookup("starknet_getBlockWithTxs", [%{block_hash: hash}]),
-    do: do_cache_lookup(:block_cache, hash)
+  defp cache_lookup("starknet_getBlockWithTxs", [%{block_number: number}], network),
+    do: do_cache_lookup(:block_cache, number, network)
 
-  defp cache_lookup("starknet_getTransactionByHash", [transaction_hash]),
-    do: do_cache_lookup(:tx_cache, transaction_hash)
+  defp cache_lookup("starknet_getBlockWithTxs", [%{block_hash: hash}], network),
+    do: do_cache_lookup(:block_cache, hash, network)
 
-  defp cache_lookup(method, args), do: do_cache_lookup(:request_cache, {method, args})
+  defp cache_lookup("starknet_getTransactionByHash", [transaction_hash], network),
+    do: do_cache_lookup(:tx_cache, transaction_hash, network)
 
-  defp do_cache_lookup(cache_name, key) when is_atom(cache_name) do
+  defp cache_lookup(method, args, network),
+    do: do_cache_lookup(:request_cache, {method, args}, network)
+
+  defp do_cache_lookup(cache_type, key, network)
+       when cache_type in [:block_cache, :tx_cache, :request_cache] and
+              network in [:mainnet, :testnet, :testnet2] do
+    cache_name = :"#{network}_#{cache_type}"
+
     case Cachex.get(cache_name, key) do
-      {:ok, nil} ->
-        :cache_miss
-
       {:ok, value} ->
         {:ok, value}
 
