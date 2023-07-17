@@ -17,7 +17,7 @@ defmodule StarknetExplorer.Cache.BlockWarmer do
     # between latest and 20 behind, because that's
     # what we mostly show on the home page.
     block_requests =
-      Enum.map(max((latest_block_num - 20), 0)..max((latest_block_num - 1),0), fn block_num ->
+      Enum.map(max(latest_block_num - 20, 0)..max(latest_block_num - 1, 0), fn block_num ->
         {:ok, block = %{"transactions" => transactions}} = Rpc.get_block_by_number(block_num)
 
         tx_by_hash =
