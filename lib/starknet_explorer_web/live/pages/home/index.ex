@@ -2,6 +2,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorerWeb.Component.TransactionsPerSecond, as: TPSComponent
+
   @impl true
   def mount(_params, _session, socket) do
     Process.send_after(self(), :load_blocks, 100, [])
@@ -116,7 +117,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <div>
                 <div class="list-h">Number</div>
                 <%= live_redirect(to_string(block["block_number"]),
-                  to: "/block/#{block["block_number"]}"
+                  to: ~p"/#{assigns.network}/block/#{block["block_number"]}"
                 ) %>
               </div>
               <div class="col-span-2">
@@ -124,7 +125,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <div class="copy-container" id={"copy-block-#{block["block_number"]}"} phx-hook="Copy">
                   <div class="relative">
                     <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
-                      to: "/block/#{block["block_hash"]}",
+                      to: ~p"/#{assigns.network}/block/#{block["block_hash"]}",
                       class: "text-hover-blue",
                       title: block["block_hash"]
                     ) %>
@@ -185,7 +186,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                   <div class="copy-container" id={"copy-transaction-#{idx}"} phx-hook="Copy">
                     <div class="relative">
                       <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
-                        to: "/transactions/#{transaction["transaction_hash"]}",
+                        to: ~p"/#{assigns.network}/transactions/#{transaction["transaction_hash"]}",
                         class: "text-hover-blue"
                       ) %>
                       <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -235,11 +236,11 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
   @impl true
   def handle_info(:load_blocks, socket) do
-    latest_block = Utils.get_latest_block_with_transactions()
+    latest_block = Utils.get_latest_block_with_transactions(socket.assigns.network)
 
     {:noreply,
      assign(socket,
-       blocks: Utils.list_blocks(),
+       blocks: Utils.list_blocks(socket.assigns.network),
        latest_block: latest_block,
        block_height: latest_block |> hd |> Map.get("block_number")
      )}

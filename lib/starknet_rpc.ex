@@ -2,29 +2,31 @@ defmodule StarknetExplorer.Rpc do
   use Tesla
   plug(Tesla.Middleware.Headers, [{"content-type", "application/json"}])
 
-  def get_latest_block(:no_cache),
-    do: send_request_no_cache("starknet_getBlockWithTxs", ["latest"])
+  def get_latest_block_no_cache(network \\ :mainnet),
+    do: send_request_no_cache("starknet_getBlockWithTxs", ["latest"], network)
 
-  def get_latest_block(), do: send_request("starknet_getBlockWithTxs", ["latest"])
+  def get_latest_block(network \\ :mainnet),
+    do: send_request("starknet_getBlockWithTxs", ["latest"], network)
 
-  def get_last_n_events(n), do: send_request("starknet_getEvents", [%{"chunk_size" => n}])
+  def get_last_n_events(n, network \\ :mainnet),
+    do: send_request("starknet_getEvents", [%{"chunk_size" => n}], network)
 
-  def get_block_height(),
-    do: send_request("starknet_blockNumber", [])
+  def get_block_height(network \\ :mainnet),
+    do: send_request("starknet_blockNumber", [], network)
 
-  def get_block_by_number(number) when is_integer(number),
-    do: send_request("starknet_getBlockWithTxs", [%{block_number: number}])
+  def get_block_by_number(number, network \\ :mainnet) when is_integer(number),
+    do: send_request("starknet_getBlockWithTxs", [%{block_number: number}], network)
 
-  def get_block_by_hash(number) when is_binary(number),
-    do: send_request("starknet_getBlockWithTxs", [%{block_hash: number}])
+  def get_block_by_hash(number, network \\ :mainnet) when is_binary(number),
+    do: send_request("starknet_getBlockWithTxs", [%{block_hash: number}], network)
 
-  def get_transaction(transaction_hash),
-    do: send_request("starknet_getTransactionByHash", [transaction_hash])
+  def get_transaction(transaction_hash, network \\ :mainnet),
+    do: send_request("starknet_getTransactionByHash", [transaction_hash], network)
 
-  def get_transaction_receipt(transaction_hash),
-    do: send_request("starknet_getTransactionReceipt", [transaction_hash])
+  def get_transaction_receipt(transaction_hash, network \\ :mainnet),
+    do: send_request("starknet_getTransactionReceipt", [transaction_hash], network)
 
-  defp send_request(method, args) do
+  defp send_request(method, args, network) when network in [:mainnet, :testnet, :testnet2] do
     payload = build_payload(method, args)
 
     case cache_lookup(method, args) do
@@ -50,34 +52,35 @@ defmodule StarknetExplorer.Rpc do
     end
   end
 
-  defp send_request_no_cache(method, args) do
+  defp send_request_no_cache(method, args, network)
+       when network in [:mainnet, :testnet, :testnet2] do
     payload = build_payload(method, args)
     host = Application.fetch_env!(:starknet_explorer, :rpc_host)
     {:ok, rsp} = post(host, payload)
     handle_response(rsp)
   end
 
-  defp build_payload(method, params) do
-    %{
-      jsonrpc: "2.0",
-      id: Enum.random(1..9_999_999),
-      method: method,
-      params: params
-    }
-    |> Jason.encode!()
-  end
+       defp build_payload(method, params) do
+         %{
+           jsonrpc: "2.0",
+           id: Enum.random(1..9_999_999),
+           method: method,
+           params: params
+         }
+         |> Jason.encode!()
+       end
 
-  defp handle_response(rsp) do
-    case Jason.decode!(rsp.body) do
-      %{"result" => result} ->
-        {:ok, result}
+       defp handle_response(rsp) do
+         case Jason.decode!(rsp.body) do
+           %{"result" => result} ->
+             {:ok, result}
 
-      %{"error" => error} ->
-        {:error, error}
-    end
-  end
+           %{"error" => error} ->
+             {:error, error}
+         end
+       end
 
-  defp cache_lookup("starknet_getBlockWithTxs", [%{block_number: number}]),
+       defp cache_lookup("starknet_getBlockWithTxs", [%{block_number: number}]),
     do: do_cache_lookup(:block_cache, number)
 
   defp cache_lookup("starknet_getBlockWithTxs", [%{block_hash: hash}]),

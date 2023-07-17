@@ -91,7 +91,9 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
   def handle_info(:load_blocks, socket) do
     {:noreply,
      assign(socket,
-       latest_block: Utils.get_latest_block_with_transactions()
+       latest_block:
+       socket.assigns.network
+       |> Utils.get_latest_block_with_transactions()
      )}
   end
 end

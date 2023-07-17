@@ -29,7 +29,7 @@ defmodule StarknetExplorerWeb.Component.TransactionsPerSecond do
     # Fetch the current block height
     # and set a lower bound.
     {:ok, latest = %{"block_number" => height, "timestamp" => curr_block_timestamp}} =
-      Rpc.get_latest_block(:no_cache)
+      Rpc.get_latest_block_no_cache
 
     {:ok, _prev_block = %{"timestamp" => prev_block_time}} = Rpc.get_block_by_number(height - 1)
 

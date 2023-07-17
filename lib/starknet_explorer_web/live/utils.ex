@@ -6,18 +6,18 @@ defmodule StarknetExplorerWeb.Utils do
     "#{String.slice(block_hash, 0, 6)}...#{String.slice(block_hash, -4, 4)}"
   end
 
-  def get_latest_block_with_transactions() do
-    {:ok, block} = Rpc.get_block_by_number(get_latest_block_number())
+  def get_latest_block_with_transactions(network) do
+    {:ok, block} = Rpc.get_block_by_number(get_latest_block_number(network))
     [block]
   end
 
-  def get_latest_block_number() do
-    {:ok, latest_block} = Rpc.get_latest_block(:no_cache)
+  def get_latest_block_number(network) do
+    {:ok, latest_block} = Rpc.get_latest_block(network)
     latest_block["block_number"]
   end
 
-  def list_blocks() do
-    Enum.reverse(list_blocks(get_latest_block_number(), 15, []))
+  def list_blocks(network) do
+    Enum.reverse(list_blocks(get_latest_block_number(network), 15, []))
   end
 
   def list_blocks(_block_number, 0, acc) do
