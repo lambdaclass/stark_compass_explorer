@@ -29,8 +29,8 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
                   <div class="copy-container" id={"copy-tsx-#{idx}"} phx-hook="Copy">
                     <div class="relative">
                       <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
-                      to: ~p"/#{@network}/transactions/#{transaction["transaction_hash"]}",
-                      class: "text-hover-blue"
+                        to: ~p"/#{@network}/transactions/#{transaction["transaction_hash"]}",
+                        class: "text-hover-blue"
                       ) %>
                       <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                         <div class="relative">

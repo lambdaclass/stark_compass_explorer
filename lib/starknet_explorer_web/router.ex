@@ -1,5 +1,6 @@
 defmodule StarknetExplorerWeb.Router do
   use StarknetExplorerWeb, :router
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
