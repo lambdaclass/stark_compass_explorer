@@ -1,7 +1,5 @@
 defmodule StarknetExplorerWeb.Router do
   use StarknetExplorerWeb, :router
-  alias Plug.Conn
-
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -33,8 +31,6 @@ defmodule StarknetExplorerWeb.Router do
       live "/classes", ClassIndexLive
       live "/classes/:hash", ClassDetailLive
     end
-
-    forward "/", StarknetExplorerWeb.Plug.Redirect
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
@@ -53,4 +49,6 @@ defmodule StarknetExplorerWeb.Router do
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end
+
+  forward "/", StarknetExplorerWeb.Plug.Redirect
 end

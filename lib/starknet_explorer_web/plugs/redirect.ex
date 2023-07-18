@@ -1,6 +1,4 @@
 defmodule StarknetExplorerWeb.Plug.Redirect do
-  import Plug.Conn
-
   def init(opts) do
     opts
   end
