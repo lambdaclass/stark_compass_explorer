@@ -15,13 +15,15 @@ defmodule StarknetExplorerWeb.Component.TransactionsPerSecond do
   end
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, _session = %{"network" => network}, socket) do
     Process.send_after(self(), :calculate_tps, 100, [])
 
-    {:ok,
-     assign(socket,
-       tx_per_second: nil
-     )}
+    socket =
+      socket
+      |> assign(tx_per_second: nil)
+      |> assign(:network, network)
+
+    {:ok, socket}
   end
 
   @impl true
@@ -29,9 +31,10 @@ defmodule StarknetExplorerWeb.Component.TransactionsPerSecond do
     # Fetch the current block height
     # and set a lower bound.
     {:ok, latest = %{"block_number" => height, "timestamp" => curr_block_timestamp}} =
-      Rpc.get_latest_block_no_cache
+      Rpc.get_latest_block_no_cache(socket.assigns.network)
 
-    {:ok, _prev_block = %{"timestamp" => prev_block_time}} = Rpc.get_block_by_number(height - 1)
+    {:ok, _prev_block = %{"timestamp" => prev_block_time}} =
+      Rpc.get_block_by_number(height - 1, socket.assigns.network)
 
     curr_block_time = curr_block_timestamp - prev_block_time
 

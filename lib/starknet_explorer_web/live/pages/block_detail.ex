@@ -52,11 +52,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     {:ok, block} =
       case num_or_hash(param) do
         :hash ->
-          Rpc.get_block_by_hash(param)
+          Rpc.get_block_by_hash(param, socket.assigns.network)
 
         :num ->
           {num, ""} = Integer.parse(param)
-          Rpc.get_block_by_number(num)
+          Rpc.get_block_by_number(num, socket.assigns.network)
       end
 
     assigns = [

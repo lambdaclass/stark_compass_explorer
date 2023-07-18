@@ -45,7 +45,7 @@ defmodule StarknetExplorerWeb.SearchLive do
     query = String.trim(query)
 
     navigate_fun =
-      case try_search(query) do
+      case try_search(query, socket.assigns.network) do
         {:tx, _tx} ->
           fn ->
             push_navigate(socket, to: ~p"/#{socket.assigns.network}/transactions/#{query}")
@@ -65,28 +65,28 @@ defmodule StarknetExplorerWeb.SearchLive do
     {:noreply, navigate_fun.()}
   end
 
-  defp try_search(query) do
+  defp try_search(query, network) do
     case infer_query(query) do
-      :hex -> try_by_hash(query)
-      {:number, number} -> try_by_number(number)
+      :hex -> try_by_hash(query, network)
+      {:number, number} -> try_by_number(number, network)
       :noquery -> :noquery
     end
   end
 
-  def try_by_number(number) do
-    case Rpc.get_block_by_number(number) do
+  def try_by_number(number, network) do
+    case Rpc.get_block_by_number(number, network) do
       {:ok, _block} -> {:block, number}
       {:error, :not_found} -> :noquery
     end
   end
 
-  def try_by_hash(hash) do
-    case Rpc.get_transaction(hash) do
+  def try_by_hash(hash, network) do
+    case Rpc.get_transaction(hash, network) do
       {:ok, _transaction} ->
         {:tx, hash}
 
       {:error, _} ->
-        case Rpc.get_block_by_hash(hash) do
+        case Rpc.get_block_by_hash(hash, network) do
           {:ok, block} -> {:block, block}
           {:error, _} -> :noquery
         end

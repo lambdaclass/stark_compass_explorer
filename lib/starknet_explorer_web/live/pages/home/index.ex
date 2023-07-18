@@ -41,7 +41,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <div class="text-sm">
           <div>TPS</div>
           <div>
-            <%= live_render(@socket, TPSComponent, id: "tps-number") %>
+            <%= live_render(@socket, TPSComponent, id: "tps-number", session: %{"network" => @network}) %>
           </div>
         </div>
       </div>
