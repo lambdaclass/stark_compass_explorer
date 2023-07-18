@@ -27,14 +27,14 @@ defmodule StarknetExplorer.Application do
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
       ] ++
-      cache_child_specs ++
-      if_prod do
-      # TODO: Uncomment when it's ready
-      # [StarknetExplorer.BlockFetcher]
-      []
-    else
-      []
-    end
+        cache_child_specs ++
+        if_prod do
+          # TODO: Uncomment when it's ready
+          # [StarknetExplorer.BlockFetcher]
+          []
+        else
+          []
+        end
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

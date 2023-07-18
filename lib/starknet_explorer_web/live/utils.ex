@@ -7,8 +7,7 @@ defmodule StarknetExplorerWeb.Utils do
   end
 
   def get_latest_block_with_transactions(network) do
-    {:ok, block} =
-      Rpc.get_block_by_number(get_latest_block_number(network), network)
+    {:ok, block} = Rpc.get_block_by_number(get_latest_block_number(network), network)
 
     [block]
   end
@@ -34,7 +33,7 @@ defmodule StarknetExplorerWeb.Utils do
   end
 
   def list_blocks(block_number, remaining, acc, network) do
-    {:ok, block} = Rpc.get_block_by_number(block_number, network) 
+    {:ok, block} = Rpc.get_block_by_number(block_number, network)
     prev_block_number = block_number - 1
     list_blocks(prev_block_number, remaining - 1, [block | acc], network)
   end

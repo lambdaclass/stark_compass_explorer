@@ -92,8 +92,8 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
     {:noreply,
      assign(socket,
        latest_block:
-       socket.assigns.network
-       |> Utils.get_latest_block_with_transactions()
+         socket.assigns.network
+         |> Utils.get_latest_block_with_transactions()
      )}
   end
 end

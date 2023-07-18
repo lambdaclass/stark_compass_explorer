@@ -24,8 +24,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       <h2>Madara Starknet Explorer</h2>
     </div>
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-    id: "search-bar",
-    flash: @flash
+      id: "search-bar",
+      flash: @flash
     ) %>
     <div class="mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 my-5">
       <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5">
@@ -238,6 +238,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def handle_info(:load_blocks, socket) do
     latest_block = Utils.get_latest_block_with_transactions(socket.assigns.network)
+
     {:noreply,
      assign(socket,
        blocks: Utils.list_blocks(socket.assigns.network),
