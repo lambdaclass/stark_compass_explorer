@@ -38,9 +38,9 @@ defmodule StarknetExplorer.BlockFetcher do
           receipts =
             transactions
             |> Map.new(fn %{"transaction_hash" => tx_hash} ->
-            {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, :mainnet)
-            {tx_hash, receipt}
-          end)
+              {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, :mainnet)
+              {tx_hash, receipt}
+            end)
 
           :ok = Block.insert_from_rpc_response(block, receipts)
           Logger.info("Inserted new block: #{new_block_number}")
