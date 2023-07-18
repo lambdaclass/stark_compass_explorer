@@ -22,9 +22,9 @@ end
 
 rpc_host =
   System.get_env("RPC_API_HOST") ||
-  raise """
-  environment variable RPC_API_HOST is missing.
-  """
+    raise """
+    environment variable RPC_API_HOST is missing.
+    """
 
 # testnet_rpc_host =
 #   System.get_env("TESTNET_RPC_API_HOST") ||
