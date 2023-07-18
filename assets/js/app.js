@@ -274,9 +274,24 @@ tippy("#tps", {
 //
 Hooks.Network = {
   mounted() {
-    const btn = document.querySelector(".dropdown");
-    const options = document.querySelector(".options");
-    const listItems = document.querySelectorAll(".option");
+    const btn = document.querySelector("#nav-dropdown");
+    const options = document.querySelector("nav #options");
+    const listItems = document.querySelectorAll("nav .option");
+    btn.addEventListener("click", () => {
+      options.classList.toggle("hidden");
+    });
+    listItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        options.classList.add("hidden");
+      });
+    });
+  },
+};
+Hooks.Dropdown = {
+  mounted() {
+    const btn = document.querySelector("main .dropdown");
+    const options = document.querySelector("main .options");
+    const listItems = options.querySelectorAll("main .option");
     btn.addEventListener("click", () => {
       options.classList.toggle("hidden");
     });
