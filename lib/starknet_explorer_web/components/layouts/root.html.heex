@@ -87,11 +87,47 @@
             <img class="lg:hidden" src={~p"/images/calendar.svg"} />
             <span>Events</span>
           </a>
-          <div class="pointer-events-none rounded-md bg-container flex gap-2 items-center px-4 py-2 relative w-fit">
-            <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
-            <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
-            </span>
-            <span id="networkSelected" class="block truncate">Mainnet</span>
+          <div class="relative w-fit">
+            <div
+              id="nav-dropdown"
+              phx-hook="Network"
+              class="dropdown cursor-pointer rounded-md bg-container flex gap-2 items-center px-4 py-2 relative w-fit"
+            >
+              <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
+              <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
+              </span>
+              <span class="block truncate capitalize"><%= @network %></span>
+              <img class="transform rotate-90 w-4 h-4" src={~p"/images/dropdown.svg"} />
+            </div>
+            <div
+              id="options"
+              class="w-full hidden absolute z-10 mt-1 rounded-md bg-container py-1 text-base text-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+            >
+              <div class="w-full py-2 hover:bg-se-violet">
+                <a class="option relative pl-10" href="/mainnet">
+                  <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
+                  <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
+                  </span>
+                  <span>Mainnet</span>
+                </a>
+              </div>
+              <div class="w-full py-2 hover:bg-se-violet">
+                <a class="option relative pl-10" href="/testnet">
+                  <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
+                  <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
+                  </span>
+                  <span>Testnet</span>
+                </a>
+              </div>
+              <div class="w-full py-2 hover:bg-se-violet">
+                <a class="option relative pl-10" href="/testnet2">
+                  <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
+                  <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
+                  </span>
+                  <span>Testnet2</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </nav>

@@ -35,7 +35,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div
       id="dropdown"
       class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
-      phx-hook="Network"
+      phx-hook="Dropdown"
     >
       <span class="networkSelected capitalize"><%= assigns.transaction_view %></span>
       <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
