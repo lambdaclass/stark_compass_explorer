@@ -21,7 +21,7 @@ if System.get_env("PHX_SERVER") do
 end
 
 rpc_host =
-  System.get_env("MAINNET_RPC_API_HOST") ||
+  System.get_env("RPC_API_HOST") ||
     raise """
     environment variable RPC_API_HOST is missing.
     """
