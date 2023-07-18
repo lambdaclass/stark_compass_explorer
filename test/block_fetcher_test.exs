@@ -72,7 +72,7 @@ defmodule StarknetExplorer.BlockFetcher.Test do
 
         {:ok, receipt} =
           tx_hash
-          |> Rpc.get_transaction_receipt()
+          |> Rpc.get_transaction_receipt(:mainnet)
 
         for {key, value} when key not in ["transaction_hash"] <- receipt do
           key_atom = String.to_existing_atom(key)
