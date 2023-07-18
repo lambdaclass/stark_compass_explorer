@@ -39,10 +39,10 @@ defmodule StarknetExplorerWeb.Component.TransactionsPerSecond do
 
     {:noreply,
      assign(socket,
-       tx_per_second: safe_div(x, y) |> :erlang.float_to_binary(decimals: 2)
+       tx_per_second: safe_div(tx_amount, curr_block_time) |> :erlang.float_to_binary(decimals: 2)
      )}
   end
 
   defp safe_div(x, y) when is_number(x) and is_number(y) and y > 0, do: x / y
-  defp safe_div(x, y), do: 0
+  defp safe_div(_, _), do: 0
 end
