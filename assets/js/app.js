@@ -21,6 +21,7 @@ import "phoenix_html";
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
+import { ProofOptions } from "starknet-lambda-prover";
 
 // Show copyright
 const setYear = () => {
@@ -28,6 +29,9 @@ const setYear = () => {
   copyright.innerHTML = `LambdaClass &copy; ${new Date().getFullYear()}`;
 };
 setYear();
+
+console.log("hola")
+console.log(ProofOptions)
 
 let Hooks = {};
 

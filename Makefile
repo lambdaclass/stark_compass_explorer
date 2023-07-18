@@ -1,9 +1,14 @@
-.PHONY: run setup deps-get db stop-db
+.PHONY: run setup deps-get db stop-db setup-wasm-prover
 
 run:
 	iex -S mix phx.server
 
-setup: deps-get db
+setup: deps-get db setup-wasm-prover
+
+setup-wasm-prover:
+	git submodule init
+	git submodule update --recursive
+	cd starknet_stack_prover_lambdaworks && wasm-pack build --web
 
 db:
 	docker-compose up -d
