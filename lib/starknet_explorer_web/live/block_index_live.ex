@@ -32,7 +32,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
               <div class="copy-container" id={"copy-bk-#{block["block_number"]}"} phx-hook="Copy">
                 <div class="relative">
                   <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
-                    to: "/block/#{block["block_hash"]}",
+                    to: ~p"/#{@network}/block/#{block["block_hash"]}",
                     class: "text-hover-blue",
                     title: block["block_hash"]
                   ) %>
