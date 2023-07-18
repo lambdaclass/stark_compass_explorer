@@ -29,7 +29,7 @@ defmodule StarknetExplorer.Rpc do
   defp send_request(method, args, network) when network in [:mainnet, :testnet, :testnet2] do
     payload = build_payload(method, args)
 
-    case cache_lookup(method, args, network) |> IO.inspect(label: LookUp) do
+    case cache_lookup(method, args, network) do
       :cache_miss ->
         host = fetch_rpc_host(network)
         {:ok, rsp} = post(host, payload)
