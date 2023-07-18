@@ -2,39 +2,38 @@ defmodule StarknetExplorer.Rpc do
   use Tesla
   plug(Tesla.Middleware.Headers, [{"content-type", "application/json"}])
 
-  def get_latest_block_no_cache(network \\ :mainnet),
+  def get_latest_block_no_cache(network),
     do: send_request_no_cache("starknet_getBlockWithTxs", ["latest"], network)
 
-  def get_latest_block(network \\ :mainnet),
+  def get_latest_block(network),
     do: send_request("starknet_getBlockWithTxs", ["latest"], network)
 
-  def get_last_n_events(n, network \\ :mainnet),
+  def get_last_n_events(n, network),
     do: send_request("starknet_getEvents", [%{"chunk_size" => n}], network)
 
-  def get_block_height(network \\ :mainnet),
+  def get_block_height(network),
     do: send_request("starknet_blockNumber", [], network)
 
-  def get_block_by_number(number, network \\ :mainnet) when is_integer(number),
+  def get_block_by_number(number, network) when is_integer(number),
     do: send_request("starknet_getBlockWithTxs", [%{block_number: number}], network)
 
-  def get_block_by_hash(number, network \\ :mainnet) when is_binary(number),
+  def get_block_by_hash(number, network) when is_binary(number),
     do: send_request("starknet_getBlockWithTxs", [%{block_hash: number}], network)
 
-  def get_transaction(transaction_hash, network \\ :mainnet),
+  def get_transaction(transaction_hash, network),
     do: send_request("starknet_getTransactionByHash", [transaction_hash], network)
 
-  def get_transaction_receipt(transaction_hash, network \\ :mainnet),
+  def get_transaction_receipt(transaction_hash, network),
     do: send_request("starknet_getTransactionReceipt", [transaction_hash], network)
 
   defp send_request(method, args, network) when network in [:mainnet, :testnet, :testnet2] do
     payload = build_payload(method, args)
 
-    case cache_lookup(method, args, network) do
+    case cache_lookup(method, args, network) |> IO.inspect(label: LookUp) do
       :cache_miss ->
         host = fetch_rpc_host(network)
         {:ok, rsp} = post(host, payload)
         response = handle_response(rsp)
-
         # Cache miss, so save this result.
         case handle_response(rsp) do
           {:ok, result} ->
@@ -102,7 +101,7 @@ defmodule StarknetExplorer.Rpc do
     cache_name = :"#{network}_#{cache_type}"
 
     case Cachex.get(cache_name, key) do
-      {:ok, value} ->
+      {:ok, value} when not is_nil(value) ->
         {:ok, value}
 
       _ ->
