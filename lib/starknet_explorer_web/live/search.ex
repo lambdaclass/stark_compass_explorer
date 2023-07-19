@@ -19,7 +19,7 @@ defmodule StarknetExplorerWeb.SearchLive do
     """
   end
 
-  def mount(params, session, socket) do
+  def mount(_params, session, socket) do
     new_assigns = [query: "", loading: false, matches: [], errors: []]
 
     socket =
