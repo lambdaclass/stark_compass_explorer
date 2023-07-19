@@ -34,7 +34,14 @@ defmodule StarknetExplorer.BlockFetcher do
     # fetch a new block, else do nothing.
     if curr_height + 10 >= state.latest_block_fetched do
       case fetch_block(state.latest_block_fetched + 1) do
-        {:ok, block = %{"block_number" => new_block_number}} ->
+        {:ok, block = %{"block_number" => new_block_number, "transactions" => transactions}} ->
+          receipts =
+            transactions
+            |> Map.new(fn %{"transaction_hash" => tx_hash} ->
+              {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash)
+              {tx_hash, receipt}
+            end)
+
           # TODO: Early on DECLARE transactions did not exist, they were DEPLOY ones.
           # We need to take that into account
 

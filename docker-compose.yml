@@ -5,7 +5,7 @@ services:
     container_name: starknet_explorer_dev_db
     image: postgres:15.3
     ports:
-      - 127.0.0.1:5432:5432
+      - 5432:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -25,9 +25,9 @@ services:
         - PGADMIN_DEFAULT_EMAIL=lambda@email.com
         - PGADMIN_DEFAULT_PASSWORD=pgadmin
     ports:
-        - 127.0.0.1:5050:80
+        - 5050:80
     volumes:
-      - 'pgadmin_data:/var/lib/pgadmin'
+      - pgadmin_data:/var/lib/pgadmin
     networks:
       default:
         aliases:

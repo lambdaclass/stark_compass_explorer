@@ -52,6 +52,6 @@ jobs:
       - name: Check Elixir Formatting
         run: mix format --check-formatted
       - name: Compiles without warnings
-        run: mix compile --all-warnings 
+        run: mix compile --all-warnings --warnings-as-errors
       - name: Run tests
         run: mix test

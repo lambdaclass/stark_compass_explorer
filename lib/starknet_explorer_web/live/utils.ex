@@ -12,7 +12,7 @@ defmodule StarknetExplorerWeb.Utils do
   end
 
   def get_latest_block_number() do
-    {:ok, latest_block} = Rpc.get_latest_block()
+    {:ok, latest_block} = Rpc.get_latest_block(:no_cache)
     latest_block["block_number"]
   end
 
@@ -21,6 +21,10 @@ defmodule StarknetExplorerWeb.Utils do
   end
 
   def list_blocks(_block_number, 0, acc) do
+    acc
+  end
+
+  def list_blocks(block_number, _remaining, acc) when block_number < 0 do
     acc
   end
 

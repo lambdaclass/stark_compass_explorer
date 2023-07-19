@@ -1,0 +1,15 @@
+[Unit]
+Description=Starknet Explorer
+
+[Service]
+WorkingDirectory=/home/starknet_explorer/starknet_explorer
+Restart=on-failure
+ExecStart=/home/starknet_explorer/starknet_explorer/entrypoint.sh
+ExecReload=/bin/kill -HUP
+KillSignal=SIGTERM
+EnvironmentFile=/home/starknet_explorer/.env
+StandardOutput=append:/home/starknet_explorer/logs/starknet_explorer.log
+StandardError=append:/home/starknet_explorer/logs/starknet_explorer.log
+
+[Install]
+WantedBy=multi-user.target

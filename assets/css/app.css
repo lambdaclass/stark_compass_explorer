@@ -3,6 +3,20 @@
 @import "tailwindcss/utilities";
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&display=swap");
 
+/*
+Styles criteria:
+
+Lilac is used for icons and features like copy buttons
+
+Blue is used for links
+
+Pink and Violet for details and highlights
+(they should be avoided from being used for texts due to their low contrast)
+
+with that being said, Blue, Green, Violet and Pink can be used for labels if needed
+
+*/
+
 /* This file is for your main application CSS */
 * {
   @apply box-border p-0 m-0 scroll-smooth;
@@ -10,24 +24,27 @@
 html {
   @apply overflow-x-hidden;
 }
+
+/* Titles */
 h1 {
   @apply font-ibm-plex text-4xl uppercase font-semibold;
 }
 h2 {
-  @apply font-ibm-plex text-2xl mb-4;
+  @apply font-ibm-plex text-2xl lg:mb-4;
 }
-.blocks-grid {
-  @apply grid md:grid-cols-6 gap-1 md:gap-8 py-5 md:py-0;
+
+a,
+.copy-btn {
+  @apply cursor-pointer;
 }
-.transactions-grid {
-  @apply grid md:grid-cols-7 gap-1 md:gap-8 py-5 md:py-0;
+
+.network-option {
+  @apply text-white bg-container hover:bg-se-violet/80 relative select-none py-2 pl-3 pr-9 w-full cursor-pointer flex items-center;
 }
-.blocks-grid > div,
-.transactions-grid > div {
-  @apply py-2;
-}
+
+/* Tables */
 .table-block {
-  @apply flex flex-col text-sm md:py-3 px-5 justify-between text-left text-white rounded-lg bg-[#232331];
+  @apply flex flex-col text-sm md:py-3 px-5 justify-between text-left text-white rounded-lg bg-container;
 }
 .table-header {
   @apply text-sm flex justify-between items-baseline py-2;
@@ -35,15 +52,114 @@ h2 {
 .table-title {
   @apply font-semibold text-lg;
 }
-.table-th {
-  @apply hidden md:grid font-ibm-plex text-sm pb-2 text-gray-400;
+.custom-list-item {
+  @apply pt-3 mb-3 border-t border-t-gray-700;
 }
-.list-h {
-  @apply font-ibm-plex text-sm pb-2 text-gray-400 md:hidden;
+.custom-list-item > div {
+  @apply my-3 md:my-0 flex flex-col gap-2 items-start;
 }
+.grid-3 {
+  @apply md:grid grid-cols-3 items-center gap-1 md:gap-5;
+}
+.grid-4 {
+  @apply md:grid grid-cols-4 items-center gap-1 md:gap-5;
+}
+.grid-5 {
+  @apply md:grid grid-cols-5 items-center gap-1 md:gap-5;
+}
+.grid-6 {
+  @apply md:grid grid-cols-6 items-center gap-1 md:gap-5;
+}
+.grid-7 {
+  @apply md:grid grid-cols-7 items-center gap-1 md:gap-5;
+}
+.grid-8 {
+  @apply lg:grid grid-cols-8 items-center gap-1 lg:gap-5;
+}
+.grid-9 {
+  @apply lg:grid grid-cols-9 items-center gap-1 lg:gap-5;
+}
+.grid-3 .list-h,
+.grid-4 .list-h,
+.grid-5 .list-h,
+.grid-6 .list-h,
+.grid-7 .list-h {
+  @apply font-ibm-plex text-sm pt-2 text-gray-500 md:hidden;
+}
+.grid-8 .list-h,
+.grid-9 .list-h {
+  @apply font-ibm-plex text-sm pt-2 text-gray-500 lg:hidden;
+}
+
+.grid-3.table-th,
+.grid-4.table-th,
+.grid-5.table-th,
+.grid-6.table-th,
+.grid-7.table-th {
+  @apply hidden md:grid font-ibm-plex text-sm pt-2 pb-4 text-gray-400;
+}
+.grid-8.table-th,
+.grid-9.table-th {
+  @apply hidden lg:grid font-ibm-plex text-sm pt-2 pb-4 text-gray-400;
+}
+
+/* Search bar */
 form {
-  @apply relative;
+  @apply relative !w-full !max-w-7xl !mx-auto !my-10;
 }
 input {
-  @apply !bg-[#232331] !border-none !text-se-lilac !pr-10 xl:!w-80;
+  @apply !bg-[#232331] !border-none !text-se-lilac !pr-10 !w-full text-ellipsis;
+}
+
+/* Detail pages */
+.block-label {
+  @apply col-span-full md:col-span-1 text-gray-500 md:text-white;
+}
+
+/* Text Styles */
+.text-hover-blue {
+  @apply text-se-blue hover:text-se-hover-blue transition-all duration-300;
+}
+.text-hover-green {
+  @apply text-se-green hover:text-se-hover-green transition-all duration-300;
+}
+.text-hover-pink {
+  @apply text-se-pink hover:text-se-hover-pink transition-all duration-300;
+}
+.text-hover-violet {
+  @apply text-se-violet hover:text-se-hover-violet transition-all duration-300;
+}
+.text-hover-lilac {
+  @apply text-se-lilac hover:text-se-hover-lilac transition-all duration-300;
+}
+.text-hover-gray {
+  @apply text-gray-400 hover:text-gray-300 transition-all duration-300;
+}
+
+/* Rounded Labels */
+.pink-label {
+  @apply text-hover-pink bg-se-pink/5 px-4 py-1 rounded-full;
+}
+.blue-label {
+  @apply text-hover-blue bg-se-blue/5 px-4 py-1 rounded-full;
+}
+.green-label {
+  @apply text-hover-green bg-se-green/5 px-4 py-1 rounded-full;
+}
+.violet-label {
+  @apply text-hover-violet bg-se-violet/5 px-4 py-1 rounded-full;
+}
+.lilac-label {
+  @apply text-hover-lilac bg-se-lilac/5 px-4 py-1 rounded-full;
+}
+.gray-label {
+  @apply text-hover-gray bg-gray-400/5 px-4 py-1 rounded-full;
+}
+
+/* Dropdown */
+.options {
+  @apply bg-black/20 lg:bg-transparent lg:flex lg:flex-row mt-2 lg:mt-0 mb-10 lg:mb-0;
+}
+.option {
+  @apply border-b border-b-gray-800 py-3 px-3 transition-all duration-300;
 }

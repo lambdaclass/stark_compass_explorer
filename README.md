@@ -1,4 +1,5 @@
 # StarknetExplorer
+![image](./priv/static/images/explorer_preview.png)
 
 ## Requirements
 

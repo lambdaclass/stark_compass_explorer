@@ -52,7 +52,8 @@ defmodule StarknetExplorer.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:tesla, "~> 1.4"},
       # optional, but recommended adapter
-      {:hackney, "~> 1.17"}
+      {:hackney, "~> 1.17"},
+      {:cachex, "~> 3.6"}
     ]
   end
 
