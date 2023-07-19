@@ -19,15 +19,13 @@ defmodule StarknetExplorerWeb.SearchLive do
     """
   end
 
-  def mount(_params, _session, socket) do
+  def mount(params, session, socket) do
     new_assigns = [query: "", loading: false, matches: [], errors: []]
 
     socket =
       socket
       |> assign(new_assigns)
-      # This will take the parent liveview's network assign
-      # and reuse it here.
-      |> assign_new(:network, fn -> nil end)
+      |> assign_new(:network, fn -> session["network"] end)
 
     {:ok, socket}
   end

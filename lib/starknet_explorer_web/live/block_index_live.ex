@@ -6,7 +6,8 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
     ~H"""
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
       id: "search-bar",
-      flash: @flash
+      flash: @flash,
+      session: %{"network" => @network}
     ) %>
     <div class="max-w-7xl mx-auto">
       <div class="table-header">

@@ -25,7 +25,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
     </div>
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
       id: "search-bar",
-      flash: @flash
+      flash: @flash,
+      session: %{"network" => @network}
     ) %>
     <div class="mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 my-5">
       <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5">

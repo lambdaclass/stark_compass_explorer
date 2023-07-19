@@ -72,7 +72,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     ~H"""
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
       id: "search-bar",
-      flash: @flash
+      flash: @flash,
+      session: %{"network" => @network}
     ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <%= block_detail_header(assigns) %>
