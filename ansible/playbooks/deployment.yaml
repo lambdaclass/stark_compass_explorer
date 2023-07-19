@@ -65,6 +65,8 @@
       secret_key_base: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
       database_url: "{{ lookup('ansible.builtin.env', 'DATABASE_URL') }}"
       rpc_api_host: "{{ lookup('ansible.builtin.env', 'RPC_API_HOST') }}"
+      testnet_rpc_api_host: "{{ lookup('ansible.builtin.env', 'TESTNET_RPC_API_HOST') }}"
+      testnet_2_rpc_api_host: "{{ lookup('ansible.builtin.env', 'TESTNET_2_RPC_API_HOST') }}"
 
   - name: Create user systemd directory
     ansible.builtin.file:
