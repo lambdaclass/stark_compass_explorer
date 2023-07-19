@@ -51,5 +51,8 @@ defmodule StarknetExplorerWeb.Router do
     end
   end
 
-  forward "/", StarknetExplorerWeb.Plug.Redirect
+  scope "/" do
+    pipe_through :browser
+    forward "/", StarknetExplorerWeb.Plug.Redirect
+  end
 end
