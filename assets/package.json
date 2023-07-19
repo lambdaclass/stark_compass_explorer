@@ -10,9 +10,8 @@
   "author": "Lambdaclass",
   "license": "MIT",
   "devDependencies": {
-    "esbuild": "^0.18.13",
-    "esbuild-plugin-wasm": "^1.1.0",
-    "esbuild-plugin-wasm-pack": "^1.1.0"
+    "esbuild": "0.17.10",
+    "esbuild-plugin-wasm": "1.0.0"
   },
   "dependencies": {
     "phoenix": "file:../deps/phoenix",

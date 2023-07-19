@@ -31,7 +31,7 @@
     <meta property="twitter:image" content={~p"/images/preview.webp"} />
 
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
-    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
+    <script defer phx-track-static type="module" src={~p"/assets/app.js"}>
     </script>
   </head>
   <body class="bg-se-black text-white relative">
@@ -42,6 +42,16 @@
           <span class="font-semibold">Explorer</span>
         </a>
         <img id="hamburger" class="z-50 lg:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
+        <button>
+          <div
+            class="button"
+            id="verify_proof"
+            phx-click={JS.dispatch("verify_proof", detail: %{})}
+            phx-hook="Verifier"
+          >
+            Verify Proof
+          </div>
+        </button>
         <div
           id="menu-options"
           class="pointer-events-none lg:pointer-events-auto absolute lg:relative top-0 left-0 w-screen lg:w-auto h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 flex flex-col lg:flex-row justify-start items-streach gap-7 lg:gap-10 bg-[#111118] my-16 lg:my-0 py-10 lg:py-0 border-t lg:border-t-0 px-5 lg:px-0"

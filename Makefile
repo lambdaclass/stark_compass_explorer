@@ -8,7 +8,8 @@ setup: deps-get db setup-wasm-prover
 setup-wasm-prover:
 	git submodule init
 	git submodule update --recursive
-	cd starknet_stack_prover_lambdaworks && wasm-pack build --web
+	cd starknet_stack_prover_lambdaworks && git checkout wasm_bindgen
+	cd starknet_stack_prover_lambdaworks && wasm-pack build
 
 db:
 	docker-compose up -d
