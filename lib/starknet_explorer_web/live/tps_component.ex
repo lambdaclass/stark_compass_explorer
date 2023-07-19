@@ -44,5 +44,5 @@ defmodule StarknetExplorerWeb.Component.TransactionsPerSecond do
   end
 
   defp safe_div(x, y) when is_number(x) and is_number(y) and y > 0, do: x / y
-  defp safe_div(_, _), do: 0
+  defp safe_div(_, _), do: 0.0
 end
