@@ -69,6 +69,7 @@
       rpc_api_host: "{{ lookup('ansible.builtin.env', 'RPC_API_HOST') }}"
       aws_access_key_id: "{{ lookup('ansible.builtin.env', 'AWS_ACCESS_KEY_ID') }}"
       aws_secret_access_key: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY') }}"
+      prover_storage: "{{ lookup('ansible.builtin.env', 'PROVER_STORAGE') }}"
 
   - name: Create user systemd directory
     ansible.builtin.file:
