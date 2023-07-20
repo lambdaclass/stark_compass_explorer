@@ -28,6 +28,7 @@
   - name: Build
     ansible.builtin.shell: |
       set -ex
+      export PATH=${PATH}:/home/starknet_explorer/.cargo/bin
       mix local.hex --force
       mix local.rebar --force
       mix deps.get --only $MIX_ENV
