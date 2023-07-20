@@ -1,4 +1,4 @@
-name: Deploy to testing
+name: Deploy https://madaraexplorer.com/
 on:
   push:
     branches:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing
-      url: https://starknet-explorer.lambdaclass.com/
+      url: https://madaraexplorer.com/
     steps:
 
     - name: Checkout
