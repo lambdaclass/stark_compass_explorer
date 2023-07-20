@@ -50,9 +50,12 @@ defmodule StarknetExplorer.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:tesla, "~> 1.4"},
-      # optional, but recommended adapter
-      {:hackney, "~> 1.17"},
-      {:cachex, "~> 3.6"}
+      {:cachex, "~> 3.6"},
+      {:ex_aws, "~> 2.0"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:poison, "~> 3.1"},
+      {:hackney, "~> 1.6"},
+      {:sweet_xml, "~> 0.7.0"}
     ]
   end
 

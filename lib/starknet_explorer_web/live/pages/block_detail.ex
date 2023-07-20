@@ -2,6 +2,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorer.Rpc
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.S3
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
   defp num_or_hash(_num), do: :num
 
@@ -53,6 +54,18 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       block: block,
       view: "overview"
     ]
+
+    proof_storage = Application.get_env(:starknet_explorer, :proof_storage)
+
+    ## Get proof, send it to the client on a button click
+    case proof_storage do
+      "s3" ->
+        {:ok, response} = S3.get_object!(block["hash"])
+        proof_bytes = response.body
+
+      _ ->
+        :nothing
+    end
 
     {:ok, assign(socket, assigns)}
   end
