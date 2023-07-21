@@ -1,7 +1,8 @@
 defmodule StarknetExplorer.BlockFetcher do
   use GenServer
   require Logger
-  alias StarknetExplorer.{Rpc, BlockFetcher, Block, Class}
+  alias StarknetExplorer.{Rpc, BlockFetcher, Block, Class, Contract}
+  alias StarknetExplorer.TransactionReceipt, as: Receipt
   defstruct [:block_height, :latest_block_fetched]
   @fetch_interval 300
   def start_link(args) do
@@ -42,37 +43,10 @@ defmodule StarknetExplorer.BlockFetcher do
               {tx_hash, receipt}
             end)
 
-          # TODO: Early on DECLARE transactions did not exist, they were DEPLOY ones.
-          # We need to take that into account
+          :ok = Block.insert_from_rpc_response(block, receipts)
 
-          # Contracts:
-          # If it's the first time we see the class hash, it's a declare, othwise deploy
+          Enum.each(transactions, fn tx -> process_transaction(tx, block) end)
 
-          :ok = Block.insert_from_rpc_response(block)
-
-          Enum.each(block["transactions"], fn transaction ->
-            case transaction["type"] do
-              "DECLARE" ->
-                {:ok, class} = Rpc.get_class(new_block_number, transaction["class_hash"])
-
-                class =
-                  Map.put(class, "hash", transaction["class_hash"])
-                  |> Map.put("block_number", new_block_number)
-                  |> Map.put("declared_at", block["timestamp"])
-                  |> Map.put("declared_at_tx", transaction["transaction_hash"])
-                  |> Map.put("version", class["contract_class_version"])
-
-                # TODO: Uncomment this line when we have contracts
-                # |> Map.put("declared_by", transaction["sender_address"])
-
-                :ok = Class.insert_from_rpc_response(class)
-
-              _ ->
-                :nothing
-            end
-          end)
-
-          Logger.info("Inserted new block: #{new_block_number}")
           Process.send_after(self(), :fetch_and_store, @fetch_interval)
           {:noreply, %{state | block_height: curr_height, latest_block_fetched: new_block_number}}
 
@@ -86,6 +60,70 @@ defmodule StarknetExplorer.BlockFetcher do
   def handle_info(:stop, _) do
     Logger.info("Stopping BlockFetcher")
     {:stop, :normal, :ok}
+  end
+
+  # TODO: Early on DECLARE transactions did not exist, they were DEPLOY ones.
+  # We need to take that into account
+
+  # Contracts:
+  # If it's the first time we see the class hash, it's a declare, othwise deploy
+  defp process_transaction(transaction = %{"type" => "DEPLOY_ACCOUNT"}, block) do
+    %{
+      "class_hash" => class_hash,
+      "transaction_hash" => tx_hash,
+      "block_number" => block_number
+    } =
+      transaction
+
+    :ok =
+      case Class.get_by_hash(class_hash) do
+        nil ->
+          build_class_info_and_insert(class_hash, block, transaction)
+
+        _ ->
+          :ok
+      end
+
+    %Receipt{contract_address: contract_address} = Receipt.get_by_tx_hash(tx_hash)
+
+    Contract.changeset(%Contract{}, %{
+      # TODO: Fetch this balance properly
+      eth_balance: 0,
+      deployed_at: tx_hash,
+      deployed_at_tx: tx_hash,
+      type: "ACCOUNT",
+      # Deployed by 'itself'
+      deployed_by: nil,
+      version: nil
+    })
+  end
+
+  defp process_transaction(transaction = %{"type" => "DECLARE"}, block) do
+    %{"class_hash" => class_hash, "block_number" => block_number} = transaction
+    build_class_info_and_insert(class_hash, transaction, block)
+  end
+
+  defp process_transaction(_, _), do: :nothing
+
+  defp build_class_info_and_insert(
+         class_hash,
+         block = %{"block_number" => new_block_number},
+         transaction
+       ) do
+    {:ok, class} =
+      Rpc.get_class(new_block_number, class_hash)
+
+    class =
+      Map.put(class, "hash", class_hash)
+      |> Map.put("block_number", new_block_number)
+      |> Map.put("declared_at", block["timestamp"])
+      |> Map.put("declared_at_tx", transaction["transaction_hash"])
+      |> Map.put("version", class["contract_class_version"])
+
+    # TODO: Uncomment this line when we have contracts
+    # |> Map.put("declared_by", transaction["sender_address"])
+
+    Class.insert_from_rpc_response(class)
   end
 
   defp fetch_block_height() do

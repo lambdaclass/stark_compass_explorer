@@ -20,7 +20,7 @@ defmodule StarknetExplorer.Contract do
     field :eth_balance, :integer
     field :deployed_at, :integer
     field :version, :string
-
+    field :type, :string
     belongs_to :block, StarknetExplorer.Block, references: :number
     belongs_to :deployed_by, __MODULE__
     belongs_to :deployed_at_tx, StarknetExplorer.Transaction, references: :hash

@@ -26,6 +26,7 @@ defmodule StarknetExplorer.Repo.Migrations.AddContracts do
       add :eth_balance, :integer
       add :deployed_at, :integer
       add :version, :string
+      add :type, :string, null: true
 
       timestamps()
     end

@@ -21,7 +21,8 @@ defmodule StarknetExplorer.Repo.Migrations.AddFksToContractsAndClasses do
             name: :deployed_by_address,
             prefix: nil,
             type: :string
-          )
+          ),
+        null: true
 
       add :class_hash,
           references("classes",
