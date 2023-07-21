@@ -2,7 +2,7 @@ name: Deploy https://madaraexplorer.com/
 on:
   push:
     branches:
-      - main
+      - add-npm-builds
   workflow_dispatch:
 
 jobs:
@@ -37,7 +37,8 @@ jobs:
         SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         PHX_HOST: ${{ vars.PHX_HOST }}
         PHX_SERVER: ${{ vars.PHX_SERVER }}
-        RPC_API_HOST: ${{ secrets.RPC_API_HOST }}
+        # RPC_API_HOST: ${{ secrets.RPC_API_HOST }}
+        RPC_API_HOST: "http://35.164.199.147:10008"
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         PROVER_STORAGE: ${{ vars.PROVER_STORAGE }}
