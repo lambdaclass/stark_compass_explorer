@@ -276,28 +276,15 @@ tippy("#tps", {
 //
 Hooks.Network = {
   mounted() {
-    const btn = document.querySelector("#networkBtn");
-    const options = document.querySelector("#networkOptions");
-    const selected = document.querySelector("#networkSelected");
-    const listItems = document.querySelectorAll(".network-option");
+    const btn = document.querySelector(".dropdown");
+    const options = document.querySelector(".options");
+    const listItems = document.querySelectorAll(".option");
     btn.addEventListener("click", () => {
       options.classList.toggle("hidden");
     });
     listItems.forEach((item) => {
       item.addEventListener("click", () => {
-        console.log(item);
-        if (item.classList.contains("mainnet")) {
-          selected.innerHTML = "Mainnet";
-        }
-        if (item.classList.contains("testnet")) {
-          selected.innerHTML = "Testnet";
-        }
-        if (item.classList.contains("testnet-2")) {
-          selected.innerHTML = "Testnet 2";
-        }
-        setTimeout(() => {
-          options.classList.add("hidden");
-        }, 2);
+        options.classList.add("hidden");
       });
     });
   },
