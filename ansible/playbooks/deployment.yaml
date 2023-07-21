@@ -28,10 +28,12 @@
   - name: Build
     ansible.builtin.shell: |
       set -ex
+      export PATH=${PATH}:/home/starknet_explorer/.cargo/bin
       mix local.hex --force
       mix local.rebar --force
       mix deps.get --only $MIX_ENV
       mix deps.compile
+      mix assets.setup
       mix assets.deploy
       mix phx.digest
       mix compile
@@ -65,6 +67,9 @@
       secret_key_base: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
       database_url: "{{ lookup('ansible.builtin.env', 'DATABASE_URL') }}"
       rpc_api_host: "{{ lookup('ansible.builtin.env', 'RPC_API_HOST') }}"
+      aws_access_key_id: "{{ lookup('ansible.builtin.env', 'AWS_ACCESS_KEY_ID') }}"
+      aws_secret_access_key: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY') }}"
+      prover_storage: "{{ lookup('ansible.builtin.env', 'PROVER_STORAGE') }}"
 
   - name: Create user systemd directory
     ansible.builtin.file:
