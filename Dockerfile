@@ -7,9 +7,10 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
 # Install nodejs v16.20.0
-RUN wget https://nodejs.org/dist/v16.20.0/node-v16.20.0-linux-x64.tar.gz
-RUN tar -xzvf node-v16.20.0-linux-x64.tar.gz
-RUN cp -r node-v16.20.0-linux-x64/* /usr/local/
+RUN arch=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/x64/) && \
+    wget https://nodejs.org/dist/v16.20.0/node-v16.20.0-linux-${arch}.tar.gz && \
+    tar -xzvf node-v16.20.0-linux-${arch}.tar.gz && \
+    cp -r node-v16.20.0-linux-${arch}/* /usr/local/
 
 ENV MIX_ENV=prod
 
