@@ -11,7 +11,7 @@
   - name: Delete tmp repo
     file:
       state: absent
-      path: /home/starknet_explorer/tmp/starknet_explorer
+      path: /home/starknet_explorer/tmp/madara_explorer
 
   - name: Clone repo in tmp dir
     ansible.builtin.git:
