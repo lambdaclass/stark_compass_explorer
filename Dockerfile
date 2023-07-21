@@ -6,6 +6,11 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 # Install wasm-pack
 RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
+# Install nodejs v16.20.0
+RUN wget https://nodejs.org/dist/v16.20.0/node-v16.20.0-linux-x64.tar.gz
+RUN tar -xzvf node-v16.20.0-linux-x64.tar.gz
+RUN cp -r node-v16.20.0-linux-x64/* /usr/local/
+
 ENV MIX_ENV=prod
 
 WORKDIR /explorer
@@ -17,6 +22,7 @@ RUN mix archive.install --force hex phx_new
 RUN mix deps.get --only $MIX_ENV
 RUN mix deps.compile
 RUN mix assets.setup
+RUN mix assets.build
 RUN mix assets.deploy
 RUN mix phx.digest
 RUN mix compile
