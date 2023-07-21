@@ -24,4 +24,26 @@ let opts = {
   plugins
 }
 
-const promise = esbuild.build(opts)
+if (deploy) {
+  opts = {
+    ...opts,
+    minify: true,
+  };
+}
+
+if (watch) {
+  opts = {
+    ...opts,
+    sourcemap: "inline",
+  };
+  esbuild
+    .context(opts)
+    .then((ctx) => {
+      ctx.watch();
+    })
+    .catch((_error) => {
+      process.exit(1);
+    });
+} else {
+  esbuild.build(opts);
+}

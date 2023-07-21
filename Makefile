@@ -3,13 +3,7 @@
 run:
 	iex -S mix phx.server
 
-setup: deps-get db setup-wasm-prover
-
-setup-wasm-prover:
-	git submodule init
-	git submodule update --recursive
-	cd starknet_stack_prover_lambdaworks && git checkout wasm_bindgen
-	cd starknet_stack_prover_lambdaworks && wasm-pack build
+setup: deps-get db
 
 db:
 	docker-compose up -d
@@ -20,6 +14,8 @@ stop-db:
 	docker-compose down
 
 deps-get:
+	git submodule init
+	git submodule update
 	mix deps.get
 
 db_container := $(shell docker ps -aqf name=starknet_explorer_dev_db)

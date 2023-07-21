@@ -6,6 +6,16 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
   defp num_or_hash(_num), do: :num
 
+  defp get_block_proof(block_hash) do
+    response = S3.get_object!("0xb66944d85d4fd34d" <> "-proof")
+    :erlang.binary_to_list(response.body)
+  end
+
+  defp get_block_public_inputs(block_hash) do
+    response = S3.get_object!("0xb66944d85d4fd34d" <> "-public_inputs")
+    :erlang.binary_to_list(response.body)
+  end
+
   defp block_detail_header(assigns) do
     ~H"""
     <div class="flex flex-col md:flex-row justify-between">
@@ -52,7 +62,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
     assigns = [
       block: block,
-      view: "overview"
+      view: "overview",
+      verification: "Pending"
     ]
 
     proof_storage = Application.get_env(:starknet_explorer, :proof_storage)
@@ -68,6 +79,37 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     end
 
     {:ok, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event("select-view", %{"view" => view}, socket) do
+    socket = assign(socket, :view, view)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("get-block-proof", %{"block_hash" => block_hash}, socket) do
+    proof = get_block_proof(block_hash)
+    public_inputs = get_block_public_inputs(block_hash)
+    {:reply, %{public_inputs: public_inputs, proof: proof}, socket }
+  end
+
+  @impl true
+  def handle_event("block-verified", %{"result" => result}, socket) do
+    IO.inspect(result, label: "Block verification result")
+
+    verification = case result do
+      true ->
+        "Verified"
+
+      false ->
+        "Failed"
+    end
+
+    {
+      :noreply,
+      assign(socket, verification: verification)
+    }
   end
 
   @impl true
@@ -137,6 +179,22 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   # - Gas Price
   def render_info(assigns = %{block: _block, view: "overview"}) do
     ~H"""
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">
+        Local Verification
+      </div>
+      <div class="col-span-3">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+          <span
+            id="block_verifier"
+            class={"#{if @verification == "Pending", do: "pink-label"} #{if @verification == "Verified", do: "green-label"} #{if @verification == "Failed", do: "violet-label"}"}
+            data-hash={@block["block_hash"]}
+            phx-hook="BlockVerifier">
+            <%= @verification %>
+          </span>
+        </div>
+      </div>
+    </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Hash</div>
       <div
@@ -272,11 +330,5 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       </div>
     </div>
     """
-  end
-
-  @impl true
-  def handle_event("select-view", %{"view" => view}, socket) do
-    socket = assign(socket, :view, view)
-    {:noreply, socket}
   end
 end
