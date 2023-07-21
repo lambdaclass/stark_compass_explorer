@@ -91,20 +91,21 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   def handle_event("get-block-proof", %{"block_hash" => block_hash}, socket) do
     proof = get_block_proof(block_hash)
     public_inputs = get_block_public_inputs(block_hash)
-    {:reply, %{public_inputs: public_inputs, proof: proof}, socket }
+    {:reply, %{public_inputs: public_inputs, proof: proof}, socket}
   end
 
   @impl true
   def handle_event("block-verified", %{"result" => result}, socket) do
     IO.inspect(result, label: "Block verification result")
 
-    verification = case result do
-      true ->
-        "Verified"
+    verification =
+      case result do
+        true ->
+          "Verified"
 
-      false ->
-        "Failed"
-    end
+        false ->
+          "Failed"
+      end
 
     {
       :noreply,
@@ -189,7 +190,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             id="block_verifier"
             class={"#{if @verification == "Pending", do: "pink-label"} #{if @verification == "Verified", do: "green-label"} #{if @verification == "Failed", do: "violet-label"}"}
             data-hash={@block["block_hash"]}
-            phx-hook="BlockVerifier">
+            phx-hook="BlockVerifier"
+          >
             <%= @verification %>
           </span>
         </div>
