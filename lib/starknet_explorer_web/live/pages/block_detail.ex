@@ -7,13 +7,23 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   defp num_or_hash(_num), do: :num
 
   defp get_block_proof(block_hash) do
-    response = S3.get_object!("0xb66944d85d4fd34d" <> "-proof")
-    :erlang.binary_to_list(response.body)
+    try do
+      response = S3.get_object!("#{block_hash}" <> "-proof")
+      :erlang.binary_to_list(response.body)
+    rescue
+      _ ->
+        :not_found
+    end
   end
 
   defp get_block_public_inputs(block_hash) do
-    response = S3.get_object!("0xb66944d85d4fd34d" <> "-public_inputs")
-    :erlang.binary_to_list(response.body)
+    try do
+      response = S3.get_object!("#{block_hash}" <> "-public_inputs")
+      :erlang.binary_to_list(response.body)
+    rescue
+      _ ->
+        :not_found
+    end
   end
 
   defp block_detail_header(assigns) do
@@ -75,18 +85,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       view: "overview",
       verification: "Pending"
     ]
-
-    proof_storage = Application.get_env(:starknet_explorer, :proof_storage)
-
-    ## Get proof, send it to the client on a button click
-    case proof_storage do
-      "s3" ->
-        {:ok, response} = S3.get_object!(block["hash"])
-        proof_bytes = response.body
-
-      _ ->
-        :nothing
-    end
 
     {:ok, assign(socket, assigns)}
   end
