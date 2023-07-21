@@ -11,13 +11,13 @@
   - name: Delete tmp repo
     file:
       state: absent
-      path: /home/starknet_explorer/tmp/starknet_explorer
+      path: /home/starknet_explorer/tmp/madara_explorer
 
   - name: Clone repo in tmp dir
     ansible.builtin.git:
-      repo: git@github.com:lambdaclass/starknet_explorer.git
+      repo: git@github.com:lambdaclass/madara_explorer.git
       version: "{{ lookup('ansible.builtin.env', 'GIT_BRANCH') }}"
-      dest: /home/starknet_explorer/tmp/starknet_explorer
+      dest: /home/starknet_explorer/tmp/madara_explorer
       ssh_opts: "-o StrictHostKeyChecking=no"
       key_file: /home/starknet_explorer/.ssh/id_ed25519
     register: clone_output
@@ -43,7 +43,7 @@
     environment:
       MIX_ENV: prod
     args:
-      chdir: /home/starknet_explorer/tmp/starknet_explorer
+      chdir: /home/starknet_explorer/tmp/madara_explorer
     register: build_output
 
   - debug: msg="{{ build_output.stdout_lines + [ build_output.stderr_lines ] }}"
@@ -51,12 +51,12 @@
   - name: Delete old repo
     ansible.builtin.file:
       state: absent
-      path: /home/starknet_explorer/starknet_explorer
+      path: /home/starknet_explorer/madara_explorer
 
   - name: Copy repo from tmp dir
     ansible.builtin.copy:
       remote_src: true
-      src: /home/starknet_explorer/tmp/starknet_explorer
+      src: /home/starknet_explorer/tmp/madara_explorer
       dest: /home/starknet_explorer/
 
   - name: Create .env file
@@ -70,6 +70,7 @@
       rpc_api_host: "{{ lookup('ansible.builtin.env', 'RPC_API_HOST') }}"
       aws_access_key_id: "{{ lookup('ansible.builtin.env', 'AWS_ACCESS_KEY_ID') }}"
       aws_secret_access_key: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY') }}"
+      aws_region: "{{ lookup('ansible.builtin.env', 'AWS_REGION') }}"
       prover_storage: "{{ lookup('ansible.builtin.env', 'PROVER_STORAGE') }}"
 
   - name: Create user systemd directory
