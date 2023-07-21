@@ -21,7 +21,7 @@ import "phoenix_html";
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
-
+import { BlockVerifier } from "./hooks/block_verifier";
 // Show copyright
 const setYear = () => {
   const copyright = document.getElementById("copyright");
@@ -29,7 +29,9 @@ const setYear = () => {
 };
 setYear();
 
-let Hooks = {};
+let Hooks = {
+  BlockVerifier: new BlockVerifier()
+};
 
 // Hamburger menu
 Hooks.Nav = {

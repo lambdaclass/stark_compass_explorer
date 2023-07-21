@@ -1,4 +1,4 @@
-name: Deploy to testing
+name: Deploy https://madaraexplorer.com/
 on:
   push:
     branches:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing
-      url: https://starknet-explorer.lambdaclass.com/
+      url: https://madaraexplorer.com/
     steps:
 
     - name: Checkout
@@ -38,6 +38,9 @@ jobs:
         PHX_HOST: ${{ vars.PHX_HOST }}
         PHX_SERVER: ${{ vars.PHX_SERVER }}
         RPC_API_HOST: ${{ secrets.RPC_API_HOST }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        PROVER_STORAGE: ${{ vars.PROVER_STORAGE }}
         ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_testing"
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
       run: |
