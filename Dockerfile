@@ -1,6 +1,10 @@
 FROM elixir:1.14.5-otp-25 as builder
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain=1.70
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install wasm-pack
+RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
 ENV MIX_ENV=prod
 
