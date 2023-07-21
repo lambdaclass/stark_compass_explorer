@@ -2,6 +2,7 @@ defmodule StarknetExplorer.Class do
   use Ecto.Schema
   alias StarknetExplorer.Repo
   import Ecto.Changeset
+  import Ecto.Query
 
   @required [
     :block_number,
@@ -50,7 +51,7 @@ defmodule StarknetExplorer.Class do
     |> assoc_constraint(:declared_by_address)
     |> assoc_constraint(:declared_at_tx_hash)
     |> validate_required(@required)
-    |> unique_constraint(:hash)
+    |> unique_constraint(:hash, name: :classes_pkey)
   end
 
   @doc """
@@ -72,10 +73,19 @@ defmodule StarknetExplorer.Class do
         |> Map.put("abi", abi)
       )
 
-    {:ok, _} = Repo.insert(changeset)
+    case Repo.insert(changeset) do
+      {:ok, _} ->
+        :ok
 
-    :ok
+      {:error, failed} ->
+        :error
+    end
   end
 
-  def list(), do: Repo.all(__MODULE__)
+  def get_by_hash(hash), do: Repo.get_by(__MODULE__, hash: hash)
+
+  def list_all(), do: Repo.all(__MODULE__)
+
+  def list(limit \\ 20),
+    do: Repo.all(from c in __MODULE__, limit: ^limit, order_by: c.inserted_at)
 end

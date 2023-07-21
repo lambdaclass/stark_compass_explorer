@@ -108,6 +108,8 @@ defmodule StarknetExplorer.TransactionReceipt do
     # |> dbg
   end
 
+  def get_by_tx_hash(tx_hash), do: Repo.get_by(__MODULE__, transaction_hash: tx_hash)
+
   # TODO: Use the proper changeset function
   def changeset_for_assoc(attrs = %{"transaction_hash" => _}) do
     %TransactionReceipt{}
