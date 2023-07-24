@@ -2,7 +2,10 @@ use rustler::types::binary::Binary;
 use starknet_in_rust::felt::Felt252;
 use starknet_in_rust::hash_utils;
 use starknet_in_rust::utils::Address;
+// This turns into {:ok, value} or {:error, "error message"} in elixir.
 pub type ElixirResult<T> = Result<T, String>;
+// Receives field elements as hex numbers
+// (without leading 0x), and returns a contract address.
 #[rustler::nif]
 fn contract_address(
     deployer_address: Binary,
