@@ -1,7 +1,7 @@
 defmodule StarknetExplorer.BlockFetcher do
   use GenServer
   require Logger
-  alias StarknetExplorer.{Rpc, BlockFetcher, Block, Class, Contract, Nif}
+  alias StarknetExplorer.{Rpc, BlockFetcher, Block, Class, Contract, NIF}
   alias StarknetExplorer.TransactionReceipt, as: Receipt
   defstruct [:block_height, :latest_block_fetched]
   @fetch_interval 300
