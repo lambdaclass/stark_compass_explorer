@@ -86,7 +86,7 @@ defmodule StarknetExplorer.BlockFetcher do
           :ok
       end
 
-    contract_address = NIF.contract_address(tx_hash, salt, class_hash, call_data)
+    {:ok, contract_address} = NIF.contract_address(tx_hash, salt, class_hash, call_data)
 
     Contract.changeset(%Contract{address: contract_address}, %{
       # TODO: Fetch this balance properly
