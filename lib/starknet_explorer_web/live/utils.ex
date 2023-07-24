@@ -35,8 +35,12 @@ defmodule StarknetExplorerWeb.Utils do
   end
 
   def get_block_age(block) do
+    get_block_age_from_timestamp(block["timestamp"])
+  end
+
+  def get_block_age_from_timestamp(timestamp) do
     %{minutes: minutes, hours: hours, days: days} =
-      DateUtils.calculate_time_difference(block["timestamp"])
+      DateUtils.calculate_time_difference(timestamp)
 
     case days do
       0 ->
