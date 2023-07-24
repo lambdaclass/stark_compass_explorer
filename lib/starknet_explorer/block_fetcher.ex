@@ -1,7 +1,7 @@
 defmodule StarknetExplorer.BlockFetcher do
   use GenServer
   require Logger
-  alias StarknetExplorer.{Rpc, BlockFetcher, Block, Class, Contract}
+  alias StarknetExplorer.{Rpc, BlockFetcher, Block, Class, Contract, Nif}
   alias StarknetExplorer.TransactionReceipt, as: Receipt
   defstruct [:block_height, :latest_block_fetched]
   @fetch_interval 300
@@ -71,7 +71,9 @@ defmodule StarknetExplorer.BlockFetcher do
     %{
       "class_hash" => class_hash,
       "transaction_hash" => tx_hash,
-      "block_number" => block_number
+      "block_number" => block_number,
+      "contract_address_salt" => salt,
+      "constructor_call_data" => call_data
     } =
       transaction
 
@@ -84,9 +86,9 @@ defmodule StarknetExplorer.BlockFetcher do
           :ok
       end
 
-    %Receipt{contract_address: contract_address} = Receipt.get_by_tx_hash(tx_hash)
+    contract_address = NIF.contract_address(tx_hash, salt, class_hash, call_data)
 
-    Contract.changeset(%Contract{}, %{
+    Contract.changeset(%Contract{address: contract_address}, %{
       # TODO: Fetch this balance properly
       eth_balance: 0,
       deployed_at: tx_hash,

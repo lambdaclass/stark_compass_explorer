@@ -10,8 +10,8 @@ defmodule StarknetExplorer.NIF do
     contract_address(deployer_address, salt, class_hash, constructor_call_data)
   end
 
-  defp err(), do: :erlang.nif_error(:nif_not_loaded)
-
   def contract_address(_deployer_address, _salt, _class_hash, _constructor_call_data),
     do: err()
+
+  defp err(), do: :erlang.nif_error(:nif_not_loaded)
 end
