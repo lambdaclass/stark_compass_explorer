@@ -1,0 +1,14 @@
+[package]
+name = "starknet_explorer_nif"
+version = "0.1.0"
+authors = []
+edition = "2021"
+
+[lib]
+name = "starknet_explorer_nif"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+rustler = "0.29.1"
+starknet_in_rust = "0.3.0"

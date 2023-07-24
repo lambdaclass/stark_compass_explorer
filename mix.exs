@@ -55,7 +55,8 @@ defmodule StarknetExplorer.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:poison, "~> 3.1"},
       {:hackney, "~> 1.6"},
-      {:sweet_xml, "~> 0.7.0"}
+      {:sweet_xml, "~> 0.7.0"},
+      {:rustler, "~> 0.29.1"}
     ]
   end
 
