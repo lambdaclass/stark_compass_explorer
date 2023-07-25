@@ -73,7 +73,8 @@ defmodule StarknetExplorer.BlockFetcher do
       "transaction_hash" => tx_hash,
       "block_number" => block_number,
       "contract_address_salt" => salt,
-      "constructor_call_data" => call_data
+      "constructor_call_data" => call_data,
+      "version" => version
     } =
       transaction
 
@@ -87,17 +88,18 @@ defmodule StarknetExplorer.BlockFetcher do
       end
 
     {:ok, contract_address} = NIF.contract_address(tx_hash, salt, class_hash, call_data)
-
-    Contract.changeset(%Contract{address: contract_address}, %{
-      # TODO: Fetch this balance properly
-      eth_balance: 0,
-      deployed_at: tx_hash,
-      deployed_at_tx: tx_hash,
-      type: "ACCOUNT",
-      # Deployed by 'itself'
-      deployed_by: nil,
-      version: nil
-    })
+    {:ok, _} =
+      Contract.changeset(%Contract{address: contract_address}, %{
+        # TODO: Fetch this balance properly
+        eth_balance: 0,
+        deployed_at: tx_hash,
+        deployed_at_tx: tx_hash,
+        type: "ACCOUNT",
+        deployed_by: nil,
+        version: version,
+        block: block["block_number"]
+      })
+      |> StarknetExplorer.Repo.insert()
   end
 
   defp process_transaction(transaction = %{"type" => "DECLARE"}, block) do
