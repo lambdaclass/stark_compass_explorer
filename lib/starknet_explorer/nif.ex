@@ -5,8 +5,9 @@ defmodule StarknetExplorer.NIF do
         <<"0x", deployer_address::binary>>,
         <<"0x", salt::binary>>,
         <<"0x", class_hash::binary>>,
-        <<"0x", constructor_call_data::binary>>
-      ) do
+        constructor_call_data
+      )
+      when is_list(constructor_call_data) do
     contract_address(deployer_address, salt, class_hash, constructor_call_data)
   end
 

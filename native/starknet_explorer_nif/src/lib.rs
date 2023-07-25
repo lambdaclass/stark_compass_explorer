@@ -4,7 +4,7 @@ use starknet_in_rust::hash_utils;
 use starknet_in_rust::utils::Address;
 // This turns into {:ok, value} or {:error, "error message"} in elixir.
 pub type ElixirResult<T> = Result<T, String>;
-// Receives field elements as hex numbers
+// Receives field elements as hex strings
 // (without leading 0x), and returns a contract address.
 #[rustler::nif]
 fn contract_address(
