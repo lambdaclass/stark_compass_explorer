@@ -14,14 +14,14 @@ defmodule StarknetExplorer.Repo.Migrations.AddContracts do
             type: :integer
           )
 
-      add :deployed_at_tx,
-          references("transactions",
-            on_delete: :delete_all,
-            column: :hash,
-            name: :deployed_at_tx,
-            prefix: nil,
-            type: :string
-          )
+      add :deployed_at_transaction,
+        references("transactions",
+          on_delete: :delete_all,
+          column: :hash,
+          name: :deployed_at_transaction,
+          prefix: nil,
+          type: :string
+        )
 
       add :eth_balance, :integer
       add :deployed_at, :integer

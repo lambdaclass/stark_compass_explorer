@@ -10,21 +10,39 @@ defmodule StarknetExplorer.Contract do
   ]
 
   @allowed [
-             :eth_balance,
-             :deployed_by,
-             :deployed_at_tx
+             :eth_balance
            ] ++ @required
-
+  @assocs [
+    :deployed_by,
+    :deployed_at_tx,
+    :class_hash
+  ]
   @primary_key {:address, :string, []}
   schema "contracts" do
     field :eth_balance, :integer
     field :deployed_at, :integer
     field :version, :string
     field :type, :string
-    belongs_to :block, StarknetExplorer.Block, references: :number
-    belongs_to :deployed_by, __MODULE__
-    belongs_to :deployed_at_tx, StarknetExplorer.Transaction, references: :hash
-    belongs_to :class_hash, StarknetExplorer.Class
+
+    belongs_to :block, StarknetExplorer.Block,
+      references: :number,
+      primary_key: true,
+      foreign_key: :block_number
+
+    belongs_to :deployed_by, __MODULE__,
+      references: :address,
+      primary_key: true,
+      foreign_key: :deployed_by_address
+
+    belongs_to :deployed_at_tx, StarknetExplorer.Transaction,
+      references: :hash,
+      primary_key: true,
+      foreign_key: :deployed_at_transaction
+
+    belongs_to :class_hash, StarknetExplorer.Class,
+      references: :hash,
+      primary_key: true,
+      foreign_key: :contract_class_hash
 
     timestamps()
   end
@@ -35,6 +53,10 @@ defmodule StarknetExplorer.Contract do
       attrs,
       @allowed
     )
+    |> cast_assoc(:block)
+    |> cast_assoc(:deployed_by)
+    |> cast_assoc(:deployed_at_tx)
+    |> cast_assoc(:class_hash)
     |> validate_required(@required)
     |> unique_constraint(:address)
   end
