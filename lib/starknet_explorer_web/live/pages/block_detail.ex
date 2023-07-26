@@ -84,7 +84,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       block: block,
       view: "overview",
       verification: "Pending",
-      enable_verification: false
+      enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification)
     ]
 
     {:ok, assign(socket, assigns)}
