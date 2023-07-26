@@ -41,7 +41,6 @@ defmodule StarknetExplorer.MixProject do
       {:phoenix_live_view, "~> 0.19.0"},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.0"},
-      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
       {:finch, "~> 0.13"},
@@ -51,9 +50,12 @@ defmodule StarknetExplorer.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:tesla, "~> 1.4"},
-      # optional, but recommended adapter
-      {:hackney, "~> 1.17"},
-      {:cachex, "~> 3.6"}
+      {:cachex, "~> 3.6"},
+      {:ex_aws, "~> 2.0"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:poison, "~> 3.1"},
+      {:hackney, "~> 1.6"},
+      {:sweet_xml, "~> 0.7.0"}
     ]
   end
 
@@ -69,9 +71,18 @@ defmodule StarknetExplorer.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
+      # "assets.setup": ["tailwind.install --if-missing", "cmd --cd starknet_stack_prover_lambdaworks wasm-pack build --target web", "cmd --cd assets npm install"],
+      "assets.setup": [
+        "tailwind.install --if-missing",
+        "cmd --cd starknet_stack_prover_lambdaworks wasm-pack build",
+        "cmd --cd assets npm install"
+      ],
+      "assets.build": ["tailwind default", "cmd --cd assets node build.js"],
+      "assets.deploy": [
+        "tailwind default --minify",
+        "cmd --cd assets node build.js --deploy",
+        "phx.digest"
+      ]
     ]
   end
 end

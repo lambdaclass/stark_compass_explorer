@@ -1,10 +1,10 @@
 [Unit]
-Description=Starknet Explorer
+Description=Madara Explorer
 
 [Service]
-WorkingDirectory=/home/starknet_explorer/starknet_explorer
+WorkingDirectory=/home/starknet_explorer/madara_explorer
 Restart=on-failure
-ExecStart=/home/starknet_explorer/starknet_explorer/entrypoint.sh
+ExecStart=/home/starknet_explorer/madara_explorer/entrypoint.sh
 ExecReload=/bin/kill -HUP
 KillSignal=SIGTERM
 EnvironmentFile=/home/starknet_explorer/.env

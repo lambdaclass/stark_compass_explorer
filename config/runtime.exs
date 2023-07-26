@@ -43,6 +43,20 @@ config :starknet_explorer,
   testnet_host: testnet_rpc_host,
   testnet_2_host: testnet_2_rpc_host
 
+config :starknet_explorer, rpc_host: rpc_host
+
+config :starknet_explorer,
+  rpc_host: rpc_host,
+  s3_bucket_name: "kraken-proofs"
+
+config :ex_aws,
+  access_key_id: System.get_env("AWS_ACCESS_KEY_ID"),
+  secret_access_key: System.get_env("AWS_SECRET_ACCESS_KEY"),
+  region: System.get_env("AWS_REGION")
+
+config :starknet_explorer,
+  enable_block_verification: System.get_env("ENABLE_BLOCK_VERIFICATION") || false
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
@@ -77,6 +91,11 @@ if config_env() == :prod do
   config :starknet_explorer, StarknetExplorerWeb.Endpoint,
     server: true,
     url: [host: host, port: 443, scheme: "https"],
+    check_origin: [
+      "https://madaraexplorer.com",
+      "https://www.madaraexplorer.com",
+      "https://madaraexplorer.lambdaclass.com"
+    ],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
