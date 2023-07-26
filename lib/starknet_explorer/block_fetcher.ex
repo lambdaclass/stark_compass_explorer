@@ -150,4 +150,20 @@ defmodule StarknetExplorer.BlockFetcher do
         :error
     end
   end
+  def calculate_contract_address(
+        <<"0x", deployer_address::binary>>,
+        <<"0x", salt::binary>>,
+        <<"0x", class_hash::binary>>,
+        constructor_call_data
+      ) do
+    constructor_call_data =
+      constructor_call_data
+      |> Enum.map(fn <<"0x", call_data::binary>> -> call_data end)
+
+    IO.inspect(deployer_address, label: Address)
+    IO.inspect(salt, label: Salt)
+    IO.inspect(class_hash, label: Address)
+    IO.inspect(constructor_call_data, label: CallData)
+    NIF.contract_address(deployer_address, salt, class_hash, constructor_call_data)
+  end
 end

@@ -13,13 +13,13 @@ fn contract_address(
     class_hash: Binary,
     constructor_call_data: Vec<Binary>,
 ) -> ElixirResult<String> {
-    let deployer_address = Address(Felt252::from_bytes_be(&*deployer_address));
-    let salt = Felt252::from_bytes_be(&*salt);
-    let class_hash = Felt252::from_bytes_be(&*class_hash);
+    let deployer_address = Address(binary_to_felt(deployer_address)?);
+    let salt = binary_to_felt(salt)?;
+    let class_hash = binary_to_felt(class_hash)?;
     let constructor_call_data = constructor_call_data
         .into_iter()
-        .map(|call_data| Felt252::from_bytes_be(&*call_data))
-        .collect::<Vec<Felt252>>();
+        .map(|call_data| binary_to_felt(call_data))
+        .collect::<ElixirResult<Vec<Felt252>>>()?;
     let address = hash_utils::calculate_contract_address(
         &salt,
         &class_hash,
@@ -30,5 +30,10 @@ fn contract_address(
     let address_hex = address.to_str_radix(16_u32);
     Ok(format!("0x{}", address_hex))
 }
-
+fn binary_to_felt(binary: Binary) -> Result<Felt252, String> {
+    let string = String::from_utf8((*binary).to_vec())
+        .map_err(|err| format!("Invalid elixir string!, got this error {}", err))?;
+    dbg!(&string);
+    Ok(Felt252::from_bytes_be(string.as_bytes()))
+}
 rustler::init!("Elixir.StarknetExplorer.NIF", [contract_address]);
