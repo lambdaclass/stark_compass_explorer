@@ -83,7 +83,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     assigns = [
       block: block,
       view: "overview",
-      verification: "Pending"
+      verification: "Pending",
+      enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification)
     ]
 
     {:ok, assign(socket, assigns)}
@@ -104,8 +105,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   @impl true
   def handle_event("block-verified", %{"result" => result}, socket) do
-    IO.inspect(result, label: "Block verification result")
-
     verification =
       case result do
         true ->
@@ -186,25 +185,27 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   # Do not hardcode:
   # - Total Execeution Resources
   # - Gas Price
-  def render_info(assigns = %{block: _block, view: "overview"}) do
+  def render_info(assigns = %{block: _block, view: "overview", enable_verification: _}) do
     ~H"""
-    <div class="grid-4 custom-list-item">
-      <div class="block-label">
-        Local Verification
-      </div>
-      <div class="col-span-3">
-        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-          <span
-            id="block_verifier"
-            class={"#{if @verification == "Pending", do: "pink-label"} #{if @verification == "Verified", do: "green-label"} #{if @verification == "Failed", do: "violet-label"}"}
-            data-hash={@block["block_hash"]}
-            phx-hook="BlockVerifier"
-          >
-            <%= @verification %>
-          </span>
+    <%= if @enable_verification do %>
+      <div class="grid-4 custom-list-item">
+        <div class="block-label">
+          Local Verification
+        </div>
+        <div class="col-span-3">
+          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+            <span
+              id="block_verifier"
+              class={"#{if @verification == "Pending", do: "pink-label"} #{if @verification == "Verified", do: "green-label"} #{if @verification == "Failed", do: "violet-label"}"}
+              data-hash={@block["block_hash"]}
+              phx-hook="BlockVerifier"
+            >
+              <%= @verification %>
+            </span>
+          </div>
         </div>
       </div>
-    </div>
+    <% end %>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Hash</div>
       <div

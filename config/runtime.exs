@@ -35,6 +35,9 @@ config :ex_aws,
   secret_access_key: System.get_env("AWS_SECRET_ACCESS_KEY"),
   region: System.get_env("AWS_REGION")
 
+config :starknet_explorer,
+  enable_block_verification: System.get_env("ENABLE_BLOCK_VERIFICATION") || false
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
@@ -72,7 +75,7 @@ if config_env() == :prod do
     check_origin: [
       "https://madaraexplorer.com",
       "https://www.madaraexplorer.com",
-      "https://madaraexplorer.lambdaclass.com",
+      "https://madaraexplorer.lambdaclass.com"
     ],
     http: [
       # Enable IPv6 and bind on all interfaces.
