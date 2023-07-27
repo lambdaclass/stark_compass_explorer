@@ -8,7 +8,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   defp get_block_proof(block_hash) do
     try do
-      case System.get_env("PROVER_STORAGE") do
+      case Application.get_env(:starknet_explorer, :prover_storage) do
         "s3" ->
           response = S3.get_object!("#{block_hash}" <> "-proof")
           :erlang.binary_to_list(response.body)
@@ -32,7 +32,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   defp get_block_public_inputs(block_hash) do
     try do
-      case System.get_env("PROVER_STORAGE") do
+      case Application.get_env(:starknet_explorer, :prover_storage) do
         "s3" ->
           response = S3.get_object!("#{block_hash}" <> "-public_inputs")
           :erlang.binary_to_list(response.body)
