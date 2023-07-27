@@ -14,6 +14,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           :erlang.binary_to_list(response.body)
 
         _ ->
+          proofs_dir = Application.get_env(:starknet_explorer, :proofs_root_dir)
+
           case File.read(Path.join(proofs_dir, "#{block_hash}" <> "-proof")) do
             {:ok, content} ->
               :erlang.binary_to_list(content)
