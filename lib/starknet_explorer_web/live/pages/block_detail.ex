@@ -14,9 +14,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           :erlang.binary_to_list(response.body)
 
         _ ->
-          case File.read(Path.join(proofs_dir,"#{block_hash}" <> "-proof")) do
+          case File.read(Path.join(proofs_dir, "#{block_hash}" <> "-proof")) do
             {:ok, content} ->
               :erlang.binary_to_list(content)
+
             _ ->
               Logger.info("Failed to read binary file #{block_hash}-proof.")
               :not_found
@@ -28,8 +29,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     end
   end
 
-
-
   defp get_block_public_inputs(block_hash) do
     try do
       case Application.get_env(:starknet_explorer, :prover_storage) do
@@ -38,14 +37,17 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           :erlang.binary_to_list(response.body)
 
         _ ->
-          proofs_dir = Application.get_env(:starknet_explorer, :proofs_root_dir);
-          case File.read(Path.join(proofs_dir,"#{block_hash}" <> "-public_inputs")) do
+          proofs_dir = Application.get_env(:starknet_explorer, :proofs_root_dir)
+
+          case File.read(Path.join(proofs_dir, "#{block_hash}" <> "-public_inputs")) do
             {:ok, content} ->
               :erlang.binary_to_list(content)
+
             _ ->
               Logger.info("Failed to read binary file #{block_hash}-public_inputs.")
               :not_found
           end
+      end
     rescue
       _ ->
         :not_found
