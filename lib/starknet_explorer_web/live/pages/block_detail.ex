@@ -8,18 +8,43 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   defp get_block_proof(block_hash) do
     try do
-      response = S3.get_object!("#{block_hash}" <> "-proof")
-      :erlang.binary_to_list(response.body)
+      case System.get_env("PROVER_STORAGE") do
+        "s3" ->
+          response = S3.get_object!("#{block_hash}" <> "-proof")
+          :erlang.binary_to_list(response.body)
+
+        _ ->
+          case File.read("#{block_hash}" <> "-proof") do
+            {:ok, content} ->
+              :erlang.binary_to_list(content)
+            _ ->
+              Logger.info("Failed to read binary file #{block_hash}-proof.")
+              :not_found
+          end
+      end
     rescue
       _ ->
         :not_found
     end
   end
 
+
+
   defp get_block_public_inputs(block_hash) do
     try do
-      response = S3.get_object!("#{block_hash}" <> "-public_inputs")
-      :erlang.binary_to_list(response.body)
+      case System.get_env("PROVER_STORAGE") do
+        "s3" ->
+          response = S3.get_object!("#{block_hash}" <> "-public_inputs")
+          :erlang.binary_to_list(response.body)
+
+        _ ->
+          case File.read("#{block_hash}" <> "-public_inputs") do
+            {:ok, content} ->
+              :erlang.binary_to_list(content)
+            _ ->
+              Logger.info("Failed to read binary file #{block_hash}-public_inputs.")
+              :not_found
+          end
     rescue
       _ ->
         :not_found
