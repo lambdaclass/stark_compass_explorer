@@ -7,7 +7,8 @@ defmodule StarknetExplorerWeb.ContractIndexLive do
     ~H"""
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
       id: "search-bar",
-      flash: @flash
+      flash: @flash,
+      session: %{"network" => @network}
     ) %>
     <div class="max-w-7xl mx-auto">
       <div class="table-header !justify-start gap-5">
@@ -30,7 +31,8 @@ defmodule StarknetExplorerWeb.ContractIndexLive do
                   Utils.shorten_block_hash(
                     "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
                   ),
-                  to: "/contracts/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2",
+                  to:
+                    ~p"/#{@network}/contracts/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2",
                   class: "text-hover-blue"
                 ) %>
               </div>
@@ -44,7 +46,8 @@ defmodule StarknetExplorerWeb.ContractIndexLive do
                   Utils.shorten_block_hash(
                     "0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918"
                   ),
-                  to: "/classes/0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918",
+                  to:
+                    ~p"/#{@network}/classes/0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918",
                   class: "text-hover-blue"
                 ) %>
               </div>

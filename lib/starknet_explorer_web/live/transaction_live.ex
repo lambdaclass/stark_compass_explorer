@@ -35,7 +35,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div
       id="dropdown"
       class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
-      phx-hook="Network"
+      phx-hook="Dropdown"
     >
       <span class="networkSelected capitalize"><%= assigns.transaction_view %></span>
       <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
@@ -84,7 +84,8 @@ defmodule StarknetExplorerWeb.TransactionLive do
     ~H"""
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
       id: "search-bar",
-      flash: @flash
+      flash: @flash,
+      session: %{"network" => @network}
     ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <%= transaction_header(assigns) %>
@@ -583,9 +584,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
         :load_transaction,
         %{assigns: %{transaction_hash: transaction_hash}} = socket
       ) do
-    {:ok, transaction} = Rpc.get_transaction(transaction_hash)
+    {:ok, transaction} = Rpc.get_transaction(transaction_hash, socket.assigns.network)
 
-    {:ok, transaction_receipt} = Rpc.get_transaction_receipt(transaction_hash)
+    {:ok, transaction_receipt} =
+      Rpc.get_transaction_receipt(transaction_hash, socket.assigns.network)
 
     assigns = [
       transaction: transaction,

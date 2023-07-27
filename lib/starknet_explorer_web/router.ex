@@ -14,28 +14,25 @@ defmodule StarknetExplorerWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", StarknetExplorerWeb do
-    pipe_through :browser
+  live_session :default, on_mount: {StarknetExplorerWeb.Live.CommonAssigns, :network} do
+    scope "/:network", StarknetExplorerWeb do
+      pipe_through :browser
 
-    live "/", HomeLive.Index, :index
-    live "/blocks", BlockIndexLive
-    live "/block/:number_or_hash", BlockDetailLive
-    live "/transactions", TransactionIndexLive
-    live "/transactions/:transaction_hash", TransactionLive
-    live "/contracts", ContractIndexLive
-    live "/contracts/:address", ContractDetailLive
-    live "/events", EventIndexLive
-    live "/events/:identifier", EventDetailLive
-    live "/messages", MessageIndexLive
-    live "/messages/:identifier", MessageDetailLive
-    live "/classes", ClassIndexLive
-    live "/classes/:hash", ClassDetailLive
+      live "/", HomeLive.Index, :index
+      live "/blocks", BlockIndexLive
+      live "/block/:number_or_hash", BlockDetailLive
+      live "/transactions", TransactionIndexLive
+      live "/transactions/:transaction_hash", TransactionLive
+      live "/contracts", ContractIndexLive
+      live "/contracts/:address", ContractDetailLive
+      live "/events", EventIndexLive
+      live "/events/:identifier", EventDetailLive
+      live "/messages", MessageIndexLive
+      live "/messages/:identifier", MessageDetailLive
+      live "/classes", ClassIndexLive
+      live "/classes/:hash", ClassDetailLive
+    end
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", StarknetExplorerWeb do
-  #   pipe_through :api
-  # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:starknet_explorer, :dev_routes) do
@@ -52,5 +49,10 @@ defmodule StarknetExplorerWeb.Router do
       live_dashboard "/dashboard", metrics: StarknetExplorerWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
+  end
+
+  scope "/" do
+    pipe_through :browser
+    forward "/", StarknetExplorerWeb.Plug.Redirect
   end
 end

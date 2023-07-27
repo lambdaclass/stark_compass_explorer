@@ -12,7 +12,7 @@ defmodule StarknetExplorer.BlockFetcher.Test do
 
   @tag timeout: 120_000
   test "Fetch blocks from 40 blocks below the chain's height " do
-    {:ok, block_height} = Rpc.get_block_height()
+    {:ok, block_height} = Rpc.get_block_height(:mainnet)
     lower_block_limit = block_height - 40
 
     # Introduce a fake block to make the BlockFetcher
@@ -43,7 +43,7 @@ defmodule StarknetExplorer.BlockFetcher.Test do
     # storing everything correctly.
     for i <- from_height..to_height do
       {:ok, rpc_json = %{"block_hash" => hash, "block_number" => number, "transactions" => txs}} =
-        Rpc.get_block_by_number(i)
+        Rpc.get_block_by_number(i, :mainnet)
 
       # Check the block's hash and number is correct
       db_block = Repo.one!(from b in Block, where: b.number == ^i) |> Repo.preload(:transactions)
@@ -72,7 +72,7 @@ defmodule StarknetExplorer.BlockFetcher.Test do
 
         {:ok, receipt} =
           tx_hash
-          |> Rpc.get_transaction_receipt()
+          |> Rpc.get_transaction_receipt(:mainnet)
 
         for {key, value} when key not in ["transaction_hash"] <- receipt do
           key_atom = String.to_existing_atom(key)

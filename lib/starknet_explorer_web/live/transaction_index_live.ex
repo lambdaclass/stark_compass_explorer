@@ -7,7 +7,8 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
     ~H"""
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
       id: "search-bar",
-      flash: @flash
+      flash: @flash,
+      session: %{"network" => @network}
     ) %>
     <div class="max-w-7xl mx-auto">
       <div class="table-header">
@@ -29,7 +30,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
                   <div class="copy-container" id={"copy-tsx-#{idx}"} phx-hook="Copy">
                     <div class="relative">
                       <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
-                        to: "/transactions/#{transaction["transaction_hash"]}",
+                        to: ~p"/#{@network}/transactions/#{transaction["transaction_hash"]}",
                         class: "text-hover-blue"
                       ) %>
                       <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -91,7 +92,9 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
   def handle_info(:load_blocks, socket) do
     {:noreply,
      assign(socket,
-       latest_block: Utils.get_latest_block_with_transactions()
+       latest_block:
+         socket.assigns.network
+         |> Utils.get_latest_block_with_transactions()
      )}
   end
 end

@@ -6,7 +6,8 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
     ~H"""
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
       id: "search-bar",
-      flash: @flash
+      flash: @flash,
+      session: %{"network" => @network}
     ) %>
     <div class="max-w-7xl mx-auto">
       <div class="table-header">
@@ -32,7 +33,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
               <div class="copy-container" id={"copy-bk-#{block["block_number"]}"} phx-hook="Copy">
                 <div class="relative">
                   <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
-                    to: "/block/#{block["block_hash"]}",
+                    to: ~p"/#{@network}/block/#{block["block_hash"]}",
                     class: "text-hover-blue",
                     title: block["block_hash"]
                   ) %>
@@ -86,8 +87,8 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
   def handle_info(:load_blocks, socket) do
     {:noreply,
      assign(socket,
-       blocks: Utils.list_blocks(),
-       latest_block: Utils.get_latest_block_with_transactions()
+       blocks: Utils.list_blocks(socket.assigns.network),
+       latest_block: Utils.get_latest_block_with_transactions(socket.assigns.network)
      )}
   end
 end

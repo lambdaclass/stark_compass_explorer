@@ -8,6 +8,10 @@ defmodule StarknetExplorer.Application do
 
   @impl true
   def start(_type, _args) do
+    cache_child_specs =
+      [:mainnet, :testnet, :testnet2]
+      |> Enum.flat_map(fn net -> cache_supervisor_spec(net) end)
+
     children =
       [
         # Start the Telemetry supervisor
@@ -19,36 +23,11 @@ defmodule StarknetExplorer.Application do
         # Start Finch
         {Finch, name: StarknetExplorer.Finch},
         # Start the Endpoint (http/https)
-        StarknetExplorerWeb.Endpoint,
-        # Active block cache
-        Supervisor.child_spec(
-          Cachex.child_spec(
-            name: :block_cache,
-            limit: 1000,
-            id: :block_cache,
-            warmers: [
-              warmer(module: StarknetExplorer.Cache.BlockWarmer, state: %{})
-            ]
-          ),
-          id: :block_cache
-        ),
-        Supervisor.child_spec(
-          Cachex.child_spec(name: :tx_cache, limit: 5000, id: :tx_cache),
-          id: :tx_cache
-        ),
-        # Passive cache for general requests
-        Supervisor.child_spec(
-          Cachex.child_spec(
-            name: :request_cache,
-            limit: 5000,
-            id: :request_cache,
-            policy: Cachex.Policy.LRW
-          ),
-          id: :request_cache
-        )
+        StarknetExplorerWeb.Endpoint
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
       ] ++
+        cache_child_specs ++
         if_prod do
           # TODO: Uncomment when it's ready
           # [StarknetExplorer.BlockFetcher]
@@ -69,5 +48,41 @@ defmodule StarknetExplorer.Application do
   def config_change(changed, _new, removed) do
     StarknetExplorerWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp cache_supervisor_spec(network) when network in [:mainnet, :testnet, :testnet2] do
+    # Active block cache
+    active_block_cache_spec =
+      Supervisor.child_spec(
+        Cachex.child_spec(
+          name: :"#{network}_block_cache",
+          limit: 1000,
+          id: :"#{network}_block_cache",
+          warmers: [
+            warmer(module: StarknetExplorer.Cache.BlockWarmer, state: %{network: network})
+          ]
+        ),
+        id: :"#{network}_block_cache"
+      )
+
+    tx_cache_spec =
+      Supervisor.child_spec(
+        Cachex.child_spec(name: :"#{network}_tx_cache", limit: 5000, id: :"#{network}_tx_cache"),
+        id: :"#{network}_tx_cache"
+      )
+
+    # Passive cache for general requests
+    request_cache =
+      Supervisor.child_spec(
+        Cachex.child_spec(
+          name: :"#{network}_request_cache",
+          limit: 5000,
+          id: :"#{network}_request_cache",
+          policy: Cachex.Policy.LRW
+        ),
+        id: :"#{network}_request_cache"
+      )
+
+    [active_block_cache_spec, tx_cache_spec, request_cache]
   end
 end

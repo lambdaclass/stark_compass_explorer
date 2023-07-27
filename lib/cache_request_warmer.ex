@@ -1,4 +1,5 @@
 defmodule StarknetExplorer.Cache.BlockWarmer do
+  require Logger
   use Cachex.Warmer
   alias StarknetExplorer.Rpc
 
@@ -6,19 +7,22 @@ defmodule StarknetExplorer.Cache.BlockWarmer do
     :timer.seconds(60)
   end
 
-  def execute(_) do
+  def execute(%{network: network}) when network in [:mainnet, :testnet, :testnet2] do
+    Logger.info("Warming cache for #{network}")
+
     # Fetch the highest block number,
     # invalidate cache so that we're sure that
     # we're using fresh data.
     {:ok, latest_block = %{"block_number" => latest_block_num, "block_hash" => latest_hash}} =
-      Rpc.get_latest_block(:no_cache)
+      Rpc.get_latest_block_no_cache(network)
 
     # Request blocks that fall in the range
     # between latest and 20 behind, because that's
     # what we mostly show on the home page.
     block_requests =
       Enum.map(max(latest_block_num - 20, 0)..max(latest_block_num - 1, 0), fn block_num ->
-        {:ok, block = %{"transactions" => transactions}} = Rpc.get_block_by_number(block_num)
+        {:ok, block = %{"transactions" => transactions}} =
+          Rpc.get_block_by_number(block_num, network)
 
         tx_by_hash =
           transactions

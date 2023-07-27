@@ -38,7 +38,7 @@ defmodule StarknetExplorer.BlockFetcher do
           receipts =
             transactions
             |> Map.new(fn %{"transaction_hash" => tx_hash} ->
-              {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash)
+              {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, :mainnet)
               {tx_hash, receipt}
             end)
 
@@ -60,7 +60,7 @@ defmodule StarknetExplorer.BlockFetcher do
   end
 
   defp fetch_block_height() do
-    case Rpc.get_block_height() do
+    case Rpc.get_block_height(:mainnet) do
       {:ok, height} ->
         height
 
@@ -70,7 +70,7 @@ defmodule StarknetExplorer.BlockFetcher do
   end
 
   defp fetch_block(number) when is_integer(number) do
-    case Rpc.get_block_by_number(number) do
+    case Rpc.get_block_by_number(number, :mainnet) do
       {:ok, block} ->
         {:ok, block}
 

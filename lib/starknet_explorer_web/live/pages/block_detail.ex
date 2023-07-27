@@ -40,7 +40,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     <div
       id="dropdown"
       class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
-      phx-hook="Network"
+      phx-hook="Dropdown"
     >
       <span class="networkSelected capitalize"><%= assigns.view %></span>
       <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
@@ -73,11 +73,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     {:ok, block} =
       case num_or_hash(param) do
         :hash ->
-          Rpc.get_block_by_hash(param)
+          Rpc.get_block_by_hash(param, socket.assigns.network)
 
         :num ->
           {num, ""} = Integer.parse(param)
-          Rpc.get_block_by_number(num)
+          Rpc.get_block_by_number(num, socket.assigns.network)
       end
 
     assigns = [
@@ -125,7 +125,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     ~H"""
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
       id: "search-bar",
-      flash: @flash
+      flash: @flash,
+      session: %{"network" => @network}
     ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <%= block_detail_header(assigns) %>
