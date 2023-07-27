@@ -10,5 +10,6 @@ path = "src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
+num-traits = "0.2.16"
 rustler = "0.29.1"
 starknet_in_rust = "0.3.0"

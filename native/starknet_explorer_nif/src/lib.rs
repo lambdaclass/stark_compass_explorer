@@ -1,3 +1,4 @@
+use num_traits::Num;
 use rustler::types::binary::Binary;
 use starknet_in_rust::felt::Felt252;
 use starknet_in_rust::hash_utils;
@@ -7,7 +8,7 @@ pub type ElixirResult<T> = Result<T, String>;
 // Receives field elements as hex strings
 // (without leading 0x), and returns a contract address.
 #[rustler::nif]
-fn contract_address(
+fn contract_address_for_deploy_tx(
     deployer_address: Binary,
     salt: Binary,
     class_hash: Binary,
@@ -33,41 +34,46 @@ fn contract_address(
 fn binary_to_felt(binary: Binary) -> Result<Felt252, String> {
     let string = String::from_utf8((*binary).to_vec())
         .map_err(|err| format!("Invalid elixir string!, got this error {}", err))?;
-    dbg!(&string);
-    Ok(Felt252::from_bytes_be(string.as_bytes()))
+    Ok(Felt252::from_str_radix(&string, 16))
 }
-rustler::init!("Elixir.StarknetExplorer.NIF", [contract_address]);
+rustler::init!("Elixir.StarknetExplorer.NIF", [contract_address_for_deploy_tx]);
 #[cfg(test)]
 mod test {
-    use starknet_in_rust::{felt::Felt252, hash_utils, utils::Address};
     use num_traits::Num;
+    use starknet_in_rust::{felt::Felt252, hash_utils, utils::Address};
     #[test]
     fn contract_address() {
-        let expected = 
-            "4311f49b1c1e1214d3ff0189b959ecaa4c0a215903a38f310791c546441930a";
+        let expected = "4311f49b1c1e1214d3ff0189b959ecaa4c0a215903a38f310791c546441930a";
         let salt: Felt252 = Felt252::from_str_radix(
-            "684e2b6ce49de0cbfd96dc3a9964ca28a1013466b09e089fa1b454713ae38de", 16
-        ).unwrap();
+            "684e2b6ce49de0cbfd96dc3a9964ca28a1013466b09e089fa1b454713ae38de",
+            16,
+        )
+        .unwrap();
         let class_hash: Felt252 = Felt252::from_str_radix(
-            "10455c752b86932ce552f2b0fe81a880746649b9aee7e0d842bf3f52378f9f8", 16
-        ).unwrap();
+            "10455c752b86932ce552f2b0fe81a880746649b9aee7e0d842bf3f52378f9f8",
+            16,
+        )
+        .unwrap();
         let constructor_call_data: Vec<Felt252> = vec![
             Felt252::from_str_radix(
-                "65e4c777af8dfba3a687ccabd557be85c884e9d9927fc18176e97b9c20b5206", 16
-            ).unwrap(),
-            
+                "65e4c777af8dfba3a687ccabd557be85c884e9d9927fc18176e97b9c20b5206",
+                16,
+            )
+            .unwrap(),
             Felt252::from_str_radix(
-                "62f02b39508a7f3857f679b44b592e5e8500ab1d5f312a5004839b9ac1295c3", 16
-            ).unwrap()
-            
+                "62f02b39508a7f3857f679b44b592e5e8500ab1d5f312a5004839b9ac1295c3",
+                16,
+            )
+            .unwrap(),
         ];
         let deployer_address = Address(Felt252::from_str_radix("0", 16).unwrap());
-    let address = hash_utils::calculate_contract_address(
-        &salt,
-        &class_hash,
-        &constructor_call_data,
-        deployer_address,
-    ).unwrap();
-    assert_eq!(address.to_str_radix(16), expected);
+        let address = hash_utils::calculate_contract_address(
+            &salt,
+            &class_hash,
+            &constructor_call_data,
+            deployer_address,
+        )
+        .unwrap();
+        assert_eq!(address.to_str_radix(16), expected);
     }
 }

@@ -67,13 +67,12 @@ defmodule StarknetExplorer.BlockFetcher do
 
   # Contracts:
   # If it's the first time we see the class hash, it's a declare, othwise deploy
-  defp process_transaction(transaction = %{"type" => "DEPLOY_ACCOUNT"}, block) do
+  defp process_transaction(transaction = %{"type" => "DEPLOY"}, block) do
     %{
       "class_hash" => class_hash,
       "transaction_hash" => tx_hash,
-      "block_number" => block_number,
       "contract_address_salt" => salt,
-      "constructor_call_data" => call_data,
+      "constructor_calldata" => call_data,
       "version" => version
     } =
       transaction
@@ -87,7 +86,9 @@ defmodule StarknetExplorer.BlockFetcher do
           :ok
       end
 
-    {:ok, contract_address} = NIF.contract_address(tx_hash, salt, class_hash, call_data)
+    {:ok, contract_address} =
+      NIF.contract_address_for_deploy_tx(tx_hash, salt, class_hash, call_data)
+
     {:ok, _} =
       Contract.changeset(%Contract{address: contract_address}, %{
         # TODO: Fetch this balance properly
@@ -150,6 +151,7 @@ defmodule StarknetExplorer.BlockFetcher do
         :error
     end
   end
+
   def calculate_contract_address(
         <<"0x", deployer_address::binary>>,
         <<"0x", salt::binary>>,
