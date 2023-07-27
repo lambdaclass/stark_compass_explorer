@@ -44,7 +44,7 @@ mod test {
     #[test]
     fn contract_address() {
         let expected = 
-            "0x04311f49b1c1e1214d3ff0189b959ecaa4c0a215903a38f310791c546441930a";
+            "4311f49b1c1e1214d3ff0189b959ecaa4c0a215903a38f310791c546441930a";
         let salt: Felt252 = Felt252::from_str_radix(
             "684e2b6ce49de0cbfd96dc3a9964ca28a1013466b09e089fa1b454713ae38de", 16
         ).unwrap();
@@ -68,6 +68,6 @@ mod test {
         &constructor_call_data,
         deployer_address,
     ).unwrap();
-    assert_eq!(format!("0x{}", address), expected)
+    assert_eq!(address.to_str_radix(16), expected);
     }
 }
