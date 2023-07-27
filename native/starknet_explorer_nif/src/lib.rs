@@ -61,7 +61,7 @@ mod test {
             ).unwrap()
             
         ];
-        let deployer_address = Address(Felt252::from_bytes_be("".as_bytes()));
+        let deployer_address = Address(Felt252::from_str_radix("0", 16).unwrap());
     let address = hash_utils::calculate_contract_address(
         &salt,
         &class_hash,
