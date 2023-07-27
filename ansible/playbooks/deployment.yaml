@@ -36,6 +36,7 @@
       mix assets.setup
       mix assets.build
       mix assets.deploy
+      mix ecto.setup
       mix phx.digest
       mix compile
       mix release
