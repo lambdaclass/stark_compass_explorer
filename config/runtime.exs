@@ -48,7 +48,8 @@ config :starknet_explorer, rpc_host: rpc_host
 config :starknet_explorer,
   rpc_host: rpc_host,
   s3_bucket_name: "kraken-proofs",
-  prover_storage: System.get_env("PROVER_STORAGE")
+  prover_storage: System.get_env("PROVER_STORAGE"),
+  proofs_root_dir: System.get_env("PROOFS_ROOT_DIR")
 
 config :ex_aws,
   access_key_id: System.get_env("AWS_ACCESS_KEY_ID"),
