@@ -50,9 +50,7 @@ defmodule StarknetExplorer.Application do
         # {StarknetExplorer.Worker, arg}
       ] ++
         if_prod do
-          # TODO: Uncomment when it's ready
-          # [StarknetExplorer.BlockFetcher]
-          []
+          [StarknetExplorer.BlockFetcher]
         else
           []
         end
