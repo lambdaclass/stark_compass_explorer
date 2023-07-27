@@ -84,8 +84,15 @@ defmodule StarknetExplorer.Block do
               |> Transaction.changeset(tx)
               |> Repo.insert!()
 
-            Ecto.build_assoc(tx, :receipt, receipts[tx.hash])
-            |> Receipt.changeset(receipts[tx.hash])
+            receipt = receipts[tx.hash]
+            receipt_binary = :erlang.term_to_binary(receipt)
+
+            receipt =
+              receipt
+              |> Map.put("original_json", receipt_binary)
+
+            Ecto.build_assoc(tx, :receipt, receipt)
+            |> Receipt.changeset(receipt)
             |> Repo.insert!()
           end)
       end)
