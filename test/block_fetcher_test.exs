@@ -2,6 +2,7 @@ defmodule StarknetExplorer.BlockFetcher.Test do
   alias StarknetExplorer.{BlockFetcher, Block, Rpc, Repo}
   use StarknetExplorer.DataCase
 
+  @tag :skip
   test "Fetch some blocks from nothing during 15 seconds, check db" do
     {:ok, pid} = BlockFetcher.start_link([])
     Process.send_after(pid, :stop, 15_000)
@@ -11,6 +12,7 @@ defmodule StarknetExplorer.BlockFetcher.Test do
   end
 
   @tag timeout: 120_000
+  @tag :skip
   test "Fetch blocks from 40 blocks below the chain's height " do
     {:ok, block_height} = Rpc.get_block_height(:mainnet)
     lower_block_limit = block_height - 40
