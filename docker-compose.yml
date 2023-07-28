@@ -38,7 +38,7 @@ services:
     ports:
         - 6060:6060
     volumes:
-      - ./juno/juno_goerli2/:/var/lib/juno
+      - ./juno_files/:/var/lib/juno
     command: >
       --http-port 6060
       --db-path /var/lib/juno

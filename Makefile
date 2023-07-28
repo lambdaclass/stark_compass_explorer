@@ -25,4 +25,5 @@ create-seed: db
 	docker exec -i $(db_container) pg_dump --column-inserts --data-only -d starknet_explorer_dev -U postgres > ./priv/repo/seed.sql
 
 juno_dev:
+	mkdir ./juno_files
 	docker-compose up juno_dev
