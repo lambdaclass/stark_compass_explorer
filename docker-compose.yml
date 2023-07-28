@@ -32,6 +32,18 @@ services:
       default:
         aliases:
           - pgadmin
+  juno_dev:
+    container_name: 'juno_dev'
+    image: nethermind/juno
+    ports:
+        - 6060:6060
+    volumes:
+      - ./juno/juno_goerli2/:/var/lib/juno
+    command: >
+      --http-port 6060
+      --db-path /var/lib/juno
+      --eth-node "${ETH_NODE_URL}"
+      --network mainnet
 networks:
   default:
     driver: bridge
