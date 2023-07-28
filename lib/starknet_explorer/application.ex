@@ -29,7 +29,8 @@ defmodule StarknetExplorer.Application do
       ] ++
         cache_child_specs ++
         if_prod do
-          [StarknetExplorer.BlockFetcher]
+          # [StarknetExplorer.BlockFetcher]
+          []
         else
           []
         end
