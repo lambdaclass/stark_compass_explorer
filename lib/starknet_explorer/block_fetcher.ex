@@ -3,7 +3,7 @@ defmodule StarknetExplorer.BlockFetcher do
   require Logger
   alias StarknetExplorer.{Rpc, BlockFetcher, Block}
   defstruct [:block_height, :latest_block_fetched]
-  @fetch_interval 300
+  @fetch_interval 10 * 60 * 1000
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
   end
