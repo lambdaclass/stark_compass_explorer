@@ -23,11 +23,11 @@ import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
 import { BlockVerifier } from "./hooks/block_verifier";
 // Show copyright
-const setYear = () => {
-  const copyright = document.getElementById("copyright");
-  copyright.innerHTML = `LambdaClass &copy; ${new Date().getFullYear()}`;
-};
-setYear();
+// const setYear = () => {
+//   const copyright = document.getElementById("copyright");
+//   copyright.innerHTML = `LambdaClass &copy; ${new Date().getFullYear()}`;
+// };
+// setYear();
 
 let Hooks = {
   BlockVerifier: new BlockVerifier()
