@@ -41,3 +41,6 @@ npm-debug.log
 
 # Ignore postgres files
 .volumes 
+
+# Ignore juno files
+./juno_files
