@@ -39,6 +39,7 @@ services:
     volumes:
       - ./juno_files/:/var/lib/juno
     command: >
+      --pending-poll-interval "60s"
       --http-port 6060
       --db-path /var/lib/juno
       --eth-node "${ETH_NODE_URL}"

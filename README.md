@@ -28,7 +28,8 @@ You can also use the docker provided juno with
 make juno
 ```
 You'll need a Mainnet Ethereum RPC provider for this to
-work, set with the env variable `$ETH_NODE_URL`.
+work, set with the env variable `$ETH_NODE_URL`, mind you
+it must be a websocket url.
 
 ### Up and running
 With a working RPC set, start the explorer with
