@@ -31,8 +31,8 @@ services:
       default:
         aliases:
           - pgadmin
-  juno_dev:
-    container_name: 'juno_dev'
+  juno:
+    container_name: 'juno_mainnet'
     image: nethermind/juno
     ports:
         - 6060:6060
