@@ -598,7 +598,6 @@ defmodule StarknetExplorerWeb.TransactionLive do
       transaction_view: socket.assigns.transaction_view
     ]
 
-    IO.inspect(transaction, label: TheTx)
     socket = assign(socket, assigns)
     {:noreply, socket}
   end
