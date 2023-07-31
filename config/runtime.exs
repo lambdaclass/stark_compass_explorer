@@ -94,7 +94,8 @@ if config_env() == :prod do
     check_origin: [
       "https://madaraexplorer.com",
       "https://www.madaraexplorer.com",
-      "https://madaraexplorer.lambdaclass.com"
+      "https://madaraexplorer.lambdaclass.com",
+      "https://testing.madaraexplorer.com"
     ],
     http: [
       # Enable IPv6 and bind on all interfaces.

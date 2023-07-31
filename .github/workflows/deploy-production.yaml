@@ -1,9 +1,8 @@
-name: Deploy https://testing.madaraexplorer.com/
+name: Deploy https://madaraexplorer.com/
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    tags:
+      - v**
 
 jobs:
 
@@ -11,8 +10,8 @@ jobs:
     name: Build and deploy to testing
     runs-on: ubuntu-latest
     environment:
-      name: testing
-      url: https://testing.madaraexplorer.com/
+      name: production
+      url: https://madaraexplorer.com/
     steps:
 
     - name: Checkout
@@ -24,7 +23,7 @@ jobs:
       run: |
         set -ex
         sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > id_ed25519_testing
-        chmod 400 id_ed25519_testing
+        chmod 400 id_ed25519_production
 
     - name: Install ansible
       run: |
@@ -44,7 +43,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ vars.AWS_REGION }}
         PROVER_STORAGE: ${{ vars.PROVER_STORAGE }}
-        ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_testing"
+        ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_production"
         SSH_HOST: ${{ vars.SSH_HOST }}
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
       run: |
