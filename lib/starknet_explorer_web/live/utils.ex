@@ -2,6 +2,8 @@ defmodule StarknetExplorerWeb.Utils do
   alias StarknetExplorer.Rpc
   alias StarknetExplorer.DateUtils
 
+  def shorten_block_hash(nil), do: ""
+
   def shorten_block_hash(block_hash) do
     "#{String.slice(block_hash, 0, 6)}...#{String.slice(block_hash, -4, 4)}"
   end

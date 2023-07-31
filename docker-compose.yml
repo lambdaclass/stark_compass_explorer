@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   postgres:
     container_name: starknet_explorer_dev_db
@@ -32,6 +31,20 @@ services:
       default:
         aliases:
           - pgadmin
+  juno:
+    container_name: 'juno_mainnet'
+    image: nethermind/juno
+    ports:
+        - 6060:6060
+    volumes:
+      - ./juno_files/:/var/lib/juno
+    command: >
+      --pending-poll-interval "60s"
+      --http-port 6060
+      --db-path /var/lib/juno
+      --eth-node "${ETH_NODE_URL}"
+      --network mainnet
+
 networks:
   default:
     driver: bridge

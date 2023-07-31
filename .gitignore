@@ -38,6 +38,7 @@ npm-debug.log
 
 # Ignore .envrc
 .envrc
-
 # Ignore postgres files
-.volumes 
+.volumes
+# Ignore juno files
+juno_files

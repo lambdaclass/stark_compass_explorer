@@ -9,6 +9,7 @@
 
 ## Local development
 
+### RPC Provider
 To run it locally, you'll need to set the RPC API url of the network. If you're using a provider like Infura, this will look something like this:
 
 ```
@@ -21,8 +22,17 @@ Set the following environment variable with the url mentioned above
 export RPC_API_HOST=your_rpc_hostname
 ```
 
-then do
+### RPC with Juno
+You can also use the docker provided juno with
+```
+make juno
+```
+You'll need a Mainnet Ethereum RPC provider for this to
+work, set with the env variable `$ETH_NODE_URL`, mind you
+it must be a websocket url.
 
+### Up and running
+With a working RPC set, start the explorer with
 ```
 make setup run
 ```

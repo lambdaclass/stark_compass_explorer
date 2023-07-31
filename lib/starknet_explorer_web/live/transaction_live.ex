@@ -529,17 +529,19 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <div>Index</div>
           <div class="col-span-7">Value</div>
         </div>
-        <%= for {index, signature} <- Enum.with_index(@transaction["signature"]) do %>
-          <div class="w-full grid-8 custom-list-item">
-            <div>
-              <div class="list-h">Index</div>
-              <div class="break-all"><%= signature %></div>
+        <%= unless is_nil(@transaction["signature"]) do %>
+          <%= for {index, signature} <- Enum.with_index(@transaction["signature"]) do %>
+            <div class="w-full grid-8 custom-list-item">
+              <div>
+                <div class="list-h">Index</div>
+                <div class="break-all"><%= signature %></div>
+              </div>
+              <div>
+                <div class="list-h">Value</div>
+                <div class="break-all col-span-7"><%= index |> Utils.shorten_block_hash() %></div>
+              </div>
             </div>
-            <div>
-              <div class="list-h">Value</div>
-              <div class="break-all col-span-7"><%= index |> Utils.shorten_block_hash() %></div>
-            </div>
-          </div>
+          <% end %>
         <% end %>
       </div>
     </div>
