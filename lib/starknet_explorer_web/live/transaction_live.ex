@@ -44,7 +44,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     </div>
     <div class="options hidden">
       <div
-        class={"option #{if assigns.transaction_view == "overview", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "overview", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="overview"
@@ -52,7 +52,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         Overview
       </div>
       <div
-        class={"option #{if assigns.transaction_view == "events", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "events", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="events"
@@ -60,7 +60,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         Events <span class="gray-label text-sm">Mocked</span>
       </div>
       <div
-        class={"option #{if assigns.transaction_view == "message_logs", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "message_logs", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="message_logs"
@@ -68,7 +68,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         Message Logs <span class="gray-label text-sm">Mocked</span>
       </div>
       <div
-        class={"option #{if assigns.transaction_view == "internal_calls", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "internal_calls", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="internal_calls"
