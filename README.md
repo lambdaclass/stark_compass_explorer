@@ -25,7 +25,7 @@ export RPC_API_HOST=your_rpc_hostname
 ### RPC with Juno
 You can also use the docker provided juno with
 ```
-make juno_dev
+make juno
 ```
 You'll need a Mainnet Ethereum RPC provider for this to
 work, set with the env variable `$ETH_NODE_URL`.
