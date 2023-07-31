@@ -26,7 +26,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
     </div>
     <div class="options hidden">
       <div
-        class={"option #{if assigns.view == "overview", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="overview"
@@ -34,7 +34,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Overview
       </div>
       <div
-        class={"option #{if assigns.view == "transactions", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "transactions", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="transactions"
@@ -42,7 +42,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Transactions
       </div>
       <div
-        class={"option #{if assigns.view == "events", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="events"
@@ -50,7 +50,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Events
       </div>
       <div
-        class={"option #{if assigns.view == "account-calls", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "account-calls", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="account-calls"
@@ -58,7 +58,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Account Calls
       </div>
       <div
-        class={"option #{if assigns.view == "message-logs", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "message-logs", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="message-logs"
@@ -66,7 +66,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Message Logs
       </div>
       <div
-        class={"option #{if assigns.view == "portfolio", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "portfolio", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="portfolio"
@@ -74,7 +74,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Portfolio
       </div>
       <div
-        class={"option #{if assigns.view == "class-code-history", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "class-code-history", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="class-code-history"
@@ -82,7 +82,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Class Code/History
       </div>
       <div
-        class={"option #{if assigns.view == "read-write-contract", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "read-write-contract", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="read-write-contract"
@@ -90,7 +90,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Read/Write Contract
       </div>
       <div
-        class={"option #{if assigns.view == "token-transfers", do: "lg:border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "token-transfers", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="token-transfers"
