@@ -1,4 +1,5 @@
 defmodule StarknetExplorerWeb.BlockDetailLive do
+  require Logger
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorer.Rpc
   alias StarknetExplorerWeb.Utils
@@ -8,8 +9,23 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   defp get_block_proof(block_hash) do
     try do
-      response = S3.get_object!("#{block_hash}" <> "-proof")
-      :erlang.binary_to_list(response.body)
+      case Application.get_env(:starknet_explorer, :prover_storage) do
+        "s3" ->
+          response = S3.get_object!("#{block_hash}" <> "-proof")
+          :erlang.binary_to_list(response.body)
+
+        _ ->
+          proofs_dir = Application.get_env(:starknet_explorer, :proofs_root_dir)
+
+          case File.read(Path.join(proofs_dir, "#{block_hash}" <> "-proof")) do
+            {:ok, content} ->
+              :erlang.binary_to_list(content)
+
+            _ ->
+              Logger.info("Failed to read binary file #{block_hash}-proof.")
+              :not_found
+          end
+      end
     rescue
       _ ->
         :not_found
@@ -18,8 +34,23 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   defp get_block_public_inputs(block_hash) do
     try do
-      response = S3.get_object!("#{block_hash}" <> "-public_inputs")
-      :erlang.binary_to_list(response.body)
+      case Application.get_env(:starknet_explorer, :prover_storage) do
+        "s3" ->
+          response = S3.get_object!("#{block_hash}" <> "-public_inputs")
+          :erlang.binary_to_list(response.body)
+
+        _ ->
+          proofs_dir = Application.get_env(:starknet_explorer, :proofs_root_dir)
+
+          case File.read(Path.join(proofs_dir, "#{block_hash}" <> "-public_inputs")) do
+            {:ok, content} ->
+              :erlang.binary_to_list(content)
+
+            _ ->
+              Logger.info("Failed to read binary file #{block_hash}-public_inputs.")
+              :not_found
+          end
+      end
     rescue
       _ ->
         :not_found
