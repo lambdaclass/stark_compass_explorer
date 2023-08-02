@@ -99,7 +99,7 @@ if config_env() == :prod do
       "https://madaraexplorer.lambdaclass.com",
       "https://testing.madaraexplorer.com",
       "https://#{host}:#{port}",
-      "http://#{host}:#{port}",
+      "http://#{host}:#{port}"
     ],
     http: [
       # Enable IPv6 and bind on all interfaces.
