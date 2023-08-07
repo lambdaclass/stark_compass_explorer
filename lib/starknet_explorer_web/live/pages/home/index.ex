@@ -104,7 +104,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       <div>
         <div class="table-header">
           <div class="table-title">Latest Blocks</div>
-          <a href="/blocks" class="text-gray-300 hover:text-white transition-all duration-300">
+          <a
+            href={~p"/#{@network}/blocks"}
+            class="text-gray-300 hover:text-white transition-all duration-300"
+          >
             <div class="flex gap-2 items-center">
               <div>View all blocks</div>
               <img src={~p"/images/arrow-right.svg"} />
@@ -170,7 +173,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       <div>
         <div class="table-header">
           <div class="table-title">Latest Transactions</div>
-          <a href="/transactions" class="text-gray-300 hover:text-white transition-all duration-300">
+          <a
+            href={~p"/#{@network}/transactions"}
+            class="text-gray-300 hover:text-white transition-all duration-300"
+          >
             <div class="flex gap-2 items-center">
               <div>View all transactions</div>
               <img src={~p"/images/arrow-right.svg"} />
