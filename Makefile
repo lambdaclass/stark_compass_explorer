@@ -3,7 +3,10 @@
 run:
 	iex -S mix phx.server
 
-setup: deps-get db
+setup: deps-get assets db
+
+assets:
+	mix assets.setup
 
 db:
 	docker-compose up -d postgres pgadmin

@@ -1,6 +1,6 @@
 FROM elixir:1.14.5-otp-25 as builder
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain=1.70
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain=1.69
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Install wasm-pack
@@ -16,8 +16,6 @@ ENV MIX_ENV=prod
 
 WORKDIR /explorer
 COPY . .
-RUN git submodule init
-RUN git submodule update
 RUN mix local.hex --force
 RUN mix local.rebar --force
 RUN mix archive.install --force hex phx_new

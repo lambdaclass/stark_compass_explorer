@@ -71,10 +71,10 @@ defmodule StarknetExplorer.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      # "assets.setup": ["tailwind.install --if-missing", "cmd --cd starknet_stack_prover_lambdaworks wasm-pack build --target web", "cmd --cd assets npm install"],
+      # "assets.setup": ["tailwind.install --if-missing", "cmd --cd lambdaworks_stark_platinum wasm-pack build --target web --features=wasm", "cmd --cd assets npm install"],
       "assets.setup": [
         "tailwind.install --if-missing",
-        "cmd --cd starknet_stack_prover_lambdaworks wasm-pack build",
+        "cmd --cd lambdaworks_stark_platinum wasm-pack build --target=web -- --features=wasm",
         "cmd --cd assets npm install"
       ],
       "assets.build": ["tailwind default", "cmd --cd assets node build.js"],
