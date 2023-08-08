@@ -1,19 +1,22 @@
-.PHONY: run setup deps-get db stop-db setup-wasm-prover
+.PHONY: run setup deps-get db stop-db setup-wasm-prover setup-assets start-db create-db
 
 run:
 	iex -S mix phx.server
 
-setup: submodule deps-get assets db
+setup: submodule deps-get start-db setup-assets create-db
 
 submodule: 
 	git submodule init
 	git submodule update
-
-assets:
+	cd lambdaworks_stark_platinum && git checkout b2fdd2c115dbf3049097f8c2f99a7097fbc5e5fb
+setup-assets:
 	mix assets.setup
+	mix assets.build
 
-db:
+start-db:
 	docker-compose up -d postgres pgadmin
+
+create-db:
 	mix ecto.create
 	mix ecto.migrate
 

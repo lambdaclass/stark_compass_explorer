@@ -1,4 +1,4 @@
 [submodule "lambdaworks_stark_platinum"]
 	path = lambdaworks_stark_platinum
 	url = https://github.com/lambdaclass/lambdaworks_stark_platinum
-	branch = wasm
+	branch = main
