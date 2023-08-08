@@ -17,6 +17,6 @@
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",
-    "starknet-lambda-prover": "file:../starknet_stack_prover_lambdaworks/pkg"
+    "starknet-lambda-prover": "file:../lambdaworks_stark_platinum/pkg"
   }
 }

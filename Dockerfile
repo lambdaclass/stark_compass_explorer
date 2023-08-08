@@ -16,6 +16,8 @@ ENV MIX_ENV=prod
 
 WORKDIR /explorer
 COPY . .
+RUN git submodule init
+RUN git submodule update
 RUN mix local.hex --force
 RUN mix local.rebar --force
 RUN mix archive.install --force hex phx_new
