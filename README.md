@@ -40,7 +40,7 @@ With a working RPC set, start the explorer with
 make setup run
 ```
 
-This will start postgres, create the database and start a web app in `localhost:4000`.
+This will start postgres, create the database, build the static assets and start a web app in `localhost:4000`.
 
 From now on, if you want to restart the app, you can just do:
 ```
