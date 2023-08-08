@@ -7,7 +7,7 @@ on:
 jobs:
 
   build-deploy:
-    name: Build and deploy to testing
+    name: Build and deploy to production
     runs-on: ubuntu-latest
     environment:
       name: production
@@ -22,7 +22,7 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_KEY }}
       run: |
         set -ex
-        sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > id_ed25519_testing
+        sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > id_ed25519_production
         chmod 400 id_ed25519_production
 
     - name: Install ansible
