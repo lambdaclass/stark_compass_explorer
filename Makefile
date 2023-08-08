@@ -3,7 +3,11 @@
 run:
 	iex -S mix phx.server
 
-setup: deps-get assets db
+setup: submodule deps-get assets db
+
+submodule: 
+	git submodule init
+	git submodule update
 
 assets:
 	mix assets.setup
