@@ -33,8 +33,6 @@
       mix local.rebar --force
       mix deps.get --only $MIX_ENV
       mix deps.compile
-      mix assets.setup
-      mix assets.build
       mix assets.deploy
       mix phx.digest
       mix compile
@@ -66,7 +64,7 @@
     vars:
       phx_host: "{{ lookup('ansible.builtin.env', 'PHX_HOST') }}"
       secret_key_base: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
-      database_url: "{{ lookup('ansible.builtin.env', 'DATABASE_URL') }}"
+      database_path: "{{ lookup('ansible.builtin.env', 'DATABASE_PATH') }}"
       rpc_api_host: "{{ lookup('ansible.builtin.env', 'RPC_API_HOST') }}"
       testnet_rpc_api_host: "{{ lookup('ansible.builtin.env', 'TESTNET_RPC_API_HOST') }}"
       testnet_2_rpc_api_host: "{{ lookup('ansible.builtin.env', 'TESTNET_2_RPC_API_HOST') }}"

@@ -2,10 +2,7 @@ import Config
 
 # Configure your database
 config :starknet_explorer, StarknetExplorer.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "starknet_explorer_dev",
+  database: "./volumes/explorer_dev.db",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -25,7 +22,8 @@ config :starknet_explorer, StarknetExplorerWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "JyULoT5cLBifW+XNEuCTVoAb+SaFgQt9j227RN0cKpR3wTsrApGd1HNcgeopemyl",
   watchers: [
-    node: ["build.js", "--watch", cd: Path.expand("../assets", __DIR__)],
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline)]},
+    # node: ["build.js", "--watch", cd: Path.expand("../assets", __DIR__)],
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 

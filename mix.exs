@@ -35,7 +35,6 @@ defmodule StarknetExplorer.MixProject do
       {:phoenix, "~> 1.7.6"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.10"},
-      {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.19.0"},
@@ -55,7 +54,9 @@ defmodule StarknetExplorer.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:poison, "~> 3.1"},
       {:hackney, "~> 1.6"},
-      {:sweet_xml, "~> 0.7.0"}
+      {:sweet_xml, "~> 0.7.0"},
+      {:ecto_sqlite3, ">= 0.0.0"},
+      {:esbuild, "~> 0.4", runtime: Mix.env() == :dev}
     ]
   end
 
@@ -72,15 +73,15 @@ defmodule StarknetExplorer.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       # "assets.setup": ["tailwind.install --if-missing", "cmd --cd starknet_stack_prover_lambdaworks wasm-pack build --target web", "cmd --cd assets npm install"],
-      "assets.setup": [
-        "tailwind.install --if-missing",
-        "cmd --cd starknet_stack_prover_lambdaworks wasm-pack build",
-        "cmd --cd assets npm install"
-      ],
-      "assets.build": ["tailwind default", "cmd --cd assets node build.js"],
+      # "assets.setup": [
+      #   "tailwind.install --if-missing",
+      #   "cmd --cd starknet_stack_prover_lambdaworks wasm-pack build",
+      #   "cmd --cd assets npm install"
+      # ],
+      # "assets.build": ["tailwind default", "cmd --cd assets node build.js"],
       "assets.deploy": [
         "tailwind default --minify",
-        "cmd --cd assets node build.js --deploy",
+        "esbuild default --minify",
         "phx.digest"
       ]
     ]
