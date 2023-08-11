@@ -7,7 +7,6 @@ COPY . .
 
 RUN mix local.hex --force
 RUN mix local.rebar --force
-RUN mix archive.install --force hex phx_new
 RUN mix deps.get 
 RUN mix assets.deploy
 RUN mix phx.digest
