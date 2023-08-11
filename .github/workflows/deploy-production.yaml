@@ -32,7 +32,7 @@ jobs:
     - name: "Deploy with ansible"
       env:
         MIX_ENV: ${{ vars.MIX_ENV }}
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        DATABASE_PATH: ${{ vars.DATABASE_PATH }}
         SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         PHX_HOST: ${{ vars.PHX_HOST }}
         PHX_SERVER: ${{ vars.PHX_SERVER }}
