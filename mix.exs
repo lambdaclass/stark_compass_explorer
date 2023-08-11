@@ -55,7 +55,7 @@ defmodule StarknetExplorer.MixProject do
       {:poison, "~> 3.1"},
       {:hackney, "~> 1.6"},
       {:sweet_xml, "~> 0.7.0"},
-      {:ecto_sqlite3, ">= 0.0.0", only: [:dev, :test]},
+      {:ecto_sqlite3, ">= 0.0.0"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev}
     ]
   end
