@@ -13,8 +13,6 @@ stop-db:
 	docker-compose down
 
 deps-get:
-	git submodule init
-	git submodule update
 	mix deps.get
 
 db_container := $(shell docker ps -aqf name=starknet_explorer_dev_db)
