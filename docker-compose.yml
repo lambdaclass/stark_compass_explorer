@@ -6,7 +6,7 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ./db/:/root/db
+      - ./volumes/:/root/db
   juno:
     container_name: 'juno_mainnet'
     image: nethermind/juno

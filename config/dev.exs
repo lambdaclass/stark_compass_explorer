@@ -2,10 +2,9 @@ import Config
 
 # Configure your database
 config :starknet_explorer, StarknetExplorer.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "starknet_explorer_dev",
+  username: "sqlite",
+  password: "sqlite",
+  database: "./volumes/explorer_dev.db",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
