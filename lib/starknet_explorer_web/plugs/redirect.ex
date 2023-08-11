@@ -3,9 +3,20 @@ defmodule StarknetExplorerWeb.Plug.Redirect do
     opts
   end
 
-  def call(conn, _opts) do
-    conn
-    |> Phoenix.Controller.redirect(to: "/mainnet")
-    |> Plug.Conn.halt()
+  def call(conn = %{request_path: path}, _opts) do
+    case path do
+      # Redirect a "mainnet" leading route
+      # to a route leaded by a slash
+      <<"/mainnet", path::binary>> ->
+        conn
+        |> Phoenix.Controller.redirect(to: path)
+        |> Plug.Conn.halt()
+
+      # Redirect to root if route is unknown
+      _ ->
+        conn
+        |> Phoenix.Controller.redirect(to: "/")
+        |> Plug.Conn.halt()
+    end
   end
 end

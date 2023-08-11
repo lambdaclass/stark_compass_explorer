@@ -15,22 +15,24 @@ defmodule StarknetExplorerWeb.Router do
   end
 
   live_session :default, on_mount: {StarknetExplorerWeb.Live.CommonAssigns, :network} do
-    scope "/:network", StarknetExplorerWeb do
-      pipe_through :browser
+    for net_scope <- ["/", "/testnet", "/testnet2"] do
+      scope net_scope, StarknetExplorerWeb do
+        pipe_through :browser
 
-      live "/", HomeLive.Index, :index
-      live "/blocks", BlockIndexLive
-      live "/block/:number_or_hash", BlockDetailLive
-      live "/transactions", TransactionIndexLive
-      live "/transactions/:transaction_hash", TransactionLive
-      live "/contracts", ContractIndexLive
-      live "/contracts/:address", ContractDetailLive
-      live "/events", EventIndexLive
-      live "/events/:identifier", EventDetailLive
-      live "/messages", MessageIndexLive
-      live "/messages/:identifier", MessageDetailLive
-      live "/classes", ClassIndexLive
-      live "/classes/:hash", ClassDetailLive
+        live "/", HomeLive.Index, :index
+        live "/blocks", BlockIndexLive
+        live "/block/:number_or_hash", BlockDetailLive
+        live "/transactions", TransactionIndexLive
+        live "/transactions/:transaction_hash", TransactionLive
+        live "/contracts", ContractIndexLive
+        live "/contracts/:address", ContractDetailLive
+        live "/events", EventIndexLive
+        live "/events/:identifier", EventDetailLive
+        live "/messages", MessageIndexLive
+        live "/messages/:identifier", MessageDetailLive
+        live "/classes", ClassIndexLive
+        live "/classes/:hash", ClassDetailLive
+      end
     end
   end
 
