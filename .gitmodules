@@ -1,4 +1,0 @@
-[submodule "starknet_stack_prover_lambdaworks"]
-	path = starknet_stack_prover_lambdaworks
-	url = https://github.com/lambdaclass/starknet_stack_prover_lambdaworks.git
-	branch = wasm_bindgen
