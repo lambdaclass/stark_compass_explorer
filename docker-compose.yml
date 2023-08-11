@@ -1,12 +1,5 @@
 version: '3.8'
 services:
-  sqlite3:
-    container_name: 'explorer_db'
-    image: nouchka/sqlite3:latest
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./volumes/:/root/db
   juno:
     container_name: 'juno_mainnet'
     image: nethermind/juno

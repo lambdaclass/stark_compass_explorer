@@ -6,7 +6,6 @@ run:
 setup: deps-get db
 
 db:
-	docker-compose up -d sqlite3
 	mix ecto.create
 	mix ecto.migrate
 
