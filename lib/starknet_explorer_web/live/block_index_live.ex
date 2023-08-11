@@ -25,7 +25,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
             <div>
               <div class="list-h">Number</div>
               <%= live_redirect(to_string(block["block_number"]),
-                to: "/block/#{block["block_number"]}"
+                to: ~p"/#{@network}/block/#{block["block_hash"]}"
               ) %>
             </div>
             <div class="col-span-2">
