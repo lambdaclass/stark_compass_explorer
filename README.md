@@ -17,10 +17,12 @@ To run it locally, you'll need to set the RPC API url of the network. If you're 
 https://starknet-mainnet.infura.io/v3/your_api_key
 ```
 
-Set the following environment variable with the url mentioned above
+Set the following environment variables:
 
 ```
 export RPC_API_HOST=your_rpc_hostname
+export TESTNET_1_RPC_API_HOST=testnet_rpc_hostname
+export TESTNET_2_RPC_API_HOST=testnet_2_rpc_hostname
 ```
 
 ### RPC with Juno
