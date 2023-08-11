@@ -21,7 +21,7 @@ Set the following environment variables:
 
 ```
 export RPC_API_HOST=your_rpc_hostname
-export TESTNET_1_RPC_API_HOST=testnet_rpc_hostname
+export TESTNET_RPC_API_HOST=testnet_rpc_hostname
 export TESTNET_2_RPC_API_HOST=testnet_2_rpc_hostname
 ```
 
