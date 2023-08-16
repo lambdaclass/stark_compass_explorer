@@ -2,7 +2,6 @@ defmodule StarknetExplorer.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
-  import StarknetExplorer.Utils
   import Cachex.Spec
   use Application
 
@@ -11,6 +10,8 @@ defmodule StarknetExplorer.Application do
     cache_child_specs =
       [:mainnet, :testnet, :testnet2]
       |> Enum.flat_map(fn net -> cache_supervisor_spec(net) end)
+
+    enable_fetcher? = not is_nil(System.get_env("ENABLE_FETCHER"))
 
     children =
       [
@@ -28,9 +29,8 @@ defmodule StarknetExplorer.Application do
         # {StarknetExplorer.Worker, arg}
       ] ++
         cache_child_specs ++
-        if_prod do
-          # [StarknetExplorer.BlockFetcher]
-          []
+        if enable_fetcher? do
+          [StarknetExplorer.BlockFetcher]
         else
           []
         end
