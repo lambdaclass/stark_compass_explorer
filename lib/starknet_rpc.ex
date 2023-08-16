@@ -11,6 +11,9 @@ defmodule StarknetExplorer.Rpc do
   def get_last_n_events(n, network),
     do: send_request("starknet_getEvents", [%{"chunk_size" => n}], network)
 
+  def get_block_height_no_cache(network),
+    do: send_request_no_cache("starknet_blockNumber", [], network)
+
   def get_block_height(network),
     do: send_request("starknet_blockNumber", [], network)
 
