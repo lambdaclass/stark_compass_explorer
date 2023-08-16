@@ -52,7 +52,7 @@ defmodule StarknetExplorer.BlockFetcher do
     end
   end
 
-  defp store_block(block = %{"block_number" => block_number, "transactions" => transactions}) do
+  defp store_block(block = %{"transactions" => transactions}) do
     receipts =
       transactions
       |> Map.new(fn %{"transaction_hash" => tx_hash} ->
