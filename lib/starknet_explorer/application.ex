@@ -58,8 +58,13 @@ defmodule StarknetExplorer.Application do
           limit: 1000,
           id: :"#{network}_block_cache",
           warmers: [
-            warmer(module: StarknetExplorer.Cache.BlockWarmer, state: %{network: network})
-          ]
+            warmer(
+              module: StarknetExplorer.Cache.BlockWarmer,
+              state: %{network: network},
+              async: true
+            )
+          ],
+          shutdown: 5000
         ),
         id: :"#{network}_block_cache"
       )
