@@ -11,8 +11,6 @@ defmodule StarknetExplorer.Application do
       [:mainnet, :testnet, :testnet2]
       |> Enum.flat_map(fn net -> cache_supervisor_spec(net) end)
 
-    enable_fetcher? = not is_nil(System.get_env("ENABLE_FETCHER"))
-
     children =
       [
         # Start the Telemetry supervisor
@@ -29,7 +27,7 @@ defmodule StarknetExplorer.Application do
         # {StarknetExplorer.Worker, arg}
       ] ++
         cache_child_specs ++
-        if enable_fetcher? do
+        if Application.get_env(:starknet_explorer, :enable_fetcher?) do
           [StarknetExplorer.BlockFetcher]
         else
           []
