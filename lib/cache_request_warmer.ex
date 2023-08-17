@@ -3,7 +3,6 @@ defmodule StarknetExplorer.Cache.BlockWarmer do
   use Cachex.Warmer
   alias StarknetExplorer.Rpc
   @interval :timer.seconds(5)
-  @attempts 5
   def interval, do: @interval
 
   def execute(%{network: network})
