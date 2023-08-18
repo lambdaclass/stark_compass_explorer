@@ -47,8 +47,8 @@ export ENABLE_FETCHER="true"
 The db file will be stored under `/priv/repo`.
 There are 2 things to keep in mind here:
 1. Amount of requests: If you have any constraint 
-   on how many requests you can make, like a limit on daily requests like infura has,
-   keep an eye on that because the fetcher can do a lot of requests per second.
+   on how many requests you can make keep an eye on that,
+   because the fetcher can do a lot of requests per second.
 2. Disk Usage: We're still measuring it, but we expect it to be considerable 
    after running it for a couple of days.
 ### Up and running
