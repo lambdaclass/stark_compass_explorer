@@ -2,7 +2,7 @@ import Config
 
 # Configure your database
 config :starknet_explorer, StarknetExplorer.Repo,
-  database: "./volumes/explorer_dev.db",
+  database: "./priv/repo/explorer_dev.db",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10

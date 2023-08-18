@@ -40,5 +40,11 @@ npm-debug.log
 .envrc
 # Ignore docker volumes
 .volumes
+
 # Ignore juno files
 juno_files
+
+# Ignore sqlite files
+*.db
+*.db-shm
+*.db-wal

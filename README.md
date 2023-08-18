@@ -44,6 +44,7 @@ To enable this process, before starting the explorer, set this env var:
 ```
 export ENABLE_FETCHER="true"
 ```
+The db file will be stored under `/priv/repo`.
 There are 2 things to keep in mind here:
 1. Amount of requests: If you have any constraint 
    on how many requests you can make, like a limit on daily requests like infura has,
