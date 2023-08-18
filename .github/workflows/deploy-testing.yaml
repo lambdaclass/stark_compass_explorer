@@ -46,6 +46,7 @@ jobs:
         PROVER_STORAGE: ${{ vars.PROVER_STORAGE }}
         ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_testing"
         SSH_HOST: ${{ vars.SSH_HOST }}
+        ENABLE_FETCHER: ${{ vars.ENABLE_FETCHER }}
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
       run: |
         ansible-playbook -i ansible/inventory.yaml ansible/playbooks/deployment.yaml
