@@ -70,7 +70,7 @@ if config_env() == :prod do
       For example: /etc/my_app/my_app.db
       """
 
-  maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
+  # maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
   config :starknet_explorer, StarknetExplorer.Repo,
     # ssl: true,
