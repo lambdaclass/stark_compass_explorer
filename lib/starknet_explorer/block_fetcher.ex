@@ -1,9 +1,9 @@
 defmodule StarknetExplorer.BlockFetcher do
-  use GenServer
+  use GenServer, restart: :temporary
   require Logger
   alias StarknetExplorer.{Rpc, BlockFetcher, Block}
-  defstruct [:block_height, :latest_block_fetched]
-  @fetch_interval 10 * 60 * 1000
+  defstruct [:latest_block_number_fetched]
+  @fetch_latest_interval 100
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
   end
@@ -11,46 +11,27 @@ defmodule StarknetExplorer.BlockFetcher do
   @impl true
   def init(_opts) do
     state = %BlockFetcher{
-      # The actual chain block-height
-      block_height: fetch_block_height(),
-      # Highest block number stored on the DB
-      latest_block_fetched: StarknetExplorer.Block.highest_fetched_block_number()
+      latest_block_number_fetched: block_height()
     }
 
-    Process.send_after(self(), :fetch_and_store, @fetch_interval)
+    Process.send_after(self(), :fetch_latest, @fetch_latest_interval)
+    Logger.info("Starting explorer with fetcher enabled!")
     {:ok, state}
   end
 
-  @impl true
-  def handle_info(:fetch_and_store, state = %BlockFetcher{}) do
-    # Try to fetch the new height, else keep the current one.
-    curr_height =
-      case fetch_block_height() do
-        height when is_integer(height) -> height
-        _ -> state.block_height
+  def handle_info(:fetch_latest, state = %BlockFetcher{}) do
+    new_height = block_height()
+    highest_fetched = state.latest_block_number_fetched
+
+    state =
+      if new_height > highest_fetched do
+        fetch_and_store(highest_fetched + 1, state)
+      else
+        state
       end
 
-    # If the db is 10 blocks behind,
-    # fetch a new block, else do nothing.
-    if curr_height + 10 >= state.latest_block_fetched do
-      case fetch_block(state.latest_block_fetched + 1) do
-        {:ok, block = %{"block_number" => new_block_number, "transactions" => transactions}} ->
-          receipts =
-            transactions
-            |> Map.new(fn %{"transaction_hash" => tx_hash} ->
-              {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, :mainnet)
-              {tx_hash, receipt}
-            end)
-
-          :ok = Block.insert_from_rpc_response(block, receipts)
-          Logger.info("Inserted new block: #{new_block_number}")
-          Process.send_after(self(), :fetch_and_store, @fetch_interval)
-          {:noreply, %{state | block_height: curr_height, latest_block_fetched: new_block_number}}
-
-        :error ->
-          {:noreply, state}
-      end
-    end
+    Process.send_after(self(), :fetch_latest, @fetch_latest_interval)
+    {:noreply, state}
   end
 
   @impl true
@@ -59,8 +40,31 @@ defmodule StarknetExplorer.BlockFetcher do
     {:stop, :normal, :ok}
   end
 
-  defp fetch_block_height() do
-    case Rpc.get_block_height(:mainnet) do
+  defp fetch_and_store(block_height, state = %BlockFetcher{}) do
+    with {:ok, block} <- fetch_block(block_height),
+         :ok <- store_block(block) do
+      Logger.info("Inserted new block: #{block_height}")
+      %{state | latest_block_number_fetched: block_height}
+    else
+      err ->
+        Logger.error("Fetcher failed with: #{inspect(err)}")
+        state
+    end
+  end
+
+  defp store_block(block = %{"transactions" => transactions}) do
+    receipts =
+      transactions
+      |> Map.new(fn %{"transaction_hash" => tx_hash} ->
+        {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, :mainnet)
+        {tx_hash, receipt}
+      end)
+
+    Block.insert_from_rpc_response(block, receipts)
+  end
+
+  defp block_height() do
+    case Rpc.get_block_height_no_cache(:mainnet) do
       {:ok, height} ->
         height
 

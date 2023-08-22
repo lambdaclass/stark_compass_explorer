@@ -20,6 +20,8 @@ if System.get_env("PHX_SERVER") do
   config :starknet_explorer, StarknetExplorerWeb.Endpoint, server: true
 end
 
+enable_fetcher? = System.get_env("ENABLE_FETCHER") == "true"
+
 rpc_host =
   System.get_env("RPC_API_HOST") ||
     raise """
@@ -41,7 +43,8 @@ testnet_2_rpc_host =
 config :starknet_explorer,
   rpc_host: rpc_host,
   testnet_host: testnet_rpc_host,
-  testnet_2_host: testnet_2_rpc_host
+  testnet_2_host: testnet_2_rpc_host,
+  enable_fetcher?: enable_fetcher?
 
 config :starknet_explorer, rpc_host: rpc_host
 
@@ -67,7 +70,7 @@ if config_env() == :prod do
       For example: /etc/my_app/my_app.db
       """
 
-  maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
+  # maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
   config :starknet_explorer, StarknetExplorer.Repo,
     # ssl: true,

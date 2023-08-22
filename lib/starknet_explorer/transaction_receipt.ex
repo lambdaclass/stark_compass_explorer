@@ -7,7 +7,8 @@ defmodule StarknetExplorer.TransactionReceipt do
     :type,
     :transaction_hash,
     :actual_fee,
-    :status,
+    :finality_status,
+    :execution_status,
     :messages_sent,
     :events,
     :block_hash,
@@ -20,7 +21,8 @@ defmodule StarknetExplorer.TransactionReceipt do
     :type,
     :transaction_hash,
     :actual_fee,
-    :status,
+    :finality_status,
+    :execution_status,
     :block_hash,
     :block_number,
     :messages_sent,
@@ -31,7 +33,8 @@ defmodule StarknetExplorer.TransactionReceipt do
     :type,
     :transaction_hash,
     :actual_fee,
-    :status,
+    :finality_status,
+    :execution_status,
     :block_hash,
     :block_number,
     :messages_sent,
@@ -41,7 +44,8 @@ defmodule StarknetExplorer.TransactionReceipt do
   @deploy_tx_receipt [
     :transaction_hash,
     :actual_fee,
-    :status,
+    :finality_status,
+    :execution_status,
     :block_hash,
     :messages_sent,
     :events,
@@ -52,7 +56,8 @@ defmodule StarknetExplorer.TransactionReceipt do
   @deploy_account_tx_receipt [
     :transaction_hash,
     :actual_fee,
-    :status,
+    :finality_status,
+    :execution_status,
     :block_hash,
     :block_number,
     :messages_sent,
@@ -87,6 +92,8 @@ defmodule StarknetExplorer.TransactionReceipt do
     field :type, :string
     field :actual_fee, :string
     field :status, :string
+    field :finality_status, :string
+    field :execution_status, :string
     field :block_hash, :string
     field :block_number, :integer
     field :messages_sent, {:array, :map}

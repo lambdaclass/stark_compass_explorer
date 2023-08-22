@@ -14,13 +14,12 @@ defmodule StarknetExplorer.Transaction do
     :calldata
   ]
 
-  @invoke_tx_fields [
+  @invoke_v0_tx_fields [
     :calldata,
     :contract_address,
     :entry_point_selector,
     :hash,
     :max_fee,
-    :nonce,
     :signature,
     :type,
     :version
@@ -70,7 +69,7 @@ defmodule StarknetExplorer.Transaction do
   ]
 
   @fields @l1_handler_tx_fields ++
-            @invoke_tx_fields ++
+            @invoke_v0_tx_fields ++
             @declare_tx_fields ++ @deploy_contract_tx_fields ++ @deploy_account_tx_fields
 
   schema "transactions" do
@@ -127,7 +126,7 @@ defmodule StarknetExplorer.Transaction do
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "INVOKE"}) do
     changeset
-    |> validate_required(@invoke_tx_fields)
+    |> validate_required(@invoke_v0_tx_fields)
   end
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "DEPLOY", "max_fee" => _}) do
