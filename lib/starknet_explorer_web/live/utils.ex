@@ -1,6 +1,9 @@
 defmodule StarknetExplorerWeb.Utils do
+  require Logger
   alias StarknetExplorer.Rpc
   alias StarknetExplorer.DateUtils
+  alias StarknetExplorer.Transaction
+  alias StarknetExplorer.{Block, Transaction, TransactionReceipt}
 
   def shorten_block_hash(nil), do: ""
 
@@ -14,6 +17,24 @@ defmodule StarknetExplorerWeb.Utils do
     [block]
   end
 
+  def get_transaction(tx_hash, network) do
+    tx =
+      case Transaction.get_by_hash_with_receipt(tx_hash) do
+        nil ->
+          {:ok, tx} = Rpc.get_transaction(tx_hash, network)
+          {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
+
+          tx
+          |> Transaction.from_rpc_tx()
+          |> Map.put(:receipt, receipt |> atomize_keys)
+
+        tx ->
+          tx
+      end
+
+    {:ok, tx}
+  end
+
   def get_latest_block_number(network) do
     {:ok, _latest_block = %{"block_number" => block_number}} =
       Rpc.get_latest_block_no_cache(network)
@@ -21,28 +42,37 @@ defmodule StarknetExplorerWeb.Utils do
     block_number
   end
 
-  def list_blocks(network) do
+  def list_blocks(network, block_amount \\ 15) do
     block_number = get_latest_block_number(network)
-    Enum.reverse(list_blocks(block_number, 15, [], network))
+    blocks = Block.latest_blocks_with_txs(block_amount, block_number)
+    every_block_is_in_the_db = length(blocks) == block_amount
+
+    case blocks do
+      blocks when every_block_is_in_the_db ->
+        blocks
+
+      _ ->
+        upper = block_number
+        lower = block_number - block_amount
+
+        upper..lower
+        |> Enum.map(fn block_number ->
+          {:ok, block} = Rpc.get_block_by_number(block_number, network)
+
+          Block.from_rpc_block(block)
+        end)
+    end
   end
 
-  def list_blocks(_block_number, 0, acc, _) do
-    acc
+  def get_block_age(%{timestamp: timestamp}) do
+    get_block_age_from_timestamp(timestamp)
   end
 
-  def list_blocks(block_number, _remaining, acc, _) when block_number < 0 do
-    acc
+  def get_block_age(%{"timestamp" => timestamp}) do
+    get_block_age_from_timestamp(timestamp)
   end
 
-  def list_blocks(block_number, remaining, acc, network) do
-    {:ok, block} = Rpc.get_block_by_number(block_number, network)
-    prev_block_number = block_number - 1
-    list_blocks(prev_block_number, remaining - 1, [block | acc], network)
-  end
-
-  def get_block_age(block) do
-    get_block_age_from_timestamp(block["timestamp"])
-  end
+  def get_block_age_from_timestamp(nil), do: ""
 
   def get_block_age_from_timestamp(timestamp) do
     %{minutes: minutes, hours: hours, days: days} = DateUtils.calculate_time_difference(timestamp)
@@ -58,4 +88,18 @@ defmodule StarknetExplorerWeb.Utils do
         "#{days} d"
     end
   end
+
+  def atomize_keys(map) when is_map(map) do
+    map
+    |> Map.new(fn {key, val} when is_binary(key) ->
+      {String.to_atom(key), atomize_keys(val)}
+    end)
+  end
+
+  def atomize_keys(list) when is_list(list) do
+    list
+    |> Enum.map(fn list_elem -> atomize_keys(list_elem) end)
+  end
+
+  def atomize_keys(not_a_map), do: not_a_map
 end
