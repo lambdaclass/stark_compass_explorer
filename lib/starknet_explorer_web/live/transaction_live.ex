@@ -586,14 +586,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
         :load_transaction,
         %{assigns: %{transaction_hash: transaction_hash}} = socket
       ) do
-    {:ok, transaction} = Rpc.get_transaction(transaction_hash, socket.assigns.network)
-
-    {:ok, transaction_receipt} =
-      Rpc.get_transaction_receipt(transaction_hash, socket.assigns.network)
+    {:ok, transaction} = Utils.get_transaction(transaction_hash, socket.assigns.network)
+    IO.inspect(transaction, label: TheTransaction)
 
     assigns = [
       transaction: transaction,
-      transaction_receipt: transaction_receipt,
+      transaction_receipt: transaction.receipt,
       transaction_hash: socket.assigns.transaction_hash,
       transaction_view: socket.assigns.transaction_view
     ]
