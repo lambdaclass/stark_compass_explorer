@@ -570,7 +570,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       transaction_receipt: transaction.receipt,
       transaction_hash: transaction_hash,
       transaction_view: "overview",
-      events: receipt.events 
+      events: receipt.events
     ]
 
     socket = assign(socket, assigns)

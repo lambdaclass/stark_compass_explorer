@@ -3,6 +3,7 @@ defmodule StarknetExplorer.Block do
   import Ecto.Query
   import Ecto.Changeset
   alias StarknetExplorer.{Repo, Transaction, Block}
+  alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.TransactionReceipt, as: Receipt
   require Logger
   @primary_key {:number, :integer, []}
@@ -105,7 +106,7 @@ defmodule StarknetExplorer.Block do
 
   def from_rpc_block(rpc_block) do
     rpc_block =
-      rpc_block |> rename_rpc_fields |> StarknetExplorerWeb.Utils.atomize_keys()
+      rpc_block |> rename_rpc_fields |> Utils.atomize_keys()
 
     struct(__MODULE__, rpc_block)
   end

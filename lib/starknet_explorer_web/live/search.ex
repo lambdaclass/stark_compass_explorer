@@ -1,6 +1,6 @@
 defmodule StarknetExplorerWeb.SearchLive do
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Rpc
+  alias StarknetExplorer.Data
 
   def render(assigns) do
     ~H"""
@@ -72,19 +72,19 @@ defmodule StarknetExplorerWeb.SearchLive do
   end
 
   def try_by_number(number, network) do
-    case Rpc.get_block_by_number(number, network) do
+    case Data.block_by_number(number, network) do
       {:ok, _block} -> {:block, number}
       {:error, :not_found} -> :noquery
     end
   end
 
   def try_by_hash(hash, network) do
-    case Rpc.get_transaction(hash, network) do
+    case Data.transaction(hash, network) do
       {:ok, _transaction} ->
         {:tx, hash}
 
       {:error, _} ->
-        case Rpc.get_block_by_hash(hash, network) do
+        case Data.block_by_hash(hash, network) do
           {:ok, block} -> {:block, block}
           {:error, _} -> :noquery
         end
