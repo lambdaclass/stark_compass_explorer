@@ -111,10 +111,6 @@ defmodule StarknetExplorer.TransactionReceipt do
       @fields ++ [:original_json]
     )
     |> validate_according_to_type(attrs)
-
-    # |> foreign_key_constraint(:transaction_id)
-    # |> unique_constraint([:id])
-    # |> dbg
   end
 
   # TODO: Use the proper changeset function

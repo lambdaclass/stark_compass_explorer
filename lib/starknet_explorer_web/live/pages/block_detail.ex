@@ -110,7 +110,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           {num, ""} = Integer.parse(param)
           Data.block_by_number(num, socket.assigns.network)
       end
-      |> dbg
 
     assigns = [
       block: block,
