@@ -1,6 +1,7 @@
 defmodule StarknetExplorerWeb.BlockIndexLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.Data
   @impl true
   def render(assigns) do
     ~H"""
@@ -88,7 +89,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
     {:noreply,
      assign(socket,
        blocks: Utils.list_blocks(socket.assigns.network),
-       latest_block: Utils.get_latest_block_with_transactions(socket.assigns.network)
+       latest_block: Data.latest_block_with_transactions(socket.assigns.network)
      )}
   end
 end

@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.BlockDetailLive do
   require Logger
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Rpc
+  alias StarknetExplorer.Data
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.S3
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
@@ -104,12 +104,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     {:ok, block} =
       case num_or_hash(param) do
         :hash ->
-          Rpc.get_block_by_hash(param, socket.assigns.network)
+          Data.block_by_hash(param, socket.assigns.network)
 
         :num ->
           {num, ""} = Integer.parse(param)
-          Rpc.get_block_by_number(num, socket.assigns.network)
+          Data.block_by_number(num, socket.assigns.network)
       end
+      |> dbg
 
     assigns = [
       block: block,

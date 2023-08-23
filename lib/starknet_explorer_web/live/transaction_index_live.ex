@@ -1,6 +1,7 @@
 defmodule StarknetExplorerWeb.TransactionIndexLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.Data
 
   @impl true
   def render(assigns) do
@@ -92,9 +93,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
   def handle_info(:load_blocks, socket) do
     {:noreply,
      assign(socket,
-       latest_block:
-         socket.assigns.network
-         |> Utils.get_latest_block_with_transactions()
+       latest_block: Data.latest_block_with_transactions(socket.assigns.network)
      )}
   end
 end

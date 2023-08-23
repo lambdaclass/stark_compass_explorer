@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Rpc
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.Data
 
   defp transaction_header(assigns) do
     ~H"""
@@ -102,11 +102,6 @@ defmodule StarknetExplorerWeb.TransactionLive do
     """
   end
 
-  # TODO:
-  # Do not hardcode the following:
-  # Identifier
-  # Name
-  # Age
   def render_info(%{transaction_view: "events"} = assigns) do
     ~H"""
     <div class={"table-th !pt-7 border-t border-gray-700 #{if @transaction.sender_address, do: "grid-6", else: "grid-5"}"}>
@@ -119,7 +114,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <% end %>
       <div>Age</div>
     </div>
-    <%= for %{keys: [identifier | _], from_address: from_address} <- @events do %>
+    <%= for %{keys: [identifier | _], from_address: _} <- @events do %>
       <div class={"custom-list-item #{if @transaction.sender_address, do: "grid-6", else: "grid-5"}"}>
         <div>
           <div class="list-h">Identifier</div>
@@ -137,8 +132,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </div>
         <div>
           <div class="list-h">Name</div>
-          <span class="gray-label text-sm">Mocked</span>
-          <div><span class="lilac-label">Transfer</span></div>
+          <div>
+            <span class="lilac-label">Transfer</span>
+            <span class="gray-label text-sm">Mocked</span>
+          </div>
         </div>
         <%= if @transaction.sender_address do %>
           <div>
@@ -566,7 +563,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   @impl true
   def mount(%{"transaction_hash" => transaction_hash}, _session, socket) do
     {:ok, transaction = %{receipt: receipt}} =
-      Utils.get_transaction(transaction_hash, socket.assigns.network) |> dbg
+      Data.transaction(transaction_hash, socket.assigns.network)
 
     assigns = [
       transaction: transaction,

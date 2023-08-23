@@ -168,4 +168,20 @@ defmodule StarknetExplorer.Block do
         {k, v}
     end)
   end
+
+  def get_by_hash(hash) do
+    query =
+      from b in Block,
+        where: b.hash == ^hash
+
+    Repo.one(query)
+  end
+
+  def get_by_num(num) do
+    query =
+      from b in Block,
+        where: b.number == ^num
+
+    Repo.one(query)
+  end
 end
