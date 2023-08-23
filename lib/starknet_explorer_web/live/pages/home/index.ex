@@ -246,7 +246,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
   @impl true
   def handle_info(:load_blocks, socket) do
-    blocks = Utils.list_blocks(socket.assigns.network)
+    blocks = StarknetExplorer.Data.many_blocks(socket.assigns.network)
     latest_block = blocks |> hd
 
     transactions =

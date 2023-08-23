@@ -1,6 +1,37 @@
 defmodule StarknetExplorer.Data do
   alias StarknetExplorer.{Rpc, Transaction, Block}
 
+  @doc """
+  Fetch block_amount blocks (defaults to 15), first
+  look them up in the db, if not found check the RPC
+  provider.
+  """
+  def many_blocks(network, block_amount \\ 15) do
+    block_number = StarknetExplorer.Data.latest_block_number(network)
+    blocks = Block.latest_blocks_with_txs(block_amount, block_number)
+    every_block_is_in_the_db = length(blocks) == block_amount
+
+    case blocks do
+      blocks when every_block_is_in_the_db ->
+        blocks
+
+      _ ->
+        upper = block_number
+        lower = block_number - block_amount
+
+        upper..lower
+        |> Enum.map(fn block_number ->
+          {:ok, block} = Rpc.get_block_by_number(block_number, network)
+
+          Block.from_rpc_block(block)
+        end)
+    end
+  end
+
+  @doc """
+  Fetch a block by its hash, first look up in
+  the db, if not found, fetch from the RPC provider
+  """
   def block_by_hash(hash, network) do
     case Block.get_by_hash(hash) do
       nil ->
@@ -11,6 +42,10 @@ defmodule StarknetExplorer.Data do
     end
   end
 
+  @doc """
+  Fetch a block by number, first look up in
+  the db, if not found, fetch from the RPC provider
+  """
   def block_by_number(number, network) do
     case Block.get_by_num(number) do
       nil ->

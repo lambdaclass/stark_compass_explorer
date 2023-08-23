@@ -10,28 +10,6 @@ defmodule StarknetExplorerWeb.Utils do
     "#{String.slice(block_hash, 0, 6)}...#{String.slice(block_hash, -4, 4)}"
   end
 
-  def list_blocks(network, block_amount \\ 15) do
-    block_number = StarknetExplorer.Data.latest_block_number(network)
-    blocks = Block.latest_blocks_with_txs(block_amount, block_number)
-    every_block_is_in_the_db = length(blocks) == block_amount
-
-    case blocks do
-      blocks when every_block_is_in_the_db ->
-        blocks
-
-      _ ->
-        upper = block_number
-        lower = block_number - block_amount
-
-        upper..lower
-        |> Enum.map(fn block_number ->
-          {:ok, block} = Rpc.get_block_by_number(block_number, network)
-
-          Block.from_rpc_block(block)
-        end)
-    end
-  end
-
   def get_block_age(%{timestamp: timestamp}) do
     get_block_age_from_timestamp(timestamp)
   end
