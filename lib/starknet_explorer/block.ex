@@ -167,8 +167,5 @@ defmodule StarknetExplorer.Block do
       {k, v} ->
         {k, v}
     end)
-    |> then(fn block = %{"transactions" => transactions} ->
-      block
-    end)
   end
 end

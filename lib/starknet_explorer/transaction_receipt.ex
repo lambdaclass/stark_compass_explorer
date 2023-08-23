@@ -2,7 +2,7 @@ defmodule StarknetExplorer.TransactionReceipt do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query
-  alias StarknetExplorer.{Transaction, TransactionReceipt}
+  alias StarknetExplorer.{Transaction, TransactionReceipt, Repo}
 
   @invoke_tx_receipt_fields [
     :type,
