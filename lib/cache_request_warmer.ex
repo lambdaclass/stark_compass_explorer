@@ -2,7 +2,7 @@ defmodule StarknetExplorer.Cache.BlockWarmer do
   require Logger
   use Cachex.Warmer
   alias StarknetExplorer.Rpc
-  @interval :timer.seconds(5)
+  @interval :timer.seconds(60)
   def interval, do: @interval
 
   def execute(%{network: network})
