@@ -1,8 +1,6 @@
 defmodule StarknetExplorerWeb.Utils do
   require Logger
-  alias StarknetExplorer.Rpc
   alias StarknetExplorer.DateUtils
-  alias StarknetExplorer.Block
 
   def shorten_block_hash(nil), do: ""
 

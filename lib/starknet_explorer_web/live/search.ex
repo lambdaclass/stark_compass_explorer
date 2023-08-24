@@ -74,7 +74,7 @@ defmodule StarknetExplorerWeb.SearchLive do
   def try_by_number(number, network) do
     case Data.block_by_number(number, network) do
       {:ok, _block} -> {:block, number}
-      {:error, :not_found} -> :noquery
+      {:error, _} -> :noquery
     end
   end
 

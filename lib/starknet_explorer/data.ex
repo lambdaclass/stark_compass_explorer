@@ -2,7 +2,7 @@ defmodule StarknetExplorer.Data do
   alias StarknetExplorer.{Rpc, Transaction, Block}
 
   @doc """
-  Fetch block_amount blocks (defaults to 15), first
+  Fetch `block_amount` blocks (defaults to 15), first
   look them up in the db, if not found check the RPC
   provider.
   """
