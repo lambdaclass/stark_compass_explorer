@@ -2,12 +2,12 @@ defmodule StarknetExplorer.Cache.BlockWarmer do
   require Logger
   use Cachex.Warmer
   alias StarknetExplorer.Rpc
-  @interval :timer.seconds(60)
+  @interval :timer.seconds(10)
   def interval, do: @interval
 
   def execute(%{network: network})
       when network in [:mainnet, :testnet, :testnet2] do
-    Logger.info("Warming cache for #{network}")
+    Logger.debug("Warming cache for #{network}")
     # Try/Rescue is not really an elixir/erlang thing to do, but
     # I think this is the most simple way to do this, since
     # this process can crash the whole application on startup.
