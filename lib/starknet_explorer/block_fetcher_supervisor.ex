@@ -10,7 +10,7 @@ defmodule StarknetExplorer.BlockFetcher do
   end
 
   def fetch_in_range(args = %{start: start, finish: finish})
-      when start > finish do
+      when start > finish and is_integer(start) and is_integer(finish) do
     spec = %{
       id: StarknetExplorer.BlockFetcher.Worker,
       start: {StarknetExplorer.BlockFetcher.Worker, :start_link, args}

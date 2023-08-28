@@ -25,11 +25,11 @@ defmodule StarknetExplorer.BlockFetcher.Worker do
 
   def handle_info(:fetch, state = %Worker{}) do
     Process.send_after(self(), :fetch, @fetch_interval)
+    IO.inspect(state, pretty: true, label: TheState)
 
     state =
       case BlockUtils.fetch_and_store(state.next_to_fetch) do
         {:ok, block} ->
-          BlockUtils.fetch_and_store(block)
           %{state | next_to_fetch: state.next_to_fetch - 1}
 
         {:error, err} ->
@@ -53,7 +53,7 @@ defmodule StarknetExplorer.BlockFetcher.Worker do
     {:stop, :normal, :ok}
   end
 
-  defp decide_next_message(%Worker{next_to_fetch: next, finish: last}) when next <= last,
+  defp decide_next_message(%Worker{next_to_fetch: next, finish: last}) when next < last,
     do: :stop
 
   defp decide_next_message(_), do: :fetch
