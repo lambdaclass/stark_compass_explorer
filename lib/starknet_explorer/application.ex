@@ -4,13 +4,14 @@ defmodule StarknetExplorer.Application do
   @moduledoc false
   import Cachex.Spec
   use Application
-
+  @networks Application.compile_env(:starknet_explorer, :allowed_networks)
   @impl true
   def start(_type, _args) do
     cache_child_specs =
-      [:mainnet, :testnet, :testnet2]
+      @networks
       |> Enum.flat_map(fn net -> cache_supervisor_spec(net) end)
 
+    # cache_child_specs ++
     children =
       [
         # Start the Telemetry supervisor
@@ -26,12 +27,13 @@ defmodule StarknetExplorer.Application do
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
       ] ++
-        cache_child_specs ++
-        if Application.get_env(:starknet_explorer, :enable_fetcher?) do
-          [StarknetExplorer.BlockFetcher]
-        else
-          []
-        end
+        [{DynamicSupervisor, strategy: :one_for_one, name: StarknetExplorer.BlockFetcher}]
+
+    if Application.get_env(:starknet_explorer, :enable_fetcher?) do
+      # [StarknetExplorer.BlockListener]
+    else
+      []
+    end
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -47,7 +49,7 @@ defmodule StarknetExplorer.Application do
     :ok
   end
 
-  defp cache_supervisor_spec(network) when network in [:mainnet, :testnet, :testnet2] do
+  defp cache_supervisor_spec(network) do
     # Active block cache
     active_block_cache_spec =
       Supervisor.child_spec(
