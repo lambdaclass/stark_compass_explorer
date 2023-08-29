@@ -1,7 +1,7 @@
 defmodule StarknetExplorer.BlockListener do
   use GenServer, restart: :temporary
   require Logger
-  alias StarknetExplorer.{Rpc, BlockListener, Block, BlockUtils}
+  alias StarknetExplorer.{BlockListener, BlockUtils}
   defstruct [:latest_block_number]
   @fetch_latest_interval :timer.seconds(1)
   @moduledoc """

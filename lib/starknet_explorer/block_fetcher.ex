@@ -1,17 +1,17 @@
 defmodule StarknetExplorer.BlockFetcher.Worker do
   @fetch_interval 100
-  alias StarknetExplorer.{Rpc, BlockFetcher.Worker, BlockUtils}
+  alias StarknetExplorer.{BlockFetcher.Worker, BlockUtils}
   defstruct [:finish, :next_to_fetch]
   require Logger
   use GenServer, restart: :temporary
 
   @moduledoc """
-  Module dedicated to fetch blocks on the range
-  start..finish, where start > finish, so for example
-  if start = 10 and finish = 1, then this process
-  will fetch blocks 10 down to 1.
-  To use it, please call the StarknetExplorer.BlockFetcher.fetch_in_range/1
-  function instead of using this module directly.
+  Module dedicated to fetch blocks on the range between 2 numbers
+  (start and finish, where start > finish) so for example if start =
+  10 and finish = 1, then this process will fetch blocks 10 down to 1.
+  To use it, please call the
+  StarknetExplorer.BlockFetcher.fetch_in_range/1 function instead of
+  using this module directly.
   """
 
   def start_link(args) do
