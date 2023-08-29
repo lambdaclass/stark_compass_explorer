@@ -20,7 +20,7 @@ if System.get_env("PHX_SERVER") do
   config :starknet_explorer, StarknetExplorerWeb.Endpoint, server: true
 end
 
-enable_fetcher? = System.get_env("ENABLE_FETCHER") == "true"
+enable_listener? = System.get_env("ENABLE_LISTENER") == "true"
 
 rpc_host =
   System.get_env("RPC_API_HOST") ||
@@ -44,7 +44,7 @@ config :starknet_explorer,
   rpc_host: rpc_host,
   testnet_host: testnet_rpc_host,
   testnet_2_host: testnet_2_rpc_host,
-  enable_fetcher?: enable_fetcher?
+  enable_listener: enable_listener?
 
 config :starknet_explorer, rpc_host: rpc_host
 
