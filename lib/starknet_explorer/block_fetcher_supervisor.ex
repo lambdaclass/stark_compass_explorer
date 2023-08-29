@@ -5,6 +5,10 @@ defmodule StarknetExplorer.BlockFetcher do
     DynamicSupervisor.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
+  def stop_child(pid) do
+    DynamicSupervisor.terminate_child(__MODULE__, pid)
+  end
+
   def init(_) do
     {:ok, %{}}
   end

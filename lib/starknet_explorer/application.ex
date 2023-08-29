@@ -11,7 +11,6 @@ defmodule StarknetExplorer.Application do
       @networks
       |> Enum.flat_map(fn net -> cache_supervisor_spec(net) end)
 
-    # cache_child_specs ++
     children =
       [
         # Start the Telemetry supervisor
@@ -23,17 +22,17 @@ defmodule StarknetExplorer.Application do
         # Start Finch
         {Finch, name: StarknetExplorer.Finch},
         # Start the Endpoint (http/https)
-        StarknetExplorerWeb.Endpoint
+        StarknetExplorerWeb.Endpoint,
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
+        {DynamicSupervisor, strategy: :one_for_one, name: StarknetExplorer.BlockFetcher}
+        | cache_child_specs
       ] ++
-        [{DynamicSupervisor, strategy: :one_for_one, name: StarknetExplorer.BlockFetcher}]
-
-    if Application.get_env(:starknet_explorer, :enable_fetcher?) do
-      # [StarknetExplorer.BlockListener]
-    else
-      []
-    end
+        if Application.get_env(:starknet_explorer, :enable_fetcher?) do
+          [StarknetExplorer.BlockListener]
+        else
+          []
+        end
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

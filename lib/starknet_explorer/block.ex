@@ -32,7 +32,6 @@ defmodule StarknetExplorer.Block do
       :new_root,
       :timestamp,
       :sequencer_address,
-      # :transactions
       :original_json
     ])
     |> validate_required([
@@ -42,7 +41,6 @@ defmodule StarknetExplorer.Block do
       :parent_hash,
       :new_root,
       :timestamp,
-      :sequencer_address,
       :original_json
     ])
     |> unique_constraint(:number)
