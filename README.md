@@ -44,7 +44,7 @@ export ENABLE_LISTENER="true"
 To use it, you simply have to call the `StarknetExplorer.BlockFetcher.fetch_in_range`
 function, you can do this interactively after starting with `make run`:
  ```elixir
- iex> StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10})
+ StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10})
  ```
 Or, if you're on a "prod" environment, simply send it through elixir's RPC:
  ```bash 
