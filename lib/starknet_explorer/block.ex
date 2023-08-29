@@ -12,7 +12,7 @@ defmodule StarknetExplorer.Block do
     field :parent_hash, :string
     field :new_root, :string
     field :timestamp, :integer
-    field :sequencer_address, :string
+    field :sequencer_address, :string, default: ""
     field :original_json, :binary, load_in_query: false
 
     has_many :transactions, StarknetExplorer.Transaction,
