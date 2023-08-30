@@ -61,8 +61,7 @@ defmodule StarknetExplorer.Application do
               state: %{network: network},
               async: true
             )
-          ],
-          shutdown: 5000
+          ]
         ),
         id: :"#{network}_block_cache"
       )

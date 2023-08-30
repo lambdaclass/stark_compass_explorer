@@ -1,7 +1,8 @@
 defmodule StarknetExplorer.TransactionReceipt do
   use Ecto.Schema
   import Ecto.Changeset
-  alias StarknetExplorer.{Transaction, TransactionReceipt}
+  import Ecto.Query
+  alias StarknetExplorer.{Transaction, TransactionReceipt, Repo}
 
   @invoke_tx_receipt_fields [
     :type,
@@ -110,10 +111,6 @@ defmodule StarknetExplorer.TransactionReceipt do
       @fields ++ [:original_json]
     )
     |> validate_according_to_type(attrs)
-
-    # |> foreign_key_constraint(:transaction_id)
-    # |> unique_constraint([:id])
-    # |> dbg
   end
 
   # TODO: Use the proper changeset function
@@ -126,6 +123,18 @@ defmodule StarknetExplorer.TransactionReceipt do
     )
     |> validate_according_to_type(attrs)
     |> unique_constraint(:receipt)
+  end
+
+  def get_by_transaction_hash(tx_hash) do
+    query =
+      from tr in TransactionReceipt,
+        where: tr.transaction_hash == ^tx_hash
+
+    Repo.one(query)
+  end
+
+  def from_rpc_tx(rpc_receipt) do
+    struct(%__MODULE__{}, rpc_receipt |> StarknetExplorerWeb.Utils.atomize_keys())
   end
 
   defp validate_according_to_type(changeset, _tx = %{"type" => "INVOKE"}) do

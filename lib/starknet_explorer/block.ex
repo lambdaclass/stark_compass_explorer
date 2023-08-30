@@ -3,6 +3,7 @@ defmodule StarknetExplorer.Block do
   import Ecto.Query
   import Ecto.Changeset
   alias StarknetExplorer.{Repo, Transaction, Block}
+  alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.TransactionReceipt, as: Receipt
   require Logger
   @primary_key {:number, :integer, []}
@@ -64,11 +65,7 @@ defmodule StarknetExplorer.Block do
     # match the fields in the schema.
     block =
       block
-      |> Map.new(fn
-        {"block_hash", hash} -> {"hash", hash}
-        {"block_number", number} -> {"number", number}
-        {k, v} -> {k, v}
-      end)
+      |> rename_rpc_fields
       |> Map.put("original_json", original_json)
 
     transaction_result =
@@ -107,6 +104,13 @@ defmodule StarknetExplorer.Block do
     end
   end
 
+  def from_rpc_block(rpc_block) do
+    rpc_block =
+      rpc_block |> rename_rpc_fields |> Utils.atomize_keys()
+
+    struct(__MODULE__, rpc_block)
+  end
+
   @doc """
   Returns the highest block number fetched from the RPC.
   """
@@ -136,14 +140,49 @@ defmodule StarknetExplorer.Block do
   end
 
   @doc """
-  Returns the n latests blocks
+  Returns amount blocks starting at block number up_to
   """
-  def latest_n_blocks_with_txs(n \\ 20) do
+  def latest_blocks_with_txs(amount, up_to) do
     query =
       from b in Block,
         order_by: [desc: b.number],
-        limit: ^n
+        where: b.number <= ^up_to and b.number >= ^(up_to - amount)
 
-    Repo.all(query) |> Repo.preload(:transactions)
+    query
+    |> Repo.all()
+    |> Repo.preload(:transactions)
+  end
+
+  def rename_rpc_fields(rpc_block) do
+    rpc_block
+    |> Map.new(fn
+      {"block_hash", hash} ->
+        {"hash", hash}
+
+      {"block_number", number} ->
+        {"number", number}
+
+      {"transactions", transactions} ->
+        {"transactions", Enum.map(transactions, &Transaction.rename_rpc_fields/1)}
+
+      {k, v} ->
+        {k, v}
+    end)
+  end
+
+  def get_by_hash(hash) do
+    query =
+      from b in Block,
+        where: b.hash == ^hash
+
+    Repo.one(query)
+  end
+
+  def get_by_num(num) do
+    query =
+      from b in Block,
+        where: b.number == ^num
+
+    Repo.one(query)
   end
 end
