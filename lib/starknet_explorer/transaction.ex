@@ -107,16 +107,36 @@ defmodule StarknetExplorer.Transaction do
     |> validate_according_to_tx_type(attrs)
   end
 
+  def from_rpc_tx(rpc_tx) do
+    struct(%__MODULE__{}, rpc_tx |> rename_rpc_fields |> StarknetExplorerWeb.Utils.atomize_keys())
+  end
+
   def get_by_hash(hash) do
     query =
       from tx in Transaction,
         where: tx.hash == ^hash
 
-    Repo.one!(query)
+    Repo.one(query)
   end
 
-  defp rename_rpc_fields(rpc_tx = %{"transaction_hash" => th}) do
-    rpc_tx |> Map.delete("transaction_hash") |> Map.put("hash", th)
+  def get_by_hash_with_receipt(hash) do
+    query =
+      from tx in Transaction,
+        where: tx.hash == ^hash
+
+    case Repo.one(query) do
+      nil ->
+        nil
+
+      tx ->
+        Repo.preload(tx, :receipt)
+    end
+  end
+
+  def rename_rpc_fields(rpc_tx = %{"transaction_hash" => th}) do
+    rpc_tx
+    |> Map.delete("transaction_hash")
+    |> Map.put("hash", th)
   end
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "INVOKE", "version" => "0x1"}) do

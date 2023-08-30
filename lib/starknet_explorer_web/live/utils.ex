@@ -1,5 +1,5 @@
 defmodule StarknetExplorerWeb.Utils do
-  alias StarknetExplorer.Rpc
+  require Logger
   alias StarknetExplorer.DateUtils
 
   def shorten_block_hash(nil), do: ""
@@ -8,41 +8,15 @@ defmodule StarknetExplorerWeb.Utils do
     "#{String.slice(block_hash, 0, 6)}...#{String.slice(block_hash, -4, 4)}"
   end
 
-  def get_latest_block_with_transactions(network) do
-    {:ok, block} = Rpc.get_block_by_number(get_latest_block_number(network), network)
-
-    [block]
+  def get_block_age(%{timestamp: timestamp}) do
+    get_block_age_from_timestamp(timestamp)
   end
 
-  def get_latest_block_number(network) do
-    {:ok, _latest_block = %{"block_number" => block_number}} =
-      Rpc.get_latest_block_no_cache(network)
-
-    block_number
+  def get_block_age(%{"timestamp" => timestamp}) do
+    get_block_age_from_timestamp(timestamp)
   end
 
-  def list_blocks(network) do
-    block_number = get_latest_block_number(network)
-    Enum.reverse(list_blocks(block_number, 15, [], network))
-  end
-
-  def list_blocks(_block_number, 0, acc, _) do
-    acc
-  end
-
-  def list_blocks(block_number, _remaining, acc, _) when block_number < 0 do
-    acc
-  end
-
-  def list_blocks(block_number, remaining, acc, network) do
-    {:ok, block} = Rpc.get_block_by_number(block_number, network)
-    prev_block_number = block_number - 1
-    list_blocks(prev_block_number, remaining - 1, [block | acc], network)
-  end
-
-  def get_block_age(block) do
-    get_block_age_from_timestamp(block["timestamp"])
-  end
+  def get_block_age_from_timestamp(nil), do: ""
 
   def get_block_age_from_timestamp(timestamp) do
     %{minutes: minutes, hours: hours, days: days} = DateUtils.calculate_time_difference(timestamp)
@@ -58,4 +32,18 @@ defmodule StarknetExplorerWeb.Utils do
         "#{days} d"
     end
   end
+
+  def atomize_keys(map) when is_map(map) do
+    map
+    |> Map.new(fn {key, val} when is_binary(key) ->
+      {String.to_atom(key), atomize_keys(val)}
+    end)
+  end
+
+  def atomize_keys(list) when is_list(list) do
+    list
+    |> Enum.map(fn list_elem -> atomize_keys(list_elem) end)
+  end
+
+  def atomize_keys(not_a_map), do: not_a_map
 end
