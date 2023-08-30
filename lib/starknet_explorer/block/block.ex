@@ -13,7 +13,7 @@ defmodule StarknetExplorer.Block do
     field :parent_hash, :string
     field :new_root, :string
     field :timestamp, :integer
-    field :sequencer_address, :string
+    field :sequencer_address, :string, default: ""
     field :original_json, :binary, load_in_query: false
 
     has_many :transactions, StarknetExplorer.Transaction,
@@ -33,7 +33,6 @@ defmodule StarknetExplorer.Block do
       :new_root,
       :timestamp,
       :sequencer_address,
-      # :transactions
       :original_json
     ])
     |> validate_required([
@@ -43,7 +42,6 @@ defmodule StarknetExplorer.Block do
       :parent_hash,
       :new_root,
       :timestamp,
-      :sequencer_address,
       :original_json
     ])
     |> unique_constraint(:number)
@@ -182,6 +180,14 @@ defmodule StarknetExplorer.Block do
     query =
       from b in Block,
         where: b.number == ^num
+
+    Repo.one(query)
+  end
+
+  def get_by_height(height) when is_integer(height) do
+    query =
+      from b in Block,
+        where: b.number == ^height
 
     Repo.one(query)
   end

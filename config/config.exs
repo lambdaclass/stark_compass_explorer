@@ -58,6 +58,9 @@ config :esbuild,
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
+config :starknet_explorer,
+  allowed_networks: [:mainnet, :testnet, :testnet2]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

@@ -72,7 +72,7 @@
       aws_secret_access_key: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY') }}"
       aws_region: "{{ lookup('ansible.builtin.env', 'AWS_REGION') }}"
       prover_storage: "{{ lookup('ansible.builtin.env', 'PROVER_STORAGE') }}"
-      enable_fetcher: "{{ lookup('ansible.builtin.env', 'ENABLE_FETCHER') }}"
+      enable_listener: "{{ lookup('ansible.builtin.env', 'ENABLE_LISTENER') }}"
 
   - name: Create user systemd directory
     ansible.builtin.file:

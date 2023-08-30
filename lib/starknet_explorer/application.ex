@@ -4,11 +4,11 @@ defmodule StarknetExplorer.Application do
   @moduledoc false
   import Cachex.Spec
   use Application
-
+  @networks Application.compile_env(:starknet_explorer, :allowed_networks)
   @impl true
   def start(_type, _args) do
     cache_child_specs =
-      [:mainnet, :testnet, :testnet2]
+      @networks
       |> Enum.flat_map(fn net -> cache_supervisor_spec(net) end)
 
     children =
@@ -22,13 +22,14 @@ defmodule StarknetExplorer.Application do
         # Start Finch
         {Finch, name: StarknetExplorer.Finch},
         # Start the Endpoint (http/https)
-        StarknetExplorerWeb.Endpoint
+        StarknetExplorerWeb.Endpoint,
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
+        {DynamicSupervisor, strategy: :one_for_one, name: StarknetExplorer.BlockFetcher}
+        | cache_child_specs
       ] ++
-        cache_child_specs ++
         if Application.get_env(:starknet_explorer, :enable_fetcher?) do
-          [StarknetExplorer.BlockFetcher]
+          [StarknetExplorer.BlockListener]
         else
           []
         end
@@ -47,7 +48,7 @@ defmodule StarknetExplorer.Application do
     :ok
   end
 
-  defp cache_supervisor_spec(network) when network in [:mainnet, :testnet, :testnet2] do
+  defp cache_supervisor_spec(network) do
     # Active block cache
     active_block_cache_spec =
       Supervisor.child_spec(
