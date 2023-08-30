@@ -58,4 +58,14 @@ defmodule StarknetExplorerWeb.Utils do
         "#{days} d"
     end
   end
+
+  # 1 eth = 10^18 wei
+  @wei_to_eth_constant Decimal.new("1.0E+18")
+  def hex_wei_to_eth(<<"0x", wei_base_16::binary>>) do
+    wei_base_16
+    |> String.to_integer(16)
+    |> Decimal.new()
+    |> Decimal.div(@wei_to_eth_constant)
+    |> Decimal.to_string(:normal)
+  end
 end

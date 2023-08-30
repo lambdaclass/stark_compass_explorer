@@ -112,13 +112,31 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       end
 
     assigns = [
+      gas_price: "Loading...",
       block: block,
       view: "overview",
       verification: "Pending",
       enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification)
     ]
 
+    Process.send_after(self(), :get_gas_price, 200)
+
     {:ok, assign(socket, assigns)}
+  end
+
+  def handle_info(:get_gas_price, socket = %Phoenix.LiveView.Socket{}) do
+    block_hash = socket.assigns.block["block_hash"]
+
+    new_gas_price_assign =
+      case StarknetExplorer.Gateway.block_gas_fee_in_wei(block_hash) do
+        {:ok, gas_price} ->
+          StarknetExplorerWeb.Utils.hex_wei_to_eth(gas_price)
+
+        {:error, err} ->
+          "Unavailable"
+      end
+
+    {:noreply, assign(socket, :gas_price, new_gas_price_assign)}
   end
 
   @impl true
@@ -354,9 +372,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       </div>
       <div class="col-span-3">
         <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-          <div class="gray-label text-sm">Mocked</div>
-          <div class="break-all bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1">
-            <%= "0.000000017333948464 ETH" %>
+          <div
+            class="break-all bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1"
+            phx-update="replace"
+            id="gas-price"
+          >
+            <%= "#{@gas_price} ETH" %>
           </div>
         </div>
       </div>

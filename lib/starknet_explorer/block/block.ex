@@ -13,6 +13,8 @@ defmodule StarknetExplorer.Block do
     field :new_root, :string
     field :timestamp, :integer
     field :sequencer_address, :string, default: ""
+    field :gas_fee_in_wei, :string
+    field :execution_resources, :integer
     field :original_json, :binary, load_in_query: false
 
     has_many :transactions, StarknetExplorer.Transaction,
@@ -32,6 +34,7 @@ defmodule StarknetExplorer.Block do
       :new_root,
       :timestamp,
       :sequencer_address,
+      :gas_fee_in_wei,
       :original_json
     ])
     |> validate_required([
@@ -41,6 +44,7 @@ defmodule StarknetExplorer.Block do
       :parent_hash,
       :new_root,
       :timestamp,
+      :gas_fee_in_wei,
       :original_json
     ])
     |> unique_constraint(:number)
@@ -68,6 +72,8 @@ defmodule StarknetExplorer.Block do
         {k, v} -> {k, v}
       end)
       |> Map.put("original_json", original_json)
+
+    dbg(block)
 
     transaction_result =
       StarknetExplorer.Repo.transaction(fn ->
