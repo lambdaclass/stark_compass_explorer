@@ -35,7 +35,7 @@ defmodule StarknetExplorer.BlockFetcher.Worker do
   @impl true
   def handle_info(:fetch, state = %Worker{}) do
     state =
-      case BlockUtils.fetch_and_store(state.next_to_fetch) do
+      case BlockUtils.fetch_and_store(state.next_to_fetch) |> dbg do
         {:ok, _block} ->
           %{state | next_to_fetch: state.next_to_fetch - 1}
 
@@ -46,11 +46,13 @@ defmodule StarknetExplorer.BlockFetcher.Worker do
 
           state
       end
+      |> dbg
 
     maybe_fetch_another(state)
 
     {:noreply, state}
   end
+  |> dbg
 
   defp maybe_fetch_another(%Worker{next_to_fetch: next, finish: last})
        when next < last,

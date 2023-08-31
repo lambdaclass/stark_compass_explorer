@@ -26,9 +26,24 @@ defmodule StarknetExplorer.BlockFetcher do
         __MODULE__,
         spec
       )
+      |> dbg
   end
 
   def fetch_in_range(_args) do
     {:error, "Error starting block fetcher, make sure that start >= finish}"}
+  end
+
+  def find_and_set_missing_gas_prices() do
+    spec =
+      %{
+        id: StarknetExplorer.BlockUpdater,
+        start: {StarknetExplorer.BlockUpdater, :start_link, [%{}]}
+      }
+
+    {:ok, _} =
+      DynamicSupervisor.start_child(
+        __MODULE__,
+        spec
+      )
   end
 end
