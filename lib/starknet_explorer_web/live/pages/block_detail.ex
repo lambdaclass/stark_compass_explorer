@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.BlockDetailLive do
   require Logger
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.{Rpc, Block, Data}
+  alias StarknetExplorer.{Block, Data}
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.S3
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
@@ -135,7 +135,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     {:noreply, socket}
   end
 
-  defp gas_fee_for_block(%Block{gas_fee_in_wei: nil, hash: block_hash}) do
+  defp gas_fee_for_block(%Block{gas_fee_in_wei: gas_price = <<"0x", _hex_price::binary>>}),
+    do: StarknetExplorerWeb.Utils.hex_wei_to_eth(gas_price)
+
+  defp gas_fee_for_block(%Block{gas_fee_in_wei: _, hash: block_hash}) do
     case StarknetExplorer.Gateway.block_gas_fee_in_wei(block_hash) do
       {:ok, gas_price} ->
         StarknetExplorerWeb.Utils.hex_wei_to_eth(gas_price)
@@ -144,9 +147,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         "Unavailable"
     end
   end
-
-  defp gas_fee_for_block(%Block{gas_fee_in_wei: gas_price}),
-    do: StarknetExplorerWeb.Utils.hex_wei_to_eth(gas_price)
 
   @impl true
   def handle_event("select-view", %{"view" => view}, socket) do
