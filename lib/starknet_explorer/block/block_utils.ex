@@ -20,9 +20,9 @@ defmodule StarknetExplorer.BlockUtils do
   end
 
   def store_block(block = %{"block_number" => block_number}) do
-    with {:ok, receipts} <- receipts_for_block(block) do
-      # {:ok, gas_price} <- StarknetExplorer.Gateway.block_gas_fee_in_wei(block_number) do
-      # block = Map.put(block, "gas_fee_in_wei", " ")
+    with {:ok, receipts} <- receipts_for_block(block),
+         {:ok, gas_price} <- StarknetExplorer.Gateway.block_gas_fee_in_wei(block_number) do
+      block = Map.put(block, "gas_fee_in_wei", gas_price)
       Block.insert_from_rpc_response(block, receipts)
     end
   end
