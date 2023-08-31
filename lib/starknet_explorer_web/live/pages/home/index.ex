@@ -122,28 +122,28 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             <div>Age</div>
           </div>
           <%= for block <- Enum.take(@blocks, 15) do %>
-            <div id={"block-#{block["block_number"]}"} class="grid-6 custom-list-item">
+            <div id={"block-#{block.number}"} class="grid-6 custom-list-item">
               <div>
                 <div class="list-h">Number</div>
-                <%= live_redirect(to_string(block["block_number"]),
-                  to: ~p"/#{assigns.network}/block/#{block["block_number"]}"
+                <%= live_redirect(to_string(block.number),
+                  to: ~p"/#{assigns.network}/block/#{block.number}"
                 ) %>
               </div>
               <div class="col-span-2">
                 <div class="list-h">Block Hash</div>
-                <div class="copy-container" id={"copy-block-#{block["block_number"]}"} phx-hook="Copy">
+                <div class="copy-container" id={"copy-block-#{block.number}"} phx-hook="Copy">
                   <div class="relative">
-                    <%= live_redirect(Utils.shorten_block_hash(block["block_hash"]),
-                      to: ~p"/#{assigns.network}/block/#{block["block_hash"]}",
+                    <%= live_redirect(Utils.shorten_block_hash(block.hash),
+                      to: ~p"/#{assigns.network}/block/#{block.hash}",
                       class: "text-hover-blue",
-                      title: block["block_hash"]
+                      title: block.hash
                     ) %>
                     <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                       <div class="relative">
                         <img
                           class="copy-btn copy-text w-4 h-4"
                           src={~p"/images/copy.svg"}
-                          data-text={block["block_hash"]}
+                          data-text={block.hash}
                         />
                         <img
                           class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -157,8 +157,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <div class="col-span-2">
                 <div class="list-h">Status</div>
                 <div>
-                  <span class={"#{if block["status"] == "ACCEPTED_ON_L2", do: "green-label"} #{if block["status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if block["status"] == "PENDING", do: "pink-label"}"}>
-                    <%= block["status"] %>
+                  <span class={"#{if block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if block.status == "PENDING", do: "pink-label"}"}>
+                    <%= block.status %>
                   </span>
                 </div>
               </div>
@@ -196,8 +196,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <div class="list-h">Transaction Hash</div>
                 <div class="copy-container" id={"copy-transaction-#{idx}"} phx-hook="Copy">
                   <div class="relative">
-                    <%= live_redirect(Utils.shorten_block_hash(transaction["transaction_hash"]),
-                      to: ~p"/#{assigns.network}/transactions/#{transaction["transaction_hash"]}",
+                    <%= live_redirect(Utils.shorten_block_hash(transaction.hash),
+                      to: ~p"/#{assigns.network}/transactions/#{transaction.hash}",
                       class: "text-hover-blue"
                     ) %>
                     <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -205,7 +205,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                         <img
                           class="copy-btn copy-text w-4 h-4"
                           src={~p"/images/copy.svg"}
-                          data-text={transaction["transaction_hash"]}
+                          data-text={transaction.hash}
                         />
                         <img
                           class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -219,22 +219,22 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <div class="col-span-2">
                 <div class="list-h">Type</div>
                 <div>
-                  <span class={"#{if transaction["type"] == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
-                    <%= transaction["type"] %>
+                  <span class={"#{if transaction.type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+                    <%= transaction.type %>
                   </span>
                 </div>
               </div>
               <div class="col-span-2">
                 <div class="list-h">Status</div>
                 <div>
-                  <span class={"#{if transaction["block_status"] == "ACCEPTED_ON_L2", do: "green-label"} #{if transaction["block_status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if transaction["block_status"] == "PENDING", do: "pink-label"}"}>
-                    <%= transaction["block_status"] %>
+                  <span class={"#{if transaction.block_status == "ACCEPTED_ON_L2", do: "green-label"} #{if transaction.block_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if transaction.block_status == "PENDING", do: "pink-label"}"}>
+                    <%= transaction.block_status %>
                   </span>
                 </div>
               </div>
               <div>
                 <div class="list-h">Age</div>
-                <%= Utils.get_block_age_from_timestamp(transaction["block_timestamp"]) %>
+                <%= Utils.get_block_age_from_timestamp(transaction.block_timestamp) %>
               </div>
             </div>
           <% end %>
@@ -246,24 +246,23 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
   @impl true
   def handle_info(:load_blocks, socket) do
-    latest_block = Utils.get_latest_block_with_transactions(socket.assigns.network)
-    blocks = Utils.list_blocks(socket.assigns.network)
+    blocks = StarknetExplorer.Data.many_blocks(socket.assigns.network)
+    latest_block = blocks |> hd
 
     transactions =
-      Enum.map(blocks, fn block ->
-        Enum.map(block["transactions"], fn transaction ->
-          Map.put(transaction, "block_status", block["status"])
-          |> Map.put("block_timestamp", block["timestamp"])
-        end)
+      latest_block.transactions
+      |> Enum.map(fn tx ->
+        tx
+        |> Map.put(:block_timestamp, latest_block.timestamp)
+        |> Map.put(:block_status, latest_block.status)
       end)
-      |> List.flatten()
 
     {:noreply,
      assign(socket,
        blocks: blocks,
        transactions: transactions,
        latest_block: latest_block,
-       block_height: latest_block |> hd |> Map.get("block_number")
+       block_height: latest_block.number
      )}
   end
 end

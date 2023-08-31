@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Rpc
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.Data
 
   defp transaction_header(assigns) do
     ~H"""
@@ -9,19 +9,19 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <h2>Transaction</h2>
       <div
         class="copy-container break-all pr-10 lg:pr-0"
-        id={"tsx-header-#{@transaction["transaction_hash"]}"}
+        id={"tsx-header-#{@transaction.hash}"}
         phx-hook="Copy"
       >
         <div class="relative">
           <div class="font-semibold">
-            <%= @transaction["transaction_hash"] %>
+            <%= @transaction.hash %>
           </div>
           <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
             <div class="relative">
               <img
                 class="copy-btn copy-text w-4 h-4"
                 src={~p"/images/copy.svg"}
-                data-text={@transaction["transaction_hash"]}
+                data-text={@transaction.hash}
               />
               <img
                 class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -57,7 +57,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         ,
         phx-value-view="events"
       >
-        Events <span class="gray-label text-sm">Mocked</span>
+        Events
       </div>
       <div
         class={"option #{if assigns.transaction_view == "message_logs", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
@@ -102,48 +102,45 @@ defmodule StarknetExplorerWeb.TransactionLive do
     """
   end
 
-  # TODO:
-  # Do not hardcode the following:
-  # Identifier
-  # Name
-  # Age
   def render_info(%{transaction_view: "events"} = assigns) do
     ~H"""
-    <div class={"table-th !pt-7 border-t border-gray-700 #{if @transaction["sender_address"], do: "grid-6", else: "grid-5"}"}>
+    <div class={"table-th !pt-7 border-t border-gray-700 #{if @transaction.sender_address, do: "grid-6", else: "grid-5"}"}>
       <div>Identifier</div>
       <div>Block Number</div>
       <div>Transaction Hash</div>
       <div>Name</div>
-      <%= if @transaction["sender_address"] do %>
+      <%= if @transaction.sender_address do %>
         <div>From Address</div>
       <% end %>
       <div>Age</div>
     </div>
-    <%= for _signature <- @transaction_receipt["events"] do %>
-      <div class={"custom-list-item #{if @transaction["sender_address"], do: "grid-6", else: "grid-5"}"}>
+    <%= for %{keys: [identifier | _], from_address: _} <- @events do %>
+      <div class={"custom-list-item #{if @transaction.sender_address, do: "grid-6", else: "grid-5"}"}>
         <div>
           <div class="list-h">Identifier</div>
           <div>
-            <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d_4"
-            |> Utils.shorten_block_hash() %>
+            <%= identifier |> Utils.shorten_block_hash() %>
           </div>
         </div>
         <div>
           <div class="list-h">Block Number</div>
-          <div><span class="blue-label"><%= @transaction_receipt["block_number"] %></span></div>
+          <div><span class="blue-label"><%= @transaction_receipt.block_number %></span></div>
         </div>
         <div>
           <div class="list-h">Transaction Hash</div>
-          <div><%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %></div>
+          <div><%= @transaction.hash |> Utils.shorten_block_hash() %></div>
         </div>
         <div>
           <div class="list-h">Name</div>
-          <div><span class="lilac-label">Transfer</span></div>
+          <div>
+            <span class="lilac-label">Transfer</span>
+            <span class="gray-label text-sm">Mocked</span>
+          </div>
         </div>
-        <%= if @transaction["sender_address"] do %>
+        <%= if @transaction.sender_address do %>
           <div>
             <div class="list-h">From Address</div>
-            <div><%= @transaction["sender_address"] |> Utils.shorten_block_hash() %></div>
+            <div><%= @transaction.sender_address |> Utils.shorten_block_hash() %></div>
           </div>
         <% end %>
         <div>
@@ -275,19 +272,15 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Transaction Hash</div>
       <div class="col-span-3 break-all">
-        <div
-          class="copy-container"
-          id={"tsx-overview-hash-#{@transaction["transaction_hash"]}"}
-          phx-hook="Copy"
-        >
+        <div class="copy-container" id={"tsx-overview-hash-#{@transaction.hash}"} phx-hook="Copy">
           <div class="relative">
-            <%= @transaction["transaction_hash"] |> Utils.shorten_block_hash() %>
+            <%= @transaction.hash |> Utils.shorten_block_hash() %>
             <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
               <div class="relative">
                 <img
                   class="copy-btn copy-text w-4 h-4"
                   src={~p"/images/copy.svg"}
-                  data-text={@transaction["transaction_hash"]}
+                  data-text={@transaction.hash}
                 />
                 <img
                   class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -302,23 +295,23 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Transaction Type</div>
       <div class="col-span-3">
-        <span class={"#{if @transaction["type"] == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
-          <%= @transaction["type"] %>
+        <span class={"#{if @transaction.type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+          <%= @transaction.type %>
         </span>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Status</div>
       <div class="col-span-3">
-        <span class={"#{if @transaction_receipt["status"] == "ACCEPTED_ON_L2", do: "green-label"} #{if @transaction_receipt["status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if @transaction_receipt["status"] == "PENDING", do: "pink-label"}"}>
-          <%= @transaction_receipt["status"] %>
+        <span class={"#{if @transaction_receipt.finality_status == "ACCEPTED_ON_L2", do: "green-label"} #{if @transaction_receipt.finality_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if @transaction_receipt.finality_status == "PENDING", do: "pink-label"}"}>
+          <%= @transaction_receipt.finality_status %>
         </span>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Number</div>
       <div class="col-span-3">
-        <span class="blue-label"><%= @transaction_receipt["block_number"] %></span>
+        <span class="blue-label"><%= @transaction_receipt.block_number %></span>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
@@ -326,17 +319,17 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="col-span-3 text-hover-blue break-all">
         <div
           class="copy-container"
-          id={"tsx-overview-block-#{@transaction_receipt["block_hash"]}"}
+          id={"tsx-overview-block-#{@transaction_receipt.block_hash}"}
           phx-hook="Copy"
         >
           <div class="relative">
-            <%= @transaction_receipt["block_hash"] |> Utils.shorten_block_hash() %>
+            <%= @transaction_receipt.block_hash |> Utils.shorten_block_hash() %>
             <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
               <div class="relative">
                 <img
                   class="copy-btn copy-text w-4 h-4"
                   src={~p"/images/copy.svg"}
-                  data-text={@transaction_receipt["block_hash"]}
+                  data-text={@transaction_receipt.block_hash}
                 />
                 <img
                   class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -348,23 +341,23 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </div>
       </div>
     </div>
-    <%= if @transaction["sender_address"] do %>
+    <%= if @transaction.sender_address do %>
       <div class="grid-4 custom-list-item">
         <div class="block-label">Sender Address</div>
         <div class="col-span-3 break-all">
           <div
             class="copy-container"
-            id={"tsx-overview-addres-#{@transaction["sender_address"]}"}
+            id={"tsx-overview-addres-#{@transaction.sender_address}"}
             phx-hook="Copy"
           >
             <div class="relative">
-              <%= @transaction["sender_address"] |> Utils.shorten_block_hash() %>
+              <%= @transaction.sender_address |> Utils.shorten_block_hash() %>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
                   <img
                     class="copy-btn copy-text w-4 h-4"
                     src={~p"/images/copy.svg"}
-                    data-text={@transaction["sender_address"]}
+                    data-text={@transaction.sender_address}
                   />
                   <img
                     class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -379,19 +372,19 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <% end %>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Actual Fee</div>
-      <div class="col-span-3"><%= @transaction_receipt["actual_fee"] %></div>
+      <div class="col-span-3"><%= @transaction_receipt.actual_fee %></div>
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Max Fee</div>
       <div class="col-span-3">
         <span class="bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1">
-          <%= @transaction["max_fee"] %>
+          <%= @transaction.max_fee %>
         </span>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Nonce</div>
-      <div class="col-span-3"><%= @transaction["nonce"] %></div>
+      <div class="col-span-3"><%= @transaction.nonce %></div>
     </div>
     <div class="custom-list-item">
       <div class="mb-5 text-gray-500 md:text-white !flex-row gap-2">
@@ -529,8 +522,8 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <div>Index</div>
           <div class="col-span-7">Value</div>
         </div>
-        <%= unless is_nil(@transaction["signature"]) do %>
-          <%= for {index, signature} <- Enum.with_index(@transaction["signature"]) do %>
+        <%= unless is_nil(@transaction.signature) do %>
+          <%= for {index, signature} <- Enum.with_index(@transaction.signature) do %>
             <div class="w-full grid-8 custom-list-item">
               <div>
                 <div class="list-h">Index</div>
@@ -569,37 +562,19 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   @impl true
   def mount(%{"transaction_hash" => transaction_hash}, _session, socket) do
-    Process.send(self(), :load_transaction, [])
-
-    assigns = [
-      transaction_hash: transaction_hash,
-      transaction: nil,
-      transaction_receipt: nil,
-      transaction_view: "overview"
-    ]
-
-    {:ok, assign(socket, assigns)}
-  end
-
-  @impl true
-  def handle_info(
-        :load_transaction,
-        %{assigns: %{transaction_hash: transaction_hash}} = socket
-      ) do
-    {:ok, transaction} = Rpc.get_transaction(transaction_hash, socket.assigns.network)
-
-    {:ok, transaction_receipt} =
-      Rpc.get_transaction_receipt(transaction_hash, socket.assigns.network)
+    {:ok, transaction = %{receipt: receipt}} =
+      Data.transaction(transaction_hash, socket.assigns.network)
 
     assigns = [
       transaction: transaction,
-      transaction_receipt: transaction_receipt,
-      transaction_hash: socket.assigns.transaction_hash,
-      transaction_view: socket.assigns.transaction_view
+      transaction_receipt: transaction.receipt,
+      transaction_hash: transaction_hash,
+      transaction_view: "overview",
+      events: receipt.events
     ]
 
     socket = assign(socket, assigns)
-    {:noreply, socket}
+    {:ok, assign(socket, assigns)}
   end
 
   @impl true
