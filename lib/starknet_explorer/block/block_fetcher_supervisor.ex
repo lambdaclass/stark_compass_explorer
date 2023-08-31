@@ -26,7 +26,6 @@ defmodule StarknetExplorer.BlockFetcher do
         __MODULE__,
         spec
       )
-      |> dbg
   end
 
   def fetch_in_range(_args) do

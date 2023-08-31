@@ -1,5 +1,5 @@
 defmodule StarknetExplorer.BlockUpdater do
-  alias StarknetExplorer.{BlockUpdater, Block, Gateway}
+  alias StarknetExplorer.{Block, Gateway}
   use GenServer
   require Logger
   @update_interval :timer.seconds(5)
@@ -7,7 +7,7 @@ defmodule StarknetExplorer.BlockUpdater do
     GenServer.start_link(__MODULE__, args)
   end
 
-  def init(args) do
+  def init(_args) do
     state = %{}
     Logger.info("starting block updater")
     Process.send_after(self(), :update_gas_fee, 100)
@@ -17,18 +17,15 @@ defmodule StarknetExplorer.BlockUpdater do
   def handle_info(:update_gas_fee, state) do
     Logger.info("Updating gas fees")
 
-    case StarknetExplorer.Block.get_with_missing_gas_fees(10) |> dbg do
+    case StarknetExplorer.Block.get_with_missing_gas_fees(10) do
       [] ->
         Process.send_after(self(), :stop, 100)
 
       blocks_without_gas_fees ->
         blocks_without_gas_fees
         |> tasks_for_fee_fetching
-        |> dbg
         |> Task.await_many()
-        |> dbg
         |> Enum.map(&do_db_update/1)
-        |> dbg
 
         Process.send_after(self(), :stop, @update_interval)
     end
@@ -37,7 +34,7 @@ defmodule StarknetExplorer.BlockUpdater do
   end
 
   def handle_info(:stop, state) do
-    {:stop, :ok, state}
+    {:stop, :normal, state}
   end
 
   defp tasks_for_fee_fetching(blocks) when is_list(blocks) do

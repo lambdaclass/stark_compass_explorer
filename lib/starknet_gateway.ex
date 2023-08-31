@@ -13,7 +13,6 @@ defmodule StarknetExplorer.Gateway do
   defp gas_fee_request(query) do
     case gateway_request("get_block", query) do
       {:ok, map} ->
-        dbg(Map.keys(map))
         gas_price = Map.get(map, "gas_price")
         {:ok, gas_price}
 

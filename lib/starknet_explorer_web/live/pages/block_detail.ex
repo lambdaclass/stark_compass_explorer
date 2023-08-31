@@ -124,6 +124,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     {:ok, assign(socket, assigns)}
   end
 
+  @impl true
   def handle_info(:get_gas_price, socket = %Phoenix.LiveView.Socket{}) do
     block_hash = socket.assigns.block["block_hash"]
 
@@ -132,7 +133,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         {:ok, gas_price} ->
           StarknetExplorerWeb.Utils.hex_wei_to_eth(gas_price)
 
-        {:error, err} ->
+        {:error, _err} ->
           "Unavailable"
       end
 

@@ -72,8 +72,6 @@ defmodule StarknetExplorer.Block do
       end)
       |> Map.put("original_json", original_json)
 
-    dbg(block)
-
     transaction_result =
       StarknetExplorer.Repo.transaction(fn ->
         block_changeset = Block.changeset(%Block{original_json: original_json}, block)

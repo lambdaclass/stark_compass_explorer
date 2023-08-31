@@ -13,7 +13,6 @@ defmodule StarknetExplorer.BlockUtils do
       error ->
         {:error, error}
     end
-    |> dbg
   end
 
   defp already_stored?(block_height) do
