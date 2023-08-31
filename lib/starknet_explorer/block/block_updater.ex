@@ -46,7 +46,7 @@ defmodule StarknetExplorer.BlockUpdater do
   end
 
   defp fetch_gas_fee(block = %Block{}) do
-    case Gateway.block_gas_price_in_wei(block.number) do
+    case Gateway.block_gas_fee_in_wei(block.number) do
       {:ok, gas_price} ->
         {:ok, gas_price, block.number}
 

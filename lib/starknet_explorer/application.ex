@@ -26,7 +26,7 @@ defmodule StarknetExplorer.Application do
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
         {DynamicSupervisor, strategy: :one_for_one, name: StarknetExplorer.BlockFetcher}
-        # | cache_child_specs
+        | cache_child_specs
       ] ++
         if Application.get_env(:starknet_explorer, :enable_fetcher?) do
           [StarknetExplorer.BlockListener]

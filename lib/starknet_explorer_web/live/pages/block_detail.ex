@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.BlockDetailLive do
   require Logger
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Rpc
+  alias StarknetExplorer.{Rpc, Block}
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.S3
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
@@ -126,19 +126,27 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   @impl true
   def handle_info(:get_gas_price, socket = %Phoenix.LiveView.Socket{}) do
-    block_hash = socket.assigns.block["block_hash"]
+    new_gas_assign = gas_fee_for_block(socket.assigns.block)
 
-    new_gas_price_assign =
-      case StarknetExplorer.Gateway.block_gas_fee_in_wei(block_hash) do
-        {:ok, gas_price} ->
-          StarknetExplorerWeb.Utils.hex_wei_to_eth(gas_price)
+    socket =
+      socket
+      |> assign(:gas_price, new_gas_assign)
 
-        {:error, _err} ->
-          "Unavailable"
-      end
-
-    {:noreply, assign(socket, :gas_price, new_gas_price_assign)}
+    {:noreply, socket}
   end
+
+  defp gas_fee_for_block(%Block{gas_fee_in_wei: nil, hash: block_hash}) do
+    case StarknetExplorer.Gateway.block_gas_fee_in_wei(block_hash) do
+      {:ok, gas_price} ->
+        StarknetExplorerWeb.Utils.hex_wei_to_eth(gas_price)
+
+      {:error, _err} ->
+        "Unavailable"
+    end
+  end
+
+  defp gas_fee_for_block(%Block{gas_fee_in_wei: gas_price}),
+    do: StarknetExplorerWeb.Utils.hex_wei_to_eth(gas_price)
 
   @impl true
   def handle_event("select-view", %{"view" => view}, socket) do

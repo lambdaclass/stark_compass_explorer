@@ -4,10 +4,10 @@ defmodule StarknetExplorer.Gateway do
 
   @gateway_url "https://alpha-mainnet.starknet.io/feeder_gateway"
 
-  def block_gas_price_in_wei(block_hash = <<"0x", _hash::binary>>),
+  def block_gas_fee_in_wei(block_hash = <<"0x", _hash::binary>>),
     do: gas_fee_request(blockHash: block_hash)
 
-  def block_gas_price_in_wei(block_number) when is_integer(block_number),
+  def block_gas_fee_in_wei(block_number) when is_integer(block_number),
     do: gas_fee_request(blockNumber: block_number)
 
   defp gas_fee_request(query) do
