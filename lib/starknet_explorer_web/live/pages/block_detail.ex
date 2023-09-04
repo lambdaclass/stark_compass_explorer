@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.BlockDetailLive do
   require Logger
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.{Block, Data}
+  alias StarknetExplorer.Data
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.BlockUtils
   alias StarknetExplorer.S3
@@ -145,19 +145,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       |> assign(:execution_resources, resources_assign)
 
     {:noreply, socket}
-  end
-
-  defp gas_fee_for_block(%Block{gas_fee_in_wei: gas_price = <<"0x", _hex_price::binary>>}),
-    do: StarknetExplorerWeb.Utils.hex_wei_to_eth(gas_price)
-
-  defp gas_fee_for_block(%Block{gas_fee_in_wei: _, hash: block_hash}) do
-    case StarknetExplorer.Gateway.fetch_block(block_hash) do
-      {:ok, %{"gas_price" => gas_price}} ->
-        StarknetExplorerWeb.Utils.hex_wei_to_eth(gas_price)
-
-      {:error, _err} ->
-        "Unavailable"
-    end
   end
 
   @impl true
