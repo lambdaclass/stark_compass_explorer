@@ -60,9 +60,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   defp block_detail_header(assigns) do
     ~H"""
     <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
-      <h2>Block <span class="font-semibold">#<%= @block["block_number"] %></span></h2>
+      <h2>Block <span class="font-semibold">#<%= @block.number %></span></h2>
       <div class="text-gray-400">
-        <%= @block["timestamp"]
+        <%= @block.timestamp
         |> DateTime.from_unix()
         |> then(fn {:ok, time} -> time end)
         |> Calendar.strftime("%c") %> UTC
@@ -126,7 +126,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   @impl true
   def handle_info(:get_gas_price, socket = %Phoenix.LiveView.Socket{}) do
-    new_gas_assign = gas_fee_for_block(socket.assigns.block)
+    new_gas_assign =
+      socket.assigns.block
+      |> gas_fee_for_block()
 
     socket =
       socket
@@ -200,7 +202,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>Type</div>
       <div>Version</div>
     </div>
-    <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block["transactions"] do %>
+    <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block.transactions do %>
       <div class="grid-3 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
@@ -269,17 +271,17 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="block-label">Block Hash</div>
       <div
         class="copy-container col-span-3 text-hover-blue"
-        id={"copy-block-hash-#{@block["block_number"]}"}
+        id={"copy-block-hash-#{@block.number}"}
         phx-hook="Copy"
       >
         <div class="relative">
-          <%= Utils.shorten_block_hash(@block["block_hash"]) %>
+          <%= Utils.shorten_block_hash(@block.hash) %>
           <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
             <div class="relative">
               <img
                 class="copy-btn copy-text w-4 h-4"
                 src={~p"/images/copy.svg"}
-                data-text={@block["block_hash"]}
+                data-text={@block.hash}
               />
               <img
                 class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -293,26 +295,22 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Status</div>
       <div class="col-span-3">
-        <span class={"#{if @block["status"] == "ACCEPTED_ON_L2", do: "green-label"} #{if @block["status"] == "ACCEPTED_ON_L1", do: "blue-label"} #{if @block["status"] == "PENDING", do: "pink-label"}"}>
-          <%= @block["status"] %>
+        <span class={"#{if @block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if @block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if @block.status == "PENDING", do: "pink-label"}"}>
+          <%= @block.status %>
         </span>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">State Root</div>
-      <div
-        class="copy-container col-span-3"
-        id={"copy-block-root-#{@block["block_number"]}"}
-        phx-hook="Copy"
-      >
+      <div class="copy-container col-span-3" id={"copy-block-root-#{@block.number}"} phx-hook="Copy">
         <div class="relative">
-          <%= Utils.shorten_block_hash(@block["new_root"]) %>
+          <%= Utils.shorten_block_hash(@block.new_root) %>
           <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
             <div class="relative">
               <img
                 class="copy-btn copy-text w-4 h-4"
                 src={~p"/images/copy.svg"}
-                data-text={@block["new_root"]}
+                data-text={@block.new_root}
               />
               <img
                 class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -325,19 +323,15 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Parent Hash</div>
-      <div
-        class="copy-container col-span-3"
-        id={"copy-block-parent-#{@block["block_number"]}"}
-        phx-hook="Copy"
-      >
+      <div class="copy-container col-span-3" id={"copy-block-parent-#{@block.number}"} phx-hook="Copy">
         <div class="relative">
-          <%= Utils.shorten_block_hash(@block["parent_hash"]) %>
+          <%= Utils.shorten_block_hash(@block.parent_hash) %>
           <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
             <div class="relative">
               <img
                 class="copy-btn copy-text w-4 h-4"
                 src={~p"/images/copy.svg"}
-                data-text={@block["parent_hash"]}
+                data-text={@block.parent_hash}
               />
               <img
                 class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -354,17 +348,17 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       </div>
       <div
         class="copy-container col-span-3 text-hover-blue"
-        id={"copy-block-sequencer-#{@block["block_number"]}"}
+        id={"copy-block-sequencer-#{@block.number}"}
         phx-hook="Copy"
       >
         <div class="relative">
-          <%= Utils.shorten_block_hash(@block["sequencer_address"]) %>
+          <%= Utils.shorten_block_hash(@block.sequencer_address) %>
           <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
             <div class="relative">
               <img
                 class="copy-btn copy-text w-4 h-4"
                 src={~p"/images/copy.svg"}
-                data-text={@block["sequencer_address"]}
+                data-text={@block.sequencer_address}
               />
               <img
                 class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
