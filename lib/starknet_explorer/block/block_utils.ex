@@ -27,7 +27,6 @@ defmodule StarknetExplorer.BlockUtils do
         block
         |> Map.put("gas_fee_in_wei", gas_price)
         |> Map.put("execution_resources", calculate_gateway_block_steps(gateway_block))
-        |> dbg
 
       Block.insert_from_rpc_response(block, receipts)
     end
