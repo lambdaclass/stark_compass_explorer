@@ -36,7 +36,8 @@ defmodule StarknetExplorer.Block do
       :timestamp,
       :sequencer_address,
       :gas_fee_in_wei,
-      :original_json
+      :original_json,
+      :execution_resources
     ])
     |> validate_required([
       :number,
@@ -212,11 +213,14 @@ defmodule StarknetExplorer.Block do
     Repo.all(query)
   end
 
-  def update_gas_fee_for_block(block_number, gas_fee) when is_number(block_number) do
+  def update_block_gas_and_resources(block_number, gas_fee, execution_resources)
+      when is_number(block_number) do
     query =
       from b in Block,
         where: b.number == ^block_number
 
-    Repo.update_all(query, set: [gas_fee_in_wei: gas_fee])
+    Repo.update_all(query,
+      set: [gas_fee_in_wei: gas_fee, execution_resources: execution_resources]
+    )
   end
 end

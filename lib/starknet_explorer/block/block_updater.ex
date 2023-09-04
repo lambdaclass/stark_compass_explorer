@@ -42,21 +42,24 @@ defmodule StarknetExplorer.BlockUpdater do
   end
 
   defp fee_fetch_task(block = %Block{}) do
-    Task.async(fn -> fetch_gas_fee(block) end)
+    Task.async(fn -> fetch_gas_fee_and_resources(block) end)
   end
 
-  defp fetch_gas_fee(block = %Block{}) do
-    case Gateway.block_gas_fee_in_wei(block.number) do
-      {:ok, gas_price} ->
-        {:ok, gas_price, block.number}
+  defp fetch_gas_fee_and_resources(block = %Block{}) do
+    case Gateway.fetch_block(block.number) do
+      {:ok, gateway_block = %{"gas_price" => gas_price}} ->
+        execution_resources =
+          StarknetExplorer.BlockUtils.calculate_gateway_block_steps(gateway_block)
+
+        {:ok, gas_price, execution_resources, block.number}
 
       err ->
         {err, block.number}
     end
   end
 
-  defp do_db_update({:ok, gas_price, block_number}) do
-    Block.update_gas_fee_for_block(block_number, gas_price)
+  defp do_db_update({:ok, gas_price, execution_resources, block_number}) do
+    Block.update_block_gas_and_resources(block_number, gas_price, execution_resources)
   end
 
   defp do_db_update({{:error, reason}, block_number}) do
