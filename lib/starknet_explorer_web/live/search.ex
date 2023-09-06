@@ -50,7 +50,7 @@ defmodule StarknetExplorerWeb.SearchLive do
           end
 
         {:block, _block} ->
-          fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/block/#{query}") end
+          fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
 
         :noquery ->
           fn ->

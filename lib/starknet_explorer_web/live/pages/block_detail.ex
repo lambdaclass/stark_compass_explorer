@@ -4,6 +4,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorer.Data
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.S3
+
+  @chunk_size 30
+
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
   defp num_or_hash(_num), do: :num
 
@@ -95,6 +98,17 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       >
         Transactions
       </div>
+      <div
+      class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+      phx-click="select-view"
+      ,
+      phx-value-view="events",
+      phx-value-continuation_token="0"
+      phx-value-continuation_token_prev="0",
+      phx-value-continuation_token_post="{@chunk_size_}",
+      >
+      Events
+    </div>
     </div>
     """
   end
@@ -119,6 +133,21 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     ]
 
     {:ok, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event("select-view", %{"view" => "events", "continuation_token" => continuation_token}, socket) do
+    socket = assign(socket, :view, "events")
+    # continuation_token = Map.get(socket.assigns, :continuation_token, 0)
+
+    events = Data.get_block_events_paginated(socket.assigns.block["block_hash"], %{"chunk_size" => @chunk_size, "continuation_token" => continuation_token}, socket.assigns.network)
+
+    assigns = [
+      events: events["events"],
+      view: "events",
+    ]
+
+    {:noreply, assign(socket, assigns)}
   end
 
   @impl true
@@ -372,6 +401,50 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     </div>
+    """
+  end
+
+  def render_info(assigns = %{block: _block, view: "events"}) do
+    ~H"""
+    <div class={"table-th !pt-7 border-t border-gray-700 grid-6"}>
+      <div>Identifier TODO</div>
+      <div>Block Number</div>
+      <div>Transaction Hash</div>
+      <div>Name TODO</div>
+      <div>From Address</div>
+      <div>Age</div>
+    </div>
+    <%= for %{"block_number" => block_number, "from_address" => from_address, "transaction_hash" => tx_hash} <- @events do %>
+    <div class={"custom-list-item grid-6"}>
+      <div>
+        <div class="list-h">Identifier</div>
+        <div>
+          TODO
+        </div>
+      </div>
+      <div>
+        <div class="list-h">Block Number</div>
+        <div><span class="blue-label"><%= block_number %></span></div>
+      </div>
+      <div>
+        <div class="list-h">Transaction Hash</div>
+        <div><%= tx_hash |> Utils.shorten_block_hash() %></div>
+      </div>
+      <div>
+        <div class="list-h">Name</div>
+        <div>
+          <span class="lilac-label">TODO</span>
+          <span class="gray-label text-sm">Mocked</span>
+        </div>
+      </div>
+      <div class="list-h">From Address</div>
+        <div><%= from_address |> Utils.shorten_block_hash() %></div>
+      <div>
+        <div class="list-h">Age</div>
+        <div><%= Utils.get_block_age(@block) %></div>
+      </div>
+    </div>
+    <% end %>
     """
   end
 end
