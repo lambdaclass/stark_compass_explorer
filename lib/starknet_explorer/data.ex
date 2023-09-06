@@ -35,7 +35,11 @@ defmodule StarknetExplorer.Data do
   def block_by_hash(hash, network) do
     case Block.get_by_hash(hash) do
       nil ->
-        {:ok, _} = Rpc.get_block_by_hash(hash, network)
+        {:ok, block} = Rpc.get_block_by_hash(hash, network)
+
+        block = Block.from_rpc_block(block)
+
+        {:ok, block}
 
       block ->
         {:ok, block}
@@ -49,7 +53,11 @@ defmodule StarknetExplorer.Data do
   def block_by_number(number, network) do
     case Block.get_by_num(number) do
       nil ->
-        {:ok, _} = Rpc.get_block_by_number(number, network)
+        {:ok, block} = Rpc.get_block_by_number(number, network)
+
+        block = Block.from_rpc_block(block)
+
+        {:ok, block}
 
       block ->
         {:ok, block}

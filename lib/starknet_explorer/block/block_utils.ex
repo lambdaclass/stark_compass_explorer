@@ -19,7 +19,15 @@ defmodule StarknetExplorer.BlockUtils do
     not is_nil(Block.get_by_height(block_height))
   end
 
-  def store_block(block = %{"transactions" => transactions}) do
+  def store_block(block = %{"block_number" => block_number}) do
+    with {:ok, receipts} <- receipts_for_block(block),
+         {:ok, gas_price} <- StarknetExplorer.Gateway.block_gas_fee_in_wei(block_number) do
+      block = Map.put(block, "gas_fee_in_wei", gas_price)
+      Block.insert_from_rpc_response(block, receipts)
+    end
+  end
+
+  defp receipts_for_block(_block = %{"transactions" => transactions}) do
     receipts =
       transactions
       |> Map.new(fn %{"transaction_hash" => tx_hash} ->
@@ -27,7 +35,7 @@ defmodule StarknetExplorer.BlockUtils do
         {tx_hash, receipt}
       end)
 
-    Block.insert_from_rpc_response(block, receipts)
+    {:ok, receipts}
   end
 
   def block_height() do
