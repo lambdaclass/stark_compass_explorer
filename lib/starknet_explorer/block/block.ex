@@ -204,10 +204,11 @@ defmodule StarknetExplorer.Block do
     Repo.one(query)
   end
 
-  def get_with_missing_gas_fees(limit \\ 10) do
+  def get_with_missing_gas_fees_or_resources(limit \\ 10) do
     query =
       from b in Block,
-        where: is_nil(b.gas_fee_in_wei) or b.gas_fee_in_wei == "",
+        where:
+          is_nil(b.gas_fee_in_wei) or b.gas_fee_in_wei == "" or is_nil(b.execution_resources),
         limit: ^limit
 
     Repo.all(query)
