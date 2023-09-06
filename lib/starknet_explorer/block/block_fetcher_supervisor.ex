@@ -30,7 +30,7 @@ defmodule StarknetExplorer.BlockFetcher do
 
   def fetch_in_range(_args) do
     {:error, "Error starting block fetcher, make sure that start >= finish}"}
-      end
+  end
 
   def find_and_set_missing_fields() do
     spec =
