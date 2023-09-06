@@ -240,7 +240,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     ~H"""
     <div class="table-block">
       <div class="grid-9 table-th">
-        <div>Identifier</div>
         <div>Message Hash</div>
         <div>Direction</div>
         <div class="col-span-2">Type</div>
@@ -251,13 +250,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       </div>
       <%= for message <- @messages do %>
         <div class="grid-8 custom-list-item">
-          <div>
-            <div class="list-h">Identifier</div>
-            <div>
-              <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-              |> Utils.shorten_block_hash() %>
-            </div>
-          </div>
           <div>
             <div class="list-h">Message Hash</div>
             <div>
