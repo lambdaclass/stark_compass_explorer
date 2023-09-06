@@ -15,18 +15,23 @@ Everything that can be fetched from the [0.4.0 RPC provider spec](https://playgr
 is not mocked, mostly Blocks and their transactions plus some
 details. We're also calculating Transactions per second to show them on the index page.
 #### What we're missing
-Currently the RPC provider spec is missing information that could be
-useful to show everything we want. A considerable part of this
-information can be retreived from Starknet's Gateway. Eg: Asking for a
-block also answers about state diffs, deployed contracts and so
-on. So, on a high level what we're missing is:
-- Contract class (how many there are, their addresses, their code)
-- Deployed contracts (how many there are, their addresses, their code)
-- Code executed on a transaction (a transaction receipt might throw some light into this)
-- Amount of events.
-- Amount of L2->L1 Messages.
+Currently, the RPC provider spec is missing information that could be
+useful to show everything we want.  On the webpage side, we took the
+time to flag what's not real with a "mocked" tag.  A considerable part
+of this information can be retreived from Starknet's Gateway. Eg:
+Asking said gateway for a block also answers about state diffs,
+deployed contracts and so on. So, what we're missing is:
+- [Contract classes](https://docs.starknet.io/documentation/architecture_and_concepts/Smart_Contracts/contract-classes/) 
+  and deployed contracts (how many there are, their addresses, their code)
+  There are a couple of ways on how we think we can get information about contracts.
+  1. Ask the gateway for it, while we wait for the RPC spec to catch up.
+  2. Check each transaction transaction receipt and get contract information from it.
+  3. RPC call starknet_getStateUpdate might be useful.
+- Code executed on a transaction (a transaction receipt might throw some light into this),
+  this is also related to knowing a contract code + address.
+- Amount of [events](https://docs.starknet.io/documentation/architecture_and_concepts/Smart_Contracts/starknet-events/).
+- Amount of L2->L1 Messages (L2->L1 messages are part of a transaction receipt).
 - Amount of L1->L2 Messages.
-We took the time to display what's not real with a "mocked" tag.
 ### Explorer data
 As a way to have a cache and a full view into the network's data,
 we're building a sqlite database. Currently it has tables for blocks,
@@ -51,4 +56,3 @@ each view is under the ../lib/live/ folder.
   There is an active cache for blocks (`StarknetExplorer.Cache.BlockWarmer`) and
   2 passive ones for transactions and requests. One set of these starts for each network,
   when the explorer starts. 
-- 
