@@ -1,5 +1,5 @@
 defmodule StarknetExplorer.Data do
-  alias StarknetExplorer.{Rpc, Transaction, Block}
+  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt}
 
   @doc """
   Fetch `block_amount` blocks (defaults to 15), first
@@ -35,7 +35,8 @@ defmodule StarknetExplorer.Data do
   def block_by_hash(hash, network) do
     case Block.get_by_hash(hash) do
       nil ->
-        {:ok, _} = Rpc.get_block_by_hash(hash, network)
+        {:ok, block} = Rpc.get_block_by_hash(hash, network)
+        {:ok, Block.from_rpc_block(block)}
 
       block ->
         {:ok, block}
@@ -49,10 +50,33 @@ defmodule StarknetExplorer.Data do
   def block_by_number(number, network) do
     case Block.get_by_num(number) do
       nil ->
-        {:ok, _} = Rpc.get_block_by_number(number, network)
+        {:ok, block} = Rpc.get_block_by_number(number, network)
+        {:ok, Block.from_rpc_block(block)}
 
       block ->
         {:ok, block}
+    end
+  end
+
+  @doc """
+  Fetch transactions receipts by block hash
+  """
+  def receipts_by_block_hash(block_hash) do
+    case TransactionReceipt.get_by_block_hash(block_hash) do
+      receipts ->
+        {:ok, receipts}
+    end
+  end
+
+  @doc """
+  delete
+  """
+  def test_receipt() do
+    case TransactionReceipt.get_by_transaction_hash(
+           "0x02b0821a222884de8bb0d2d35fd5369e721c253453c89e6bd08143117543602f"
+         ) do
+      receipts ->
+        {:ok, receipts}
     end
   end
 
