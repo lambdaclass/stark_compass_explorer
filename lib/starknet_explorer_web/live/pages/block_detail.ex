@@ -166,15 +166,19 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     """
   end
 
-  def render_info(assigns = %{block: _, view: "transactions"}) do
+  def render_info(assigns = %{block: block, view: "transactions"}) do
     ~H"""
-    <div class="grid-3 table-th !pt-7 border-t border-gray-700">
+    <div class="grid-7 table-th !pt-7 border-t border-gray-700">
       <div>Hash</div>
       <div>Type</div>
       <div>Version</div>
+      <div>Status</div>
+      <div>Calls</div>
+      <div>Address</div>
+      <div>Age</div>
     </div>
     <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block["transactions"] do %>
-      <div class="grid-3 custom-list-item">
+      <div class="grid-7 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
           <div
@@ -199,13 +203,29 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Type</div>
           <div>
-            <span class={"#{if type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+            <span class={"#{if type == "INVOKE", do: "violet-label", else: "lilac-label"}"}> <!-- TODO: add more statuses -->
               <%= type %>
             </span>
           </div>
         </div>
         <div>
           <div class="list-h">Version</div>
+          <div><%= version %></div>
+        </div>
+        <div>
+          <div class="list-h">Status</div><!-- TODO -->
+          <div><%= version %></div>
+        </div>
+        <div>
+          <div class="list-h">Calls</div> <!-- TODO -->
+          <div><%= version %></div>
+        </div>
+        <div>
+          <div class="list-h">Address</div> <!-- TODO -->
+          <div><%= version %></div>
+        </div>
+        <div>
+          <div class="list-h">Age</div> <!-- TODO -->
           <div><%= version %></div>
         </div>
       </div>
