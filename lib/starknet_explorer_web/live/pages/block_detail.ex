@@ -122,8 +122,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     {:ok, receipts} =
       Data.receipts_by_block_hash(block.hash)
 
-    # Data.test_receipt()
-
+    IO.inspect(block.transactions)
     messages =
       Enum.flat_map(receipts, fn %{transaction_hash: hash, messages_sent: messages} ->
         Enum.map(messages, fn message ->
@@ -196,7 +195,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>Type</div>
       <div>Version</div>
     </div>
-    <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block.transactions do %>
+    <%= for _transaction = %StarknetExplorer.Transaction{hash: hash, type: type, version: version} <- @block.transactions do %>
       <div class="grid-3 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
@@ -239,17 +238,16 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   def render_info(assigns = %{block: _, view: "messages"}) do
     ~H"""
     <div class="table-block">
-      <div class="grid-9 table-th">
+      <div class="grid-6 table-th">
         <div>Message Hash</div>
         <div>Direction</div>
-        <div class="col-span-2">Type</div>
+        <div>Type</div>
         <div>From Address</div>
         <div>To Address</div>
         <div>Transaction Hash</div>
-        <div>Age</div>
       </div>
       <%= for message <- @messages do %>
-        <div class="grid-8 custom-list-item">
+        <div class="grid-6 custom-list-item">
           <div>
             <div class="list-h">Message Hash</div>
             <div>
@@ -285,10 +283,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
               <%= message["transaction_hash"]
               |> Utils.shorten_block_hash() %>
             </div>
-          </div>
-          <div>
-            <div class="list-h">Age</div>
-            <div>9min</div>
           </div>
         </div>
       <% end %>
