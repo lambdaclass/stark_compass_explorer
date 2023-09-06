@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.BlockDetailLive do
   require Logger
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Data
+  alias StarknetExplorer.{Block, Data}
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.BlockUtils
   alias StarknetExplorer.S3
@@ -123,7 +123,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     ]
 
     Process.send_after(self(), :get_gateway_information, 200)
-
     {:ok, assign(socket, assigns)}
   end
 
