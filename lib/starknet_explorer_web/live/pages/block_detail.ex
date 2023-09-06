@@ -177,7 +177,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>Address</div>
       <div>Age</div>
     </div>
-    <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block["transactions"] do %>
+    <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version, "sender_address" => sender_address} <- @block["transactions"] do %>
       <div class="grid-7 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
@@ -221,8 +221,25 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div><%= version %></div>
         </div>
         <div>
-          <div class="list-h">Address</div> <!-- TODO -->
-          <div><%= version %></div>
+        <div class="list-h">Address</div>
+          <div
+            class="flex gap-2 items-center copy-container"
+            id={"copy-transaction-hash-#{sender_address}"}
+            phx-hook="Copy"
+          >
+            <div class="relative">
+              <div class="break-all text-hover-blue"><%= Utils.shorten_block_hash(sender_address) %></div>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img class="copy-btn copy-text w-4 h-4" src={~p"/images/copy.svg"} data-text={sender_address} />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div>
           <div class="list-h">Age</div> <!-- TODO -->
