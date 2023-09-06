@@ -17,7 +17,7 @@ defmodule StarknetExplorer.BlockUpdater do
   def handle_info(:update_gas_fee, state) do
     Logger.info("Updating gas fees")
 
-    case StarknetExplorer.Block.get_with_missing_gas_fees(10) do
+    case StarknetExplorer.Block.get_with_missing_gas_fees_or_resources(10) do
       [] ->
         Process.send_after(self(), :stop, 100)
 
