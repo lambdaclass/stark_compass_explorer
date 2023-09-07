@@ -106,11 +106,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         ,
         phx-value-view="events"
         ,
-        phx-value-continuation_token="0"
-        phx-value-continuation_token_prev="0"
-        ,
-        phx-value-continuation_token_post="0"
-        ,
       >
         Events
       </div>
