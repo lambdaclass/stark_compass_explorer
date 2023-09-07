@@ -16,7 +16,7 @@ defmodule Abi do
         _ -> clean_address
       end
 
-    bin = clean_address |> String.replace_prefix("0x", "") |> Base.decode16!(case: :mixed)
+    bin = clean_address |> Base.decode16!(case: :mixed)
     pad_to_32_bytes(bin)
   end
 
