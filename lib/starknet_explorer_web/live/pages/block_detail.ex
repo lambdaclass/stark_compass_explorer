@@ -497,7 +497,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>Identifier</div>
       <div>Block Number</div>
       <div>Transaction Hash</div>
-      <div>Name TODO</div>
+      <div>Name WIP</div>
       <div>From Address</div>
       <div>Age</div>
     </div>
