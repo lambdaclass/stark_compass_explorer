@@ -12,7 +12,17 @@ defmodule StarknetExplorer.Rpc do
     do: send_request("starknet_getEvents", [%{"chunk_size" => n}], network)
 
   def get_block_events_paginated(block_hash, pagination, network),
-    do: send_request("starknet_getEvents", [Map.merge(%{from_block: %{block_hash: block_hash}, to_block: %{block_hash: block_hash}}, pagination)], network)
+    do:
+      send_request(
+        "starknet_getEvents",
+        [
+          Map.merge(
+            %{from_block: %{block_hash: block_hash}, to_block: %{block_hash: block_hash}},
+            pagination
+          )
+        ],
+        network
+      )
 
   def get_block_height_no_cache(network),
     do: send_request_no_cache("starknet_blockNumber", [], network)
