@@ -505,17 +505,32 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="custom-list-item grid-6">
         <div>
           <div class="list-h">Identifier</div>
-          <div>
-            <%= Integer.to_string(block_number) <> "_" <> Integer.to_string(idx + @idx_first) %>
-          </div>
+          <% identifier =
+            Integer.to_string(block_number) <> "_" <> Integer.to_string(idx + @idx_first) %>
+          <%= live_redirect(
+            identifier,
+            to: ~p"/#{@network}/events/#{identifier}",
+            class: "text-hover-blue"
+          ) %>
+          <div></div>
         </div>
         <div>
           <div class="list-h">Block Number</div>
-          <div><span class="blue-label"><%= block_number %></span></div>
+          <div>
+            <span class="blue-label">
+              <%= live_redirect(to_string(block_number),
+                to: ~p"/#{@network}/blocks/#{@block.hash}"
+              ) %>
+            </span>
+          </div>
         </div>
         <div>
           <div class="list-h">Transaction Hash</div>
-          <div><%= tx_hash |> Utils.shorten_block_hash() %></div>
+          <div>
+            <%= live_redirect(tx_hash |> Utils.shorten_block_hash(),
+              to: ~p"/#{@network}/transactions/#{tx_hash}"
+            ) %>
+          </div>
         </div>
         <div>
           <div class="list-h">Name</div>
@@ -524,7 +539,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           </div>
         </div>
         <div class="list-h">From Address</div>
-        <div><%= from_address |> Utils.shorten_block_hash() %></div>
+        <div>
+          <%= live_redirect(from_address |> Utils.shorten_block_hash(),
+            to: ~p"/#{@network}/contracts/#{from_address}"
+          ) %>
+        </div>
         <div>
           <div class="list-h">Age</div>
           <div><%= @block_age %></div>
