@@ -4,6 +4,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorer.Data
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.S3
+  alias StarknetExplorer.Messages
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
   defp num_or_hash(_num), do: :num
 
@@ -122,13 +123,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     {:ok, receipts} =
       Data.receipts_by_block_hash(block.hash)
 
-    IO.inspect(block.transactions)
-    messages =
-      Enum.flat_map(receipts, fn %{transaction_hash: hash, messages_sent: messages} ->
-        Enum.map(messages, fn message ->
-          Map.merge(%{"transaction_hash" => hash}, message)
-        end)
-      end)
+    #IO.inspect(receipts)
+    messages = Enum.flat_map(receipts, fn x -> Messages.from_transaction_receipt(x) end)
 
     IO.inspect(messages)
 
@@ -251,7 +247,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div>
             <div class="list-h">Message Hash</div>
             <div>
-              <%= "0x01"
+              <%= message.message_hash
               |> Utils.shorten_block_hash() %>
             </div>
           </div>
@@ -266,21 +262,21 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div>
             <div class="list-h">From Address</div>
             <div>
-              <%= message["from_address"]
+              <%= message.from_address
               |> Utils.shorten_block_hash() %>
             </div>
           </div>
           <div>
             <div class="list-h">To Address</div>
             <div>
-              <%= message["to_address"]
+              <%= message.to_address
               |> Utils.shorten_block_hash() %>
             </div>
           </div>
           <div>
             <div class="list-h">Transaction Hash</div>
             <div>
-              <%= message["transaction_hash"]
+              <%= message.transaction_hash
               |> Utils.shorten_block_hash() %>
             </div>
           </div>
