@@ -492,6 +492,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>Age</div>
     </div>
     <%= for {idx, %{"block_number" => block_number, "from_address" => from_address, "transaction_hash" => tx_hash}} <- Enum.with_index(@events, fn element, index -> {index, element} end) do %>
+      <% IO.inspect(Data.get_class_hash_at(block_number, from_address, @network)) %>
       <div class="custom-list-item grid-6">
         <div>
           <div class="list-h">Identifier</div>

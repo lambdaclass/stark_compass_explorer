@@ -100,4 +100,10 @@ defmodule StarknetExplorer.Data do
 
     events
   end
+
+  def get_class_hash_at(block_number, contract_address, network) do
+    {:ok, class_hash} = Rpc.get_class_hash_at(block_number, contract_address, network)
+
+    class_hash
+  end
 end
