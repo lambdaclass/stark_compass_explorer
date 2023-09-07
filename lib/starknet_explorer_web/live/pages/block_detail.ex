@@ -3,7 +3,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorer.{Block, Data}
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.BlockUtils
   alias StarknetExplorer.S3
+  alias StarknetExplorer.Gateway
 
   @chunk_size 30
 
@@ -130,6 +132,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
     assigns = [
       gas_price: "Loading...",
+      execution_resources: "Loading",
       block: block,
       view: "overview",
       verification: "Pending",
@@ -137,20 +140,26 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       block_age: Utils.get_block_age(block)
     ]
 
-    Process.send_after(self(), :get_gas_price, 200)
-
+    Process.send_after(self(), :get_gateway_information, 200)
     {:ok, assign(socket, assigns)}
   end
 
   @impl true
-  def handle_info(:get_gas_price, socket = %Phoenix.LiveView.Socket{}) do
-    new_gas_assign =
-      socket.assigns.block
-      |> gas_fee_for_block()
+  def handle_info(:get_gateway_information, socket = %Phoenix.LiveView.Socket{}) do
+    {gas_assign, resources_assign} =
+      case Gateway.fetch_block(socket.assigns.block.number) do
+        {:ok, block = %{"gas_price" => gas_price}} ->
+          execution_resources = BlockUtils.calculate_gateway_block_steps(block)
+          {gas_price, execution_resources}
+
+        {:error, _} ->
+          {"Unavailable", "Unavailable"}
+      end
 
     socket =
       socket
-      |> assign(:gas_price, new_gas_assign)
+      |> assign(:gas_price, gas_assign)
+      |> assign(:execution_resources, resources_assign)
 
     {:noreply, socket}
   end
@@ -350,7 +359,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             <span
               id="block_verifier"
               class={"#{if @verification == "Pending", do: "pink-label"} #{if @verification == "Verified", do: "green-label"} #{if @verification == "Failed", do: "violet-label"}"}
-              data-hash={@block["block_hash"]}
+              data-hash={@block.hash}
               phx-hook="BlockVerifier"
             >
               <%= @verification %>
@@ -483,8 +492,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       </div>
       <div class="col-span-3">
         <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-          <div class="gray-label text-sm">Mocked</div>
-          <%= 543_910 %>
+          <%= "#{@execution_resources} steps" %>
         </div>
       </div>
     </div>

@@ -32,7 +32,7 @@ defmodule StarknetExplorer.BlockFetcher do
     {:error, "Error starting block fetcher, make sure that start >= finish}"}
   end
 
-  def find_and_set_missing_gas_prices() do
+  def find_and_set_missing_fields() do
     spec =
       %{
         id: StarknetExplorer.BlockUpdater,
