@@ -133,7 +133,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       block: block,
       view: "overview",
       verification: "Pending",
-      enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification)
+      enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification),
+      block_age: Utils.get_block_age(block)
     ]
 
     Process.send_after(self(), :get_gas_price, 200)
@@ -519,14 +520,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="list-h">Name</div>
           <div>
             <span class="lilac-label">TODO</span>
-            <span class="gray-label text-sm">Mocked</span>
           </div>
         </div>
         <div class="list-h">From Address</div>
         <div><%= from_address |> Utils.shorten_block_hash() %></div>
         <div>
           <div class="list-h">Age</div>
-          <div><%= Utils.get_block_age(@block) %></div>
+          <div><%= @block_age %></div>
         </div>
       </div>
     <% end %>
