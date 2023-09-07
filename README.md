@@ -16,7 +16,27 @@
 
 ## Local development
 
+If you run `make` it will print out the available targets: 
+```
+% make            
+Usage:
+    run   : Starts the Elixir backend server.
+    setup : Sets up everything necessary to build and run the explorer.
+    deps  : Gets code dependencies.
+    db    : Runs the database creation and migration steps.
+```
+
+### Setup
+Once you have the requirements installed and set up, you can proceed to building and running the project. 
+
+```bash
+make setup
+```
+
 ### RPC Provider
+
+You now have the choice of connecting the explorer to an RPC API provider of your choice, e.g. Infura with an API key, or by running your own Juno node. 
+
 To run it locally, you'll need to set the RPC API url of the network. If you're using a provider like Infura, this will look something like this: `https://starknet-mainnet.infura.io/v3/your_api_key`
 
 Set the following environment variables:
@@ -28,10 +48,9 @@ export TESTNET_2_RPC_API_HOST=testnet_2_rpc_hostname
 ```
 
 ### RPC with Juno
-You can also use the docker provided juno with
 
 ```bash
-make juno
+docker-compose up juno
 ```
 
 You'll need a Mainnet Ethereum RPC provider for this to
@@ -53,7 +72,7 @@ To use it, you simply have to call the `StarknetExplorer.BlockFetcher.fetch_in_r
 function, you can do this interactively after starting with `make run`:
 
 ```elixir
- StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10})
+StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10})
  ```
 
 Or, if you're on a "prod" environment, simply send it through elixir's RPC:
