@@ -166,7 +166,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     """
   end
 
-  def render_info(assigns = %{block: block, view: "transactions"}) do
+  def render_info(assigns = %{block: _, view: "transactions"}) do
     ~H"""
     <div class="grid-7 table-th !pt-7 border-t border-gray-700">
       <div>Hash</div>
@@ -242,8 +242,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           </div>
         </div>
         <div>
-          <div class="list-h">Age</div> <!-- TODO -->
-          <div><%= version %></div>
+          <div class="list-h">Age</div>
+          <div><%= Utils.get_block_age(@block) %></div>
         </div>
       </div>
     <% end %>
