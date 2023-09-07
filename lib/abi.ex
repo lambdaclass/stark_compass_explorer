@@ -6,7 +6,7 @@ defmodule Abi do
     <<padding::binary, bin::binary>>
   end
 
-  @doc "Encodes an Ethereum address to a 32-byte binary."
+  @doc "Encodes and pads a hex value to a 32-byte binary"
   def encode_hex(address) when is_binary(address) do
     clean_address = address |> String.replace_prefix("0x", "")
 
