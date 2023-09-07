@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.BlockDetailLive do
   require Logger
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.{Block, Data}
+  alias StarknetExplorer.Data
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.BlockUtils
   alias StarknetExplorer.S3
