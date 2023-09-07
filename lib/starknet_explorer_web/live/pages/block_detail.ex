@@ -164,19 +164,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     {:noreply, socket}
   end
 
-  defp gas_fee_for_block(%Block{gas_fee_in_wei: gas_price = <<"0x", _hex_price::binary>>}),
-    do: StarknetExplorerWeb.Utils.hex_wei_to_eth(gas_price)
-
-  defp gas_fee_for_block(%Block{gas_fee_in_wei: _, hash: block_hash}) do
-    case StarknetExplorer.Gateway.block_gas_fee_in_wei(block_hash) do
-      {:ok, gas_price} ->
-        StarknetExplorerWeb.Utils.hex_wei_to_eth(gas_price)
-
-      {:error, _err} ->
-        "Unavailable"
-    end
-  end
-
   defp get_previous_continuation_token(token) when token < @chunk_size, do: 0
   defp get_previous_continuation_token(token), do: token - @chunk_size
 
