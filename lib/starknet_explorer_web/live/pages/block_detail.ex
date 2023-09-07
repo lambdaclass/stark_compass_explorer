@@ -235,7 +235,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       events: events["events"],
       view: "events",
       idx_first: 0,
-      idx_last: @chunk_size
+      idx_last: @chunk_size,
+      chunk_size: @chunk_size
     ]
 
     {:noreply, assign(socket, assigns)}
@@ -531,9 +532,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       </div>
     <% end %>
     <div>
-      <button phx-click="dec_events">Previous</button>
+      <%= if @idx_first != 0 do %>
+        <button phx-click="dec_events">Previous</button>
+      <% end %>
       Showing from <%= @idx_first %> to <%= @idx_last %>
-      <button phx-click="inc_events">Next</button>
+      <%= if length(@events) >= @chunk_size do %>
+        <button phx-click="inc_events">Next</button>
+      <% end %>
     </div>
     """
   end
