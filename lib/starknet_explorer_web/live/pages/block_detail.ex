@@ -188,7 +188,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       events: events,
       view: "events",
       idx_first: continuation_token,
-      idx_last: length(events)
+      idx_last: length(events) + continuation_token
     ]
 
     {:noreply, assign(socket, assigns)}
@@ -212,7 +212,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       events: events,
       view: "events",
       idx_first: continuation_token,
-      idx_last: length(events)
+      idx_last: length(events) + continuation_token
     ]
 
     {:noreply, assign(socket, assigns)}
@@ -493,19 +493,19 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   def render_info(assigns = %{block: _block, view: "events"}) do
     ~H"""
     <div class="table-th !pt-7 border-t border-gray-700 grid-6">
-      <div>Identifier TODO</div>
+      <div>Identifier</div>
       <div>Block Number</div>
       <div>Transaction Hash</div>
       <div>Name TODO</div>
       <div>From Address</div>
       <div>Age</div>
     </div>
-    <%= for %{"block_number" => block_number, "from_address" => from_address, "transaction_hash" => tx_hash} <- @events do %>
+    <%= for {idx, %{"block_number" => block_number, "from_address" => from_address, "transaction_hash" => tx_hash}} <- Enum.with_index(@events, fn element, index -> {index, element} end) do %>
       <div class="custom-list-item grid-6">
         <div>
           <div class="list-h">Identifier</div>
           <div>
-            TODO
+            <%= Integer.to_string(block_number) <> "_" <> Integer.to_string(idx + @idx_first) %>
           </div>
         </div>
         <div>
@@ -530,8 +530,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
-    <button phx-click="dec_events">Previous</button>
-    <button phx-click="inc_events">Next</button>
+    <div>
+      <button phx-click="dec_events">Previous</button>
+      Showing from <%= @idx_first %> to <%= @idx_last %>
+      <button phx-click="inc_events">Next</button>
+    </div>
     """
   end
 end
