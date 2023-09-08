@@ -9,7 +9,6 @@ defmodule StarknetExplorer.Messages do
 
   def from_transaction_receipt(receipt) do
     Enum.map(receipt.messages_sent, fn message ->
-      # IO.inspect(message)
       message =
         message
         |> StarknetExplorerWeb.Utils.atomize_keys()
