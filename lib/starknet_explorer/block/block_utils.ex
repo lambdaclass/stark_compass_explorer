@@ -16,7 +16,7 @@ defmodule StarknetExplorer.BlockUtils do
   end
 
   defp already_stored?(block_height) do
-    not is_nil(Block.get_by_height(block_height))
+    not is_nil(Block.get_by_num(block_height))
   end
 
   def store_block(block = %{"block_number" => block_number}) do

@@ -178,6 +178,7 @@ defmodule StarknetExplorer.Block do
         where: b.hash == ^hash
 
     Repo.one(query)
+    |> Repo.preload(:transactions)
   end
 
   def get_by_num(num) do
@@ -186,14 +187,7 @@ defmodule StarknetExplorer.Block do
         where: b.number == ^num
 
     Repo.one(query)
-  end
-
-  def get_by_height(height) when is_integer(height) do
-    query =
-      from b in Block,
-        where: b.number == ^height
-
-    Repo.one(query)
+    |> Repo.preload(:transactions)
   end
 
   def get_by_height(height) when is_integer(height) do
