@@ -14,6 +14,8 @@ defmodule StarknetExplorer.Block do
     field :new_root, :string
     field :timestamp, :integer
     field :sequencer_address, :string, default: ""
+    field :gas_fee_in_wei, :string
+    field :execution_resources, :integer
     field :original_json, :binary, load_in_query: false
 
     has_many :transactions, StarknetExplorer.Transaction,
@@ -33,7 +35,9 @@ defmodule StarknetExplorer.Block do
       :new_root,
       :timestamp,
       :sequencer_address,
-      :original_json
+      :gas_fee_in_wei,
+      :original_json,
+      :execution_resources
     ])
     |> validate_required([
       :number,
@@ -184,5 +188,34 @@ defmodule StarknetExplorer.Block do
 
     Repo.one(query)
     |> Repo.preload(:transactions)
+  end
+
+  def get_by_height(height) when is_integer(height) do
+    query =
+      from b in Block,
+        where: b.number == ^height
+
+    Repo.one(query)
+  end
+
+  def get_with_missing_gas_fees_or_resources(limit \\ 10) do
+    query =
+      from b in Block,
+        where:
+          is_nil(b.gas_fee_in_wei) or b.gas_fee_in_wei == "" or is_nil(b.execution_resources),
+        limit: ^limit
+
+    Repo.all(query)
+  end
+
+  def update_block_gas_and_resources(block_number, gas_fee, execution_resources)
+      when is_number(block_number) do
+    query =
+      from b in Block,
+        where: b.number == ^block_number
+
+    Repo.update_all(query,
+      set: [gas_fee_in_wei: gas_fee, execution_resources: execution_resources]
+    )
   end
 end

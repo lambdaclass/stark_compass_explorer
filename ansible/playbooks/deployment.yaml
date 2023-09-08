@@ -34,6 +34,7 @@
       mix deps.get --only $MIX_ENV
       mix deps.compile
       mix assets.deploy
+      mix ecto.setup
       mix phx.digest
       mix compile
       mix release
