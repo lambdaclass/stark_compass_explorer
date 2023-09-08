@@ -153,7 +153,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     """
   end
 
-  def render_info(%{transaction_view: "message_logs", messages: messages} = assigns) do
+  def render_info(%{transaction_view: "message_logs"} = assigns) do
     ~H"""
     <div class="table-block">
       <div class="grid-6 table-th">
@@ -164,7 +164,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <div>To Address</div>
         <div>Transaction Hash</div>
       </div>
-      <%= for message <- messages do %>
+      <%= for message <- @messages do %>
         <div class="grid-6 custom-list-item">
           <div>
             <div class="list-h">Message Hash</div>
