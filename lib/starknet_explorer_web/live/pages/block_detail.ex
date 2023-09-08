@@ -5,6 +5,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.BlockUtils
   alias StarknetExplorer.S3
+  alias StarknetExplorer.Messages
   alias StarknetExplorer.Gateway
 
   @chunk_size 30
@@ -101,6 +102,14 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         Transactions
       </div>
       <div
+        class={"option #{if assigns.view == "messages", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        phx-click="select-view"
+        ,
+        phx-value-view="messages"
+      >
+        Messages
+      </div>
+      <div
         class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
@@ -125,10 +134,17 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           Data.block_by_number(num, socket.assigns.network)
       end
 
+    {:ok, receipts} =
+      Data.receipts_by_block(block, socket.assigns.network)
+
+    # note: most transactions receipt do not contain messages
+    messages = Enum.flat_map(receipts, fn x -> Messages.from_transaction_receipt(x) end)
+
     assigns = [
       gas_price: "Loading...",
       execution_resources: "Loading",
       block: block,
+      messages: messages,
       view: "overview",
       verification: "Pending",
       enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification),
@@ -285,7 +301,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>Type</div>
       <div>Version</div>
     </div>
-    <%= for _transaction = %{"transaction_hash" => hash, "type" => type, "version" => version} <- @block.transactions do %>
+    <%= for _transaction = %StarknetExplorer.Transaction{hash: hash, type: type, version: version} <- @block.transactions do %>
       <div class="grid-3 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
@@ -322,6 +338,141 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
+    """
+  end
+
+  def render_info(assigns = %{block: _, view: "messages"}) do
+    ~H"""
+    <div class="table-block">
+      <div class="grid-6 table-th">
+        <div>Message Hash</div>
+        <div>Direction</div>
+        <div>Type</div>
+        <div>From Address</div>
+        <div>To Address</div>
+        <div>Transaction Hash</div>
+      </div>
+      <%= for message <- @messages do %>
+        <div class="grid-6 custom-list-item">
+          <div>
+            <div class="list-h">Message Hash</div>
+            <div
+              class="flex gap-2 items-center copy-container"
+              id={"copy-transaction-hash-#{message.message_hash}"}
+              phx-hook="Copy"
+            >
+              <div class="relative">
+                <div class="break-all text-hover-blue">
+                  <%= Utils.shorten_block_hash(message.message_hash) %>
+                </div>
+                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                  <div class="relative">
+                    <img
+                      class="copy-btn copy-text w-4 h-4"
+                      src={~p"/images/copy.svg"}
+                      data-text={message.message_hash}
+                    />
+                    <img
+                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                      src={~p"/images/check-square.svg"}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="list-h">Direction</div>
+            <div><span class="green-label">L2</span>><span class="blue-label">L1</span></div>
+          </div>
+          <div>
+            <div class="list-h">Type</div>
+            <div>Sent On L2</div>
+          </div>
+          <div>
+            <div class="list-h">From Address</div>
+            <div
+              class="flex gap-2 items-center copy-container"
+              id={"copy-transaction-hash-#{message.from_address}"}
+              phx-hook="Copy"
+            >
+              <div class="relative">
+                <div class="break-all text-hover-blue">
+                  <%= Utils.shorten_block_hash(message.from_address) %>
+                </div>
+                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                  <div class="relative">
+                    <img
+                      class="copy-btn copy-text w-4 h-4"
+                      src={~p"/images/copy.svg"}
+                      data-text={message.from_address}
+                    />
+                    <img
+                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                      src={~p"/images/check-square.svg"}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="list-h">To Address</div>
+            <div
+              class="flex gap-2 items-center copy-container"
+              id={"copy-transaction-hash-#{message.to_address}"}
+              phx-hook="Copy"
+            >
+              <div class="relative">
+                <div class="break-all text-hover-blue">
+                  <%= Utils.shorten_block_hash(message.to_address) %>
+                </div>
+                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                  <div class="relative">
+                    <img
+                      class="copy-btn copy-text w-4 h-4"
+                      src={~p"/images/copy.svg"}
+                      data-text={message.to_address}
+                    />
+                    <img
+                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                      src={~p"/images/check-square.svg"}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="list-h">Transaction Hash</div>
+            <div
+              class="flex gap-2 items-center copy-container"
+              id={"copy-transaction-hash-#{message.transaction_hash}"}
+              phx-hook="Copy"
+            >
+              <div class="relative">
+                <div class="break-all text-hover-blue">
+                  <%= Utils.shorten_block_hash(message.transaction_hash) %>
+                </div>
+                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                  <div class="relative">
+                    <img
+                      class="copy-btn copy-text w-4 h-4"
+                      src={~p"/images/copy.svg"}
+                      data-text={message.transaction_hash}
+                    />
+                    <img
+                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                      src={~p"/images/check-square.svg"}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
     """
   end
 
