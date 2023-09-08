@@ -53,7 +53,7 @@ defmodule StarknetExplorer.Data do
     case Block.get_by_num(number) do
       nil ->
         {:ok, block} = Rpc.get_block_by_number(number, network)
-        
+
         block = Block.from_rpc_block(block)
         {:ok, block}
 
