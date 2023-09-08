@@ -10,7 +10,6 @@ defmodule StarknetExplorer.TransactionReceipt do
     :actual_fee,
     :finality_status,
     :execution_status,
-    :messages_sent,
     :events,
     :block_hash,
     :block_number,

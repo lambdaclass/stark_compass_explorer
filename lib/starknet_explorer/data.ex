@@ -59,15 +59,30 @@ defmodule StarknetExplorer.Data do
   end
 
   @doc """
-  Fetch transactions receipts by block hash
+  Fetch transactions receipts by block
   """
   def receipts_by_block(block, network) do
     case TransactionReceipt.get_by_block_hash(block.hash) do
+      # if receipts are not found in the db, split the txs in chunks and get receipts by RPC
       [] ->
-        {:ok,
-         Enum.map(block.transactions, fn x ->
-           TransactionReceipt.from_rpc_tx(Rpc.get_transaction_receipt(x.hash, network) |> elem(1))
-         end)}
+        all_receipts =
+          block.transactions
+          |> Enum.chunk_every(50)
+          |> Enum.flat_map(fn chunk ->
+            tasks =
+              Enum.map(chunk, fn x ->
+                Task.async(fn ->
+                  {:ok, receipt} = Rpc.get_transaction_receipt(x.hash, network)
+
+                  receipt
+                  |> StarknetExplorerWeb.Utils.atomize_keys()
+                end)
+              end)
+
+            Enum.map(tasks, &Task.await(&1, 10000))
+          end)
+
+        {:ok, all_receipts}
 
       receipts ->
         {:ok, receipts}
