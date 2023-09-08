@@ -123,4 +123,10 @@ defmodule StarknetExplorer.Data do
 
     {:ok, tx}
   end
+
+  def get_block_events_paginated(block_hash, pagination, network) do
+    {:ok, events} = Rpc.get_block_events_paginated(block_hash, pagination, network)
+
+    events
+  end
 end

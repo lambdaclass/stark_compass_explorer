@@ -126,7 +126,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <div>
                 <div class="list-h">Number</div>
                 <%= live_redirect(to_string(block.number),
-                  to: ~p"/#{assigns.network}/block/#{block.number}"
+                  to: ~p"/#{assigns.network}/blocks/#{block.number}"
                 ) %>
               </div>
               <div class="col-span-2">
@@ -134,7 +134,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <div class="copy-container" id={"copy-block-#{block.number}"} phx-hook="Copy">
                   <div class="relative">
                     <%= live_redirect(Utils.shorten_block_hash(block.hash),
-                      to: ~p"/#{assigns.network}/block/#{block.hash}",
+                      to: ~p"/#{assigns.network}/blocks/#{block.hash}",
                       class: "text-hover-blue",
                       title: block.hash
                     ) %>

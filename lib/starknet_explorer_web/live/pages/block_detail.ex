@@ -7,6 +7,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorer.S3
   alias StarknetExplorer.Messages
   alias StarknetExplorer.Gateway
+
+  @chunk_size 30
+
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
   defp num_or_hash(_num), do: :num
 
@@ -106,6 +109,14 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       >
         Messages
       </div>
+        class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        phx-click="select-view"
+        ,
+        phx-value-view="events"
+        ,
+      >
+        Events
+      </div>
     </div>
     """
   end
@@ -135,7 +146,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       messages: messages,
       view: "overview",
       verification: "Pending",
-      enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification)
+      enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification),
+      block_age: Utils.get_block_age(block)
     ]
 
     Process.send_after(self(), :get_gateway_information, 200)
@@ -160,6 +172,80 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       |> assign(:execution_resources, resources_assign)
 
     {:noreply, socket}
+  end
+
+  defp get_previous_continuation_token(token) when token < @chunk_size, do: 0
+  defp get_previous_continuation_token(token), do: token - @chunk_size
+
+  def handle_event("inc_events", _value, socket) do
+    continuation_token = Map.get(socket.assigns, :idx_first, 0) + @chunk_size
+
+    events =
+      Data.get_block_events_paginated(
+        socket.assigns.block.hash,
+        %{
+          "chunk_size" => @chunk_size,
+          "continuation_token" => Integer.to_string(continuation_token)
+        },
+        socket.assigns.network
+      )["events"]
+
+    assigns = [
+      events: events,
+      view: "events",
+      idx_first: continuation_token,
+      idx_last: length(events) + continuation_token
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  def handle_event("dec_events", _value, socket) do
+    continuation_token =
+      get_previous_continuation_token(Map.get(socket.assigns, :idx_first, @chunk_size))
+
+    events =
+      Data.get_block_events_paginated(
+        socket.assigns.block.hash,
+        %{
+          "chunk_size" => @chunk_size,
+          "continuation_token" => Integer.to_string(continuation_token)
+        },
+        socket.assigns.network
+      )["events"]
+
+    assigns = [
+      events: events,
+      view: "events",
+      idx_first: continuation_token,
+      idx_last: length(events) + continuation_token
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event(
+        "select-view",
+        %{"view" => "events"},
+        socket
+      ) do
+    events =
+      Data.get_block_events_paginated(
+        socket.assigns.block.hash,
+        %{"chunk_size" => @chunk_size},
+        socket.assigns.network
+      )
+
+    assigns = [
+      events: events["events"],
+      view: "events",
+      idx_first: 0,
+      idx_last: @chunk_size,
+      chunk_size: @chunk_size
+    ]
+
+    {:noreply, assign(socket, assigns)}
   end
 
   @impl true
@@ -541,6 +627,77 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <%= "#{@execution_resources} steps" %>
         </div>
       </div>
+    </div>
+    """
+  end
+
+  def render_info(assigns = %{block: _block, view: "events"}) do
+    ~H"""
+    <div class="table-th !pt-7 border-t border-gray-700 grid-6">
+      <div>Identifier</div>
+      <div>Block Number</div>
+      <div>Transaction Hash</div>
+      <div>Name WIP</div>
+      <div>From Address</div>
+      <div>Age</div>
+    </div>
+    <%= for {idx, %{"block_number" => block_number, "from_address" => from_address, "transaction_hash" => tx_hash}} <- Enum.with_index(@events, fn element, index -> {index, element} end) do %>
+      <div class="custom-list-item grid-6">
+        <div>
+          <div class="list-h">Identifier</div>
+          <% identifier =
+            Integer.to_string(block_number) <> "_" <> Integer.to_string(idx + @idx_first) %>
+          <%= live_redirect(
+            identifier,
+            to: ~p"/#{@network}/events/#{identifier}",
+            class: "text-hover-blue"
+          ) %>
+          <div></div>
+        </div>
+        <div>
+          <div class="list-h">Block Number</div>
+          <div>
+            <span class="blue-label">
+              <%= live_redirect(to_string(block_number),
+                to: ~p"/#{@network}/blocks/#{@block.hash}"
+              ) %>
+            </span>
+          </div>
+        </div>
+        <div>
+          <div class="list-h">Transaction Hash</div>
+          <div>
+            <%= live_redirect(tx_hash |> Utils.shorten_block_hash(),
+              to: ~p"/#{@network}/transactions/#{tx_hash}"
+            ) %>
+          </div>
+        </div>
+        <div>
+          <div class="list-h">Name</div>
+          <div>
+            <span class="lilac-label">TODO</span>
+          </div>
+        </div>
+        <div class="list-h">From Address</div>
+        <div>
+          <%= live_redirect(from_address |> Utils.shorten_block_hash(),
+            to: ~p"/#{@network}/contracts/#{from_address}"
+          ) %>
+        </div>
+        <div>
+          <div class="list-h">Age</div>
+          <div><%= @block_age %></div>
+        </div>
+      </div>
+    <% end %>
+    <div>
+      <%= if @idx_first != 0 do %>
+        <button phx-click="dec_events">Previous</button>
+      <% end %>
+      Showing from <%= @idx_first %> to <%= @idx_last %>
+      <%= if length(@events) >= @chunk_size do %>
+        <button phx-click="inc_events">Next</button>
+      <% end %>
     </div>
     """
   end

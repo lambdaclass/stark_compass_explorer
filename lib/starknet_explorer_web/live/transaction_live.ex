@@ -265,7 +265,6 @@ defmodule StarknetExplorerWeb.TransactionLive do
   # TODO:
   # Do not hardcode the following:
   # Call data
-  # Signatures
   # Execution resources
   def render_info(%{transaction_view: "overview"} = assigns) do
     ~H"""
@@ -515,7 +514,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     </div>
     <div class="custom-list-item">
       <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
-        <span>Signature</span><span class="gray-label text-sm">Mocked</span>
+        <span>Signature</span>
       </div>
       <div class="bg-black/10 p-5">
         <div class="w-full grid-8 table-th">
@@ -523,15 +522,15 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <div class="col-span-7">Value</div>
         </div>
         <%= unless is_nil(@transaction.signature) do %>
-          <%= for {index, signature} <- Enum.with_index(@transaction.signature) do %>
+          <%= for {signature, index} <- Enum.with_index(@transaction.signature) do %>
             <div class="w-full grid-8 custom-list-item">
               <div>
                 <div class="list-h">Index</div>
-                <div class="break-all"><%= signature %></div>
+                <div class="break-all"><%= index %></div>
               </div>
               <div>
                 <div class="list-h">Value</div>
-                <div class="break-all col-span-7"><%= index |> Utils.shorten_block_hash() %></div>
+                <div class="break-all col-span-7"><%= signature |> Utils.shorten_block_hash() %></div>
               </div>
             </div>
           <% end %>
