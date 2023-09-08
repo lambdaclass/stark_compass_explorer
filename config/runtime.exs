@@ -90,7 +90,7 @@ if config_env() == :prod do
       """
 
   host = System.get_env("PHX_HOST") || "madarastark.com"
-  port = String.to_integer(System.get_env("PORT") || "5000")
+  port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :starknet_explorer, StarknetExplorerWeb.Endpoint,
     server: true,
