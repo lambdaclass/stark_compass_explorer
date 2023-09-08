@@ -493,16 +493,38 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     </div>
     <%= for {idx, event = %{"block_number" => block_number, "from_address" => from_address, "transaction_hash" => tx_hash}} <- Enum.with_index(@events, fn element, index -> {index, element} end) do %>
       <div class="custom-list-item grid-6">
+        <% identifier =
+          Integer.to_string(block_number) <> "_" <> Integer.to_string(idx + @idx_first) %>
         <div>
           <div class="list-h">Identifier</div>
-          <% identifier =
-            Integer.to_string(block_number) <> "_" <> Integer.to_string(idx + @idx_first) %>
-          <%= live_redirect(
-            identifier,
-            to: ~p"/#{@network}/events/#{identifier}",
-            class: "text-hover-blue"
-          ) %>
-          <div></div>
+          <div
+            class="flex gap-2 items-center copy-container"
+            id={"copy-transaction-hash-#{identifier}"}
+            phx-hook="Copy"
+          >
+            <div class="relative">
+              <div class="break-all text-hover-blue">
+                <%= live_redirect(
+                  identifier,
+                  to: ~p"/#{@network}/events/#{identifier}",
+                  class: "text-hover-blue"
+                ) %>
+              </div>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={identifier}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div>
           <div class="list-h">Block Number</div>
