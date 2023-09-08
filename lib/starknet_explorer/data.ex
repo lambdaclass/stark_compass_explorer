@@ -61,20 +61,14 @@ defmodule StarknetExplorer.Data do
   @doc """
   Fetch transactions receipts by block hash
   """
-  def receipts_by_block_hash(block_hash) do
-    case TransactionReceipt.get_by_block_hash(block_hash) do
-      receipts ->
-        {:ok, receipts}
-    end
-  end
+  def receipts_by_block(block, network) do
+    case TransactionReceipt.get_by_block_hash(block.hash) do
+      [] ->
+        {:ok,
+         Enum.map(block.transactions, fn x ->
+           TransactionReceipt.from_rpc_tx(Rpc.get_transaction_receipt(x.hash, network) |> elem(1))
+         end)}
 
-  @doc """
-  delete
-  """
-  def test_receipt() do
-    case TransactionReceipt.get_by_transaction_hash(
-           "0x02b0821a222884de8bb0d2d35fd5369e721c253453c89e6bd08143117543602f"
-         ) do
       receipts ->
         {:ok, receipts}
     end

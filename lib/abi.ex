@@ -1,13 +1,13 @@
 defmodule Abi do
-  @doc "Pads binary data to 32 bytes."
-  def pad_to_32_bytes(bin) when is_binary(bin) do
+  # Pads binary data to 32 bytes
+  defp pad_to_32_bytes(bin) when is_binary(bin) do
     padding_length = 32 - byte_size(bin)
     padding = <<0::size(padding_length)-unit(8)>>
     <<padding::binary, bin::binary>>
   end
 
-  @doc "Encodes and pads a hex value to a 32-byte binary"
-  def encode_hex(address) when is_binary(address) do
+  # Encodes and pads a hex value to a 32-byte binary
+  defp encode_hex(address) when is_binary(address) do
     clean_address = address |> String.replace_prefix("0x", "")
 
     clean_address =
