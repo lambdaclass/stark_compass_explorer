@@ -41,6 +41,9 @@
       mix phx.gen.release
     environment:
       MIX_ENV: prod
+      RPC_API_HOST:
+      TESTNET_RPC_API_HOST:
+      TESTNET_2_RPC_API_HOST:
     args:
       chdir: /home/starknet_explorer/tmp/madara_explorer
     register: build_output
