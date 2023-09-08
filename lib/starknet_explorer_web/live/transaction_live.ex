@@ -164,7 +164,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <div>To Address</div>
         <div>Transaction Hash</div>
       </div>
-      <%= for message <- @messages do %>
+      <%= for message <- messages do %>
         <div class="grid-6 custom-list-item">
           <div>
             <div class="list-h">Message Hash</div>
