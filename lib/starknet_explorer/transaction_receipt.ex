@@ -10,7 +10,6 @@ defmodule StarknetExplorer.TransactionReceipt do
     :actual_fee,
     :finality_status,
     :execution_status,
-    :messages_sent,
     :events,
     :block_hash,
     :block_number,
@@ -92,7 +91,6 @@ defmodule StarknetExplorer.TransactionReceipt do
     field :transaction_hash
     field :type, :string
     field :actual_fee, :string
-    field :status, :string
     field :finality_status, :string
     field :execution_status, :string
     field :block_hash, :string
@@ -131,6 +129,14 @@ defmodule StarknetExplorer.TransactionReceipt do
         where: tr.transaction_hash == ^tx_hash
 
     Repo.one(query)
+  end
+
+  def get_by_block_hash(block_hash) do
+    query =
+      from tr in TransactionReceipt,
+        where: tr.block_hash == ^block_hash
+
+    Repo.all(query)
   end
 
   def from_rpc_tx(rpc_receipt) do
