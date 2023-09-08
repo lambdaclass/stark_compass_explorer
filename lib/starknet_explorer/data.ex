@@ -30,6 +30,11 @@ defmodule StarknetExplorer.Data do
   @common_event_hashes Map.keys(@common_event_hash_to_name)
   @condition_to_match 15
 
+  # Defines the separator used to distinguish between modules and event names in Cairo0 events.
+  # In Cairo0 events, event names may include module information in the format:
+  # `Module1::SubModule::EventName`
+  @event_module_separator "::"
+
   @doc """
   Fetch `block_amount` blocks (defaults to 15), first
   look them up in the db, if not found check the RPC
@@ -149,11 +154,12 @@ defmodule StarknetExplorer.Data do
     |> Enum.filter(fn abi_entry -> abi_entry["type"] == "event" end)
     |> Map.new(fn abi_event ->
       {abi_event["name"]
-       |> String.split("::")
+       |> String.split(@event_module_separator)
        |> List.last()
        |> ExKeccak.hash_256()
        |> Base.encode16(case: :lower)
-       |> last_n_characters(), List.last(String.split(abi_event["name"], "::"))}
+       |> last_n_characters(),
+       List.last(String.split(abi_event["name"], @event_module_separator))}
     end)
     |> Map.get(
       last_n_characters(event_name_hashed),
