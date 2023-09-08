@@ -45,6 +45,7 @@
       TESTNET_RPC_API_HOST:
       TESTNET_2_RPC_API_HOST:
       DATABASE_PATH: "{{ lookup('ansible.builtin.env', 'DATABASE_PATH') }}"
+      SECRET_KEY_BASE: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
     args:
       chdir: /home/starknet_explorer/tmp/madara_explorer
     register: build_output
