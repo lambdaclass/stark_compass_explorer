@@ -6,24 +6,28 @@ defmodule StarknetExplorer.Repo.Migrations.AddEventsTable do
       references("blocks",
         on_delete: :delete_all,
         column: :number,
-        name: :block_number,
+        name: :block,
         prefix: nil,
         type: :integer
       )
+
       references("transactions",
-      on_delete: :delete_all,
-      column: :hash,
-      name: :transaction_hash,
-      prefix: nil,
-      type: :string
-    )
+        on_delete: :delete_all,
+        column: :hash,
+        name: :transaction,
+        prefix: nil,
+        type: :string
+      )
 
       add :name, :string
       add :from_address, :string
-      add :age, :timestamp
+      add :age, :integer
       add :name_hashed, :string
-      add :data, :json  # [felt]
+      # array of felts.
+      add :data, {:array, :string}
       add :id, :string
+      add :index_in_block, :integer
+      add :block_number, :integer
       timestamps()
     end
 
