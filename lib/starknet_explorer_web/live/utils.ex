@@ -5,7 +5,10 @@ defmodule StarknetExplorerWeb.Utils do
   def shorten_block_hash(nil), do: ""
 
   def shorten_block_hash(block_hash) do
-    "#{String.slice(block_hash, 0, 6)}...#{String.slice(block_hash, -4, 4)}"
+    case String.length(block_hash) do
+      n when n < 6 -> block_hash
+      _ -> "#{String.slice(block_hash, 0, 6)}...#{String.slice(block_hash, -4, 4)}"
+    end
   end
 
   def get_block_age(%{timestamp: timestamp}) do
@@ -33,10 +36,22 @@ defmodule StarknetExplorerWeb.Utils do
     end
   end
 
+  # 1 eth = 10^18 wei
+  @wei_to_eth_constant Decimal.new("1.0E+18")
+  def hex_wei_to_eth(<<"0x", wei_base_16::binary>>) do
+    wei_base_16
+    |> String.to_integer(16)
+    |> Decimal.new()
+    |> Decimal.div(@wei_to_eth_constant)
+    |> Decimal.to_string(:normal)
+  end
+
   def atomize_keys(map) when is_map(map) do
     map
-    |> Map.new(fn {key, val} when is_binary(key) ->
-      {String.to_atom(key), atomize_keys(val)}
+    |> Map.new(fn
+      {key, val} when is_binary(key) -> {String.to_atom(key), atomize_keys(val)}
+      # Default case for atoms
+      {key, val} when is_atom(key) -> {key, val}
     end)
   end
 

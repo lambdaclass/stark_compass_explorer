@@ -16,10 +16,23 @@ defmodule StarknetExplorer.BlockUtils do
   end
 
   defp already_stored?(block_height) do
-    not is_nil(Block.get_by_height(block_height))
+    not is_nil(Block.get_by_num(block_height))
   end
 
-  def store_block(block = %{"transactions" => transactions}) do
+  def store_block(block = %{"block_number" => block_number}) do
+    with {:ok, receipts} <- receipts_for_block(block),
+         {:ok, gateway_block = %{"gas_price" => gas_price}} <-
+           StarknetExplorer.Gateway.fetch_block(block_number) do
+      block =
+        block
+        |> Map.put("gas_fee_in_wei", gas_price)
+        |> Map.put("execution_resources", calculate_gateway_block_steps(gateway_block))
+
+      Block.insert_from_rpc_response(block, receipts)
+    end
+  end
+
+  defp receipts_for_block(_block = %{"transactions" => transactions}) do
     receipts =
       transactions
       |> Map.new(fn %{"transaction_hash" => tx_hash} ->
@@ -27,7 +40,7 @@ defmodule StarknetExplorer.BlockUtils do
         {tx_hash, receipt}
       end)
 
-    Block.insert_from_rpc_response(block, receipts)
+    {:ok, receipts}
   end
 
   def block_height() do
@@ -48,5 +61,20 @@ defmodule StarknetExplorer.BlockUtils do
       {:error, _} ->
         :error
     end
+  end
+
+  def calculate_gateway_block_steps(_gateway_block = %{"transaction_receipts" => receipts}) do
+    receipts
+    |> get_steps_from_gateway_receipts
+    |> Enum.sum()
+  end
+
+  defp get_steps_from_gateway_receipts(receipts) do
+    receipts
+    |> Enum.map(fn
+      %{"execution_resources" => %{"n_steps" => steps}} -> steps
+      _ -> nil
+    end)
+    |> Enum.reject(&is_nil/1)
   end
 end

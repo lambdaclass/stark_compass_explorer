@@ -51,6 +51,7 @@ defmodule StarknetExplorer.MixProject do
       {:tesla, "~> 1.4"},
       {:cachex, "~> 3.6"},
       {:ex_aws, "~> 2.0"},
+      {:ex_keccak, "~> 0.7.1"},
       {:ex_aws_s3, "~> 2.0"},
       {:poison, "~> 3.1"},
       {:hackney, "~> 1.6"},

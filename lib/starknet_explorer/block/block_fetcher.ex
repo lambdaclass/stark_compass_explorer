@@ -34,8 +34,6 @@ defmodule StarknetExplorer.BlockFetcher.Worker do
 
   @impl true
   def handle_info(:fetch, state = %Worker{}) do
-    Process.send_after(self(), :fetch, @fetch_interval)
-
     state =
       case BlockUtils.fetch_and_store(state.next_to_fetch) do
         {:ok, _block} ->
