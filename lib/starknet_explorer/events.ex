@@ -160,8 +160,12 @@ defmodule StarknetExplorer.Events do
 
           events
 
-        _ ->
+        # This means that we fetch all the events from a block.
+        {:error, %{"code" => 33}} ->
           :ok
+
+        err ->
+          err
       end
     end)
   end
