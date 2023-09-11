@@ -126,7 +126,7 @@ defmodule StarknetExplorer.Data do
 
   def get_block_events_paginated(block, pagination, network) do
     # If the entries are empty, means that the events was not fetch yet.
-    with %Scrivener.Page{entries: []} <- Events.paginate_events(pagination, block.number) do
+    with %Scrivener.Page{entries: []} <- Events.paginate_events(pagination, block.number, network) do
       Events.store_events_from_rpc(block, network)
       get_block_events_paginated(block, pagination, network)
     else

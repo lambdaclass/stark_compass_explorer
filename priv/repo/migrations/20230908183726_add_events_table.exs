@@ -29,6 +29,7 @@ defmodule StarknetExplorer.Repo.Migrations.AddEventsTable do
       add :index_in_block, :integer
       add :block_number, :integer
       add :transaction_hash, :string
+      add :network, :string
       timestamps()
     end
 

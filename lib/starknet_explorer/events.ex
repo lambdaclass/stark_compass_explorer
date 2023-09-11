@@ -16,7 +16,8 @@ defmodule StarknetExplorer.Events do
     :data,
     :index_in_block,
     :block_number,
-    :transaction_hash
+    :transaction_hash,
+    :network
   ]
 
   @common_event_hash_to_name %{
@@ -65,13 +66,10 @@ defmodule StarknetExplorer.Events do
     field :data, {:array, :string}
     field :index_in_block, :integer
     field :transaction_hash, :string
+    field :network, Ecto.Enum, values: [:mainnet, :testnet, :testnet2]
     timestamps()
   end
 
-  @doc """
-  TODO:
-    - add validate_required/3
-  """
   def changeset(schema, %{"keys" => [name_hashed | _]} = params, network) do
     schema
     |> cast(params, @fields)
@@ -89,6 +87,7 @@ defmodule StarknetExplorer.Events do
     |> foreign_key_constraint(:block_number)
     |> foreign_key_constraint(:transaction_hash)
     |> unique_constraint(:id)
+    |> validate_required(@fields)
   end
 
   def insert(event, relative_idx, continuation_token, network, block) do
@@ -97,7 +96,8 @@ defmodule StarknetExplorer.Events do
       event
       |> Map.put("index_in_block", relative_idx + String.to_integer(continuation_token))
       |> Map.put("age", block.timestamp)
-      |> Map.put("block_number", block.number),
+      |> Map.put("block_number", block.number)
+      |> Map.put("network", network),
       network
     )
     |> Repo.insert()
@@ -137,9 +137,9 @@ defmodule StarknetExplorer.Events do
     |> _get_event_name(event_name_hashed)
   end
 
-  def paginate_events(params, block_number) do
+  def paginate_events(params, block_number, network) do
     Events
-    |> where([p], p.block_number == ^block_number)
+    |> where([p], p.block_number == ^block_number and p.network == ^network)
     |> order_by(asc: :index_in_block)
     |> Repo.paginate(params)
   end
