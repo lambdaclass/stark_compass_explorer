@@ -68,7 +68,7 @@ defmodule StarknetExplorer.Events do
   TODO:
     - add validate_required/3
   """
-  def changeset(schema, params, network) do
+  def changeset(schema, %{"keys" => [name_hashed | _]} = params, network) do
     schema
     |> cast(params, @fields)
     |> cast(
