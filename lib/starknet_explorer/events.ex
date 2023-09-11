@@ -8,17 +8,14 @@ defmodule StarknetExplorer.Events do
   alias StarknetExplorerWeb.Utils
   @primary_key {:id, :string, autogenerate: false}
   @fields [
-    # TODO: tx_hash can't be here, we need a cast_assoc() in the changeset function.
-    # :transaction_hash,
-    # TODO: block_number can't be here, we need a cast_assoc() in the changeset function.
-    # :block_number,
     :name,
     :from_address,
     :age,
     :name_hashed,
     :data,
     :index_in_block,
-    :block_number
+    :block_number,
+    :transaction_hash
   ]
 
   @common_event_hash_to_name %{
@@ -63,6 +60,7 @@ defmodule StarknetExplorer.Events do
     field :name_hashed, :string
     field :data, {:array, :string}
     field :index_in_block, :integer
+    field :transaction_hash, :string
     timestamps()
   end
 
@@ -101,8 +99,6 @@ defmodule StarknetExplorer.Events do
   end
 
   def insert(event, relative_idx, continuation_token, network, block_timestamp, block_number) do
-    event |> IO.inspect()
-
     %StarknetExplorer.Events{}
     |> changeset(
       event
@@ -113,9 +109,6 @@ defmodule StarknetExplorer.Events do
       network
     )
     |> Repo.insert()
-    |> IO.inspect()
-
-    # |> Repo.preload(:transaction_hash)
   end
 
   defp _get_event_name(abi, event_name_hashed) when is_list(abi) do

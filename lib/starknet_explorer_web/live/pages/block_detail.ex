@@ -218,7 +218,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         %{},
         socket.assigns.network
       )
-      |> IO.inspect()
 
     assigns = [
       page: page,
@@ -667,9 +666,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Transaction Hash</div>
           <div>
-            <%= # live_redirect(tx_hash |> Utils.shorten_block_hash(),
-            # to: ~p"/#{@network}/transactions/#{tx_hash}"
-            # ) %>
+            <%= live_redirect(event.transaction_hash |> Utils.shorten_block_hash(),
+              to: ~p"/#{@network}/transactions/#{event.transaction_hash}"
+            ) %>
           </div>
         </div>
         <div>
