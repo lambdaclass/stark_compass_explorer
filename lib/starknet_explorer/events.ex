@@ -67,45 +67,33 @@ defmodule StarknetExplorer.Events do
   @doc """
   TODO:
     - add validate_required/3
-    - add get_event_name
-    - map keys[0] -> name_hashed
-    - get age from block age (block[timestamp])
   """
   def changeset(schema, params, network) do
     schema
     |> cast(params, @fields)
-    |> add_id(params)
-    |> add_event_name(params, network)
-    |> add_name_hashed(params)
+    |> cast(
+      %{
+        id:
+          Integer.to_string(params["block_number"]) <>
+            "_" <> Integer.to_string(params["index_in_block"])
+      },
+      [:id]
+    )
+    |> cast(%{index_in_block: params["index_in_block"]}, [:index_in_block])
+    |> cast(%{name: get_event_name(params, network)}, [:name])
+    |> cast(%{name_hashed: name_hashed}, [:name_hashed])
     |> foreign_key_constraint(:block_number)
     |> foreign_key_constraint(:transaction_hash)
     |> unique_constraint(:id)
   end
 
-  defp add_id(schema, params) do
-    schema
-    |> cast(%{id: Integer.to_string(params["block_number"]) <> "_" <> params["index"]}, [:id])
-    |> cast(%{index_in_block: params["index_in_block"]}, [:index_in_block])
-  end
-
-  defp add_event_name(schema, params, network) do
-    schema
-    |> cast(%{name: get_event_name(params, network)}, [:name])
-  end
-
-  defp add_name_hashed(schema, %{"keys" => [name_hashed | _]}) do
-    schema
-    |> cast(%{name_hashed: name_hashed}, [:name_hashed])
-  end
-
-  def insert(event, relative_idx, continuation_token, network, block_timestamp, block_number) do
+  def insert(event, relative_idx, continuation_token, network, block) do
     %StarknetExplorer.Events{}
     |> changeset(
       event
-      |> Map.put("index", Integer.to_string(relative_idx + String.to_integer(continuation_token)))
       |> Map.put("index_in_block", relative_idx + String.to_integer(continuation_token))
-      |> Map.put("age", block_timestamp)
-      |> Map.put("block_number", block_number),
+      |> Map.put("age", block.timestamp)
+      |> Map.put("block_number", block.number),
       network
     )
     |> Repo.insert()

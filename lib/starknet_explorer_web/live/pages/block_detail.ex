@@ -132,8 +132,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           Data.block_by_number(num, socket.assigns.network)
       end
 
-    {:ok, receipts} =
-      Data.receipts_by_block(block, socket.assigns.network)
+    {:ok, receipts} = Data.receipts_by_block(block, socket.assigns.network)
 
     # note: most transactions receipt do not contain messages
     messages = Enum.flat_map(receipts, fn x -> Messages.from_transaction_receipt(x) end)

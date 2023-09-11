@@ -143,9 +143,7 @@ defmodule StarknetExplorer.Data do
             events |> IO.inspect()
 
             events["events"]
-            |> Enum.with_index(
-              &Events.insert(&1, &2, continuation_token, network, block.timestamp, block.number)
-            )
+            |> Enum.with_index(&Events.insert(&1, &2, continuation_token, network, block))
 
             events
 
