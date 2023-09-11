@@ -1,9 +1,6 @@
 defmodule StarknetExplorer.Data do
   alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Events}
 
-  @chunk_size 1000
-  @continuation_tokens ["0", "1000", "2000", "3000", "4000"]
-
   @doc """
   Fetch `block_amount` blocks (defaults to 15), first
   look them up in the db, if not found check the RPC
@@ -130,28 +127,7 @@ defmodule StarknetExplorer.Data do
   def get_block_events_paginated(block, pagination, network) do
     # If the entries are empty, means that the events was not fetch yet.
     with %Scrivener.Page{entries: []} <- Events.paginate_events(pagination, block.number) do
-      Enum.map(@continuation_tokens, fn continuation_token ->
-        case Rpc.get_block_events_paginated(
-               block.hash,
-               %{
-                 "chunk_size" => @chunk_size,
-                 "continuation_token" => continuation_token
-               },
-               network
-             ) do
-          {:ok, events} ->
-            events |> IO.inspect()
-
-            events["events"]
-            |> Enum.with_index(&Events.insert(&1, &2, continuation_token, network, block))
-
-            events
-
-          _ ->
-            :ok
-        end
-      end)
-
+      Events.store_events_from_rpc(block, network)
       get_block_events_paginated(block, pagination, network)
     else
       page -> page

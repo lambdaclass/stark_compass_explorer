@@ -5,6 +5,7 @@ defmodule StarknetExplorer.Events do
   alias StarknetExplorer.Events
   alias StarknetExplorer.Data
   alias StarknetExplorer.Repo
+  alias StarknetExplorer.Rpc
   alias StarknetExplorerWeb.Utils
   @primary_key {:id, :string, autogenerate: false}
   @fields [
@@ -45,6 +46,9 @@ defmodule StarknetExplorer.Events do
 
   @common_event_hashes Map.keys(@common_event_hash_to_name)
   @condition_to_match 15
+  @continuation_tokens ["0", "1000", "2000", "3000", "4000"]
+  @chunk_size 1000
+
   # Defines the separator used to distinguish between modules and event names in Cairo0 events.
   # In Cairo0 events, event names may include module information in the format:
   # `Module1::SubModule::EventName`
@@ -138,5 +142,27 @@ defmodule StarknetExplorer.Events do
     |> where([p], p.block_number == ^block_number)
     |> order_by(asc: :index_in_block)
     |> Repo.paginate(params)
+  end
+
+  def store_events_from_rpc(block, network) do
+    Enum.map(@continuation_tokens, fn continuation_token ->
+      case Rpc.get_block_events_paginated(
+             block.hash,
+             %{
+               "chunk_size" => @chunk_size,
+               "continuation_token" => continuation_token
+             },
+             network
+           ) do
+        {:ok, events} ->
+          events["events"]
+          |> Enum.with_index(&insert(&1, &2, continuation_token, network, block))
+
+          events
+
+        _ ->
+          :ok
+      end
+    end)
   end
 end
