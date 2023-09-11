@@ -136,22 +136,23 @@ defmodule StarknetExplorer.Data do
     #   page
     # else
     with %Scrivener.Page{entries: []} <- Events.paginate_events(pagination, block.number) do
-      Enum.flat_map(@continuation_tokens, fn continuation_token ->
-        with {:ok, events} <-
-               Rpc.get_block_events_paginated(
-                 block.hash,
-                 %{
-                   "chunk_size" => @chunk_size,
-                   "continuation_token" => continuation_token
-                 },
-                 network
-               ) do
+      Enum.map(@continuation_tokens, fn continuation_token ->
+        case Rpc.get_block_events_paginated(
+          block.hash,
+          %{
+            "chunk_size" => @chunk_size,
+            "continuation_token" => continuation_token
+          },
+          network
+        ) do
+        {:ok, events} ->
           events["events"]
           |> Enum.with_index(
             &Events.insert(&1, &2, continuation_token, network, block.timestamp, block.number)
           )
 
           events
+        _ -> :ok
         end
       end)
 
