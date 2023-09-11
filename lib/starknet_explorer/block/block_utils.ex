@@ -19,8 +19,8 @@ defmodule StarknetExplorer.BlockUtils do
     not is_nil(Block.get_by_num(block_height))
   end
 
-  def store_block(block = %{"block_number" => block_number}) do
-    with {:ok, receipts} <- receipts_for_block(block),
+  def store_block(block = %{"block_number" => block_number}, network \\ :mainnet) do
+    with {:ok, receipts} <- receipts_for_block(block, network),
          {:ok, gateway_block = %{"gas_price" => gas_price}} <-
            StarknetExplorer.Gateway.fetch_block(block_number) do
       block =
@@ -32,15 +32,32 @@ defmodule StarknetExplorer.BlockUtils do
     end
   end
 
-  defp receipts_for_block(_block = %{"transactions" => transactions}) do
+  defp receipts_for_block(_block = %{"transactions" => transactions}, network) do
+    # receipts =
+    # transactions
+    # |> Map.new(fn %{"transaction_hash" => tx_hash} ->
+    # {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, :mainnet)
+    # {tx_hash, receipt}
+    # end)
+
     receipts =
       transactions
-      |> Map.new(fn %{"transaction_hash" => tx_hash} ->
-        {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, :mainnet)
-        {tx_hash, receipt}
+      |> Enum.chunk_every(100)
+      |> Enum.flat_map(fn chunk ->
+        tasks =
+          Enum.map(chunk, fn %{"transaction_hash" => tx_hash} ->
+            Task.async(fn ->
+              {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
+
+              # IO.inspect({tx_hash, receipt})
+              {tx_hash, receipt}
+            end)
+          end)
+
+        Enum.map(tasks, &Task.await(&1))
       end)
 
-    {:ok, receipts}
+    {:ok, Map.new(receipts)}
   end
 
   def block_height() do
