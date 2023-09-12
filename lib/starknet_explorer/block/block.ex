@@ -16,7 +16,6 @@ defmodule StarknetExplorer.Block do
     field :sequencer_address, :string, default: ""
     field :gas_fee_in_wei, :string
     field :execution_resources, :integer
-    field :original_json, :binary, load_in_query: false
 
     has_many :transactions, StarknetExplorer.Transaction,
       foreign_key: :block_number,
@@ -36,7 +35,6 @@ defmodule StarknetExplorer.Block do
       :timestamp,
       :sequencer_address,
       :gas_fee_in_wei,
-      :original_json,
       :execution_resources
     ])
     |> validate_required([
@@ -45,8 +43,7 @@ defmodule StarknetExplorer.Block do
       :hash,
       :parent_hash,
       :new_root,
-      :timestamp,
-      :original_json
+      :timestamp
     ])
     |> unique_constraint(:number)
     |> unique_constraint(:hash)
@@ -58,9 +55,6 @@ defmodule StarknetExplorer.Block do
   """
   def insert_from_rpc_response(block = %{"transactions" => txs}, receipts, network \\ :mainnet)
       when is_map(block) do
-    # Store the original response, in case we need it
-    # in the future, as a binary blob.
-    original_json = :erlang.term_to_binary(block)
 
     # This is a bit awful, and I'm sure Ecto/Elixir
     # has a better way of doing this.
@@ -69,11 +63,10 @@ defmodule StarknetExplorer.Block do
     block =
       block
       |> rename_rpc_fields
-      |> Map.put("original_json", original_json)
 
     transaction_result =
       StarknetExplorer.Repo.transaction(fn ->
-        block_changeset = Block.changeset(%Block{original_json: original_json}, block)
+        block_changeset = Block.changeset(%Block{}, block)
 
         {:ok, block} = Repo.insert(block_changeset)
 
@@ -85,11 +78,9 @@ defmodule StarknetExplorer.Block do
               |> Repo.insert!()
 
             receipt = receipts[tx.hash]
-            receipt_binary = :erlang.term_to_binary(receipt)
 
             receipt =
               receipt
-              |> Map.put("original_json", receipt_binary)
               |> Map.put("timestamp", block.timestamp)
 
             Ecto.build_assoc(tx, :receipt, receipt)
