@@ -5,7 +5,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.BlockUtils
   alias StarknetExplorer.S3
-  alias StarknetExplorer.Messages
+  alias StarknetExplorer.Message
   alias StarknetExplorer.Gateway
 
   @chunk_size 30
@@ -139,7 +139,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       Data.receipts_by_block(block, socket.assigns.network)
 
     # note: most transactions receipt do not contain messages
-    messages = Enum.flat_map(receipts, fn x -> Messages.from_transaction_receipt(x) end)
+    messages = Enum.flat_map(receipts, fn x -> Message.from_transaction_receipt(x) end)
 
     assigns = [
       gas_price: "Loading...",

@@ -2,7 +2,7 @@ defmodule StarknetExplorer.Block do
   use Ecto.Schema
   import Ecto.Query
   import Ecto.Changeset
-  alias StarknetExplorer.{Repo, Transaction, Block}
+  alias StarknetExplorer.{Repo, Transaction, Block, Message}
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.TransactionReceipt, as: Receipt
   require Logger
@@ -56,7 +56,8 @@ defmodule StarknetExplorer.Block do
   Given a block from the RPC response, and transactions receipts
   insert them into the DB.
   """
-  def insert_from_rpc_response(block = %{"transactions" => txs}, receipts) when is_map(block) do
+  def insert_from_rpc_response(block = %{"transactions" => txs}, receipts, network \\ :mainnet)
+      when is_map(block) do
     # Store the original response, in case we need it
     # in the future, as a binary blob.
     original_json = :erlang.term_to_binary(block)
@@ -89,6 +90,8 @@ defmodule StarknetExplorer.Block do
             receipt =
               receipt
               |> Map.put("original_json", receipt_binary)
+
+            Message.insert_from_transaction_receipt(receipt, network)
 
             Ecto.build_assoc(tx, :receipt, receipt)
             |> Receipt.changeset(receipt)

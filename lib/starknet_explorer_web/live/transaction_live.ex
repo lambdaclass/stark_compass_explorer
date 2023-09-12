@@ -2,7 +2,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.Data
-  alias StarknetExplorer.Messages
+  alias StarknetExplorer.Message
 
   defp transaction_header(assigns) do
     ~H"""
@@ -633,7 +633,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     {:ok, transaction = %{receipt: receipt}} =
       Data.transaction(transaction_hash, socket.assigns.network)
 
-    messages_sent = Messages.from_transaction_receipt(receipt)
+    messages_sent = Message.from_transaction_receipt(receipt)
 
     assigns = [
       transaction: transaction,
