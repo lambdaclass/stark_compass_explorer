@@ -27,7 +27,6 @@ defmodule StarknetExplorer.BlockFetcher.Test do
       new_root: "",
       timestamp: DateTime.utc_now() |> DateTime.to_unix(),
       sequencer_address: "",
-      original_json: ""
     })
 
     {:ok, pid} = BlockFetcher.start_link([])
@@ -51,10 +50,6 @@ defmodule StarknetExplorer.BlockFetcher.Test do
       db_block = Repo.one!(from b in Block, where: b.number == ^i) |> Repo.preload(:transactions)
       assert hash == db_block.hash
       assert number == db_block.number
-
-      # Check stored json is correct
-      db_json = Repo.one!(from b in Block, select: b.original_json, where: b.number == ^i)
-      assert rpc_json == db_json |> :erlang.binary_to_term()
 
       # Check the block's transactions and receipts are correct
       for tx = %{"transaction_hash" => tx_hash} <- txs do
