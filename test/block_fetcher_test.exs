@@ -26,7 +26,7 @@ defmodule StarknetExplorer.BlockFetcher.Test do
       parent_hash: "",
       new_root: "",
       timestamp: DateTime.utc_now() |> DateTime.to_unix(),
-      sequencer_address: "",
+      sequencer_address: ""
     })
 
     {:ok, pid} = BlockFetcher.start_link([])

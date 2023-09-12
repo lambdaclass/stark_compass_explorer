@@ -5,6 +5,7 @@ defmodule :"Elixir.StarknetExplorer.Repo.Migrations.Remove-original-json-fields"
     alter table("blocks") do
       remove :original_json
     end
+
     alter table("transaction_receipts") do
       remove :original_json
     end
