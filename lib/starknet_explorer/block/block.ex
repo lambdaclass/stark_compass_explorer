@@ -90,12 +90,13 @@ defmodule StarknetExplorer.Block do
             receipt =
               receipt
               |> Map.put("original_json", receipt_binary)
-
-            Message.insert_from_transaction_receipt(receipt, network)
+              |> Map.put("timestamp", block.timestamp)
 
             Ecto.build_assoc(tx, :receipt, receipt)
             |> Receipt.changeset(receipt)
             |> Repo.insert!()
+
+            Message.insert_from_transaction_receipt(receipt, network)
           end)
       end)
 

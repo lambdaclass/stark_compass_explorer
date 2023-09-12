@@ -6,36 +6,33 @@ defmodule StarknetExplorer.Message do
   alias StarknetExplorer.Transaction
   alias StarknetExplorerWeb.Utils
 
-  @primary_key {:id, :string, autogenerate: false}
+  @primary_key {:message_hash, :string, autogenerate: false}
+  @second_key {:transaction_hash, :string}
   @fields [
     :from_address,
     :to_address,
     :payload,
     :transaction_hash,
-    :timestamp,
     :message_hash,
+    :timestamp,
     :network
   ]
 
   schema "messages" do
-    belongs_to :transaction_hash, Transaction, references: :hash
     field :from_address, :string
+    field :transaction_hash, :string
     field :to_address, :string
     field :payload, {:array, :string}
-    # field :transaction_hash, :string
-    field :message_hash, :string
     field :timestamp, :integer
-    # field :id, :string
     field :network, Ecto.Enum, values: [:mainnet, :testnet, :testnet2]
+    # belongs_to :transaction, Transaction, foreign_key: :transaction_hash, references: :hash
     timestamps()
   end
 
   def changeset(message, params, network) do
     message
-    |> cast(params, @fields -- [:transaction_hash])
-    |> cast_assoc(:transaction_hash, with: &Transaction.changeset/2)
+    |> cast(params, @fields)
     |> foreign_key_constraint(:transaction_hash)
-    |> unique_constraint(:id)
     |> validate_required(@fields)
   end
 
@@ -47,11 +44,12 @@ defmodule StarknetExplorer.Message do
       %StarknetExplorer.Message{}
       |> changeset(
         message
-        |> Map.put(:network, network),
+        |> Map.put(:network, network)
+        |> Map.put(:timestamp, receipt["timestamp"])
+        |> Map.put(:transaction_hash, receipt["transaction_hash"]),
         network
       )
-      |> IO.inspect()
-      |> Repo.insert()
+      |> Repo.insert!(returning: false)
     end)
   end
 

@@ -134,7 +134,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           Data.block_by_number(num, socket.assigns.network)
       end
 
-    # TODO: remove case; it should not happen anymore because on block retrieval we are also storing related data on db
     {:ok, receipts} =
       Data.receipts_by_block(block, socket.assigns.network)
 

@@ -2,7 +2,7 @@ defmodule StarknetExplorer.Repo.Migrations.AddMessagesTable do
   use Ecto.Migration
 
   def change do
-    create table("messages", primary_key: false) do
+    create table("messages") do
       references("transactions",
         on_delete: :delete_all,
         column: :transaction_hash,
@@ -22,15 +22,14 @@ defmodule StarknetExplorer.Repo.Migrations.AddMessagesTable do
       add :from_address, :string
       add :to_address, :string
       add :payload, {:array, :string}
-      add :transaction_hash, :string
+      add :transaction_hash, :string, primary_key: true, null: false
       add :message_hash, :string
       add :timestamp, :integer, null: false
-      add :id, :string
+      add :network, :string
 
       timestamps()
     end
 
-    create unique_index("messages", [:id])
     create unique_index("messages", [:message_hash])
   end
 end

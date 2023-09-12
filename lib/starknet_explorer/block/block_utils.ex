@@ -42,19 +42,18 @@ defmodule StarknetExplorer.BlockUtils do
 
     receipts =
       transactions
-      |> Enum.chunk_every(100)
+      |> Enum.chunk_every(75)
       |> Enum.flat_map(fn chunk ->
         tasks =
           Enum.map(chunk, fn %{"transaction_hash" => tx_hash} ->
             Task.async(fn ->
               {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
 
-              # IO.inspect({tx_hash, receipt})
               {tx_hash, receipt}
             end)
           end)
 
-        Enum.map(tasks, &Task.await(&1))
+        Enum.map(tasks, &Task.await(&1, 7500))
       end)
 
     {:ok, Map.new(receipts)}

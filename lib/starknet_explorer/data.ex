@@ -69,8 +69,11 @@ defmodule StarknetExplorer.Data do
   """
   def receipts_by_block(block, network) do
     case TransactionReceipt.get_by_block_hash(block.hash) do
+      # TODO: remove case; it should not happen anymore because on block retrieval we are also storing related data on db
       # if receipts are not found in the db, split the txs in chunks and get receipts by RPC
       [] ->
+        IO.warn("The block should have been saved with all related txs and receipts earlier")
+
         all_receipts =
           block.transactions
           |> Enum.chunk_every(50)
