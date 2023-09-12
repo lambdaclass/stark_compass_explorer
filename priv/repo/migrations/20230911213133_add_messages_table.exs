@@ -26,6 +26,7 @@ defmodule StarknetExplorer.Repo.Migrations.AddMessagesTable do
       add :message_hash, :string
       add :timestamp, :integer, null: false
       add :network, :string
+      add :type, :string
 
       timestamps()
     end

@@ -12,6 +12,7 @@ defmodule StarknetExplorer.Message do
     :from_address,
     :to_address,
     :payload,
+    :type,
     :transaction_hash,
     :message_hash,
     :timestamp,
@@ -24,6 +25,7 @@ defmodule StarknetExplorer.Message do
     field :to_address, :string
     field :payload, {:array, :string}
     field :timestamp, :integer
+    field :type, :string
     field :network, Ecto.Enum, values: [:mainnet, :testnet, :testnet2]
     # belongs_to :transaction, Transaction, foreign_key: :transaction_hash, references: :hash
     timestamps()
@@ -72,6 +74,8 @@ defmodule StarknetExplorer.Message do
         from_address: message.from_address,
         to_address: message.to_address,
         payload: message.payload,
+        # TODO: this needs to be revisited once L1 messages are added and processed
+        type: "Sent on L2",
         message_hash: String.downcase("0x" <> keccak_message_hash)
       }
     end)

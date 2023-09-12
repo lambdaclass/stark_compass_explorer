@@ -387,7 +387,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           </div>
           <div>
             <div class="list-h">Type</div>
-            <div>Sent On L2</div>
+            <div>
+              <%= message.type %>
+            </div>
           </div>
           <div>
             <div class="list-h">From Address</div>
