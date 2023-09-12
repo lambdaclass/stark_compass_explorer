@@ -61,4 +61,15 @@ defmodule StarknetExplorerWeb.Utils do
   end
 
   def atomize_keys(not_a_map), do: not_a_map
+
+  def format_arg_value(%{:type => "felt", :value => value}) do
+    shorten_block_hash(value)
+  end
+  def format_arg_value(%{:type => "Uint256", :value => [<<"0x", high::binary>>, <<"0x", low::binary>>]}) do
+    "0x"<>
+      (String.to_integer(high, 16) * 2**252 + String.to_integer(low, 16)
+        |> Integer.to_string(16)
+        |> String.downcase())
+  end
+
 end

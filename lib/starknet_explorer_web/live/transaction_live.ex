@@ -456,130 +456,55 @@ defmodule StarknetExplorerWeb.TransactionLive do
     </div>
     <div class="custom-list-item">
       <div class="mb-5 text-gray-500 md:text-white !flex-row gap-2">
-        <span>Input Data</span><span class="gray-label text-sm">Mocked</span>
+        <span>Input Data</span>
       </div>
-      <div class="col-span-full">
-        <div class="w-full bg-black/20 p-5 mt-5">
-          call <span class="text-se-violet">approve</span>(<span class="text-blue-400">spender</span>, <span class="text-blue-400">amount</span>)
-          <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(
-            "0x0219209e083275171774dab1df80982e9df2096516f06319c5c6d71ae0a8480c"
-          ) %>
-        </div>
-        <div class="w-full bg-black/10 p-5">
-          <div class="grid-3 table-th">
-            <div>Input</div>
-            <div>Type</div>
-            <div>Value</div>
-          </div>
-          <div class="grid-3 custom-list-item">
-            <div>
-              <div class="list-h">Input</div>
-              <div>spender</div>
-            </div>
-            <div>
-              <div class="list-h">Type</div>
-              <div>felt</div>
-            </div>
-            <div>
-              <div class="list-h">Value</div>
-              <div class="break-all">
-                <%= Utils.shorten_block_hash(
-                  "0x11cd02208d6ed241d3fc0dba144f09b70be03003c32e56de2d19aea99b0ca76"
-                ) %>
+      <%= unless is_nil(@transaction.input_data) do %>
+        <div class="col-span-full">
+          <%= for input <- @transaction.input_data do %>
+            <%= unless is_nil(input.call) do %>
+              <div class="w-full bg-black/20 p-5 mt-5">
+                call <span class="text-se-violet"><%= input.call.name %></span>(<.intersperse :let={arg} enum={input.call.args}><:separator>, </:separator>
+                    <span class="text-blue-400"><%= arg.name %></span></.intersperse>)
+                <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
               </div>
-            </div>
-          </div>
-          <div class="grid-3 custom-list-item">
-            <div>
-              <div class="list-h">Input</div>
-              <div>token_id</div>
-            </div>
-            <div>
-              <div class="list-h">Type</div>
-              <div>felt</div>
-            </div>
-            <div>
-              <div class="list-h">Value</div>
-              <div>1580969</div>
-            </div>
-          </div>
-        </div>
-        <div class="w-full bg-black/20 p-5 mt-5">
-          call <span class="text-se-violet">swap</span>(<span class="text-blue-400">pool_id</span>, <span class="text-blue-400">token_from_addr</span>, <span class="text-blue-400">amount_from</span>, <span class="text-blue-400">amount_to_min</span>)
-          <span class="text-blue-400">-></span>
-          <%= "0x015543c3708653cda9d418b4ccd3be11368e40636c10c44b18cfe756b6d88b29"
-          |> Utils.shorten_block_hash() %>
-        </div>
-        <div class="w-full bg-black/10 p-5">
-          <div class="grid-3 table-th">
-            <div>Input</div>
-            <div>Type</div>
-            <div>Value</div>
-          </div>
-          <div class="grid-3 custom-list-item">
-            <div>
-              <div class="list-h">Input</div>
-              <div>pool_id</div>
-            </div>
-            <div>
-              <div class="list-h">Type</div>
-              <div>felt</div>
-            </div>
-            <div>
-              <div class="list-h">Value</div>
-              <div class="break-all">
-                <%= "0x42b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2"
-                |> Utils.shorten_block_hash() %>
+              <div class="w-full bg-black/10 p-5">
+                <div class="grid-3 table-th">
+                  <div>Input</div>
+                  <div>Type</div>
+                  <div>Value</div>
+                </div>
+                <%= for arg <- input.call.args do %>
+                  <div class="grid-3 custom-list-item">
+                    <div>
+                      <div class="list-h">Input</div>
+                      <div>
+                        <%= arg.name %>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="list-h">Type</div>
+                      <div>
+                        <%= arg.type %>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="list-h">Value</div>
+                      <div class="break-all">
+                        <%= Utils.format_arg_value(arg) %>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
               </div>
-            </div>
-          </div>
-          <div class="grid-3 custom-list-item">
-            <div>
-              <div class="list-h">Input</div>
-              <div>token_from_addr</div>
-            </div>
-            <div>
-              <div class="list-h">Type</div>
-              <div>felt</div>
-            </div>
-            <div>
-              <div class="list-h">Value</div>
-              <div class="break-all">
-                <%= "0x42b8f0484674ca266ac5d08e4ac6a3fe65bd3129795def2dca5c34ecc5f96d2"
-                |> Utils.shorten_block_hash() %>
+            <% else %>
+              <div class="w-full bg-black/20 p-5 mt-5">
+                Not Supported <span class="text-se-violet">...</span>(...)
+                <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
               </div>
-            </div>
-          </div>
-          <div class="grid-3 custom-list-item">
-            <div>
-              <div class="list-h">Input</div>
-              <div>amount_from</div>
-            </div>
-            <div>
-              <div class="list-h">Type</div>
-              <div>Uint256</div>
-            </div>
-            <div>
-              <div class="list-h">Value</div>
-              <div><%= "71587356859985694" |> Utils.shorten_block_hash() %></div>
-            </div>
-          </div>
-          <div class="grid-3 custom-list-item">
-            <div>
-              <div class="list-h">Input</div>
-              <div>amount_to_min</div>
-            </div>
-            <div>
-              <div class="list-h">Type</div>
-              <div>Uint256</div>
-            </div>
-            <div>
-              <div class="list-h">Value</div>
-              <div><%= "80225122454772041" |> Utils.shorten_block_hash() %></div>
-            </div>
-          </div>
+            <% end %>
+          <% end %>
         </div>
-      </div>
+      <% end %>
     </div>
     <div class="custom-list-item">
       <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
@@ -631,7 +556,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   @impl true
   def mount(%{"transaction_hash" => transaction_hash}, _session, socket) do
     {:ok, transaction = %{receipt: receipt}} =
-      Data.transaction(transaction_hash, socket.assigns.network)
+      Data.full_transaction(transaction_hash, socket.assigns.network)
 
     messages_sent = Messages.from_transaction_receipt(receipt)
 

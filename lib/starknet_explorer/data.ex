@@ -1,5 +1,5 @@
 defmodule StarknetExplorer.Data do
-  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt}
+  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata}
 
   @doc """
   Fetch `block_amount` blocks (defaults to 15), first
@@ -117,6 +117,42 @@ defmodule StarknetExplorer.Data do
           tx
           |> Transaction.from_rpc_tx()
           |> Map.put(:receipt, receipt |> StarknetExplorerWeb.Utils.atomize_keys())
+
+        tx ->
+          tx
+      end
+
+    {:ok, tx}
+  end
+
+  def full_transaction(tx_hash, network) do
+    tx =
+      case Transaction.get_by_hash_with_receipt(tx_hash) do
+        nil ->
+          {:ok, tx} = Rpc.get_transaction(tx_hash, network)
+          {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
+
+          calldata = Calldata.from_plain_calldata(tx["calldata"])
+
+          # {:ok, class} = Rpc.get_class_at(receipt["block_number"], "0x53c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8", network)
+          # class |> IO.inspect
+
+          input_data = Enum.map(
+            calldata,
+            fn call ->
+              {:ok, class} = Rpc.get_class_at(receipt["block_number"], call.address, network)
+              input = Enum.find(
+                class["abi"],
+                fn elem ->
+                  (elem["name"] |> Calldata.keccak()) == call.selector
+                end)
+              Map.put(call, :call, Calldata.as_fn_call(input, call.calldata))
+            end)
+
+          tx
+          |> Transaction.from_rpc_tx()
+          |> Map.put(:receipt, receipt |> StarknetExplorerWeb.Utils.atomize_keys())
+          |> Map.put(:input_data, input_data)
 
         tx ->
           tx
