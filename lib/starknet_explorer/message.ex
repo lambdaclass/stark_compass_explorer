@@ -1,13 +1,9 @@
 defmodule StarknetExplorer.Message do
   use Ecto.Schema
   import Ecto.Changeset
-  import Ecto.Query
   alias StarknetExplorer.Repo
-  alias StarknetExplorer.Transaction
-  alias StarknetExplorerWeb.Utils
 
   @primary_key {:message_hash, :string, autogenerate: false}
-  @second_key {:transaction_hash, :string}
   @fields [
     :from_address,
     :to_address,
@@ -31,7 +27,7 @@ defmodule StarknetExplorer.Message do
     timestamps()
   end
 
-  def changeset(message, params, network) do
+  def changeset(message, params) do
     message
     |> cast(params, @fields)
     |> foreign_key_constraint(:transaction_hash)
@@ -48,8 +44,7 @@ defmodule StarknetExplorer.Message do
         message
         |> Map.put(:network, network)
         |> Map.put(:timestamp, receipt["timestamp"])
-        |> Map.put(:transaction_hash, receipt["transaction_hash"]),
-        network
+        |> Map.put(:transaction_hash, receipt["transaction_hash"])
       )
       |> Repo.insert!(returning: false)
     end)
