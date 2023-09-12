@@ -55,7 +55,6 @@ defmodule StarknetExplorer.Block do
   """
   def insert_from_rpc_response(block = %{"transactions" => txs}, receipts, network \\ :mainnet)
       when is_map(block) do
-
     # This is a bit awful, and I'm sure Ecto/Elixir
     # has a better way of doing this.
     # I rename some fields from the RPC response to
