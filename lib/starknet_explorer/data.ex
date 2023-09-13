@@ -134,9 +134,6 @@ defmodule StarknetExplorer.Data do
 
           calldata = Calldata.from_plain_calldata(tx["calldata"])
 
-          # {:ok, class} = Rpc.get_class_at(receipt["block_number"], "0x53c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8", network)
-          # class |> IO.inspect
-
           block_id =
             if receipt["block_number"],
               do: %{"block_number" => receipt["block_number"]},
