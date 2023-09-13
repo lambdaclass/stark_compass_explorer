@@ -27,16 +27,20 @@ defmodule StarknetExplorer.Calldata do
        :calldata => []
      }, rest}
   end
+
   def keccak(value) do
-    <<_::8, result::binary>> = value
+    <<_::8, result::binary>> =
+      value
       |> ExKeccak.hash_256()
       |> Base.encode16(case: :lower)
-    "0x"<>result
+
+    "0x" <> result
   end
 
   def as_fn_call(nil, _calldata) do
     nil
   end
+
   def as_fn_call(input, calldata) do
     %{:name => input["name"], :args => as_fn_inputs(input["inputs"], calldata)}
   end
@@ -51,7 +55,8 @@ defmodule StarknetExplorer.Calldata do
           {[fn_input | acc_current], calldata_rest}
         end
       )
-      Enum.reverse(result)
+
+    Enum.reverse(result)
   end
 
   def as_fn_input(input, calldata) do
@@ -62,7 +67,8 @@ defmodule StarknetExplorer.Calldata do
   def get_value_for_type("Uint256", [value1, value2 | rest]) do
     {[value2, value1], rest}
   end
-  def get_value_for_type(_, [value| rest]) do
+
+  def get_value_for_type(_, [value | rest]) do
     {value, rest}
   end
 

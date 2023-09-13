@@ -143,18 +143,21 @@ defmodule StarknetExplorer.Data do
             Enum.map(
               calldata,
               fn call ->
-                input = case Rpc.get_class_at(block_id, call.address, network) do
-                  {:ok, class} ->
+                input =
+                  case Rpc.get_class_at(block_id, call.address, network) do
+                    {:ok, class} ->
                       Enum.find(
                         class["abi"],
                         fn elem ->
                           elem["name"] |> Calldata.keccak() == call.selector
                         end
                       )
-                  {:error, error} ->
-                    error |> IO.inspect()
-                    nil
-                end
+
+                    {:error, error} ->
+                      error |> IO.inspect()
+                      nil
+                  end
+
                 Map.put(call, :call, Calldata.as_fn_call(input, call.calldata))
               end
             )
