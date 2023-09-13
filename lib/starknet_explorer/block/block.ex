@@ -80,8 +80,8 @@ defmodule StarknetExplorer.Block do
 
         _txs_changeset =
           Enum.map(txs, fn tx ->
-            tx |> IO.inspect()
             tx = tx |> Map.put("network", network)
+
             tx =
               Ecto.build_assoc(block, :transactions, tx)
               |> Transaction.changeset(tx)

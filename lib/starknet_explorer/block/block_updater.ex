@@ -9,7 +9,7 @@ defmodule StarknetExplorer.BlockUpdater do
     GenServer.start_link(__MODULE__, args)
   end
 
-  def init([network: network]) do
+  def init(network: network) do
     state = %BlockUpdater{
       network: network
     }
