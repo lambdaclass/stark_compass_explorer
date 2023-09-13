@@ -137,17 +137,30 @@ defmodule StarknetExplorer.Data do
           # {:ok, class} = Rpc.get_class_at(receipt["block_number"], "0x53c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8", network)
           # class |> IO.inspect
 
-          input_data = Enum.map(
-            calldata,
-            fn call ->
-              {:ok, class} = Rpc.get_class_at(receipt["block_number"], call.address, network)
-              input = Enum.find(
-                class["abi"],
-                fn elem ->
-                  (elem["name"] |> Calldata.keccak()) == call.selector
-                end)
-              Map.put(call, :call, Calldata.as_fn_call(input, call.calldata))
-            end)
+          block_id =
+            if receipt["block_number"],
+              do: %{"block_number" => receipt["block_number"]},
+              else: "latest"
+
+          input_data =
+            Enum.map(
+              calldata,
+              fn call ->
+                input = case Rpc.get_class_at(block_id, call.address, network) do
+                  {:ok, class} ->
+                      Enum.find(
+                        class["abi"],
+                        fn elem ->
+                          elem["name"] |> Calldata.keccak() == call.selector
+                        end
+                      )
+                  {:error, error} ->
+                    error |> IO.inspect()
+                    nil
+                end
+                Map.put(call, :call, Calldata.as_fn_call(input, call.calldata))
+              end
+            )
 
           tx
           |> Transaction.from_rpc_tx()
