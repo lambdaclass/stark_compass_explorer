@@ -98,7 +98,6 @@ defmodule StarknetExplorer.TransactionReceipt do
     field :messages_sent, {:array, :map}
     field :events, {:array, :map}
     field :contract_address
-    field :original_json, :binary, load_in_query: false
     timestamps()
   end
 
@@ -106,7 +105,7 @@ defmodule StarknetExplorer.TransactionReceipt do
     receipt
     |> cast(
       attrs,
-      @fields ++ [:original_json]
+      @fields
     )
     |> validate_according_to_type(attrs)
   end
