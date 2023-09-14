@@ -158,10 +158,14 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   @impl true
   def handle_info(:get_gateway_information, socket = %Phoenix.LiveView.Socket{}) do
     {gas_assign, resources_assign} =
-      case Gateway.fetch_block(socket.assigns.block.number) do
+      case Gateway.fetch_block(socket.assigns.block.number, socket.assigns.network) do
         {:ok, block = %{"gas_price" => gas_price}} ->
           execution_resources = BlockUtils.calculate_gateway_block_steps(block)
           {gas_price, execution_resources}
+
+        {:ok, err} ->
+          Logger.error(err)
+          {"Unavailable", "Unavailable"}
 
         {:error, _} ->
           {"Unavailable", "Unavailable"}

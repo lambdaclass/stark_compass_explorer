@@ -42,7 +42,7 @@ defmodule StarknetExplorer.Data do
   """
   def many_blocks(network, block_amount \\ 15) do
     block_number = StarknetExplorer.Data.latest_block_number(network)
-    blocks = Block.latest_blocks_with_txs(block_amount, block_number)
+    blocks = Block.latest_blocks_with_txs(block_amount, block_number, network)
     every_block_is_in_the_db = length(blocks) == block_amount
 
     case blocks do
@@ -57,7 +57,7 @@ defmodule StarknetExplorer.Data do
         |> Enum.map(fn block_number ->
           {:ok, block} = Rpc.get_block_by_number(block_number, network)
 
-          Block.from_rpc_block(block)
+          Block.from_rpc_block(block, network)
         end)
     end
   end
@@ -67,11 +67,11 @@ defmodule StarknetExplorer.Data do
   the db, if not found, fetch from the RPC provider
   """
   def block_by_hash(hash, network) do
-    case Block.get_by_hash(hash) do
+    case Block.get_by_hash(hash, network) do
       nil ->
         {:ok, block} = Rpc.get_block_by_hash(hash, network)
 
-        block = Block.from_rpc_block(block)
+        block = Block.from_rpc_block(block, network)
         {:ok, block}
 
       block ->
@@ -84,11 +84,11 @@ defmodule StarknetExplorer.Data do
   the db, if not found, fetch from the RPC provider
   """
   def block_by_number(number, network) do
-    case Block.get_by_num(number) do
+    case Block.get_by_num(number, network) do
       nil ->
         {:ok, block} = Rpc.get_block_by_number(number, network)
 
-        block = Block.from_rpc_block(block)
+        block = Block.from_rpc_block(block, network)
         {:ok, block}
 
       block ->
