@@ -29,7 +29,7 @@ defmodule StarknetExplorer.Application do
         | cache_child_specs
       ] ++
         if Application.get_env(:starknet_explorer, :enable_listener) do
-          [StarknetExplorer.BlockListener]
+          [{StarknetExplorer.BlockListener, network: :mainnet}]
         else
           []
         end
