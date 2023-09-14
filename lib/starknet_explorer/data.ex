@@ -139,7 +139,8 @@ defmodule StarknetExplorer.Data do
 
           {:ok, contract} = Rpc.get_class_at(block_id, tx["sender_address"], network)
 
-          calldata = Calldata.from_plain_calldata(tx["calldata"], contract["contract_class_version"])
+          calldata =
+            Calldata.from_plain_calldata(tx["calldata"], contract["contract_class_version"])
 
           input_data =
             Enum.map(

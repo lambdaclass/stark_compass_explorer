@@ -33,7 +33,6 @@ defmodule StarknetExplorer.Calldata do
     Enum.reverse(calls)
   end
 
-
   def get_call_header_v0([to, selector, data_offset, data_len | rest]) do
     {%{
        :address => to,
@@ -47,6 +46,7 @@ defmodule StarknetExplorer.Calldata do
   def get_call_header_v1([to, selector, data_len | rest]) do
     data_length = felt_to_int(data_len)
     {calldata, rest} = Enum.split(rest, data_length)
+
     {%{
        :address => to,
        :selector => selector,
