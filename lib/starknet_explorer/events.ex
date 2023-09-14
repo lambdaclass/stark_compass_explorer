@@ -49,7 +49,7 @@ defmodule StarknetExplorer.Events do
   @condition_to_match 15
   @continuation_tokens ["0", "1000", "2000", "3000", "4000"]
   @chunk_size 1000
-
+  @chunk_every 50
   # Defines the separator used to distinguish between modules and event names in Cairo0 events.
   # In Cairo0 events, event names may include module information in the format:
   # `Module1::SubModule::EventName`
@@ -155,10 +155,24 @@ defmodule StarknetExplorer.Events do
              network
            ) do
         {:ok, events} ->
+          # [[event * @chunk_every]]
           events["events"]
-          |> Enum.with_index(&insert(&1, &2, continuation_token, network, block))
-
-          events
+            |> Enum.chunk_every(@chunk_every)
+            |> Enum.with_index(fn events, idx -> {events, idx} end)
+            |> Enum.map(fn {events, idx} ->
+            StarknetExplorer.Repo.transaction(fn ->
+              events
+              |> Enum.with_index(
+                &insert(
+                  &1,
+                  &2,
+                  Integer.to_string(String.to_integer(continuation_token) + @chunk_every * idx),
+                  network,
+                  block
+                )
+              )
+            end)
+          end)
 
         # This means that we fetch all the events from a block.
         {:error, %{"code" => 33}} ->
