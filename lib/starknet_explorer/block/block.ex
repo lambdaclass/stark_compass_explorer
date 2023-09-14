@@ -71,22 +71,23 @@ defmodule StarknetExplorer.Block do
 
         _txs_changeset =
           Enum.map(txs, fn tx ->
-            tx =
+            inserted_tx =
               Ecto.build_assoc(block, :transactions, tx)
               |> Transaction.changeset(tx)
               |> Repo.insert!()
 
-            receipt = receipts[tx.hash]
+            receipt = receipts[inserted_tx.hash]
 
             receipt =
               receipt
               |> Map.put("timestamp", block.timestamp)
 
-            Ecto.build_assoc(tx, :receipt, receipt)
+            Ecto.build_assoc(inserted_tx, :receipt, receipt)
             |> Receipt.changeset(receipt)
             |> Repo.insert!()
 
             Message.insert_from_transaction_receipt(receipt, network)
+            Message.insert_from_transaction(inserted_tx, block.timestamp, network)
           end)
       end)
 

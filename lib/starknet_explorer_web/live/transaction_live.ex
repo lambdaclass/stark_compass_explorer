@@ -175,7 +175,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
             >
               <div class="relative">
                 <div class="break-all text-hover-blue">
-                  <%= Utils.shorten_block_hash(message.message_hash) %>
+                  <%= live_redirect(message.message_hash |> Utils.shorten_block_hash(),
+                    to: ~p"/#{@network}/messages/#{message.message_hash}"
+                  ) %>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                   <div class="relative">
@@ -195,11 +197,17 @@ defmodule StarknetExplorerWeb.TransactionLive do
           </div>
           <div>
             <div class="list-h">Direction</div>
-            <div><span class="green-label">L2</span>><span class="blue-label">L1</span></div>
+            <%= if Message.is_l2_to_l1(message.type) do %>
+              <div><span class="green-label">L2</span>→<span class="blue-label">L1</span></div>
+            <% else %>
+              <div><span class="blue-label">L1</span>→<span class="green-label">L2</span></div>
+            <% end %>
           </div>
           <div>
             <div class="list-h">Type</div>
-            <div>Sent On L2</div>
+            <div>
+              <%= Message.friendly_message_type(message.type) %>
+            </div>
           </div>
           <div>
             <div class="list-h">From Address</div>
@@ -209,7 +217,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
               phx-hook="Copy"
             >
               <div class="relative">
-                <div class="break-all text-hover-blue">
+                <div class="break-all">
                   <%= Utils.shorten_block_hash(message.from_address) %>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -236,7 +244,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
               phx-hook="Copy"
             >
               <div class="relative">
-                <div class="break-all text-hover-blue">
+                <div class="break-all">
                   <%= Utils.shorten_block_hash(message.to_address) %>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -264,7 +272,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
             >
               <div class="relative">
                 <div class="break-all text-hover-blue">
-                  <%= Utils.shorten_block_hash(message.transaction_hash) %>
+                  <%= live_redirect(message.transaction_hash |> Utils.shorten_block_hash(),
+                    to: ~p"/#{@network}/transactions/#{message.transaction_hash}"
+                  ) %>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                   <div class="relative">
@@ -633,7 +643,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
     {:ok, transaction = %{receipt: receipt}} =
       Data.transaction(transaction_hash, socket.assigns.network)
 
-    messages_sent = Message.from_transaction_receipt(receipt)
+    # a tx should not have both L1->L2 and L2->L1 messages AFAIK, but just in case merge both scenarios
+    messages_sent =
+      (Message.from_transaction_receipt(receipt) ++ [Message.from_transaction(transaction)])
+      |> Enum.reject(&is_nil/1)
 
     assigns = [
       transaction: transaction,

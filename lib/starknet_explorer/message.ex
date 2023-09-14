@@ -1,6 +1,7 @@
 defmodule StarknetExplorer.Message do
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
   alias StarknetExplorer.Repo
 
   @primary_key {:message_hash, :string, autogenerate: false}
@@ -21,7 +22,19 @@ defmodule StarknetExplorer.Message do
     field :to_address, :string
     field :payload, {:array, :string}
     field :timestamp, :integer
-    field :type, :string
+
+    field :type, Ecto.Enum,
+      values: [
+        :l2_to_l1_executed_on_l2,
+        :l2_to_l1_logged_on_l1,
+        :l2_to_l1_consumed_on_l1,
+        :l1_to_l2_logged_on_l1,
+        :l1_to_l2_executed_on_l2,
+        :l1_to_l2_consumed_on_l1,
+        :l1_to_l2_cancellation_started_on_l1,
+        :l1_to_l2_cancelled_on_l1
+      ]
+
     field :network, Ecto.Enum, values: [:mainnet, :testnet, :testnet2]
     # belongs_to :transaction, Transaction, foreign_key: :transaction_hash, references: :hash
     timestamps()
@@ -50,6 +63,37 @@ defmodule StarknetExplorer.Message do
     end)
   end
 
+  def latest_n_messages(n \\ 20) do
+    query =
+      from msg in StarknetExplorer.Message,
+        order_by: [desc: msg.timestamp],
+        limit: ^n
+
+    Repo.all(query)
+  end
+
+  def insert_from_transaction(transaction, timestamp, network) do
+    message =
+      transaction
+      # |> StarknetExplorerWeb.Utils.atomize_keys()
+      |> from_transaction()
+
+    IO.inspect(message)
+
+    case message do
+      nil ->
+        :skip
+
+      message ->
+        changeset(
+          %StarknetExplorer.Message{},
+          message |> Map.put(:timestamp, timestamp) |> Map.put(:network, network)
+        )
+        |> Repo.insert!(returning: false)
+    end
+  end
+
+  @spec from_transaction_receipt(atom | %{:messages_sent => any, optional(any) => any}) :: list
   def from_transaction_receipt(receipt) do
     Enum.map(receipt.messages_sent, fn message ->
       message = message |> StarknetExplorerWeb.Utils.atomize_keys()
@@ -69,10 +113,49 @@ defmodule StarknetExplorer.Message do
         from_address: message.from_address,
         to_address: message.to_address,
         payload: message.payload,
-        # TODO: this needs to be revisited once L1 messages are added and processed
-        type: "Sent on L2",
+        type: :l2_to_l1_executed_on_l2,
         message_hash: String.downcase("0x" <> keccak_message_hash)
       }
     end)
   end
+
+  # messages from L1 to L2 have to be derived from transactions
+  def from_transaction(transaction) do
+    case transaction.type do
+      "L1_HANDLER" ->
+        %{calldata: [from_address | payload] = transaction.calldata}
+
+        hash_input =
+          Abi.encode_packed_mixed([
+            from_address,
+            transaction.contract_address,
+            transaction.nonce,
+            transaction.entry_point_selector,
+            length(payload),
+            payload
+          ])
+
+        %{
+          transaction_hash: transaction.hash,
+          from_address: from_address,
+          to_address: transaction.contract_address,
+          payload: payload,
+          type: :l1_to_l2_executed_on_l2,
+          message_hash: String.downcase("0x" <> Base.encode16(ExKeccak.hash_256(hash_input)))
+        }
+
+      _ ->
+        nil
+    end
+  end
+
+  def friendly_message_type(:l2_to_l1_executed_on_l2), do: "Sent on L2"
+  def friendly_message_type(:l1_to_l2_executed_on_l2), do: "Consumed on L2"
+  # TODO: Add message type names
+  def friendly_message_type(_), do: "-"
+
+  def is_l2_to_l1(:l2_to_l1_executed_on_l2), do: true
+  def is_l2_to_l1(:l2_to_l1_logged_on_l1), do: true
+  def is_l2_to_l1(:l2_to_l1_consumed_on_l1), do: true
+  def is_l2_to_l1(_), do: false
 end
