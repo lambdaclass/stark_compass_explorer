@@ -1,6 +1,7 @@
 defmodule StarknetExplorerWeb.MessageIndexLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.Message
 
   @impl true
   def render(assigns) do
@@ -13,82 +14,143 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
     <div class="max-w-7xl mx-auto">
       <div class="table-header !justify-start gap-5">
         <h2>Messages</h2>
-        <span class="gray-label text-sm">Mocked</span>
       </div>
       <div class="table-block">
-        <div class="grid-9 table-th">
-          <div>Identifier</div>
+        <div class="grid-6 table-th">
           <div>Message Hash</div>
           <div>Direction</div>
-          <div class="col-span-2">Type</div>
+          <div>Type</div>
           <div>From Address</div>
           <div>To Address</div>
           <div>Transaction Hash</div>
-          <div>Age</div>
         </div>
-        <%= for idx <- 0..30 do %>
-          <div id={"message-#{idx}"} class="grid-9 custom-list-item">
-            <div>
-              <div class="list-h">Identifier</div>
-              <%= live_redirect(
-                Utils.shorten_block_hash(
-                  "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-                ),
-                to:
-                  ~p"/#{@network}/messages/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2",
-                class: "text-hover-blue"
-              ) %>
-            </div>
+        <%= for message <- @messages do %>
+          <div class="grid-6 custom-list-item">
             <div>
               <div class="list-h">Message Hash</div>
-              <%= live_redirect(
-                Utils.shorten_block_hash(
-                  "0xd8eda3e8962aa40cab490a11bd6e07e4f2a4b3fd276a6521c9fa2fc39165346b"
-                ),
-                to:
-                  ~p"/#{@network}/messages/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-              ) %>
+              <div
+                class="flex gap-2 items-center copy-container"
+                id={"copy-transaction-hash-#{message.message_hash}"}
+                phx-hook="Copy"
+              >
+                <div class="relative">
+                  <div class="break-all text-hover-blue">
+                    <%= live_redirect(message.message_hash |> Utils.shorten_block_hash(),
+                      to: ~p"/#{@network}/messages/#{message.message_hash}"
+                    ) %>
+                  </div>
+                  <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                    <div class="relative">
+                      <img
+                        class="copy-btn copy-text w-4 h-4"
+                        src={~p"/images/copy.svg"}
+                        data-text={message.message_hash}
+                      />
+                      <img
+                        class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                        src={~p"/images/check-square.svg"}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div>
               <div class="list-h">Direction</div>
-              <div><span class="green-label">L2</span>-> <span class="blue-label">L1</span></div>
+              <%= if Message.is_l2_to_l1(message.type) do %>
+                <div><span class="green-label">L2</span>→<span class="blue-label">L1</span></div>
+              <% else %>
+                <div><span class="blue-label">L1</span>→<span class="green-label">L2</span></div>
+              <% end %>
             </div>
-            <div class="col-span-2">
+            <div>
               <div class="list-h">Type</div>
-              <div class="violet-label">CONSUMED_ON_L1</div>
+              <div>
+                <%= Message.friendly_message_type(message.type) %>
+              </div>
             </div>
             <div>
               <div class="list-h">From Address</div>
-              <%= live_redirect(
-                Utils.shorten_block_hash(
-                  "0x073314940630fd6dcda0d772d4c972c4e0a9946bef9dabf4ef84eda8ef542b82"
-                ),
-                to:
-                  ~p"/#{@network}/contracts/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-              ) %>
+              <div
+                class="flex gap-2 items-center copy-container"
+                id={"copy-transaction-hash-#{message.from_address}"}
+                phx-hook="Copy"
+              >
+                <div class="relative">
+                  <div class="break-all">
+                    <%= Utils.shorten_block_hash(message.from_address) %>
+                  </div>
+                  <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                    <div class="relative">
+                      <img
+                        class="copy-btn copy-text w-4 h-4"
+                        src={~p"/images/copy.svg"}
+                        data-text={message.from_address}
+                      />
+                      <img
+                        class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                        src={~p"/images/check-square.svg"}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div>
               <div class="list-h">To Address</div>
-              <%= live_redirect(
-                Utils.shorten_block_hash("0xae0ee0a63a2ce6baeeffe56e7714fb4efe48d419"),
-                to:
-                  ~p"/#{@network}/etherscan_contracts/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-              ) %>
+              <div
+                class="flex gap-2 items-center copy-container"
+                id={"copy-transaction-hash-#{message.to_address}"}
+                phx-hook="Copy"
+              >
+                <div class="relative">
+                  <div class="break-all">
+                    <%= Utils.shorten_block_hash(message.to_address) %>
+                  </div>
+                  <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                    <div class="relative">
+                      <img
+                        class="copy-btn copy-text w-4 h-4"
+                        src={~p"/images/copy.svg"}
+                        data-text={message.to_address}
+                      />
+                      <img
+                        class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                        src={~p"/images/check-square.svg"}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div>
               <div class="list-h">Transaction Hash</div>
-              <%= live_redirect(
-                Utils.shorten_block_hash(
-                  "0xaffd6222cce4c2f43286d01c4f4ab2c6ce73421f0233484557a011d1485499e1"
-                ),
-                to:
-                  ~p"/#{@network}/etherscan_transactions/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2",
-                class: "text-hover-blue"
-              ) %>
-            </div>
-            <div>
-              <div class="list-h">Age</div>
-              <div>5 min</div>
+              <div
+                class="flex gap-2 items-center copy-container"
+                id={"copy-transaction-hash-#{message.transaction_hash}"}
+                phx-hook="Copy"
+              >
+                <div class="relative">
+                  <div class="break-all text-hover-blue">
+                    <%= live_redirect(message.transaction_hash |> Utils.shorten_block_hash(),
+                      to: ~p"/#{@network}/transactions/#{message.transaction_hash}"
+                    ) %>
+                  </div>
+                  <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                    <div class="relative">
+                      <img
+                        class="copy-btn copy-text w-4 h-4"
+                        src={~p"/images/copy.svg"}
+                        data-text={message.transaction_hash}
+                      />
+                      <img
+                        class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                        src={~p"/images/check-square.svg"}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         <% end %>
@@ -100,13 +162,14 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
   @impl true
   def mount(_params, _session, socket) do
     Process.send(self(), :load_messages, [])
-
-    {:ok, assign(socket, messages: [])}
+    messages = Message.latest_n_messages(20)
+    {:ok, assign(socket, messages: messages)}
   end
 
   @impl true
   def handle_info(:load_messages, socket) do
     # TODO: Fetch this from the db
-    {:noreply, assign(socket, messages: [])}
+    messages = Message.latest_n_messages(20)
+    {:noreply, assign(socket, messages: messages)}
   end
 end

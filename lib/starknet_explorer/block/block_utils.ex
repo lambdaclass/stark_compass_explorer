@@ -33,13 +33,6 @@ defmodule StarknetExplorer.BlockUtils do
   end
 
   defp receipts_for_block(_block = %{"transactions" => transactions}, network) do
-    # receipts =
-    # transactions
-    # |> Map.new(fn %{"transaction_hash" => tx_hash} ->
-    # {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, :mainnet)
-    # {tx_hash, receipt}
-    # end)
-
     receipts =
       transactions
       |> Enum.chunk_every(75)
