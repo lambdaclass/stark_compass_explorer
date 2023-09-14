@@ -75,10 +75,7 @@ defmodule StarknetExplorer.Message do
   def insert_from_transaction(transaction, timestamp, network) do
     message =
       transaction
-      # |> StarknetExplorerWeb.Utils.atomize_keys()
       |> from_transaction()
-
-    IO.inspect(message)
 
     case message do
       nil ->
