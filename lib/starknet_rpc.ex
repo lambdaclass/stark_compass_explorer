@@ -42,6 +42,14 @@ defmodule StarknetExplorer.Rpc do
   def get_transaction_receipt(transaction_hash, network),
     do: send_request("starknet_getTransactionReceipt", [transaction_hash], network)
 
+  def get_class_at(block_number, contract_address, network),
+    do:
+      send_request(
+        "starknet_getClassAt",
+        [%{"block_number" => block_number}, contract_address],
+        network
+      )
+
   defp send_request(method, args, network) when network in [:mainnet, :testnet, :testnet2] do
     payload = build_payload(method, args)
 
