@@ -2,6 +2,7 @@ defmodule StarknetExplorer.Block do
   use Ecto.Schema
   import Ecto.Query
   import Ecto.Changeset
+  alias StarknetExplorer.Events
   alias StarknetExplorer.{Repo, Transaction, Block}
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.TransactionReceipt, as: Receipt
@@ -77,6 +78,8 @@ defmodule StarknetExplorer.Block do
         block_changeset = Block.changeset(%Block{}, block)
 
         {:ok, block} = Repo.insert(block_changeset)
+        # TODO: use a parameter instead of hardcoding the network.
+        Events.store_events_from_rpc(block, :mainnet)
 
         _txs_changeset =
           Enum.map(txs, fn tx ->
@@ -88,6 +91,11 @@ defmodule StarknetExplorer.Block do
               |> Repo.insert!()
 
             receipt = receipts[tx.hash] |> Map.put("network", network)
+
+            receipt =
+              receipt
+              |> Map.put("block_hash", block.hash)
+              |> Map.put("block_number", block.number)
 
             Ecto.build_assoc(tx, :receipt, receipt)
             |> Receipt.changeset(receipt)

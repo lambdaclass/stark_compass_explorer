@@ -16,4 +16,12 @@ defmodule StarknetExplorer.Utils do
         end
     end
   end
+
+  def last_n_characters(input_string, n) do
+    # Calculate the starting index
+    start_index = String.length(input_string) - n
+
+    # Keep the last N characters
+    String.slice(input_string, start_index..-1)
+  end
 end
