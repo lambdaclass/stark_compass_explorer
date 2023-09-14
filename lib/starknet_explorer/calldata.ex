@@ -1,11 +1,11 @@
 defmodule StarknetExplorer.Calldata do
-  def from_plain_calldata([array_len | rest]) do
+  def from_plain_calldata([array_len | rest], nil) do
     {calls, [_calldata_length | calldata]} =
       List.foldl(
         Enum.to_list(1..felt_to_int(array_len)),
         {[], rest},
         fn _, {acc_current, acc_rest} ->
-          {new, new_rest} = get_call_header(acc_rest)
+          {new, new_rest} = get_call_header_v0(acc_rest)
           {[new | acc_current], new_rest}
         end
       )
@@ -18,13 +18,40 @@ defmodule StarknetExplorer.Calldata do
     )
   end
 
-  def get_call_header([to, selector, data_offset, data_len | rest]) do
+  # currently using same structure when contract_class_version is set
+  def from_plain_calldata([array_len | rest], _contract_class_version) do
+    {calls, _} =
+      List.foldl(
+        Enum.to_list(1..felt_to_int(array_len)),
+        {[], rest},
+        fn _, {acc_current, acc_rest} ->
+          {new, new_rest} = get_call_header_v1(acc_rest)
+          {[new | acc_current], new_rest}
+        end
+      )
+
+    Enum.reverse(calls)
+  end
+
+
+  def get_call_header_v0([to, selector, data_offset, data_len | rest]) do
     {%{
        :address => to,
        :selector => selector,
        :data_offset => felt_to_int(data_offset),
        :data_len => felt_to_int(data_len),
        :calldata => []
+     }, rest}
+  end
+
+  def get_call_header_v1([to, selector, data_len | rest]) do
+    data_length = felt_to_int(data_len)
+    {calldata, rest} = Enum.split(rest, data_length)
+    {%{
+       :address => to,
+       :selector => selector,
+       :data_len => felt_to_int(data_len),
+       :calldata => calldata
      }, rest}
   end
 

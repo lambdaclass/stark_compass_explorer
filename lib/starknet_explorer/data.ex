@@ -132,12 +132,14 @@ defmodule StarknetExplorer.Data do
           {:ok, tx} = Rpc.get_transaction(tx_hash, network)
           {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
 
-          calldata = Calldata.from_plain_calldata(tx["calldata"])
-
           block_id =
             if receipt["block_number"],
               do: %{"block_number" => receipt["block_number"]},
               else: "latest"
+
+          {:ok, contract} = Rpc.get_class_at(block_id, tx["sender_address"], network)
+
+          calldata = Calldata.from_plain_calldata(tx["calldata"], contract["contract_class_version"])
 
           input_data =
             Enum.map(
