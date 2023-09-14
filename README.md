@@ -72,13 +72,12 @@ To use it, you simply have to call the `StarknetExplorer.BlockFetcher.fetch_in_r
 function, you can do this interactively after starting with `make run`:
 
 ```elixir
-StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10})
+StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10, network: :mainnet})
  ```
 
 Or, if you're on a "prod" environment, simply send it through elixir's RPC:
-
 ```bash 
-./_build/prod/rel/starknet_explorer/bin rpc "StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10})"
+./_build/prod/rel/starknet_explorer/bin rpc "StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10, network: :mainnet})"
 ```
 
 There are 2 things to keep in mind here:

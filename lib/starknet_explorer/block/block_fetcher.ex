@@ -1,7 +1,7 @@
 defmodule StarknetExplorer.BlockFetcher.Worker do
   @fetch_interval 100
   alias StarknetExplorer.{BlockFetcher.Worker, BlockUtils}
-  defstruct [:finish, :next_to_fetch]
+  defstruct [:finish, :next_to_fetch, :network]
   require Logger
   use GenServer, restart: :temporary
 
@@ -19,25 +19,24 @@ defmodule StarknetExplorer.BlockFetcher.Worker do
   end
 
   @impl true
-  def init(_args = %{start: start, finish: finish}) when start > finish do
+  def init(_args = %{start: start, finish: finish, network: network}) when start > finish do
     state = %Worker{
       finish: finish,
-      next_to_fetch: start
+      next_to_fetch: start,
+      network: network
     }
 
     Process.send_after(self(), :fetch, @fetch_interval)
 
-    Logger.info("Starting block fetcher from block: #{start} to #{finish}")
+    Logger.info("Starting block fetcher from block: #{start} to #{finish}, in network #{network}")
 
     {:ok, state}
   end
 
   @impl true
-  def handle_info(:fetch, state = %Worker{}) do
-    Process.send_after(self(), :fetch, @fetch_interval)
-
+  def handle_info(:fetch, state = %Worker{network: network}) do
     state =
-      case BlockUtils.fetch_and_store(state.next_to_fetch) do
+      case BlockUtils.fetch_and_store(state.next_to_fetch, network) do
         {:ok, _block} ->
           %{state | next_to_fetch: state.next_to_fetch - 1}
 

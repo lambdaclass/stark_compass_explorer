@@ -48,5 +48,6 @@ jobs:
         SSH_HOST: ${{ vars.SSH_HOST }}
         ENABLE_FETCHER: ${{ vars.ENABLE_FETCHER }}
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
+        ANSIBLE_STDOUT_CALLBACK: "yaml"
       run: |
         ansible-playbook -i ansible/inventory.yaml ansible/playbooks/deployment.yaml

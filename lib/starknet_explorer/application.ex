@@ -28,8 +28,8 @@ defmodule StarknetExplorer.Application do
         {DynamicSupervisor, strategy: :one_for_one, name: StarknetExplorer.BlockFetcher}
         | cache_child_specs
       ] ++
-        if Application.get_env(:starknet_explorer, :enable_fetcher?) do
-          [StarknetExplorer.BlockListener]
+        if Application.get_env(:starknet_explorer, :enable_listener) do
+          [{StarknetExplorer.BlockListener, network: :mainnet}]
         else
           []
         end

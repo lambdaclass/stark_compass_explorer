@@ -2,7 +2,7 @@ defmodule StarknetExplorer.BlockListener do
   use GenServer, restart: :temporary
   require Logger
   alias StarknetExplorer.{BlockListener, BlockUtils}
-  defstruct [:latest_block_number]
+  defstruct [:latest_block_number, :network]
   @fetch_latest_interval :timer.seconds(1)
   @moduledoc """
   Module dedicated to listen for block height updates,
@@ -14,11 +14,12 @@ defmodule StarknetExplorer.BlockListener do
   end
 
   @impl true
-  def init(_opts) do
-    block_height = BlockUtils.block_height()
+  def init([network: network] = _opts) do
+    block_height = BlockUtils.block_height(network)
 
     state = %BlockListener{
-      latest_block_number: block_height
+      latest_block_number: block_height,
+      network: network
     }
 
     Process.send_after(self(), :fetch_latest, @fetch_latest_interval)
@@ -26,8 +27,8 @@ defmodule StarknetExplorer.BlockListener do
     {:ok, state}
   end
 
-  def handle_info(:fetch_latest, state = %BlockListener{}) do
-    new_height = BlockUtils.block_height()
+  def handle_info(:fetch_latest, state = %BlockListener{network: network}) do
+    new_height = BlockUtils.block_height(network)
     new_blocks? = new_height > state.latest_block_number
 
     state =
@@ -43,10 +44,11 @@ defmodule StarknetExplorer.BlockListener do
     {:stop, :normal, :ok}
   end
 
-  defp maybe_fetch_another(new_blocks?, state = %BlockListener{}) when new_blocks? do
+  defp maybe_fetch_another(new_blocks?, state = %BlockListener{network: network})
+       when new_blocks? do
     next_to_fetch = state.latest_block_number + 1
 
-    case BlockUtils.fetch_and_store(next_to_fetch) do
+    case BlockUtils.fetch_and_store(next_to_fetch, network) do
       {:ok, _} ->
         Logger.info("New block stored: #{next_to_fetch}")
         %{state | latest_block_number: next_to_fetch}

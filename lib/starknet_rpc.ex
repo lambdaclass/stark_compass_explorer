@@ -11,6 +11,19 @@ defmodule StarknetExplorer.Rpc do
   def get_last_n_events(n, network),
     do: send_request("starknet_getEvents", [%{"chunk_size" => n}], network)
 
+  def get_block_events_paginated(block_hash, pagination, network),
+    do:
+      send_request(
+        "starknet_getEvents",
+        [
+          Map.merge(
+            %{from_block: %{block_hash: block_hash}, to_block: %{block_hash: block_hash}},
+            pagination
+          )
+        ],
+        network
+      )
+
   def get_block_height_no_cache(network),
     do: send_request_no_cache("starknet_blockNumber", [], network)
 
@@ -28,6 +41,14 @@ defmodule StarknetExplorer.Rpc do
 
   def get_transaction_receipt(transaction_hash, network),
     do: send_request("starknet_getTransactionReceipt", [transaction_hash], network)
+
+  def get_class_at(block_number, contract_address, network),
+    do:
+      send_request(
+        "starknet_getClassAt",
+        [%{"block_number" => block_number}, contract_address],
+        network
+      )
 
   defp send_request(method, args, network) when network in [:mainnet, :testnet, :testnet2] do
     payload = build_payload(method, args)
