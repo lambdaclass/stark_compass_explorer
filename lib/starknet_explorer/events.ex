@@ -157,9 +157,9 @@ defmodule StarknetExplorer.Events do
         {:ok, events} ->
           # [[event * @chunk_every]]
           events["events"]
-            |> Enum.chunk_every(@chunk_every)
-            |> Enum.with_index(fn events, idx -> {events, idx} end)
-            |> Enum.map(fn {events, idx} ->
+          |> Enum.chunk_every(@chunk_every)
+          |> Enum.with_index(fn events, idx -> {events, idx} end)
+          |> Enum.map(fn {events, idx} ->
             StarknetExplorer.Repo.transaction(fn ->
               events
               |> Enum.with_index(
