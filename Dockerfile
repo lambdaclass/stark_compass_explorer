@@ -1,4 +1,4 @@
-FROM elixir:1.14.5-otp-25 as builder
+FROM hexpm/elixir:1.14.5-erlang-25.3.2.6-alpine-3.18.2 AS builder
 
 ENV MIX_ENV=prod
 
