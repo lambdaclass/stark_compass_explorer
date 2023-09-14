@@ -78,6 +78,7 @@ defmodule StarknetExplorer.Data do
                 Task.async(fn ->
                   {:ok, receipt} = Rpc.get_transaction_receipt(x.hash, network)
 
+                  # if we try to create a %StarknetExplorer.TransactionReceipt, this fails because it will not be linked to any transaction struct
                   receipt
                   |> StarknetExplorerWeb.Utils.atomize_keys()
                 end)

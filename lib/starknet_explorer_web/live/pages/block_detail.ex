@@ -105,7 +105,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         ,
         phx-value-view="messages"
       >
-        Messages
+        Message Logs
       </div>
       <div
         class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
