@@ -49,5 +49,6 @@ jobs:
         ENABLE_FETCHER: ${{ vars.ENABLE_FETCHER }}
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
         ANSIBLE_STDOUT_CALLBACK: "yaml"
+        ENABLE_LISTENER: "true"
       run: |
         ansible-playbook -i ansible/inventory.yaml ansible/playbooks/deployment.yaml
