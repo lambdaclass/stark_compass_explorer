@@ -48,8 +48,8 @@ defmodule StarknetExplorer.BlockUtils do
           end)
 
         Enum.map(tasks, &Task.await(&1, 7500))
-
       end)
+
     {:ok, Map.new(receipts)}
   end
 
