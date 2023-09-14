@@ -219,12 +219,7 @@ defmodule StarknetExplorer.Data do
             get_input_data_for_hash(block_id, implementation_hash, selector, network)
 
           true ->
-            Enum.find(
-              class["abi"],
-              fn elem ->
-                elem["name"] |> Calldata.keccak() == selector
-              end
-            )
+            find_by_selector(class, selector)
         end
 
       {:error, error} ->
@@ -236,17 +231,27 @@ defmodule StarknetExplorer.Data do
   def get_input_data_for_hash(block_id, class_hash, selector, network) do
     case Rpc.get_class(block_id, class_hash, network) do
       {:ok, class} ->
-        Enum.find(
-          class["abi"],
-          fn elem ->
-            elem["name"] |> Calldata.keccak() == selector
-          end
-        )
+        find_by_selector(class, selector)
 
       {:error, error} ->
         error |> IO.inspect()
         nil
     end
+  end
+
+
+  def find_by_selector(class, selector) do
+    Enum.find(
+      case class["abi"] do
+        abi when is_binary(abi) ->
+          Jason.decode!(abi)
+        abi ->
+          abi
+      end,
+      fn elem ->
+        elem["name"] |> IO.inspect() |> Calldata.keccak() == selector
+      end
+    )
   end
 
   def has_selector?(class, selector) do
@@ -269,7 +274,8 @@ defmodule StarknetExplorer.Data do
   end
 
   def get_class_at(block_number, contract_address, network) do
-    {:ok, class_hash} = Rpc.get_class_at(%{"block_number" => block_number}, contract_address, network)
+    {:ok, class_hash} =
+      Rpc.get_class_at(%{"block_number" => block_number}, contract_address, network)
 
     class_hash
   end
