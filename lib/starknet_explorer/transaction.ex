@@ -70,7 +70,12 @@ defmodule StarknetExplorer.Transaction do
 
   @fields @l1_handler_tx_fields ++
             @invoke_v0_tx_fields ++
-            @declare_tx_fields ++ @deploy_contract_tx_fields ++ @deploy_account_tx_fields
+            @declare_tx_fields ++
+            @deploy_contract_tx_fields ++
+            @deploy_account_tx_fields ++
+            [:network]
+
+  @networks [:mainnet, :testnet, :testnet2]
 
   schema "transactions" do
     field :hash, :string
@@ -89,6 +94,7 @@ defmodule StarknetExplorer.Transaction do
     field :chain_id, :string
     field :sender_address, :string
     field :calldata, {:array, :string}
+    field :network, Ecto.Enum, values: @networks
     belongs_to :block, StarknetExplorer.Block, foreign_key: :block_number, references: :hash
     has_one :receipt, TransactionReceipt
     timestamps()
