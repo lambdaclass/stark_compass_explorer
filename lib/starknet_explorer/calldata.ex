@@ -56,12 +56,12 @@ defmodule StarknetExplorer.Calldata do
   end
 
   def keccak(value) do
-    <<_::8, result::binary>> =
+    <<_::14, part::2, result::binary>> =
       value
       |> ExKeccak.hash_256()
       |> Base.encode16(case: :lower)
 
-    "0x" <> result
+    "0x" <> Integer.to_string(part) <> result
   end
 
   def as_fn_call(nil, _calldata) do

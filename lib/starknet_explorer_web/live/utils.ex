@@ -75,4 +75,8 @@ defmodule StarknetExplorerWeb.Utils do
        |> Integer.to_string(16)
        |> String.downcase())
   end
+
+  def format_arg_value(%{:value => value}) do
+    shorten_block_hash(value)
+  end
 end

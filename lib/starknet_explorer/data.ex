@@ -1,6 +1,9 @@
 defmodule StarknetExplorer.Data do
   alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata}
 
+  @implementation_selector "0x3a0ed1f62da1d3048614c2c1feb566f041c8467eb00fb8294776a9179dc1643"
+  @implementation_hash_selector "0x1d15dd5e6cac14c959221a0b45927b113a91fcfffa4c7bbab19b28d345467df"
+
   @doc """
   Fetch `block_amount` blocks (defaults to 15), first
   look them up in the db, if not found check the RPC
@@ -137,7 +140,8 @@ defmodule StarknetExplorer.Data do
               do: %{"block_number" => receipt["block_number"]},
               else: "latest"
 
-          {:ok, contract} = Rpc.get_class_at(block_id, tx["sender_address"], network)
+          {:ok, contract} =
+            Rpc.get_class_at(block_id, tx["sender_address"], network)
 
           calldata =
             Calldata.from_plain_calldata(tx["calldata"], contract["contract_class_version"])
@@ -146,21 +150,7 @@ defmodule StarknetExplorer.Data do
             Enum.map(
               calldata,
               fn call ->
-                input =
-                  case Rpc.get_class_at(block_id, call.address, network) do
-                    {:ok, class} ->
-                      Enum.find(
-                        class["abi"],
-                        fn elem ->
-                          elem["name"] |> Calldata.keccak() == call.selector
-                        end
-                      )
-
-                    {:error, error} ->
-                      error |> IO.inspect()
-                      nil
-                  end
-
+                input = get_input_data(block_id, call.address, call.selector, network)
                 Map.put(call, :call, Calldata.as_fn_call(input, call.calldata))
               end
             )
@@ -175,6 +165,62 @@ defmodule StarknetExplorer.Data do
       end
 
     {:ok, tx}
+  end
+
+  def get_input_data(block_id, address, selector, network) do
+    case Rpc.get_class_at(block_id, address, network) do
+      {:ok, class} ->
+        cond do
+          has_selector?(class, @implementation_selector) ->
+            {:ok, [implementation_address]} =
+              Rpc.call(block_id, address, @implementation_selector, network)
+
+            get_input_data(block_id, implementation_address, selector, network)
+
+          has_selector?(class, @implementation_hash_selector) ->
+            {:ok, [implementation_hash]} =
+              Rpc.call(block_id, address, @implementation_hash_selector, network)
+
+            get_input_data_for_hash(block_id, implementation_hash, selector, network)
+
+          true ->
+            Enum.find(
+              class["abi"],
+              fn elem ->
+                elem["name"] |> Calldata.keccak() == selector
+              end
+            )
+        end
+
+      {:error, error} ->
+        error |> IO.inspect()
+        nil
+    end
+  end
+
+  def get_input_data_for_hash(block_id, class_hash, selector, network) do
+    case Rpc.get_class(block_id, class_hash, network) do
+      {:ok, class} ->
+        Enum.find(
+          class["abi"],
+          fn elem ->
+            elem["name"] |> Calldata.keccak() == selector
+          end
+        )
+
+      {:error, error} ->
+        error |> IO.inspect()
+        nil
+    end
+  end
+
+  def has_selector?(class, selector) do
+    Enum.any?(
+      class["entry_points_by_type"]["EXTERNAL"],
+      fn elem ->
+        elem["selector"] == selector
+      end
+    )
   end
 
   def get_block_events_paginated(block_hash, pagination, network) do
