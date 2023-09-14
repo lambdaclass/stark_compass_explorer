@@ -98,7 +98,7 @@ defmodule StarknetExplorer.Block do
               |> Map.put("block_hash", block.hash)
               |> Map.put("block_number", block.number)
 
-            Ecto.build_assoc(tx, :receipt, receipt)
+            Ecto.build_assoc(inserted_tx, :receipt, receipt)
             |> Receipt.changeset(receipt)
             |> Repo.insert!()
 
