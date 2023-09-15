@@ -47,6 +47,7 @@ defmodule StarknetExplorer.Message do
     |> validate_required(@fields)
   end
 
+  @spec insert_from_transaction_receipt(any, any) :: list
   def insert_from_transaction_receipt(receipt, network) do
     receipt
     |> StarknetExplorerWeb.Utils.atomize_keys()
@@ -61,6 +62,14 @@ defmodule StarknetExplorer.Message do
       )
       |> Repo.insert!(returning: false)
     end)
+  end
+
+  def get_by_hash(message_hash) do
+    query =
+      from msg in StarknetExplorer.Message,
+        where: msg.message_hash == ^message_hash
+
+    Repo.one(query)
   end
 
   def latest_n_messages(n \\ 20) do
