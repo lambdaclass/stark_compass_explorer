@@ -477,14 +477,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <div class="col-span-full">
           <%= for input <- @transaction.input_data do %>
             <%= unless is_nil(input.call) do %>
-              <div class="w-full bg-black/20 p-5 mt-5">
+              <div class="w-full bg-black/20 p-5 mt-5" phx-no-format>
                 call <span class="text-se-violet"><%= input.call.name %></span>(<.intersperse
                   :let={arg}
                   enum={input.call.args}
-                >
-                  <:separator>,</:separator>
-                  <span class="text-blue-400"><%= arg.name %></span>
-                </.intersperse>)
+                ><:separator>, </:separator>
+                  <span class="text-blue-400"><%= arg.name %></span></.intersperse>)
                 <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
               </div>
               <div class="w-full bg-black/10 p-5">
