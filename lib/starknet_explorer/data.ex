@@ -180,42 +180,36 @@ defmodule StarknetExplorer.Data do
   end
 
   def full_transaction(tx_hash, network) do
-    tx =
-      case Transaction.get_by_hash_with_receipt(tx_hash) do
-        nil ->
-          {:ok, tx} = Rpc.get_transaction(tx_hash, network)
-          {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
+    {:ok, tx} = transaction(tx_hash, network)
+    receipt = tx.receipt
 
-          block_id =
-            if receipt["block_number"],
-              do: %{"block_number" => receipt["block_number"]},
-              else: "latest"
+    block_id =
+      if receipt[:block_number],
+        do: %{"block_number" => receipt.block_number},
+        else: "latest"
 
-          {:ok, contract} =
-            Rpc.get_class_at(block_id, tx["sender_address"], network)
+    version =
+      case Rpc.get_class_at(block_id, tx.sender_address, network) do
+        {:ok, contract} ->
+          contract[:contract_class_version]
 
-          calldata =
-            Calldata.from_plain_calldata(tx["calldata"], contract["contract_class_version"])
-
-          input_data =
-            Enum.map(
-              calldata,
-              fn call ->
-                input = get_input_data(block_id, call.address, call.selector, network)
-                Map.put(call, :call, Calldata.as_fn_call(input, call.calldata))
-              end
-            )
-
-          tx
-          |> Transaction.from_rpc_tx()
-          |> Map.put(:receipt, receipt |> StarknetExplorerWeb.Utils.atomize_keys())
-          |> Map.put(:input_data, input_data)
-
-        tx ->
-          tx
+        _ ->
+          nil
       end
 
-    {:ok, tx}
+    calldata =
+      Calldata.from_plain_calldata(tx.calldata, version)
+
+    input_data =
+      Enum.map(
+        calldata,
+        fn call ->
+          input = get_input_data(block_id, call.address, call.selector, network)
+          Map.put(call, :call, Calldata.as_fn_call(input, call.calldata))
+        end
+      )
+
+    {:ok, tx |> Map.put(:input_data, input_data)}
   end
 
   def get_input_data(block_id, address, selector, network) do
