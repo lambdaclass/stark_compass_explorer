@@ -47,7 +47,6 @@ defmodule StarknetExplorer.Message do
     |> validate_required(@fields)
   end
 
-  @spec insert_from_transaction_receipt(any, any) :: list
   def insert_from_transaction_receipt(receipt, network) do
     receipt
     |> StarknetExplorerWeb.Utils.atomize_keys()
