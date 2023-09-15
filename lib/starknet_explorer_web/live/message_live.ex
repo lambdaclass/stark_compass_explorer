@@ -10,11 +10,18 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
       flash: @flash,
       session: %{"network" => @network}
     ) %>
+
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
+      <div class="flex flex-col lg:flex-row gap-2 items-baseline pb-5">
+        <h2>Message</h2>
+        <div class="font-semibold">
+          <%= @message.message_hash %>
+        </div>
+      </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Message Hash</div>
         <div class="col-span-3">
-          <%= @message.message_hash %>
+          <%= @message.message_hash |> Utils.shorten_block_hash() %>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
