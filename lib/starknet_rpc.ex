@@ -42,11 +42,20 @@ defmodule StarknetExplorer.Rpc do
   def get_transaction_receipt(transaction_hash, network),
     do: send_request("starknet_getTransactionReceipt", [transaction_hash], network)
 
-  def get_class_at(block_number, contract_address, network),
+  def get_class_at(block_id, contract_address, network),
+    do: send_request("starknet_getClassAt", [block_id, contract_address], network)
+
+  def get_class(block_id, class_hash, network),
+    do: send_request("starknet_getClass", [block_id, class_hash], network)
+
+  def call(block_id, contract_address, selector, network),
     do:
       send_request(
-        "starknet_getClassAt",
-        [%{"block_number" => block_number}, contract_address],
+        "starknet_call",
+        [
+          %{contract_address: contract_address, entry_point_selector: selector, calldata: []},
+          block_id
+        ],
         network
       )
 
