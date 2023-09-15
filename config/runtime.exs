@@ -40,11 +40,15 @@ testnet_2_rpc_host =
     environment variable for testnet 2 is missing.
     """
 
+continuation_token_format =
+  System.get_env("CONTINUATION_TOKEN_FORMAT", "short")
+
 config :starknet_explorer,
   rpc_host: rpc_host,
   testnet_host: testnet_rpc_host,
   testnet_2_host: testnet_2_rpc_host,
-  enable_listener: enable_listener?
+  enable_listener: enable_listener?,
+  continuation_token_format: continuation_token_format
 
 config :starknet_explorer, rpc_host: rpc_host
 
