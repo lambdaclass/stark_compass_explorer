@@ -184,7 +184,7 @@ defmodule StarknetExplorer.Data do
     receipt = tx.receipt
 
     block_id =
-      if receipt[:block_number],
+      if Map.has_key?(receipt, :block_number),
         do: %{"block_number" => receipt.block_number},
         else: "latest"
 
