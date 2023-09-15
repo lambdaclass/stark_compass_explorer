@@ -63,10 +63,10 @@ defmodule StarknetExplorer.Message do
     end)
   end
 
-  def get_by_hash(message_hash) do
+  def get_by_hash(message_hash, network) do
     query =
       from msg in StarknetExplorer.Message,
-        where: msg.message_hash == ^message_hash
+        where: msg.message_hash == ^message_hash and msg.network == ^network
 
     Repo.one(query)
   end

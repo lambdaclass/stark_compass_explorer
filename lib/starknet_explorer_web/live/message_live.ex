@@ -106,7 +106,7 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
   end
 
   def mount(_params = %{"identifier" => hash}, _session, socket) do
-    message = Message.get_by_hash(hash)
+    message = Message.get_by_hash(hash, socket.assigns.network)
 
     assigns = [
       message: message
