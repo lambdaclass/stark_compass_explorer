@@ -1,5 +1,5 @@
 defmodule StarknetExplorer.Data do
-  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata, Events}
+  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata}
   alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt}
   alias StarknetExplorerWeb.Utils
 
