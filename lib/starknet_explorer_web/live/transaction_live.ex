@@ -1,9 +1,7 @@
 defmodule StarknetExplorerWeb.TransactionLive do
-  alias StarknetExplorer.BlockUtils
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.Data
-  alias StarknetExplorer.Message
+  alias StarknetExplorer.{Data, Message, Rpc, BlockUtils}
 
   defp transaction_header(assigns) do
     ~H"""
@@ -109,19 +107,17 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class={"table-th !pt-7 border-t border-gray-700 #{if @transaction.sender_address, do: "grid-6", else: "grid-5"}"}>
       <div>Identifier</div>
       <div>Block Number</div>
-      <div>Transaction Hash</div>
       <div>Name</div>
-      <%= if @transaction.sender_address do %>
-        <div>From Address</div>
-      <% end %>
+      <div>From Address</div>
       <div>Age</div>
     </div>
-    <%= for %{keys: [identifier | _], from_address: _} <- @events do %>
+    <%= for event <- @transaction_receipt.events do %>
       <div class={"custom-list-item #{if @transaction.sender_address, do: "grid-6", else: "grid-5"}"}>
         <div>
           <div class="list-h">Identifier</div>
           <div>
-            <%= identifier |> Utils.shorten_block_hash() %>
+            <%= # TODO, this wont work yet. Fix when using SQL.
+            @transaction_receipt.block_number %>
           </div>
         </div>
         <div>
@@ -129,25 +125,18 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <div><span class="blue-label"><%= @transaction_receipt.block_number %></span></div>
         </div>
         <div>
-          <div class="list-h">Transaction Hash</div>
-          <div><%= @transaction.hash |> Utils.shorten_block_hash() %></div>
-        </div>
-        <div>
           <div class="list-h">Name</div>
           <div>
-            <span class="lilac-label">Transfer</span>
-            <span class="gray-label text-sm">Mocked</span>
+            <%= Data.get_event_name(event, @network) %>
           </div>
         </div>
-        <%= if @transaction.sender_address do %>
-          <div>
-            <div class="list-h">From Address</div>
-            <div><%= @transaction.sender_address |> Utils.shorten_block_hash() %></div>
-          </div>
-        <% end %>
+        <div>
+          <div class="list-h">From Address</div>
+          <div><%= event.from_address |> Utils.shorten_block_hash() %></div>
+        </div>
         <div>
           <div class="list-h">Age</div>
-          <div>1h</div>
+          <div><%= Utils.get_block_age_from_timestamp(@block_timestamp) %></div>
         </div>
       </div>
     <% end %>
@@ -578,6 +567,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
     {:ok, transaction = %{receipt: receipt}} =
       Data.full_transaction(transaction_hash, socket.assigns.network)
 
+    {:ok, %{"timestamp" => block_timestamp}} =
+      Rpc.get_block_by_hash(receipt.block_hash, socket.assigns.network)
+
     # a tx should not have both L1->L2 and L2->L1 messages AFAIK, but just in case merge both scenarios
     messages_sent =
       (Message.from_transaction_receipt(receipt) ++ [Message.from_transaction(transaction)])
@@ -596,7 +588,8 @@ defmodule StarknetExplorerWeb.TransactionLive do
       transaction_hash: transaction_hash,
       transaction_view: "overview",
       events: receipt.events,
-      messages: messages_sent
+      messages: messages_sent,
+      block_timestamp: block_timestamp
     ]
 
     socket = assign(socket, assigns)
