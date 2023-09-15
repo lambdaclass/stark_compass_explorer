@@ -241,15 +241,30 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   defp get_previous_continuation_token(token) when token < @chunk_size, do: 0
   defp get_previous_continuation_token(token), do: token - @chunk_size
 
+  defp format_continuation_token(continuation_token, {:ok, "large"}, block_number) do
+    Integer.to_string(block_number) <> "-" <> Integer.to_string(continuation_token)
+  end
+
+  defp format_continuation_token(continuation_token, {:ok, "short"}, _block_number) do
+    Integer.to_string(continuation_token)
+  end
+
   def handle_event("inc_events", _value, socket) do
     continuation_token = Map.get(socket.assigns, :idx_first, 0) + @chunk_size
+
+    continuation_token_for_request =
+      continuation_token
+      |> format_continuation_token(
+        Application.fetch_env(:starknet_explorer, :continuation_token_format),
+        socket.assigns.block.number
+      )
 
     events =
       Data.get_block_events_paginated(
         socket.assigns.block.hash,
         %{
           "chunk_size" => @chunk_size,
-          "continuation_token" => Integer.to_string(continuation_token)
+          "continuation_token" => continuation_token_for_request
         },
         socket.assigns.network
       )["events"]
