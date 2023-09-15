@@ -1,4 +1,4 @@
-FROM hexpm/elixir:1.14.5-erlang-25.3.2.6-alpine-3.18.2 AS builder
+FROM hexpm/elixir:1.14.5-erlang-24.3.4.13-debian-bullseye-20230612 AS builder
 
 ENV MIX_ENV=prod
 
@@ -14,7 +14,7 @@ RUN mix compile
 RUN mix release
 RUN mix phx.gen.release
 
-FROM elixir:1.14.5-otp-25
+FROM elixir:1.14.5-otp-24
 ENV MIX_ENV=prod
 
 WORKDIR /explorer
