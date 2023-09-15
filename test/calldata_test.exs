@@ -3,7 +3,7 @@ defmodule StarknetExplorer.Calldata.Test do
   use ExUnit.Case
 
   test "Decode calldata field" do
-    result = Calldata.from_plain_calldata(sample_calldata())
+    result = Calldata.from_plain_calldata(sample_calldata(), nil)
     assert length(result) == 2
   end
 
