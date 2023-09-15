@@ -1,6 +1,6 @@
 defmodule StarknetExplorer.Data do
   require Logger
-  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata, Events}
+  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata}
   alias StarknetExplorerWeb.Utils
 
   @implementation_selector "0x3a0ed1f62da1d3048614c2c1feb566f041c8467eb00fb8294776a9179dc1643"
