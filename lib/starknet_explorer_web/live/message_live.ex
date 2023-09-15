@@ -14,8 +14,7 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Message Hash</div>
         <div class="col-span-3">
-          <%= @message.message_hash
-          |> Utils.shorten_block_hash() %>
+          <%= @message.message_hash %>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
