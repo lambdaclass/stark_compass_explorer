@@ -1,4 +1,5 @@
 defmodule StarknetExplorerWeb.TransactionLive do
+  alias StarknetExplorer.BlockUtils
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.Data
@@ -635,9 +636,16 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
     messages_sent = Messages.from_transaction_receipt(receipt)
 
+    # change fee formatting
+    actual_fee = BlockUtils.format_hex_for_display(transaction.receipt.actual_fee)
+    max_fee = BlockUtils.format_hex_for_display(transaction.max_fee)
+
+    receipt = transaction.receipt |> Map.put(:actual_fee, actual_fee)
+    transaction = transaction |> Map.put(:max_fee, max_fee)
+
     assigns = [
       transaction: transaction,
-      transaction_receipt: transaction.receipt,
+      transaction_receipt: receipt,
       transaction_hash: transaction_hash,
       transaction_view: "overview",
       events: receipt.events,
