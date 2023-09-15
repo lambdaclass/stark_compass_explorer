@@ -63,6 +63,14 @@ defmodule StarknetExplorer.Message do
     end)
   end
 
+  def get_by_hash(message_hash, network) do
+    query =
+      from msg in StarknetExplorer.Message,
+        where: msg.message_hash == ^message_hash and msg.network == ^network
+
+    Repo.one(query)
+  end
+
   def latest_n_messages(n \\ 20) do
     query =
       from msg in StarknetExplorer.Message,
