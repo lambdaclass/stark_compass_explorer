@@ -36,12 +36,21 @@ defmodule StarknetExplorer.BlockUtils do
   defp receipts_for_block(_block = %{"transactions" => transactions}, network) do
     receipts =
       transactions
-      |> Map.new(fn %{"transaction_hash" => tx_hash} ->
-        {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
-        {tx_hash, receipt |> Map.put("network", network)}
+      |> Enum.chunk_every(75)
+      |> Enum.flat_map(fn chunk ->
+        tasks =
+          Enum.map(chunk, fn %{"transaction_hash" => tx_hash} ->
+            Task.async(fn ->
+              {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
+
+              {tx_hash, receipt |> Map.put("network", network)}
+            end)
+          end)
+
+        Enum.map(tasks, &Task.await(&1, 7500))
       end)
 
-    {:ok, receipts}
+    {:ok, Map.new(receipts)}
   end
 
   def block_height(network) do

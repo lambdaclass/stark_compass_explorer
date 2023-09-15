@@ -3,7 +3,7 @@ defmodule StarknetExplorer.Block do
   import Ecto.Query
   import Ecto.Changeset
   alias StarknetExplorer.Events
-  alias StarknetExplorer.{Repo, Transaction, Block}
+  alias StarknetExplorer.{Repo, Transaction, Block, Message}
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.TransactionReceipt, as: Receipt
   require Logger
@@ -84,21 +84,25 @@ defmodule StarknetExplorer.Block do
           Enum.map(txs, fn tx ->
             tx = tx |> Map.put("network", network)
 
-            tx =
+            inserted_tx =
               Ecto.build_assoc(block, :transactions, tx)
               |> Transaction.changeset(tx)
               |> Repo.insert!()
 
-            receipt = receipts[tx.hash] |> Map.put("network", network)
+            receipt = receipts[inserted_tx.hash] |> Map.put("network", network)
 
             receipt =
               receipt
+              |> Map.put("timestamp", block.timestamp)
               |> Map.put("block_hash", block.hash)
               |> Map.put("block_number", block.number)
 
-            Ecto.build_assoc(tx, :receipt, receipt)
+            Ecto.build_assoc(inserted_tx, :receipt, receipt)
             |> Receipt.changeset(receipt)
             |> Repo.insert!()
+
+            Message.insert_from_transaction_receipt(receipt, network)
+            Message.insert_from_transaction(inserted_tx, block.timestamp, network)
           end)
       end)
 

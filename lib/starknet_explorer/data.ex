@@ -1,6 +1,6 @@
 defmodule StarknetExplorer.Data do
+  require Logger
   alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata}
-  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt}
   alias StarknetExplorerWeb.Utils
 
   @implementation_selector "0x3a0ed1f62da1d3048614c2c1feb566f041c8467eb00fb8294776a9179dc1643"
@@ -74,6 +74,7 @@ defmodule StarknetExplorer.Data do
     case Block.get_by_hash(hash, network) do
       nil ->
         {:ok, block} = Rpc.get_block_by_hash(hash, network)
+        StarknetExplorer.BlockUtils.store_block(block, network)
 
         block = Block.from_rpc_block(block, network)
         {:ok, block}
@@ -91,6 +92,7 @@ defmodule StarknetExplorer.Data do
     case Block.get_by_num(number, network) do
       nil ->
         {:ok, block} = Rpc.get_block_by_number(number, network)
+        StarknetExplorer.BlockUtils.store_block(block, network)
 
         block = Block.from_rpc_block(block, network)
         {:ok, block}
@@ -105,8 +107,13 @@ defmodule StarknetExplorer.Data do
   """
   def receipts_by_block(block, network) do
     case TransactionReceipt.get_by_block_hash(block.hash) do
+      # TODO: remove case; it should not happen anymore because on block retrieval we are also storing related data on db
       # if receipts are not found in the db, split the txs in chunks and get receipts by RPC
       [] ->
+        Logger.warning(
+          "The block should have been saved with all related txs and receipts earlier"
+        )
+
         all_receipts =
           block.transactions
           |> Enum.chunk_every(50)
@@ -125,7 +132,7 @@ defmodule StarknetExplorer.Data do
             Enum.map(tasks, &Task.await(&1, 10000))
           end)
 
-        {:ok, all_receipts}
+        {:ok, Map.new(all_receipts)}
 
       receipts ->
         {:ok, receipts}
