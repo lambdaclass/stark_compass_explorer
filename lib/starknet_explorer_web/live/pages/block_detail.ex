@@ -162,6 +162,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       case Gateway.fetch_block(socket.assigns.block.number, socket.assigns.network) do
         {:ok, block = %{"gas_price" => gas_price}} ->
           execution_resources = BlockUtils.calculate_gateway_block_steps(block)
+          gas_price = BlockUtils.format_hex_for_display(gas_price)
+
           {gas_price, execution_resources}
 
         {:ok, err} ->
@@ -609,7 +611,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             phx-update="replace"
             id="gas-price"
           >
-            <%= "#{@gas_price} ETH" %>
+            <%= @gas_price %> ETH
           </div>
         </div>
       </div>
