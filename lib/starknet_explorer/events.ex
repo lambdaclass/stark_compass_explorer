@@ -49,7 +49,7 @@ defmodule StarknetExplorer.Events do
   @condition_to_match 15
   @continuation_tokens ["0", "1000", "2000", "3000", "4000"]
   @chunk_size 1000
-
+  @chunk_every 50
   # Defines the separator used to distinguish between modules and event names in Cairo0 events.
   # In Cairo0 events, event names may include module information in the format:
   # `Module1::SubModule::EventName`
@@ -145,27 +145,46 @@ defmodule StarknetExplorer.Events do
   end
 
   def store_events_from_rpc(block, network) do
-    Enum.map(@continuation_tokens, fn continuation_token ->
-      case Rpc.get_block_events_paginated(
-             block.hash,
-             %{
-               "chunk_size" => @chunk_size,
-               "continuation_token" => continuation_token
-             },
-             network
-           ) do
-        {:ok, events} ->
-          events["events"]
-          |> Enum.with_index(&insert(&1, &2, continuation_token, network, block))
+    Enum.reduce_while(@continuation_tokens, :ok, fn continuation_token, acc ->
+      with {:ok, %{"events" => events = [_first_elem | _]} = _rpc_response} <-
+             Rpc.get_block_events_paginated(
+               block.hash,
+               %{
+                 "chunk_size" => @chunk_size,
+                 "continuation_token" => continuation_token
+               },
+               network
+             ) do
+        # [[event * @chunk_every]]
+        events
+        |> Enum.chunk_every(@chunk_every)
+        |> Enum.with_index(fn events, idx -> {events, idx} end)
+        |> Enum.map(fn {events, idx} ->
+          StarknetExplorer.Repo.transaction(fn ->
+            events
+            |> Enum.with_index(
+              &insert(
+                &1,
+                &2,
+                Integer.to_string(String.to_integer(continuation_token) + @chunk_every * idx),
+                network,
+                block
+              )
+            )
+          end)
+        end)
 
-          events
-
+        {:cont, acc}
+      else
         # This means that we fetch all the events from a block.
         {:error, %{"code" => 33}} ->
-          :ok
+          {:cont, acc}
+
+        {:ok, %{"events" => []} = _rpc_response} ->
+          {:halt, {:err, "Empty events from RPC."}}
 
         err ->
-          err
+          {:halt, err}
       end
     end)
   end
