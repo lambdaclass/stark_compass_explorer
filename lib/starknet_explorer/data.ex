@@ -1,5 +1,5 @@
 defmodule StarknetExplorer.Data do
-  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata, Events}
+  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata}
   alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt}
   alias StarknetExplorerWeb.Utils
 
@@ -163,6 +163,22 @@ defmodule StarknetExplorer.Data do
     {:ok, tx}
   end
 
+  # This behavior is modified for testing porpouses.
+  # def get_block_events_paginated(block, pagination, network) do
+  #   # If the entries are empty, means that the events was not fetch yet.
+  #   with %Scrivener.Page{entries: []} <- Events.paginate_events(pagination, block.number, network) do
+  #     :ok = Events.store_events_from_rpc(block, network)
+  #     get_block_events_paginated(block, pagination, network)
+  #   else
+  #     page -> page
+  #   end
+  # end
+  def get_block_events_paginated(block_hash, pagination, network) do
+    {:ok, events} = Rpc.get_block_events_paginated(block_hash, pagination, network)
+
+    events
+  end
+
   def full_transaction(tx_hash, network) do
     tx =
       case Transaction.get_by_hash_with_receipt(tx_hash) do
@@ -278,16 +294,6 @@ defmodule StarknetExplorer.Data do
         elem["selector"] == selector
       end
     )
-  end
-
-  def get_block_events_paginated(block, pagination, network) do
-    # If the entries are empty, means that the events was not fetch yet.
-    with %Scrivener.Page{entries: []} <- Events.paginate_events(pagination, block.number, network) do
-      :ok = Events.store_events_from_rpc(block, network)
-      get_block_events_paginated(block, pagination, network)
-    else
-      page -> page
-    end
   end
 
   def get_class_at(block_number, contract_address, network) do
