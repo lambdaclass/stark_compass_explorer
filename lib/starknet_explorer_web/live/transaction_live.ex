@@ -442,9 +442,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Actual Fee</div>
       <div class="col-span-3">
-      <span class="blue-label rounded-full px-4 py-1">
-      <%= @transaction_receipt.actual_fee %> ETH
-    </span>
+        <span class="blue-label rounded-full px-4 py-1">
+          <%= @transaction_receipt.actual_fee %> ETH
+        </span>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
