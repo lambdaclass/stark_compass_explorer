@@ -249,7 +249,7 @@ defmodule StarknetExplorer.Data do
           abi
       end,
       fn elem ->
-        elem["name"] |> IO.inspect() |> Calldata.keccak() == selector
+        elem["name"] |> Calldata.keccak() == selector
       end
     )
   end
