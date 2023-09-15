@@ -186,6 +186,10 @@ defmodule StarknetExplorer.Data do
     events
   end
 
+  def get_events(params, network) do
+    Rpc.get_events(params, network)
+  end
+
   def full_transaction(tx_hash, network) do
     {:ok, tx} = transaction(tx_hash, network)
     receipt = tx.receipt

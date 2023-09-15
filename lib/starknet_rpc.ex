@@ -24,6 +24,16 @@ defmodule StarknetExplorer.Rpc do
         network
       )
 
+  def get_events(params, network),
+    do:
+      send_request(
+        "starknet_getEvents",
+        [
+          params
+        ],
+        network
+      )
+
   def get_block_height_no_cache(network),
     do: send_request_no_cache("starknet_blockNumber", [], network)
 
