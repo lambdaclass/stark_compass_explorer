@@ -78,8 +78,7 @@ defmodule StarknetExplorer.Block do
         block_changeset = Block.changeset(%Block{}, block)
 
         {:ok, block} = Repo.insert(block_changeset)
-        # TODO: use a parameter instead of hardcoding the network.
-        Events.store_events_from_rpc(block, :mainnet)
+        Events.store_events_from_rpc(block, network)
 
         _txs_changeset =
           Enum.map(txs, fn tx ->

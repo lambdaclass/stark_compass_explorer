@@ -1,26 +1,23 @@
-.PHONY: run setup deps-get db stop-db setup-wasm-prover
+.PHONY: usage run setup deps-get db stop-db setup-wasm-prover
+
+usage:
+	@echo "Usage:"
+	@echo "    run   : Starts the Elixir backend server."
+	@echo "    setup : Sets up everything necessary to build and run the explorer."
+	@echo "    deps  : Gets code dependencies."
+	@echo "    db    : Runs the database creation and migration steps."
 
 run:
 	iex -S mix phx.server
 
-setup: deps-get db
+setup: deps db juno-setup
+
+deps:
+	mix deps.get
 
 db:
 	mix ecto.create
 	mix ecto.migrate
 
-stop-db:
-	docker-compose down
-
-deps-get:
-	mix deps.get
-
-db_container := $(shell docker ps -aqf name=starknet_explorer_dev_db)
-seed: db
-	cat ./priv/repo/seed.sql | docker exec -i $(db_container) psql -U postgres -d starknet_explorer_dev
-create-seed: db
-	docker exec -i $(db_container) pg_dump --column-inserts --data-only -d starknet_explorer_dev -U postgres > ./priv/repo/seed.sql
-
-juno:
+juno-setup:
 	mkdir -p ./juno_files
-	docker-compose up juno
