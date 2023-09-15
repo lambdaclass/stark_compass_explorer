@@ -49,7 +49,15 @@ defmodule StarknetExplorer.Rpc do
     do: send_request("starknet_getClass", [block_id, class_hash], network)
 
   def call(block_id, contract_address, selector, network),
-    do: send_request("starknet_call", [%{contract_address: contract_address, entry_point_selector: selector, calldata: []}, block_id], network)
+    do:
+      send_request(
+        "starknet_call",
+        [
+          %{contract_address: contract_address, entry_point_selector: selector, calldata: []},
+          block_id
+        ],
+        network
+      )
 
   defp send_request(method, args, network) when network in [:mainnet, :testnet, :testnet2] do
     payload = build_payload(method, args)

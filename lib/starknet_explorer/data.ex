@@ -239,15 +239,32 @@ defmodule StarknetExplorer.Data do
     end
   end
 
-
   def find_by_selector(class, selector) do
-    Enum.find(
+    abi =
       case class["abi"] do
         abi when is_binary(abi) ->
           Jason.decode!(abi)
+
         abi ->
           abi
-      end,
+      end
+
+    find_by_selector_and_version(abi, class["contract_class_version"], selector)
+  end
+
+  def find_by_selector_and_version(abi, nil, selector) do
+    Enum.find(
+      abi,
+      fn elem ->
+        elem["name"] |> Calldata.keccak() == selector
+      end
+    )
+  end
+
+  # we assume contract_class_version 0.1.0
+  def find_by_selector_and_version(abi, _contract_class_version, selector) do
+    Enum.find(
+      abi,
       fn elem ->
         elem["name"] |> Calldata.keccak() == selector
       end

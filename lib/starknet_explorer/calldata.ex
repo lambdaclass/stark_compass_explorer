@@ -18,7 +18,7 @@ defmodule StarknetExplorer.Calldata do
     )
   end
 
-  # currently using same structure when contract_class_version is set
+  # we assume contract_class_version 0.1.0
   def from_plain_calldata([array_len | rest], _contract_class_version) do
     {calls, _} =
       List.foldl(
@@ -56,11 +56,8 @@ defmodule StarknetExplorer.Calldata do
   end
 
   def keccak(value) do
-    <<_::6, result::250>> =
-      value
-      |> ExKeccak.hash_256()
-
-    "0x" <> Integer.to_string(result, 16) |> String.downcase()
+    <<_::6, result::250>> = ExKeccak.hash_256(value)
+    ("0x" <> Integer.to_string(result, 16)) |> String.downcase()
   end
 
   def as_fn_call(nil, _calldata) do
