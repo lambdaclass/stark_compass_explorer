@@ -23,4 +23,4 @@ COPY --from=builder /explorer/_build/$MIX_ENV/rel/starknet_explorer .
 
 EXPOSE 4000
 
-CMD ["/explorer/bin/starknet_explorer", "start"]
+CMD ["sh", "-c", "/explorer/bin/starknet_explorer eval 'StarknetExplorer.Release.migrate' && /explorer/bin/starknet_explorer start"]
