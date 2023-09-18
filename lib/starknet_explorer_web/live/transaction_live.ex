@@ -1,5 +1,4 @@
 defmodule StarknetExplorerWeb.TransactionLive do
-  alias StarknetExplorer.BlockUtils
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.Data
