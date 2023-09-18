@@ -66,13 +66,12 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
           id={"copy-block-hash-#{@message.message_hash}"}
           phx-hook="Copy"
         >
-        <div class="relative">
-
-        <div class="col-span-3">
-        <%= live_redirect(@message.transaction_hash ,
-        to: ~p"/#{@network}/transactions/#{@message.transaction_hash}"
-      ) %>
-          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+          <div class="relative">
+            <div class="col-span-3">
+              <%= live_redirect(@message.transaction_hash,
+                to: ~p"/#{@network}/transactions/#{@message.transaction_hash}"
+              ) %>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
                   <img
                     class="copy-btn copy-text w-4 h-4"
@@ -85,8 +84,8 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
                   />
                 </div>
               </div>
-        </div>
-        </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
@@ -107,11 +106,11 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
             <div class="block-label !mt-0">Nonce</div>
           </div>
           <div>
-          <span class="pink-label">
-            <%= @message.nonce %>
-          </span>
+            <span class="pink-label">
+              <%= @message.nonce %>
+            </span>
           </div>
-          </div>
+        </div>
       <% end %>
       <div class="custom-list-item">
         <div class="block-label !mt-0">Message Details</div>
@@ -124,11 +123,11 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
             <% end %>
 
             <div
-            class="copy-container col-span-3 text-hover-blue"
-            id={"copy-block-hash-#{@message.to_address}"}
-            phx-hook="Copy"
-          >
-                <%= @message.from_address %>
+              class="copy-container col-span-3 text-hover-blue"
+              id={"copy-block-hash-#{@message.to_address}"}
+              phx-hook="Copy"
+            >
+              <%= @message.from_address %>
             </div>
           </div>
           <div class="custom-list-item grid-4 w-full">
@@ -140,15 +139,13 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
               <% end %>
             </div>
             <div
-          class="copy-container col-span-3 text-hover-blue"
-          id={"copy-block-hash-#{@message.to_address}"}
-          phx-hook="Copy"
-        >
+              class="copy-container col-span-3 text-hover-blue"
+              id={"copy-block-hash-#{@message.to_address}"}
+              phx-hook="Copy"
+            >
               <%= @message.to_address %>
             </div>
-
           </div>
-
         </div>
       </div>
       <div class="custom-list-item">

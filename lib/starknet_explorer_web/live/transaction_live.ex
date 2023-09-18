@@ -460,7 +460,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="grid-4 custom-list-item">
         <div class="block-label">Max Fee</div>
         <div class="col-span-3">
-          <span class="text-se-cash-green rounded-full px-4 py-1">
+          <span class="text-se-cash-green green-label rounded-full px-4 py-1">
             <%= @transaction.max_fee %> ETH
           </span>
         </div>
