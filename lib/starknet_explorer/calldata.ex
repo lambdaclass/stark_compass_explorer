@@ -4,11 +4,7 @@ defmodule StarknetExplorer.Calldata do
   @implementation_selector "0x3a0ed1f62da1d3048614c2c1feb566f041c8467eb00fb8294776a9179dc1643"
   @implementation_hash_selector "0x1d15dd5e6cac14c959221a0b45927b113a91fcfffa4c7bbab19b28d345467df"
 
-  def parse_calldata(tx, block_id, network) do
-    parse_calldata(tx.type, tx, block_id, network)
-  end
-
-  def parse_calldata("INVOKE", tx, block_id, network) do
+  def parse_calldata(%{type: "INVOKE"} = tx, block_id, network) do
     version =
       case tx.contract do
         nil -> nil
@@ -27,7 +23,7 @@ defmodule StarknetExplorer.Calldata do
     )
   end
 
-  def parse_calldata(_type, _tx, _block_id, _network) do
+  def parse_calldata(_tx, _block_id, _network) do
     nil
   end
 
