@@ -457,17 +457,22 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </span>
       </div>
     </div>
-    <div class="grid-4 custom-list-item">
-      <div class="block-label">Max Fee</div>
-      <div class="col-span-3">
-        <span class="text-se-cash-green rounded-full px-4 py-1">
-          <%= @transaction.max_fee %> ETH
-        </span>
+    <%= if @transaction.sender_address do %>
+      <div class="grid-4 custom-list-item">
+        <div class="block-label">Max Fee</div>
+        <div class="col-span-3">
+          <span class="text-se-cash-green rounded-full px-4 py-1">
+            <%= @transaction.max_fee %> ETH
+          </span>
+        </div>
       </div>
-    </div>
+    <% end %>
+
     <div class="grid-4 custom-list-item">
       <div class="block-label">Nonce</div>
-      <div class="col-span-3"><%= @transaction.nonce %></div>
+      <div class="col-span-3">
+        <%= @transaction.nonce |> String.replace("0x", "") |> String.to_integer(16) %>
+      </div>
     </div>
     <div class="custom-list-item">
       <div class="mb-5 text-gray-500 md:text-white !flex-row gap-2">
@@ -582,11 +587,19 @@ defmodule StarknetExplorerWeb.TransactionLive do
       |> Enum.reject(&is_nil/1)
 
     # change fee formatting
-    actual_fee = BlockUtils.format_hex_for_display(transaction.receipt.actual_fee)
-    max_fee = BlockUtils.format_hex_for_display(transaction.max_fee)
+    actual_fee = Utils.hex_wei_to_eth(transaction.receipt.actual_fee)
+
+    transaction =
+      case transaction.type != "L1_HANDLER" do
+        true ->
+          max_fee = Utils.hex_wei_to_eth(transaction.max_fee)
+          transaction |> Map.put(:max_fee, max_fee)
+
+        _ ->
+          transaction
+      end
 
     receipt = transaction.receipt |> Map.put(:actual_fee, actual_fee)
-    transaction = transaction |> Map.put(:max_fee, max_fee)
 
     assigns = [
       transaction: transaction,

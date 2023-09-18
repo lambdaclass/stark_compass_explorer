@@ -20,8 +20,29 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Message Hash</div>
-        <div class="col-span-3">
-          <%= @message.message_hash |> Utils.shorten_block_hash() %>
+        <div
+          class="copy-container col-span-3 text-hover-blue"
+          id={"copy-block-hash-#{@message.message_hash}"}
+          phx-hook="Copy"
+        >
+          <div class="relative">
+            <div class="col-span-3">
+              <%= @message.message_hash %>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={@message.message_hash}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
@@ -40,40 +61,94 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Transaction Hash</div>
+        <div
+          class="copy-container col-span-3 text-hover-blue"
+          id={"copy-block-hash-#{@message.message_hash}"}
+          phx-hook="Copy"
+        >
+        <div class="relative">
+
         <div class="col-span-3">
-          <%= @message.transaction_hash %>
+        <%= live_redirect(@message.transaction_hash ,
+        to: ~p"/#{@network}/transactions/#{@message.transaction_hash}"
+      ) %>
+          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={@message.transaction_hash}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
+        </div>
+        </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Timestamp</div>
         <div class="col-span-3"><%= Utils.get_block_age_from_timestamp(@message.timestamp) %></div>
       </div>
+      <%= if !Message.is_l2_to_l1(@message.type) do %>
+        <div class="custom-list-item grid-4 w-full">
+          <div class="custom-list-item grid-4 w-full !border-none">
+            <div class="block-label !mt-0">L2 Selector</div>
+          </div>
+          <div>
+            <%= @message.selector %>
+          </div>
+        </div>
+        <div class="custom-list-item grid-4 w-full">
+          <div class="custom-list-item grid-4 w-full !border-none">
+            <div class="block-label !mt-0">Nonce</div>
+          </div>
+          <div>
+          <span class="pink-label">
+            <%= @message.nonce %>
+          </span>
+          </div>
+          </div>
+      <% end %>
       <div class="custom-list-item">
         <div class="block-label !mt-0">Message Details</div>
         <div class="bg-black/10 p-5">
           <div class="custom-list-item grid-4 w-full !border-none">
-            <div class="block-label !mt-0">From Contract Address</div>
-            <div>
-              <%= @message.from_address %>
-            </div>
-            <div class="relative">
-              <img
-                class="copy-btn copy-text w-4 h-4"
-                src={~p"/images/copy.svg"}
-                data-text={@message.from_address}
-              />
-              <img
-                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                src={~p"/images/check-square.svg"}
-              />
+            <%= if Message.is_l2_to_l1(@message.type) do %>
+              <div class="block-label !mt-0">From L2 Contract Address</div>
+            <% else %>
+              <div class="block-label !mt-0">From L1 Contract Address</div>
+            <% end %>
+
+            <div
+            class="copy-container col-span-3 text-hover-blue"
+            id={"copy-block-hash-#{@message.to_address}"}
+            phx-hook="Copy"
+          >
+                <%= @message.from_address %>
             </div>
           </div>
           <div class="custom-list-item grid-4 w-full">
-            <div class="block-label !mt-0">To Contract Address</div>
-            <div>
+            <div class="custom-list-item grid-4 w-full !border-none">
+              <%= if Message.is_l2_to_l1(@message.type) do %>
+                <div class="block-label !mt-0">To L1 Contract Address</div>
+              <% else %>
+                <div class="block-label !mt-0">To L2 Contract Address</div>
+              <% end %>
+            </div>
+            <div
+          class="copy-container col-span-3 text-hover-blue"
+          id={"copy-block-hash-#{@message.to_address}"}
+          phx-hook="Copy"
+        >
               <%= @message.to_address %>
             </div>
+
           </div>
+
         </div>
       </div>
       <div class="custom-list-item">
@@ -107,6 +182,17 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
 
   def mount(_params = %{"identifier" => hash}, _session, socket) do
     message = Message.get_by_hash(hash, socket.assigns.network)
+
+    message =
+      case Message.is_l2_to_l1(message) do
+        false ->
+          tx = StarknetExplorer.Transaction.get_by_hash(message.transaction_hash)
+          decimal_nonce = tx.nonce |> String.replace("0x", "") |> String.to_integer(16)
+          message |> Map.put(:selector, tx.entry_point_selector) |> Map.put(:nonce, decimal_nonce)
+
+        _ ->
+          message
+      end
 
     assigns = [
       message: message

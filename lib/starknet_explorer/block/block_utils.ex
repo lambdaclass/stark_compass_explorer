@@ -73,7 +73,7 @@ defmodule StarknetExplorer.BlockUtils do
     end
   end
 
-  def format_hex_for_display(hex) do
+  def format_fee_for_display(hex) do
     case Integer.parse(hex |> String.replace_prefix("0x", ""), 16) do
       {decimal, _} -> (decimal / :math.pow(10, 18)) |> :erlang.float_to_binary([{:decimals, 18}])
       :error -> "Wrong number formatting"
