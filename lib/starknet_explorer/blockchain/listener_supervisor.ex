@@ -1,6 +1,6 @@
-defmodule StarknetExplorer.Blockchain.FetcherSupervisor do
+defmodule StarknetExplorer.Blockchain.ListenerSupervisor do
   use Supervisor
-  alias StarknetExplorer.Blockchain.FetcherWorker
+  alias StarknetExplorer.Blockchain.ListenerWorker
 
   def start_link(init_arg) do
     Supervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
@@ -9,7 +9,7 @@ defmodule StarknetExplorer.Blockchain.FetcherSupervisor do
   @impl true
   def init(_init_arg) do
     children = [
-      FetcherWorker
+      ListenerWorker
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

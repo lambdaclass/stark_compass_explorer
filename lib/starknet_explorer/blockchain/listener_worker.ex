@@ -1,4 +1,4 @@
-defmodule StarknetExplorer.Blockchain.FetcherWorker do
+defmodule StarknetExplorer.Blockchain.ListenerWorker do
   use GenServer
 
   def start_link(arg) do
