@@ -1,4 +1,36 @@
 defmodule StarknetExplorer.Calldata do
+  alias StarknetExplorer.Rpc
+
+  @implementation_selector "0x3a0ed1f62da1d3048614c2c1feb566f041c8467eb00fb8294776a9179dc1643"
+  @implementation_hash_selector "0x1d15dd5e6cac14c959221a0b45927b113a91fcfffa4c7bbab19b28d345467df"
+
+  def parse_calldata(tx, block_id, network) do
+    parse_calldata(tx.type, tx, block_id, network)
+  end
+
+  def parse_calldata("INVOKE", tx, block_id, network) do
+    version =
+      case tx.contract do
+        nil -> nil
+        contract -> contract[:contract_class_version]
+      end
+
+    calldata =
+      from_plain_calldata(tx.calldata, version)
+
+    Enum.map(
+      calldata,
+      fn call ->
+        input = get_input_data(block_id, call.address, call.selector, network)
+        Map.put(call, :call, as_fn_call(input, call.calldata))
+      end
+    )
+  end
+
+  def parse_calldata(_type, _tx, _block_id, _network) do
+    nil
+  end
+
   def from_plain_calldata([array_len | rest], nil) do
     {calls, [_calldata_length | calldata]} =
       List.foldl(
@@ -98,5 +130,83 @@ defmodule StarknetExplorer.Calldata do
   def felt_to_int(<<"0x", hexa_value::binary>>) do
     {value, _} = Integer.parse(hexa_value, 16)
     value
+  end
+
+  def get_input_data(block_id, address, selector, network) do
+    case Rpc.get_class_at(block_id, address, network) do
+      {:ok, class} ->
+        cond do
+          has_selector?(class, @implementation_selector) ->
+            {:ok, [implementation_address]} =
+              Rpc.call(block_id, address, @implementation_selector, network)
+
+            get_input_data(block_id, implementation_address, selector, network)
+
+          has_selector?(class, @implementation_hash_selector) ->
+            {:ok, [implementation_hash]} =
+              Rpc.call(block_id, address, @implementation_hash_selector, network)
+
+            get_input_data_for_hash(block_id, implementation_hash, selector, network)
+
+          true ->
+            find_by_selector(class, selector)
+        end
+
+      {:error, error} ->
+        error |> IO.inspect()
+        nil
+    end
+  end
+
+  def get_input_data_for_hash(block_id, class_hash, selector, network) do
+    case Rpc.get_class(block_id, class_hash, network) do
+      {:ok, class} ->
+        find_by_selector(class, selector)
+
+      {:error, error} ->
+        error |> IO.inspect()
+        nil
+    end
+  end
+
+  def find_by_selector(class, selector) do
+    abi =
+      case class["abi"] do
+        abi when is_binary(abi) ->
+          Jason.decode!(abi)
+
+        abi ->
+          abi
+      end
+
+    find_by_selector_and_version(abi, class["contract_class_version"], selector)
+  end
+
+  def find_by_selector_and_version(abi, nil, selector) do
+    Enum.find(
+      abi,
+      fn elem ->
+        elem["name"] |> keccak() == selector
+      end
+    )
+  end
+
+  # we assume contract_class_version 0.1.0
+  def find_by_selector_and_version(abi, _contract_class_version, selector) do
+    Enum.find(
+      abi,
+      fn elem ->
+        elem["name"] |> keccak() == selector
+      end
+    )
+  end
+
+  def has_selector?(class, selector) do
+    Enum.any?(
+      class["entry_points_by_type"]["EXTERNAL"],
+      fn elem ->
+        elem["selector"] == selector
+      end
+    )
   end
 end
