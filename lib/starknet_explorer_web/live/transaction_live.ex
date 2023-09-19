@@ -589,8 +589,8 @@ defmodule StarknetExplorerWeb.TransactionLive do
     actual_fee = Utils.hex_wei_to_eth(transaction.receipt.actual_fee)
 
     transaction =
-      case transaction.type != "L1_HANDLER" do
-        true ->
+      case transaction.type do
+        "L1_HANDLER" ->
           max_fee = Utils.hex_wei_to_eth(transaction.max_fee)
           transaction |> Map.put(:max_fee, max_fee)
 
