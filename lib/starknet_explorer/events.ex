@@ -73,12 +73,9 @@ defmodule StarknetExplorer.Events do
   def changeset(schema, params) do
     schema
     |> cast(params, @fields)
-
-    # TODO: revisit this.
-    # |> foreign_key_constraint(:block_number)
-    # |> foreign_key_constraint(:transaction_hash)
-    # |> unique_constraint(:id)
-    # |> validate_required(@fields)
+    |> foreign_key_constraint(:block_number)
+    |> foreign_key_constraint(:transaction_hash)
+    |> validate_required(@fields)
   end
 
   def insert(event) do
