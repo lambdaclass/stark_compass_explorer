@@ -121,6 +121,7 @@ defmodule StarknetExplorer.Calldata do
   def get_value_for_type("Uint256", [value1, value2 | rest]) do
     {[value2, value1], rest}
   end
+
   def get_value_for_type("core::integer::u256", [value1, value2 | rest]) do
     {[value2, value1], rest}
   end
@@ -138,20 +139,27 @@ defmodule StarknetExplorer.Calldata do
     case Rpc.get_class_at(block_id, address, network) do
       {:ok, class} ->
         selectors = parse_class(class)
-        implementation_selector = Enum.find(
-          @implementation_selectors,
-          fn elem ->
-            MapSet.member?(selectors, elem)
-          end
-        )
+
+        implementation_selector =
+          Enum.find(
+            @implementation_selectors,
+            fn elem ->
+              MapSet.member?(selectors, elem)
+            end
+          )
+
         case implementation_selector do
-          nil -> find_by_selector(class, selector)
+          nil ->
+            find_by_selector(class, selector)
+
           _ ->
             {:ok, [implementation_address_or_hash]} =
               Rpc.call(block_id, address, implementation_selector, network)
+
             case Rpc.get_class(block_id, implementation_address_or_hash, network) do
               {:ok, class} ->
                 find_by_selector(class, selector)
+
               {:error, _error} ->
                 {:ok, class} = Rpc.get_class_at(block_id, implementation_address_or_hash, network)
                 find_by_selector(class, selector)
@@ -168,7 +176,7 @@ defmodule StarknetExplorer.Calldata do
     List.foldl(
       class["entry_points_by_type"]["EXTERNAL"],
       MapSet.new(),
-      fn elem, acc->
+      fn elem, acc ->
         MapSet.put(acc, elem["selector"])
       end
     )
@@ -210,10 +218,9 @@ defmodule StarknetExplorer.Calldata do
   # we assume contract_class_version 0.1.0
   def find_by_selector_and_version(abi, _contract_class_version, selector) do
     abi
-      |> Enum.map(&(&1["items"]))
-      |> Enum.filter(&(&1))
-      |> Enum.concat()
-      |> Enum.find(&(&1["name"] |> keccak() == selector))
+    |> Enum.map(& &1["items"])
+    |> Enum.filter(& &1)
+    |> Enum.concat()
+    |> Enum.find(&(&1["name"] |> keccak() == selector))
   end
-
 end
