@@ -10,14 +10,37 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
       flash: @flash,
       session: %{"network" => @network}
     ) %>
-
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
-      <div class="flex flex-col lg:flex-row gap-2 items-baseline pb-5">
-        <h2>Message</h2>
+      <%= render_info(assigns) %>
+    </div>
+    """
+  end
+
+  def render_info(assigns) do
+    ~H"""
+    <div
+      id="dropdown"
+      class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
+      phx-hook="Dropdown"
+    >
+      <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
+        <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
+      </span>
+    </div>
+    <div class="options hidden"></div>
+    <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
+      <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
         <div class="font-semibold">
-          <%= @message.message_hash %>
+          <h3>Message <%= @message.message_hash %></h3>
+        </div>
+        <div class="text-gray-400">
+          <%= @message.timestamp
+          |> DateTime.from_unix()
+          |> then(fn {:ok, time} -> time end)
+          |> Calendar.strftime("%c") %> UTC
         </div>
       </div>
+      <div class="flex flex-col lg:flex-row gap-2 items-baseline pb-5"></div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Message Hash</div>
         <div
