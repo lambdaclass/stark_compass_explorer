@@ -379,7 +379,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>Type</div>
       <div>Version</div>
     </div>
-    <%= for _transaction = %StarknetExplorer.Transaction{hash: hash, type: type, version: version} <- @block.transactions do %>
+    <%= for _transaction = %{hash: hash, type: type, version: version} <- @block.transactions do %>
       <div class="grid-3 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
