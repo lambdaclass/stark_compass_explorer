@@ -73,12 +73,24 @@ defmodule StarknetExplorer.Block do
       |> rename_rpc_fields
       |> Map.put("network", network)
 
+    events =
+      block["hash"]
+      |> Events.fetch_from_rpc(network)
+      |> Enum.with_index(fn %{"keys" => keys} = event, index ->
+        event
+        |> Map.put("network", network)
+        |> Map.put("age", block["timestamp"])
+        |> Map.put("index_in_block", index)
+        |> Map.put("block_number", block["number"])
+        |> Map.put("name", Events.get_event_name(event, network))
+        |> Map.put("name_hashed", List.first(keys))
+      end)
+
     transaction_result =
       StarknetExplorer.Repo.transaction(fn ->
         block_changeset = Block.changeset(%Block{}, block)
 
         {:ok, block} = Repo.insert(block_changeset)
-        Events.store_events_from_rpc(block, network)
 
         _txs_changeset =
           Enum.map(txs, fn tx ->
@@ -104,6 +116,8 @@ defmodule StarknetExplorer.Block do
             Message.insert_from_transaction_receipt(receipt, network)
             Message.insert_from_transaction(inserted_tx, block.timestamp, network)
           end)
+
+        Enum.each(events, fn event -> {:ok, _event} = Events.insert(event) end)
       end)
 
     case transaction_result do
