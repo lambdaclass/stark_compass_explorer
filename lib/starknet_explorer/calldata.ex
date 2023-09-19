@@ -1,14 +1,17 @@
 defmodule StarknetExplorer.Calldata do
   alias StarknetExplorer.Rpc
 
-  @implementation_selector "0x3a0ed1f62da1d3048614c2c1feb566f041c8467eb00fb8294776a9179dc1643"
-  @implementation_hash_selector "0x1d15dd5e6cac14c959221a0b45927b113a91fcfffa4c7bbab19b28d345467df"
+  @implementation_selectors [
+    "0x3a0ed1f62da1d3048614c2c1feb566f041c8467eb00fb8294776a9179dc1643",
+    "0x1d15dd5e6cac14c959221a0b45927b113a91fcfffa4c7bbab19b28d345467df",
+    "0x1f01da52d973fb13ba47dbc8e4ca94015dc4e581e2cc20b2050e87b0a743fae"
+  ]
 
   def parse_calldata(%{type: "INVOKE"} = tx, block_id, network) do
     version =
       case tx.contract do
         nil -> nil
-        contract -> contract[:contract_class_version]
+        contract -> contract["contract_class_version"]
       end
 
     calldata =
@@ -118,6 +121,9 @@ defmodule StarknetExplorer.Calldata do
   def get_value_for_type("Uint256", [value1, value2 | rest]) do
     {[value2, value1], rest}
   end
+  def get_value_for_type("core::integer::u256", [value1, value2 | rest]) do
+    {[value2, value1], rest}
+  end
 
   def get_value_for_type(_, [value | rest]) do
     {value, rest}
@@ -131,27 +137,41 @@ defmodule StarknetExplorer.Calldata do
   def get_input_data(block_id, address, selector, network) do
     case Rpc.get_class_at(block_id, address, network) do
       {:ok, class} ->
-        cond do
-          has_selector?(class, @implementation_selector) ->
-            {:ok, [implementation_address]} =
-              Rpc.call(block_id, address, @implementation_selector, network)
-
-            get_input_data(block_id, implementation_address, selector, network)
-
-          has_selector?(class, @implementation_hash_selector) ->
-            {:ok, [implementation_hash]} =
-              Rpc.call(block_id, address, @implementation_hash_selector, network)
-
-            get_input_data_for_hash(block_id, implementation_hash, selector, network)
-
-          true ->
-            find_by_selector(class, selector)
+        selectors = parse_class(class)
+        implementation_selector = Enum.find(
+          @implementation_selectors,
+          fn elem ->
+            MapSet.member?(selectors, elem)
+          end
+        )
+        case implementation_selector do
+          nil -> find_by_selector(class, selector)
+          _ ->
+            {:ok, [implementation_address_or_hash]} =
+              Rpc.call(block_id, address, implementation_selector, network)
+            case Rpc.get_class(block_id, implementation_address_or_hash, network) do
+              {:ok, class} ->
+                find_by_selector(class, selector)
+              {:error, _error} ->
+                {:ok, class} = Rpc.get_class_at(block_id, implementation_address_or_hash, network)
+                find_by_selector(class, selector)
+            end
         end
 
       {:error, error} ->
         error |> IO.inspect()
         nil
     end
+  end
+
+  def parse_class(class) do
+    List.foldl(
+      class["entry_points_by_type"]["EXTERNAL"],
+      MapSet.new(),
+      fn elem, acc->
+        MapSet.put(acc, elem["selector"])
+      end
+    )
   end
 
   def get_input_data_for_hash(block_id, class_hash, selector, network) do
@@ -189,20 +209,11 @@ defmodule StarknetExplorer.Calldata do
 
   # we assume contract_class_version 0.1.0
   def find_by_selector_and_version(abi, _contract_class_version, selector) do
-    Enum.find(
-      abi,
-      fn elem ->
-        elem["name"] |> keccak() == selector
-      end
-    )
+    abi
+      |> Enum.map(&(&1["items"]))
+      |> Enum.filter(&(&1))
+      |> Enum.concat()
+      |> Enum.find(&(&1["name"] |> keccak() == selector))
   end
 
-  def has_selector?(class, selector) do
-    Enum.any?(
-      class["entry_points_by_type"]["EXTERNAL"],
-      fn elem ->
-        elem["selector"] == selector
-      end
-    )
-  end
 end
