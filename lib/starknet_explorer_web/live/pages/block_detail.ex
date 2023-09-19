@@ -162,7 +162,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       case Gateway.fetch_block(socket.assigns.block.number, socket.assigns.network) do
         {:ok, block = %{"gas_price" => gas_price}} ->
           execution_resources = BlockUtils.calculate_gateway_block_steps(block)
-          gas_price = BlockUtils.format_hex_for_display(gas_price)
+          gas_price = Utils.hex_wei_to_eth(gas_price)
 
           {gas_price, execution_resources}
 
