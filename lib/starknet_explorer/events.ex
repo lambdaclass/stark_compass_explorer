@@ -7,6 +7,7 @@ defmodule StarknetExplorer.Events do
   alias StarknetExplorer.Repo
   alias StarknetExplorer.Rpc
   alias StarknetExplorerWeb.Utils
+  @primary_key {:id, :binary_id, autogenerate: true}
 
   @fields [
     :name,
