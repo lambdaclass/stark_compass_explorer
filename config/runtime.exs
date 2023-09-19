@@ -81,7 +81,12 @@ if config_env() == :prod do
     database: database_path,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
     stacktrace: true,
-    show_sensitive_data_on_connection_error: true
+    show_sensitive_data_on_connection_error: true,
+    synchronous: :normal,
+    journal_mode: :wal,
+    temp_store: :memory,
+    timeout: 60_000,
+    pool_timeout: 60_000
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
