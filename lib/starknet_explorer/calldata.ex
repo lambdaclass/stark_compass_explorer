@@ -104,30 +104,69 @@ defmodule StarknetExplorer.Calldata do
       List.foldl(
         inputs,
         {[], calldata},
-        fn input, {acc_current, acc_calldata} ->
-          {fn_input, calldata_rest} = as_fn_input(input, acc_calldata)
-          {[fn_input | acc_current], calldata_rest}
+        fn input, {so_far, acc_calldata} ->
+          {fn_input, calldata_rest} = as_fn_input(input, so_far, acc_calldata)
+          {[fn_input | so_far], calldata_rest}
         end
       )
 
     Enum.reverse(result)
   end
 
-  def as_fn_input(input, calldata) do
-    {value, calldata_rest} = get_value_for_type(input["type"], calldata)
+  def as_fn_input(input, so_far, calldata) do
+    {value, calldata_rest} = get_value_for_type(input, so_far, calldata)
     {%{:name => input["name"], :type => input["type"], :value => value}, calldata_rest}
   end
 
-  def get_value_for_type("Uint256", [value1, value2 | rest]) do
+  def get_value_for_type(%{"type" => "core::array::Array::<" <> inner_type}, _so_far, [
+        array_length | rest
+      ]) do
+    inner_type = String.replace_suffix(inner_type, ">", "") |> IO.inspect()
+    get_multiple_values_for_type(felt_to_int(array_length), inner_type, rest)
+  end
+
+  def get_value_for_type(%{"type" => type, "name" => name}, so_far, calldata) do
+    case String.ends_with?(type, "*") do
+      true ->
+        type = String.replace_suffix(type, "*", "!")
+        get_multiple_values_for_type(get_array_len(name, so_far), type, calldata)
+
+      _ ->
+        get_value_for_single_type(type, calldata)
+    end
+  end
+
+  def get_value_for_single_type("Uint256", [value1, value2 | rest]) do
     {[value2, value1], rest}
   end
 
-  def get_value_for_type("core::integer::u256", [value1, value2 | rest]) do
+  def get_value_for_single_type("core::integer::u256", [value1, value2 | rest]) do
     {[value2, value1], rest}
   end
 
-  def get_value_for_type(_, [value | rest]) do
+  def get_value_for_single_type(_, [value | rest]) do
     {value, rest}
+  end
+
+  def get_multiple_values_for_type(0, _type, list) do
+    {[], list}
+  end
+
+  def get_multiple_values_for_type(n, type, list) do
+    {value, rest} = get_value_for_single_type(type, list)
+    {values, final_rest} = get_multiple_values_for_type(n - 1, type, rest)
+    {[value | values], final_rest}
+  end
+
+  def get_array_len(name, input_data) do
+    Enum.find(
+      input_data,
+      fn %{:name => input_name} ->
+        name <> "_len" == input_name
+      end
+    )
+    |> Map.get(:value)
+    |> felt_to_int
   end
 
   def felt_to_int(<<"0x", hexa_value::binary>>) do

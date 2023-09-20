@@ -502,7 +502,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
                     <div>
                       <div class="list-h">Value</div>
                       <div class="break-all">
-                        <%= Utils.format_arg_value(arg) %>
+                        <pre><%= Utils.format_arg_value(arg) %></pre>
                       </div>
                     </div>
                   </div>
