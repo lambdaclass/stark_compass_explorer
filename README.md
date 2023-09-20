@@ -1,14 +1,13 @@
 # StarknetExplorer
 ![image](./priv/static/images/explorer_preview.png)
 
-- [StarknetExplorer](#starknetexplorer)
-  - [Requirements](#requirements)
-  - [Local development](#local-development)
-    - [Setup](#setup)
-    - [RPC Provider](#rpc-provider)
-    - [RPC with Juno](#rpc-with-juno)
-    - [Database](#database)
-    - [Up and running](#up-and-running)
+- [Requirements](#requirements)
+- [Local development](#local-development)
+  - [Setup](#setup)
+  - [RPC Provider](#rpc-provider)
+  - [RPC with Juno](#rpc-with-juno)
+  - [Database](#database)
+  - [Up and running](#up-and-running)
 
 ## Requirements
 - SQLite
