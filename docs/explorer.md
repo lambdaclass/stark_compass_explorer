@@ -44,6 +44,8 @@ deployed contracts and so on. So, what we're missing is:
 [starknet_docs_contract_classes]: https://docs.starknet.io/documentation/architecture_and_concepts/Smart_Contracts/contract-classes/
 [starknet_docs_events]: https://docs.starknet.io/documentation/architecture_and_concepts/Smart_Contracts/starknet-events/
 
+> Gateway data is fetched and shown only if the environment variable `ENABLE_GATEWAY_DATA` is set to `true`. Otherwise, that logic is skipped to be able to support networks that are only compatible with the Starknet RPC standard.
+
 ### Explorer data
 As a way to have a cache and a full view into the network's data,
 we're building a sqlite database. Currently it has tables for blocks,
