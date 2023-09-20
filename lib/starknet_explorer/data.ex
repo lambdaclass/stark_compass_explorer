@@ -183,6 +183,10 @@ defmodule StarknetExplorer.Data do
     events
   end
 
+  def get_events(params, network) do
+    Rpc.get_events(params, network)
+  end
+
   def full_transaction(tx_hash, network) do
     {:ok, tx} = transaction(tx_hash, network)
     receipt = tx.receipt
@@ -244,6 +248,16 @@ defmodule StarknetExplorer.Data do
   defp _get_event_name(abi, event_name_hashed) do
     abi
     |> Jason.decode!()
+    |> _get_event_name(event_name_hashed)
+  end
+
+  def get_event_name(%{keys: [event_name_hashed | _]} = _event, _network)
+      when event_name_hashed in @common_event_hashes,
+      do: @common_event_hash_to_name[event_name_hashed]
+
+  def get_event_name(%{keys: [event_name_hashed | _]} = event, network) do
+    get_class_at(event["block_number"], event["from_address"], network)
+    |> Map.get("abi")
     |> _get_event_name(event_name_hashed)
   end
 
