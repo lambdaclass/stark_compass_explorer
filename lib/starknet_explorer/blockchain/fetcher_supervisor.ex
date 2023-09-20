@@ -1,4 +1,4 @@
-defmodule StarknetExplorer.BlockFetcher do
+defmodule StarknetExplorer.BlockchainFetcher do
   use DynamicSupervisor
 
   def start_link(_arg) do
@@ -17,8 +17,8 @@ defmodule StarknetExplorer.BlockFetcher do
       when start >= finish and is_integer(start) and is_integer(finish) do
     spec =
       %{
-        id: StarknetExplorer.BlockFetcher.Worker,
-        start: {StarknetExplorer.BlockFetcher.Worker, :start_link, [args]}
+        id: StarknetExplorer.BlockchainFetcher.Worker,
+        start: {StarknetExplorer.BlockchainFetcher.Worker, :start_link, [args]}
       }
 
     {:ok, _fetcher} =

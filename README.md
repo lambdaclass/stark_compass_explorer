@@ -1,12 +1,14 @@
 # StarknetExplorer
 ![image](./priv/static/images/explorer_preview.png)
 
-- [Requirements](#requirements)
-- [Local development](#local-development)
-  - [RPC Provider](#rpc-provider)
-  - [RPC with Juno](#rpc-with-juno)
-  - [Database](#database)
-  - [Up and running](#up-and-running)
+- [StarknetExplorer](#starknetexplorer)
+  - [Requirements](#requirements)
+  - [Local development](#local-development)
+    - [Setup](#setup)
+    - [RPC Provider](#rpc-provider)
+    - [RPC with Juno](#rpc-with-juno)
+    - [Database](#database)
+    - [Up and running](#up-and-running)
 
 ## Requirements
 - SQLite
@@ -67,17 +69,17 @@ To enable this process, before starting the explorer, set this env var:
 export ENABLE_LISTENER="true"
 ```
 
-2. BlockFetcher, which will store blocks from a given range.
-To use it, you simply have to call the `StarknetExplorer.BlockFetcher.fetch_in_range`
+2. BlockchainFetcher, which will store blocks from a given range.
+To use it, you simply have to call the `StarknetExplorer.BlockchainFetcher.fetch_in_range`
 function, you can do this interactively after starting with `make run`:
 
 ```elixir
-StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10, network: :mainnet})
+StarknetExplorer.BlockchainFetcher.fetch_in_range(%{start: 100, finish: 10, network: :mainnet})
  ```
 
 Or, if you're on a "prod" environment, simply send it through elixir's RPC:
 ```bash 
-./_build/prod/rel/starknet_explorer/bin rpc "StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10, network: :mainnet})"
+./_build/prod/rel/starknet_explorer/bin rpc "StarknetExplorer.BlockchainFetcher.fetch_in_range(%{start: 100, finish: 10, network: :mainnet})"
 ```
 
 There are 2 things to keep in mind here:
