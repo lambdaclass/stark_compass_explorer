@@ -117,11 +117,13 @@ defmodule StarknetExplorer.Events do
       when event_name_hashed in @common_event_hashes,
       do: @common_event_hash_to_name[event_name_hashed]
 
-  def get_event_name(%{"keys" => keys} = event, network) do
-    Data.get_class_at(event["block_number"], event["from_address"], network)
-    |> Map.get("abi")
-    |> _get_event_name(List.first(keys))
-  end
+  def get_event_name(%{"keys" => keys} = event, network), do: List.first(keys)
+  # This was too heavy to compute when fetching blocks and related structures.
+  # TODO: revisit this.
+  #   Data.get_class_at(event["block_number"], event["from_address"], network)
+  #   |> Map.get("abi")
+  #   |> _get_event_name(List.first(keys))
+  # end
 
   def paginate_events(params, block_number, network) do
     Events
