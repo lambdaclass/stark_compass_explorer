@@ -44,6 +44,8 @@ defmodule StarknetExplorerWeb.Utils do
     |> Decimal.new()
     |> Decimal.div(@wei_to_eth_constant)
     |> Decimal.to_string(:normal)
+    |> String.trim_trailing("0")
+    |> String.replace_suffix(".", ".0")
   end
 
   def atomize_keys(map) when is_map(map) do

@@ -14,8 +14,15 @@ defmodule StarknetExplorer.BlockUpdater do
       network: network
     }
 
-    Logger.info("starting block updater")
-    Process.send_after(self(), :update_gas_fee, 100)
+    case Application.get_env(:starknet_explorer, :enable_gateway_data) do
+      true ->
+        Logger.info("starting block updater")
+        Process.send_after(self(), :update_gas_fee, 100)
+
+      _ ->
+        :skip
+    end
+
     {:ok, state}
   end
 
