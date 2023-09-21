@@ -1,6 +1,6 @@
 defmodule StarknetExplorer.Data do
   require Logger
-  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata}
+  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata, Gateway}
   alias StarknetExplorerWeb.Utils
 
   @common_event_hash_to_name %{
@@ -269,5 +269,54 @@ defmodule StarknetExplorer.Data do
     get_class_at(event["block_number"], event["from_address"], network)
     |> Map.get("abi")
     |> _get_event_name(event_name_hashed)
+  end
+
+  def internal_calls(tx, network) do
+    {:ok, trace} = Gateway.trace_transaction(tx.hash, network)
+
+    trace["function_invocation"]
+    |> StarknetExplorerWeb.Utils.atomize_keys()
+    |> flatten_internal_calls(0)
+    |> Enum.with_index()
+    |> Enum.map(fn {call_data, index} ->
+      # TODO: this can be optimized because we are going out to the Rpc/DB for every call, but contracts might be repeated
+      # (like in the case of CALL and DELEGATE call types) so those can be coalesced
+      input_data =
+        Calldata.get_input_data(
+          "latest",
+          call_data.contract_address,
+          call_data.selector,
+          network
+        )
+
+      call_data = Map.put(call_data, :selector_name, input_data["name"] || "__execute__")
+      {index, call_data}
+    end)
+    |> Map.new()
+  end
+
+  defp flatten_internal_calls(%{internal_calls: inner_list_of_calls} = outer_map, height)
+       when is_list(inner_list_of_calls) do
+    outer_details = [
+      %{
+        call_type: outer_map.call_type,
+        contract_address: outer_map.contract_address,
+        caller_address: outer_map.caller_address,
+        selector: Map.get(outer_map, :selector),
+        scope: height
+      }
+    ]
+
+    inner_details = Enum.flat_map(inner_list_of_calls, &flatten_internal_calls(&1, height + 1))
+
+    outer_details ++ inner_details
+  end
+
+  defp flatten_internal_calls(%{internal_calls: []} = _outer_map, _height) do
+    []
+  end
+
+  defp flatten_internal_calls(list, _height) when is_list(list) do
+    []
   end
 end

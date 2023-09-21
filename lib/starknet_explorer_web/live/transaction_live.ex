@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.{Data, Message, Rpc, BlockUtils}
+  alias StarknetExplorer.{Data, Message, Rpc}
 
   defp transaction_header(assigns) do
     ~H"""
@@ -73,7 +73,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         ,
         phx-value-view="internal_calls"
       >
-        Internal Calls <span class="gray-label text-sm">Mocked</span>
+        Internal Calls
       </div>
     </div>
     """
@@ -297,37 +297,56 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div>Name</div>
       <div>Contract Address</div>
     </div>
-    <div class="grid-5 custom-list-item">
-      <div>
-        <div class="list-h">Identifier</div>
+    <%= for {index, call} <- @internal_calls do %>
+      <div class="grid-5 custom-list-item">
         <div>
-          <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-          |> Utils.shorten_block_hash() %>
+          <div class="list-h">Identifier</div>
+          <div>
+            <%= "#{@transaction.hash}_#{call.scope}_#{index}" |> Utils.shorten_block_hash() %>
+          </div>
+        </div>
+        <div>
+          <div class="list-h">Transaction Hash</div>
+          <div>
+            <%= @transaction.hash
+            |> Utils.shorten_block_hash() %>
+          </div>
+        </div>
+        <div>
+          <div class="list-h">Type</div>
+          <div>
+            <%= if call.call_type=="CALL" do %>
+              <span class="green-label"><%= call.call_type %></span>
+            <% else %>
+              <span class="lilac-label"><%= call.call_type %></span>
+            <% end %>
+          </div>
+        </div>
+        <div>
+          <div class="list-h">Name</div>
+          <div><span class="blue-label"><%= call.selector_name %></span></div>
+        </div>
+        <div class="copy-container" id={"tsx-overview-hash-#{call.contract_address}"} phx-hook="Copy">
+          <div class="relative break-all text-hover-blue">
+            <%= call.contract_address
+            |> Utils.shorten_block_hash() %>
+            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+              <div class="relative">
+                <img
+                  class="copy-btn copy-text w-4 h-4"
+                  src={~p"/images/copy.svg"}
+                  data-text={call.contract_address}
+                />
+                <img
+                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                  src={~p"/images/check-square.svg"}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div>
-        <div class="list-h">Transaction Hash</div>
-        <div>
-          <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-          |> Utils.shorten_block_hash() %>
-        </div>
-      </div>
-      <div>
-        <div class="list-h">Type</div>
-        <div><span class="lilac-label">Call</span></div>
-      </div>
-      <div>
-        <div class="list-h">Name</div>
-        <div><span class="green-label">__execute__</span></div>
-      </div>
-      <div>
-        <div class="list-h">Contract Address</div>
-        <div>
-          <%= "0x008e571d599345e12730f53df66cf74bea8ad238d68844b71ebadb567eae7a1d"
-          |> Utils.shorten_block_hash() %>
-        </div>
-      </div>
-    </div>
+    <% end %>
     """
   end
 
@@ -593,10 +612,13 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
     receipt = transaction.receipt |> Map.put(:actual_fee, actual_fee)
 
+    internal_calls = Data.internal_calls(transaction, socket.assigns.network)
+
     assigns = [
       transaction: transaction,
       transaction_receipt: receipt,
       transaction_hash: transaction_hash,
+      internal_calls: internal_calls,
       transaction_view: "overview",
       events: receipt.events,
       messages: messages_sent,

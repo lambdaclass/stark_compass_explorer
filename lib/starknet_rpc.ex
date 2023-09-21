@@ -58,6 +58,9 @@ defmodule StarknetExplorer.Rpc do
   def get_class(block_id, class_hash, network),
     do: send_request("starknet_getClass", [block_id, class_hash], network)
 
+  def trace_transaction(transaction_hash, network),
+    do: send_request("starknet_traceTransaction", [transaction_hash], network)
+
   def call(block_id, contract_address, selector, network),
     do:
       send_request(
