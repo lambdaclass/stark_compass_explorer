@@ -81,6 +81,8 @@
       prover_storage: "{{ lookup('ansible.builtin.env', 'PROVER_STORAGE') }}"
       enable_listener: "{{ lookup('ansible.builtin.env', 'ENABLE_LISTENER') }}"
       enable_gateway_data: "{{ lookup('ansible.builtin.env', 'ENABLE_GATEWAY_DATA') }}"
+      newrelic_key: "{{ lookup('ansible.builtin.env', 'NEWRELIC_KEY') }}"
+      newrelic_app_name: "{{ lookup('ansible.builtin.env', 'NEWRELIC_APP_NAME') }}"
 
   - name: Create user systemd directory
     ansible.builtin.file:
