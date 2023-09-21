@@ -1,13 +1,15 @@
 # StarknetExplorer
 ![image](./priv/static/images/explorer_preview.png)
 
-- [Requirements](#requirements)
-- [Local development](#local-development)
-  - [Setup](#setup)
-  - [RPC Provider](#rpc-provider)
-  - [RPC with Juno](#rpc-with-juno)
-  - [Database](#database)
-  - [Up and running](#up-and-running)
+- [StarknetExplorer](#starknetexplorer)
+  - [Requirements](#requirements)
+  - [Local development](#local-development)
+    - [Setup](#setup)
+    - [RPC Provider](#rpc-provider)
+    - [RPC with Juno](#rpc-with-juno)
+    - [Database](#database)
+    - [Up and running](#up-and-running)
+  - [Using Madara Explorer with PostgreSQL](#using-madara-explorer-with-postgresql)
 
 ## Requirements
 - SQLite
@@ -111,4 +113,20 @@ From now on, if you want to restart the app, you can just do:
 
 ```bash
 make run
+```
+
+## Using Madara Explorer with PostgreSQL
+
+If you want to handle multiple concurrent connections and a more scalable application, you may consider using PostgreSQL.
+
+Madara Explorer provides support for that, you can set the credentials to the PostgreSQL DB in the `runtime.exs` and set the environment variable `DB_TYPE` to `postgresql`.
+
+```bash
+export DB_TYPE=postgresql
+```
+
+A Docker image of PostgreSQL is provided in the `docker-compose.yml` file, you can get the service up and running with the command:
+
+```bash
+docker-compose up postgres
 ```
