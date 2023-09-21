@@ -48,7 +48,8 @@ config :starknet_explorer,
   testnet_host: testnet_rpc_host,
   testnet_2_host: testnet_2_rpc_host,
   enable_listener: enable_listener?,
-  continuation_token_format: continuation_token_format
+  continuation_token_format: continuation_token_format,
+  enable_gateway_data: System.get_env("ENABLE_GATEWAY_DATA") == "true"
 
 config :starknet_explorer, rpc_host: rpc_host
 

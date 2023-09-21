@@ -50,6 +50,7 @@ jobs:
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
         ANSIBLE_STDOUT_CALLBACK: "yaml"
         ENABLE_LISTENER: "true"
+        ENABLE_GATEWAY_DATA: "true"
         CONTINUATION_TOKEN_FORMAT: "large"
       run: |
         ansible-playbook -i ansible/inventory.yaml ansible/playbooks/deployment.yaml

@@ -80,6 +80,7 @@
       aws_region: "{{ lookup('ansible.builtin.env', 'AWS_REGION') }}"
       prover_storage: "{{ lookup('ansible.builtin.env', 'PROVER_STORAGE') }}"
       enable_listener: "{{ lookup('ansible.builtin.env', 'ENABLE_LISTENER') }}"
+      enable_gateway_data: "{{ lookup('ansible.builtin.env', 'ENABLE_GATEWAY_DATA') }}"
 
   - name: Create user systemd directory
     ansible.builtin.file:

@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.{Data, Message, Rpc, BlockUtils}
+  alias StarknetExplorer.{Data, Message, Rpc}
 
   defp transaction_header(assigns) do
     ~H"""
@@ -584,11 +584,11 @@ defmodule StarknetExplorerWeb.TransactionLive do
     transaction =
       case transaction.type do
         "L1_HANDLER" ->
-          max_fee = Utils.hex_wei_to_eth(transaction.max_fee)
-          transaction |> Map.put(:max_fee, max_fee)
+          transaction
 
         _ ->
-          transaction
+          max_fee = Utils.hex_wei_to_eth(transaction.max_fee)
+          transaction |> Map.put(:max_fee, max_fee)
       end
 
     receipt = transaction.receipt |> Map.put(:actual_fee, actual_fee)
