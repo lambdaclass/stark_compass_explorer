@@ -92,7 +92,7 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
           <div class="relative">
             <div class="col-span-3">
               <a
-                href={Utils.network_path(@network, "/transactions/#{@message.transaction_hash}")}
+                href={Utils.network_path(@network, "transactions/#{@message.transaction_hash}")}
                 class="text-hover-blue"
               >
                 <span><%= @message.transaction_hash %></span>

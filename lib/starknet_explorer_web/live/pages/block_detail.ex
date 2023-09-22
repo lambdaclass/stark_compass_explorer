@@ -397,9 +397,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             phx-hook="Copy"
           >
             <div class="relative">
-              <a href={Utils.network_path(@network, "transactions/#{hash}")} class="text-hover-blue">
-                <div class="break-all text-hover-blue"><%= Utils.shorten_block_hash(hash) %></div>
-              </a>
+              <div class="break-all text-hover-blue">
+                <a href={Utils.network_path(@network, "transactions/#{hash}")} class="text-hover-blue">
+                  <span><%= Utils.shorten_block_hash(hash) %></span>
+                </a>
+              </div>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
                   <img class="copy-btn copy-text w-4 h-4" src={~p"/images/copy.svg"} data-text={hash} />
@@ -452,7 +454,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
               <div class="relative">
                 <div class="break-all text-hover-blue">
                   <a
-                    href={Utils.network_path(@network, "/messages/#{message.message_hash}")}
+                    href={Utils.network_path(@network, "messages/#{message.message_hash}")}
                     class="text-hover-blue"
                   >
                     <span><%= message.message_hash |> Utils.shorten_block_hash() %></span>
@@ -497,7 +499,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             >
               <div class="relative">
                 <div class="break-all">
-                  <%= Utils.shorten_block_hash(message.from_address) %>
+                  <%= if Message.is_l2_to_l1(message.type) do %>
+                    <%= Utils.shorten_block_hash(message.from_address) %>
+                  <% else %>
+                    <%= Utils.shorten_block_hash(message.from_address) %>
+                  <% end %>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                   <div class="relative">
@@ -524,7 +530,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             >
               <div class="relative">
                 <div class="break-all">
-                  <%= Utils.shorten_block_hash(message.to_address) %>
+                  <%= if Message.is_l2_to_l1(message.type) do %>
+                    <%= Utils.shorten_block_hash(message.to_address) %>
+                  <% else %>
+                    <%= Utils.shorten_block_hash(message.to_address) %>
+                  <% end %>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                   <div class="relative">
@@ -552,7 +562,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
               <div class="relative">
                 <div class="break-all text-hover-blue">
                   <a
-                    href={Utils.network_path(@network, "/transactions/#{message.transaction_hash}")}
+                    href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
                     class="text-hover-blue"
                   >
                     <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
@@ -761,10 +771,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           >
             <div class="relative">
               <div class="break-all text-hover-blue">
-                <a
-                  href={Utils.network_path(@network, "/events/#{identifier}")}
-                  class="text-hover-blue"
-                >
+                <a href={Utils.network_path(@network, "events/#{identifier}")} class="text-hover-blue">
                   <span><%= identifier %></span>
                 </a>
               </div>
@@ -788,7 +795,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="list-h">Block Number</div>
           <div>
             <span class="blue-label">
-              <a href={Utils.network_path(@network, "/blocks/#{@block.hash}")} class="text-hover-blue">
+              <a href={Utils.network_path(@network, "blocks/#{@block.hash}")} class="text-hover-blue">
                 <span><%= to_string(block_number) %></span>
               </a>
             </span>
@@ -797,7 +804,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Transaction Hash</div>
           <div>
-            <a href={Utils.network_path(@network, "/transactions/#{tx_hash}")} class="text-hover-blue">
+            <a href={Utils.network_path(@network, "transactions/#{tx_hash}")} class="text-hover-blue">
               <span><%= tx_hash |> Utils.shorten_block_hash() %></span>
             </a>
           </div>
@@ -810,9 +817,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div class="list-h">From Address</div>
         <div>
-          <a href={Utils.network_path(@network, "/contracts/#{from_address}")} class="text-hover-blue">
-            <span><%= from_address |> Utils.shorten_block_hash() %></span>
-          </a>
+          <%= from_address |> Utils.shorten_block_hash() %>
         </div>
         <div>
           <div class="list-h">Age</div>
