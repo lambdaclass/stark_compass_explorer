@@ -117,7 +117,10 @@ defmodule StarknetExplorer.Block do
             Message.insert_from_transaction(inserted_tx, block.timestamp, network)
           end)
 
-        Enum.each(events, fn event -> {:ok, _event} = Events.insert(event) end)
+        Enum.each(events, fn event ->
+          IO.inspect(event)
+          {:ok, _event} = Events.insert(event)
+        end)
       end)
 
     case transaction_result do
