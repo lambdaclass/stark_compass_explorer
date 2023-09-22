@@ -496,13 +496,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
               <div class="relative">
                 <div class="break-all">
                   <%= if Message.is_l2_to_l1(message.type) do %>
-                    <%= live_redirect(Utils.shorten_block_hash(message.from_address),
-                      to: ~p"/#{@network}/contracts/#{message.from_address}"
-                    ) %>
+                    <%= Utils.shorten_block_hash(message.from_address) %>
                   <% else %>
-                    <%= live_redirect(Utils.shorten_block_hash(message.from_address),
-                      to: "https://etherscan.io/address/#{message.from_address}"
-                    ) %>
+                    <%= Utils.shorten_block_hash(message.from_address) %>
                   <% end %>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -531,13 +527,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
               <div class="relative">
                 <div class="break-all">
                   <%= if Message.is_l2_to_l1(message.type) do %>
-                    <%= live_redirect(Utils.shorten_block_hash(message.to_address),
-                      to: "https://etherscan.io/address/#{message.to_address}"
-                    ) %>
+                    <%= Utils.shorten_block_hash(message.to_address) %>
                   <% else %>
-                    <%= live_redirect(Utils.shorten_block_hash(message.to_address),
-                      to: ~p"/#{@network}/contracts/#{message.to_address}"
-                    ) %>
+                    <%= Utils.shorten_block_hash(message.to_address) %>
                   <% end %>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -820,9 +812,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div class="list-h">From Address</div>
         <div>
-          <%= live_redirect(from_address |> Utils.shorten_block_hash(),
-            to: ~p"/#{@network}/contracts/#{from_address}"
-          ) %>
+          <%= from_address |> Utils.shorten_block_hash() %>
         </div>
         <div>
           <div class="list-h">Age</div>

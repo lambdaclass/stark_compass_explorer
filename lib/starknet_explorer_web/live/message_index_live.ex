@@ -110,9 +110,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
                 <div class="relative">
                   <div class="break-all">
                     <%= if Message.is_l2_to_l1(message.type) do %>
-                      <%= live_redirect(Utils.shorten_block_hash(message.to_address),
-                        to: "https://etherscan.io/address/#{message.to_address}"
-                      ) %>
+                      <%= Utils.shorten_block_hash(message.to_address) %>
                     <% else %>
                       <%= Utils.shorten_block_hash(message.to_address) %>
                     <% end %>

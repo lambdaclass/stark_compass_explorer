@@ -517,9 +517,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
                   enum={input.call.args}
                 ><:separator>, </:separator>
                   <span class="text-blue-400"><%= arg.name %></span></.intersperse>)
-                <span class="text-blue-400">-></span> <%= live_redirect(Utils.shorten_block_hash(input.selector),
-                    to: ~p"/#{@network}/contracts/#{input.selector}"
-                  ) %>
+                <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
               </div>
               <div class="w-full bg-black/10 p-5">
                 <div class="grid-3 table-th">
