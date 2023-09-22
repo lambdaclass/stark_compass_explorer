@@ -156,11 +156,12 @@ defmodule StarknetExplorer.Block do
   @doc """
   Returns amount blocks starting at block number up_to
   """
-  def latest_blocks_with_txs(amount, up_to, network) do
+  def latest_blocks_with_txs(amount, network) do
     query =
       from b in Block,
         order_by: [desc: b.number],
-        where: b.number <= ^up_to and b.number >= ^(up_to - amount) and b.network == ^network
+        where: b.network == ^network,
+        limit: ^amount
 
     query
     |> Repo.all()
