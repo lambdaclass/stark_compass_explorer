@@ -12,8 +12,6 @@ defmodule StarknetExplorer.Data do
     Gateway
   }
 
-  alias StarknetExplorerWeb.Utils
-
   @common_event_hash_to_name %{
     "0x99cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9" => "Transfer",
     "0x134692b230b9e1ffa39098904722134159652b09c5bc41d88d6698779d228ff" => "Approval",
