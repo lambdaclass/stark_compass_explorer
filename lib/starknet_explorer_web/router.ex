@@ -71,6 +71,5 @@ defmodule StarknetExplorerWeb.Router do
 
   scope "/" do
     pipe_through :browser
-    forward "/", StarknetExplorerWeb.Plug.Redirect
   end
 end
