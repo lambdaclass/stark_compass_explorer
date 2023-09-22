@@ -144,6 +144,10 @@ defmodule StarknetExplorer.Events do
     |> Repo.paginate(params)
   end
 
+  def get_total_count() do
+    StarknetExplorer.Events |> Repo.aggregate(:count, :id)
+  end
+
   def store_events_from_rpc(block, network) do
     Enum.reduce_while(@continuation_tokens, :ok, fn continuation_token, acc ->
       with {:ok, %{"events" => events = [_first_elem | _]} = _rpc_response} <-

@@ -8,11 +8,14 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   def mount(_params, _session, socket) do
     Process.send_after(self(), :load_blocks, 100, [])
 
+    entity_count = %{message_count: "Loading...", events_count: "Loading..."}
+
     {:ok,
      assign(socket,
        blocks: [],
        latest_block: [],
        block_height: "Loading...",
+       entity_count: entity_count,
        transactions: []
      )}
   end
@@ -59,11 +62,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </div>
       </div>
       <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <div class="absolute top-2 right-2 gray-label text-[.7rem]">Mocked</div>
         <img src={~p"/images/message-square.svg"} />
         <div class="text-sm">
           <div>Messages</div>
-          <div>905,510</div>
+          <div><%= @entity_count.message_count %></div>
         </div>
       </div>
       <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
@@ -75,11 +77,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </div>
       </div>
       <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <div class="absolute top-2 right-2 gray-label text-[.7rem]">Mocked</div>
         <img src={~p"/images/calendar.svg"} />
         <div class="text-sm">
           <div>Events</div>
-          <div>2.15</div>
+          <div><%= @entity_count.events_count %></div>
         </div>
       </div>
     </div>
@@ -257,10 +258,13 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         |> Map.put(:block_status, latest_block.status)
       end)
 
+    entity_count = StarknetExplorer.Data.get_entity_count()
+
     {:noreply,
      assign(socket,
        blocks: blocks,
        transactions: transactions,
+       entity_count: entity_count,
        latest_block: latest_block,
        block_height: latest_block.number
      )}
