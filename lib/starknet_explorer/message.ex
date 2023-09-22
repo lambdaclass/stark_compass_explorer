@@ -71,13 +71,18 @@ defmodule StarknetExplorer.Message do
     Repo.one(query)
   end
 
-  def latest_n_messages(n \\ 20) do
+  def latest_n_messages(network, n \\ 20) do
     query =
       from msg in StarknetExplorer.Message,
         order_by: [desc: msg.timestamp],
+        where: msg.network == ^network,
         limit: ^n
 
     Repo.all(query)
+  end
+
+  def get_total_count() do
+    StarknetExplorer.Message |> Repo.aggregate(:count, :to_address)
   end
 
   def insert_from_transaction(transaction, timestamp, network) do
