@@ -256,9 +256,7 @@ defmodule StarknetExplorer.Data do
       do: @common_event_hash_to_name[event_name_hashed]
 
   def get_event_name(%{keys: [event_name_hashed | _]} = event, network) do
-    get_class_at(event["block_number"], event["from_address"], network)
-    |> Map.get("abi")
-    |> _get_event_name(event_name_hashed)
+    event_name_hashed
   end
 
   def get_event_name(%{"keys" => [event_name_hashed | _]} = _event, _network)
@@ -266,9 +264,7 @@ defmodule StarknetExplorer.Data do
       do: @common_event_hash_to_name[event_name_hashed]
 
   def get_event_name(%{"keys" => [event_name_hashed | _]} = event, network) do
-    get_class_at(event["block_number"], event["from_address"], network)
-    |> Map.get("abi")
-    |> _get_event_name(event_name_hashed)
+    event_name_hashed
   end
 
   def internal_calls(tx, network) do
