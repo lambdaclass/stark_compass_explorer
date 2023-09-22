@@ -52,7 +52,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           <div>
             <%= live_render(@socket, TPSComponent,
               id: "tps-number",
-              session: %{"network" => @network}
+              session: %{"network" => Map.get(assigns, :network)}
             ) %>
           </div>
         </div>
@@ -101,7 +101,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <div class="table-header">
           <div class="table-title">Latest Blocks</div>
           <a
-            href={~p"/#{@network}/blocks"}
+            href={Utils.network_path(@network, "blocks")}
             class="text-gray-300 hover:text-white transition-all duration-300"
           >
             <div class="flex gap-2 items-center">
@@ -170,7 +170,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <div class="table-header">
           <div class="table-title">Latest Transactions</div>
           <a
-            href={~p"/#{@network}/transactions"}
+            href={Utils.network_path(@network, "transactions")}
             class="text-gray-300 hover:text-white transition-all duration-300"
           >
             <div class="flex gap-2 items-center">
