@@ -1,5 +1,6 @@
 defmodule StarknetExplorer.BlockUtils do
   alias StarknetExplorer.{Rpc, Block}
+  require Logger
 
   def fetch_and_store(block_height, network) do
     with false <- already_stored?(block_height, network),
@@ -53,12 +54,18 @@ defmodule StarknetExplorer.BlockUtils do
         tasks =
           Enum.map(chunk, fn %{"transaction_hash" => tx_hash} ->
             Task.async(fn ->
-              {:ok, receipt} = case Rpc.get_transaction_receipt(tx_hash, network) do
-                {:ok, receipt} -> {:ok, receipt}
-                err ->
-                  Logger.error("Failed to fetch transaction: #{tx_hash}, from block: #{block["block_number"]}")
-                  {:err, err}
-              end
+              {:ok, receipt} =
+                case Rpc.get_transaction_receipt(tx_hash, network) do
+                  {:ok, receipt} ->
+                    {:ok, receipt}
+
+                  err ->
+                    Logger.error(
+                      "Failed to fetch transaction: #{tx_hash}, from block: #{block["block_number"]}"
+                    )
+
+                    {:err, err}
+                end
 
               {tx_hash, receipt |> Map.put("network", network)}
             end)
