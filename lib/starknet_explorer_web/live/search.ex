@@ -1,8 +1,9 @@
 defmodule StarknetExplorerWeb.SearchLive do
   alias Expo.Messages
-  alias Expo.Message
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorer.Data
+  alias StarknetExplorerWeb.Utils
+
 
   def render(assigns) do
     ~H"""
@@ -21,14 +22,26 @@ defmodule StarknetExplorerWeb.SearchLive do
         <img src={~p"/images/search.svg"} />
       </button>
     </form>
-    <div id="dropdownInformation" class="hidden z-10 bg-container divide-y divide-gray-100 rounded-lg shadow w-full max-w-7xl mx-auto dark:bg-[#232331] dark:divide-gray-600">
+    <div id="dropdownInformation" class="z-10 bg-container divide-y divide-gray-100 rounded-lg shadow w-full max-w-7xl mx-auto dark:bg-[#232331] dark:divide-gray-600">
       <div>
       <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
-        <div>Block</div>
+      <div>
+    </div>
       </div>
       <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownInformationButton">
         <li>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
+
+        <div class="cursor-pointer block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+        <div class="text-hover-blue">
+        <%= get_number(@block)%> -
+        <%= live_redirect(Utils.shorten_block_hash(get_hash(@block)),
+          to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
+          class: "text-hover-blue",
+          title:  get_hash(@block)
+        ) %>
+        </div>
+
+        </div>
         </li>
       </ul>
       </div>
@@ -37,7 +50,7 @@ defmodule StarknetExplorerWeb.SearchLive do
   end
 
   def mount(_params, session, socket) do
-    new_assigns = [query: "", block: {}, loading: false, matches: [], errors: []]
+    new_assigns = [query: "", block: %{}, loading: false, matches: [], errors: []]
 
     socket =
       socket
@@ -50,11 +63,13 @@ defmodule StarknetExplorerWeb.SearchLive do
     block = case try_search(query, socket.assigns.network) do
       {:block, block} ->
       #fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
-      IO.inspect(block.number)
-      assign(socket, block: block)
-
+        block
+      {:noquery, _} -> nil
     end
-    {:noreply, assign(socket, :query, query)}
+
+    socket = socket |> assign(:block, block) |> assign(:query, query)
+
+    {:noreply, socket}
   end
 
   def handle_event("search", %{"search-input" => query}, socket) when byte_size(query) <= 100 do
@@ -73,7 +88,7 @@ defmodule StarknetExplorerWeb.SearchLive do
 
         {:block, block} ->
           #fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
-          fn -> assign(socket, tag: block) end
+          fn -> assign(socket, block: block) end
 
         {:message, _message} ->
           fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
@@ -85,7 +100,9 @@ defmodule StarknetExplorerWeb.SearchLive do
           end
       end
 
-    {:noreply, navigate_fun.()}
+    IO.inspect(socket.assigns.block, label: :wea)
+
+    {:noreply, socket}
   end
 
   defp try_search(query, network) do
@@ -126,4 +143,10 @@ defmodule StarknetExplorerWeb.SearchLive do
       _ -> :noquery
     end
   end
+
+  defp get_number(%StarknetExplorer.Block{number: number}), do: "#{number}"
+  defp get_number(_), do: ""
+
+  defp get_hash(%StarknetExplorer.Block{hash: hash}), do: "#{hash}"
+  defp  get_hash(_), do: ""
 end

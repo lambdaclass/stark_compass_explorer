@@ -307,10 +307,17 @@ Hooks.SearchHook = {
   mounted() {
     const input = document.querySelector("#searchHook");
     const searchDropdown = document.querySelector("#dropdownInformation");
-    input.addEventListener("click", () => {
-      searchDropdown.classList.remove("hidden");
+    input.addEventListener("click", () => { 
     })
+    searchDropdown.classList.remove("hidden");
   },
+  updated() {
+    const input = document.querySelector("#searchHook");
+    const searchDropdown = document.querySelector("#dropdownInformation");
+    input.addEventListener("click", () => { 
+      console.log(input);
+    })
+  }
 };
 
 
