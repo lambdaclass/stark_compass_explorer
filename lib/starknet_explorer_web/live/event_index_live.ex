@@ -85,11 +85,7 @@ defmodule StarknetExplorerWeb.EventIndexLive do
               </div>
             </div>
             <div class="list-h">From Address</div>
-            <div>
-              <%= live_redirect(from_address |> Utils.shorten_block_hash(),
-                to: ~p"/#{@network}/contracts/#{from_address}"
-              ) %>
-            </div>
+            <div><%= from_address |> Utils.shorten_block_hash() %></div>
             <div>
               <div class="list-h">Age</div>
               <div>
