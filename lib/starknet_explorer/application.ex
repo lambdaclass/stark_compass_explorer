@@ -13,6 +13,8 @@ defmodule StarknetExplorer.Application do
 
     children =
       [
+        # Start the Blockchain supervisor
+        StarknetExplorer.Blockchain.BlockchainSupervisor,
         # Start the Telemetry supervisor
         StarknetExplorerWeb.Telemetry,
         # Start the Ecto repository

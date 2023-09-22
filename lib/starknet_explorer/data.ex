@@ -1,7 +1,16 @@
 defmodule StarknetExplorer.Data do
   require Logger
-  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata, Gateway}
-  alias StarknetExplorerWeb.Utils
+
+  alias StarknetExplorer.{
+    Rpc,
+    Transaction,
+    Message,
+    Events,
+    Block,
+    TransactionReceipt,
+    Calldata,
+    Gateway
+  }
 
   @common_event_hash_to_name %{
     "0x99cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9" => "Transfer",
@@ -29,12 +38,6 @@ defmodule StarknetExplorer.Data do
   }
 
   @common_event_hashes Map.keys(@common_event_hash_to_name)
-  @condition_to_match 15
-
-  # Defines the separator used to distinguish between modules and event names in Cairo0 events.
-  # In Cairo0 events, event names may include module information in the format:
-  # `Module1::SubModule::EventName`
-  @event_module_separator "::"
 
   @doc """
   Fetch `block_amount` blocks (defaults to 15), first
@@ -219,56 +222,20 @@ defmodule StarknetExplorer.Data do
     class_hash
   end
 
-  defp last_n_characters(input_string) do
-    # Calculate the starting index
-    start_index = String.length(input_string) - @condition_to_match
-
-    # Keep the last N characters
-    String.slice(input_string, start_index..-1)
-  end
-
-  defp _get_event_name(abi, event_name_hashed) when is_list(abi) do
-    abi
-    |> Enum.filter(fn abi_entry -> abi_entry["type"] == "event" end)
-    |> Map.new(fn abi_event ->
-      {abi_event["name"]
-       |> String.split(@event_module_separator)
-       |> List.last()
-       |> ExKeccak.hash_256()
-       |> Base.encode16(case: :lower)
-       |> last_n_characters(),
-       List.last(String.split(abi_event["name"], @event_module_separator))}
-    end)
-    |> Map.get(
-      last_n_characters(event_name_hashed),
-      Utils.shorten_block_hash(event_name_hashed)
-    )
-  end
-
-  defp _get_event_name(abi, event_name_hashed) do
-    abi
-    |> Jason.decode!()
-    |> _get_event_name(event_name_hashed)
-  end
-
-  def get_event_name(%{keys: [event_name_hashed | _]} = _event, _network)
+  def get_event_name(%{keys: [event_name_hashed | _]}, _network)
       when event_name_hashed in @common_event_hashes,
       do: @common_event_hash_to_name[event_name_hashed]
 
-  def get_event_name(%{keys: [event_name_hashed | _]} = event, network) do
-    get_class_at(event["block_number"], event["from_address"], network)
-    |> Map.get("abi")
-    |> _get_event_name(event_name_hashed)
+  def get_event_name(%{keys: [event_name_hashed | _]}, _network) do
+    event_name_hashed
   end
 
-  def get_event_name(%{"keys" => [event_name_hashed | _]} = _event, _network)
+  def get_event_name(%{"keys" => [event_name_hashed | _]}, _network)
       when event_name_hashed in @common_event_hashes,
       do: @common_event_hash_to_name[event_name_hashed]
 
-  def get_event_name(%{"keys" => [event_name_hashed | _]} = event, network) do
-    get_class_at(event["block_number"], event["from_address"], network)
-    |> Map.get("abi")
-    |> _get_event_name(event_name_hashed)
+  def get_event_name(%{"keys" => [event_name_hashed | _]}, _network) do
+    event_name_hashed
   end
 
   def internal_calls(tx, network) do
@@ -328,5 +295,12 @@ defmodule StarknetExplorer.Data do
 
   defp flatten_internal_calls(list, _height) when is_list(list) do
     []
+  end
+
+  def get_entity_count() do
+    Map.new()
+    |> Map.put(:message_count, Message.get_total_count())
+    |> Map.put(:events_count, Events.get_total_count())
+    |> Map.put(:transaction_count, Transaction.get_total_count())
   end
 end

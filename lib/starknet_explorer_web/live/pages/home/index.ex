@@ -8,11 +8,18 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   def mount(_params, _session, socket) do
     Process.send_after(self(), :load_blocks, 100, [])
 
+    entities_count = %{
+      message_count: "Loading...",
+      events_count: "Loading...",
+      transaction_count: "Loading..."
+    }
+
     {:ok,
      assign(socket,
        blocks: [],
        latest_block: [],
        block_height: "Loading...",
+       entities_count: entities_count,
        transactions: []
      )}
   end
@@ -59,11 +66,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </div>
       </div>
       <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <div class="absolute top-2 right-2 gray-label text-[.7rem]">Mocked</div>
         <img src={~p"/images/message-square.svg"} />
         <div class="text-sm">
           <div>Messages</div>
-          <div>905,510</div>
+          <div><%= @entities_count.message_count %></div>
         </div>
       </div>
       <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
@@ -75,31 +81,21 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </div>
       </div>
       <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <div class="absolute top-2 right-2 gray-label text-[.7rem]">Mocked</div>
         <img src={~p"/images/calendar.svg"} />
         <div class="text-sm">
           <div>Events</div>
-          <div>2.15</div>
+          <div><%= @entities_count.events_count %></div>
+        </div>
+      </div>
+      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
+        <img src={~p"/images/check-square.svg"} />
+        <div class="text-sm">
+          <div>Transactions</div>
+          <div><%= @entities_count.transaction_count %></div>
         </div>
       </div>
     </div>
-    <div class="mx-auto max-w-7xl grid md:grid-cols-3 gap-5 mb-10" phx-hook="Stats" id="stats_table">
-      <div class="pt-5 bg-container relative">
-        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
-        <div class="ml-7 text-gray-500">Transactions</div>
-        <div id="transactions-chart"></div>
-      </div>
-      <div class="pt-5 bg-container relative">
-        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
-        <div class="ml-7 text-gray-500">Transaction Fees</div>
-        <div id="fees"></div>
-      </div>
-      <div class="pt-5 bg-container relative">
-        <div class="absolute top-2 right-2 gray-label text-sm">Mocked</div>
-        <div class="ml-7 text-gray-500">TVL</div>
-        <div id="tvl"></div>
-      </div>
-    </div>
+
     <div class="mx-auto max-w-7xl grid lg:grid-cols-2 lg:gap-5 xl:gap-16 mt-16">
       <div>
         <div class="table-header">
@@ -257,12 +253,21 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         |> Map.put(:block_status, latest_block.status)
       end)
 
+    # get entities count and format for display
+    entities_count =
+      StarknetExplorer.Data.get_entity_count()
+      |> Enum.map(fn {entity, count} ->
+        {entity, StarknetExplorer.Utils.format_number_for_display(count)}
+      end)
+      |> Map.new()
+
     {:noreply,
      assign(socket,
        blocks: blocks,
        transactions: transactions,
+       entities_count: entities_count,
        latest_block: latest_block,
-       block_height: latest_block.number
+       block_height: StarknetExplorer.Utils.format_number_for_display(latest_block.number)
      )}
   end
 end
