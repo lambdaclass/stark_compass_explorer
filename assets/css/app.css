@@ -105,7 +105,7 @@ a,
 
 /* Search bar */
 form {
-  @apply relative !w-full !max-w-7xl !mx-auto !my-10;
+  @apply relative !w-full !max-w-7xl !mx-auto !mt-10 !mb-1;
 }
 input {
   @apply !bg-[#232331] !border-none !text-se-lilac !pr-10 !w-full text-ellipsis;
@@ -154,6 +154,10 @@ input {
 }
 .gray-label {
   @apply text-hover-gray bg-gray-400/5 px-4 py-1 rounded-full;
+}
+
+.modal-form {
+  @apply !mt-20
 }
 
 /* Dropdown */

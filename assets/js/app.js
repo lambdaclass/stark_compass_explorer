@@ -303,9 +303,19 @@ Hooks.Dropdown = {
   },
 };
 
+Hooks.SearchHook = {
+  mounted() {
+    const input = document.querySelector("#searchHook");
+    const searchDropdown = document.querySelector("#dropdownInformation");
+    input.addEventListener("click", () => {
+      searchDropdown.classList.remove("hidden");
+    })
+  },
+};
+
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks });
-
 // Show progress bar on live navigation and form submits. Only displays if still
 // loading after 300 msec
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})

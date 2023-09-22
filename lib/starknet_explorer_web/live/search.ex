@@ -6,18 +6,33 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def render(assigns) do
     ~H"""
-    <form phx-change="update-input" phx-submit="search">
+    <form class="normal-form" phx-change="update-input" phx-submit="search">
       <.input
         phx-change="update-input"
         type="text"
         name="search-input"
         value={@query}
+        phx-hook="SearchHook"
+        id="searchHook"
+        class="search-hook"
         placeholder="Search Blocks, Transactions, Classes, Messages, Contracts or Events"
       />
-      <button class="absolute top-1/2 right-2 transform -translate-y-1/2" type="submit">
+      <button class=" absolute top-1/2 right-2 transform -translate-y-1/2" type="submit">
         <img src={~p"/images/search.svg"} />
       </button>
     </form>
+    <div id="dropdownInformation" class="hidden z-10 bg-container divide-y divide-gray-100 rounded-lg shadow w-full max-w-7xl mx-auto dark:bg-[#232331] dark:divide-gray-600">
+      <div>
+      <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+        <div>Blocks</div>
+      </div>
+      <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownInformationButton">
+        <li>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
+        </li>
+      </ul>
+      </div>
+</div>
     """
   end
 
@@ -28,7 +43,6 @@ defmodule StarknetExplorerWeb.SearchLive do
       socket
       |> assign(new_assigns)
       |> assign_new(:network, fn -> session["network"] end)
-
     {:ok, socket}
   end
 

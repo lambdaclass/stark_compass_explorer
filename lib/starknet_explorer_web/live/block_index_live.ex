@@ -10,7 +10,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
       flash: @flash,
       session: %{"network" => @network}
     ) %>
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-7xl mx-auto lg:mt-20">
       <div class="table-header">
         <h2>Blocks</h2>
       </div>
