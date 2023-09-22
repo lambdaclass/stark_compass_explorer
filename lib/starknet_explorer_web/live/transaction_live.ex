@@ -493,7 +493,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Nonce</div>
       <div class="col-span-3">
-        <%= if @transaction.nonce, do: @transaction.nonce |> String.replace("0x", "") |> String.to_integer(16), else: 0%>
+        <%= if @transaction.nonce,
+          do: @transaction.nonce |> String.replace("0x", "") |> String.to_integer(16),
+          else: 0 %>
       </div>
     </div>
     <div class="custom-list-item">
