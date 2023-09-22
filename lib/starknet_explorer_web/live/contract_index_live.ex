@@ -27,21 +27,9 @@ defmodule StarknetExplorerWeb.ContractIndexLive do
             <div id={"contract-#{idx}"} class="grid-4 custom-list-item">
               <div>
                 <div class="list-h">Contract Address</div>
-                <a
-                  href={
-                    Utils.network_path(
-                      @network,
-                      "/contracts/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-                    )
-                  }
-                  class="text-hover-blue"
-                >
-                  <span>
-                    <%= Utils.shorten_block_hash(
-                      "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-                    ) %>
-                  </span>
-                </a>
+                <%= Utils.shorten_block_hash(
+                  "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
+                ) %>
               </div>
               <div>
                 <div class="list-h">Type</div>
@@ -49,21 +37,9 @@ defmodule StarknetExplorerWeb.ContractIndexLive do
               </div>
               <div>
                 <div class="list-h">Class Hash</div>
-                <a
-                  href={
-                    Utils.network_path(
-                      @network,
-                      "/classes/0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918"
-                    )
-                  }
-                  class="text-hover-blue"
-                >
-                  <span>
-                    <%= Utils.shorten_block_hash(
-                      "0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918"
-                    ) %>
-                  </span>
-                </a>
+                <%= Utils.shorten_block_hash(
+                  "0x025ec026985a3bf9d0cc1fe17326b245dfdc3ff89b8fde106542a3ea56c5a918"
+                ) %>
               </div>
               <div>
                 <div class="list-h">Deployed At</div>
