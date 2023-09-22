@@ -105,10 +105,10 @@ a,
 
 /* Search bar */
 form {
-  @apply relative !w-full !max-w-7xl !mx-auto !my-10;
+  @apply relative !w-full !max-w-7xl !mx-auto !-mt-10 !mb-16;
 }
 input {
-  @apply !bg-[#232331] !border-none !text-se-lilac !pr-10 !w-full text-ellipsis;
+  @apply !bg-container border !border-gray-700 !text-se-green !pr-10 !w-full text-ellipsis;
 }
 
 /* Detail pages */

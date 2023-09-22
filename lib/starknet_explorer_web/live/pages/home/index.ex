@@ -27,72 +27,100 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col gap-1 justify-center items-center mt-16 lg:mt-10">
-      <h1>Welcome to</h1>
-      <h2>Madara Starknet Explorer</h2>
-    </div>
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
       id: "search-bar",
       flash: @flash,
       session: %{"network" => @network}
     ) %>
-    <div class="mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 my-5">
-      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5">
-        <img src={~p"/images/box.svg"} />
-        <div class="text-sm">
-          <div>Blocks Height</div>
-          <div><%= assigns.block_height %></div>
+    <div class="flex flex-col gap-1 justify-center items-center">
+      <h1>Welcome to</h1>
+      <h2>Madara Starknet Explorer</h2>
+    </div>
+    <div class="relative w-52 flex items-start gap-3 bg-container p-3 text-sm ml-8">
+      <img id="tps" class="absolute top-2 right-2 w-5 h-5" src={~p"/images/help-circle.svg"} />
+      <img src={~p"/images/zap.svg"} class="my-auto" />
+      <div class="flex">
+        <div class="border-r border-r-gray-700 pr-4 mr-4">TPS</div>
+        <div>
+          <%= live_render(@socket, TPSComponent,
+            id: "tps-number",
+            session: %{"network" => @network}
+          ) %>
         </div>
       </div>
-      <div class="relative flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5">
-        <img id="tps" class="absolute top-2 right-2 w-5 h-5" src={~p"/images/help-circle.svg"} />
-        <img src={~p"/images/zap.svg"} />
-        <div class="text-sm">
-          <div>TPS</div>
+    </div>
+    <div class="mx-auto max-w-7xl grid grid-cols-2 lg:grid-cols-4 gap-5 mt-4 mb-5">
+      <div class="relative bg-container">
+        <div class="flex items-start gap-6 my-4 mx-8">
+          <img src={~p"/images/box.svg"} class="my-auto w-6 h-auto" />
           <div>
-            <%= live_render(@socket, TPSComponent,
-              id: "tps-number",
-              session: %{"network" => @network}
-            ) %>
+            <div class="text-sm text-gray-400">Blocks Height</div>
+            <div class="text-2xl mt-1"><%= assigns.block_height %></div>
           </div>
         </div>
+        <a
+          href={~p"/#{@network}/blocks"}
+          class="text-gray-300 hover:text-white transition-all duration-300"
+        >
+          <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
+            <div class="text-sm">View all blocks</div>
+            <img src={~p"/images/arrow-right.svg"} />
+          </div>
+        </a>
       </div>
-      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <div class="absolute top-2 right-2 gray-label text-[.7rem]">Mocked</div>
-        <img src={~p"/images/code.svg"} />
-        <div class="text-sm">
-          <div>Classes</div>
-          <div>4,536</div>
+      <div class="reative bg-container">
+        <div class="flex items-start gap-6 my-4 mx-8">
+          <img src={~p"/images/message-square.svg"} class="my-auto w-6 h-auto" />
+          <div>
+            <div class="text-sm text-gray-400">Messages</div>
+            <div class="text-2xl mt-1"><%= @entities_count.message_count %></div>
+          </div>
         </div>
+        <a
+          href={~p"/#{@network}/messages"}
+          class="text-gray-300 hover:text-white transition-all duration-300"
+        >
+          <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
+            <div class="text-sm">View all messages</div>
+            <img src={~p"/images/arrow-right.svg"} />
+          </div>
+        </a>
       </div>
-      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <img src={~p"/images/message-square.svg"} />
-        <div class="text-sm">
-          <div>Messages</div>
-          <div><%= @entities_count.message_count %></div>
+      <div class="reative bg-container">
+        <div class="flex items-start gap-6 my-4 mx-8">
+          <img src={~p"/images/calendar.svg"} class="my-auto w-6 h-auto" />
+          <div>
+            <div class="text-sm text-gray-400">Events</div>
+            <div class="text-2xl mt-1"><%= @entities_count.events_count %></div>
+          </div>
         </div>
+        <a
+          href={~p"/#{@network}/events"}
+          class="text-gray-300 hover:text-white transition-all duration-300"
+        >
+          <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
+            <div class="text-sm">View all events</div>
+            <img src={~p"/images/arrow-right.svg"} />
+          </div>
+        </a>
       </div>
-      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <div class="absolute top-2 right-2 gray-label text-[.7rem]">Mocked</div>
-        <img src={~p"/images/file.svg"} />
-        <div class="text-sm">
-          <div>Contracts</div>
-          <div>1,525,792</div>
+      <div class="reative bg-container">
+        <div class="flex items-start gap-6 my-4 mx-8">
+          <img src={~p"/images/check-square.svg"} class="my-auto w-6 h-auto" />
+          <div>
+            <div class="text-sm text-gray-400">Transactions</div>
+            <div class="text-2xl mt-1"><%= @entities_count.transaction_count %></div>
+          </div>
         </div>
-      </div>
-      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <img src={~p"/images/calendar.svg"} />
-        <div class="text-sm">
-          <div>Events</div>
-          <div><%= @entities_count.events_count %></div>
-        </div>
-      </div>
-      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <img src={~p"/images/check-square.svg"} />
-        <div class="text-sm">
-          <div>Transactions</div>
-          <div><%= @entities_count.transaction_count %></div>
-        </div>
+        <a
+          href={~p"/#{@network}/transactions"}
+          class="text-gray-300 hover:text-white transition-all duration-300"
+        >
+          <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
+            <div class="text-sm">View all transactions</div>
+            <img src={~p"/images/arrow-right.svg"} />
+          </div>
+        </a>
       </div>
     </div>
 
