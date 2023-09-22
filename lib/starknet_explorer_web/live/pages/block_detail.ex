@@ -238,7 +238,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         socket.assigns.block.number,
         socket.assigns.network
       )
-      |> IO.inspect()
 
     assigns = [
       view: "events",
