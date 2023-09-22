@@ -67,14 +67,16 @@ defmodule StarknetExplorerWeb.TransactionLive do
       >
         Message Logs
       </div>
-      <div
-        class={"option #{if assigns.transaction_view == "internal_calls", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
-        phx-click="select-view"
-        ,
-        phx-value-view="internal_calls"
-      >
-        Internal Calls
-      </div>
+      <%= if @internal_calls != nil do %>
+        <div
+          class={"option #{if assigns.transaction_view == "internal_calls", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+          phx-click="select-view"
+          ,
+          phx-value-view="internal_calls"
+        >
+          Internal Calls
+        </div>
+      <% end %>
     </div>
     """
   end
@@ -390,9 +392,15 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Status</div>
       <div class="col-span-3">
-        <span class={"#{if @transaction_receipt.finality_status == "ACCEPTED_ON_L2", do: "green-label"} #{if @transaction_receipt.finality_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if @transaction_receipt.finality_status == "PENDING", do: "pink-label"}"}>
-          <%= @transaction_receipt.finality_status %>
-        </span>
+        <%= if @transaction_receipt.execution_status == "REVERTED" do %>
+          <span class="pink-label">
+            REVERTED
+          </span>
+        <% else %>
+          <span class={"#{if @transaction_receipt.finality_status == "ACCEPTED_ON_L2", do: "green-label"} #{if @transaction_receipt.finality_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if @transaction_receipt.finality_status == "PENDING", do: "pink-label"}"}>
+            <%= @transaction_receipt.finality_status %>
+          </span>
+        <% end %>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
@@ -603,16 +611,21 @@ defmodule StarknetExplorerWeb.TransactionLive do
     transaction =
       case transaction.type do
         "L1_HANDLER" ->
-          transaction
-
-        _ ->
           max_fee = Utils.hex_wei_to_eth(transaction.max_fee)
           transaction |> Map.put(:max_fee, max_fee)
+
+        _ ->
+          transaction
       end
 
     receipt = transaction.receipt |> Map.put(:actual_fee, actual_fee)
 
-    internal_calls = Data.internal_calls(transaction, socket.assigns.network)
+    internal_calls =
+      case receipt.execution_status != "REVERTED" &&
+             Application.get_env(:starknet_explorer, :enable_gateway_data) do
+        true -> Data.internal_calls(transaction, socket.assigns.network)
+        _ -> nil
+      end
 
     assigns = [
       transaction: transaction,

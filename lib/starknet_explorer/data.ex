@@ -289,10 +289,24 @@ defmodule StarknetExplorer.Data do
           network
         )
 
-      call_data = Map.put(call_data, :selector_name, input_data["name"] || "__execute__")
+      call_data =
+        Map.put(
+          call_data,
+          :selector_name,
+          input_data["name"] || default_internal_call_name(tx.type)
+        )
+
       {index, call_data}
     end)
     |> Map.new()
+  end
+
+  defp default_internal_call_name(tx_type) do
+    case tx_type do
+      "L1_HANDLER" -> "handle_deposit"
+      "DEPLOY_ACCOUNT" -> "constructor"
+      _ -> "__execute__"
+    end
   end
 
   defp flatten_internal_calls(%{internal_calls: inner_list_of_calls} = outer_map, height)
