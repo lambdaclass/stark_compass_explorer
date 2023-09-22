@@ -150,7 +150,9 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
               id={"copy-block-hash-#{@message.to_address}"}
               phx-hook="Copy"
             >
-              <%= @message.from_address %>
+              <%= live_redirect(@message.from_address,
+                to: ~p"/#{@network}/contracts/#{@message.from_address}"
+              ) %>
             </div>
           </div>
           <div class="custom-list-item grid-4 w-full">
@@ -166,7 +168,9 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
               id={"copy-block-hash-#{@message.to_address}"}
               phx-hook="Copy"
             >
-              <%= @message.to_address %>
+              <%= live_redirect(@message.to_address,
+                to: ~p"/#{@network}/contracts/#{@message.to_address}"
+              ) %>
             </div>
           </div>
         </div>
