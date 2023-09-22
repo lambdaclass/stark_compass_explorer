@@ -11,15 +11,22 @@ defmodule StarknetExplorer.Blockchain.ListenerSupervisor do
     children =
       if Mix.env() == :prod do
         [
-          {ListenerWorker, [network: :mainnet]},
-          {ListenerWorker, [network: :testnet]},
-          {ListenerWorker, [network: :testnet2]}
+          Supervisor.child_spec({ListenerWorker, [network: :mainnet, name: :listener_mainnet]},
+            id: "listener_mainnet"
+          ),
+          Supervisor.child_spec({ListenerWorker, [network: :testnet, name: :listener_testnet]},
+            id: "listener_testnet"
+          ),
+          Supervisor.child_spec({ListenerWorker, [network: :testnet2, name: :listener_testnet2]},
+            id: "listener_testnet2"
+          )
         ]
       else
-        [{ListenerWorker, [network: :mainnet]},
-        # Delete this two before merging.
-        {ListenerWorker, [network: :testnet]},
-        {ListenerWorker, [network: :testnet2]}]
+        [
+          Supervisor.child_spec({ListenerWorker, [network: :mainnet, name: :listener_mainnet]},
+            id: "listener_mainnet"
+          )
+        ]
       end
 
     Supervisor.init(children, strategy: :one_for_one)

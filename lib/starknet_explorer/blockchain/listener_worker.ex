@@ -8,14 +8,14 @@ defmodule StarknetExplorer.Blockchain.ListenerWorker do
   require Logger
   @fetch_timer :timer.seconds(5)
 
-  def start_link(arg) do
-    GenServer.start_link(__MODULE__, arg, name: __MODULE__)
+  def start_link([network: _network, name: name] = arg) do
+    GenServer.start_link(__MODULE__, arg, name: name)
   end
 
   ## Callbacks
 
   @impl true
-  def init([network: network]) do
+  def init([network: network, name: _name] = _args) do
     {:ok, block_height} = Rpc.get_block_height_no_cache(network)
 
     state = %ListenerWorker{
