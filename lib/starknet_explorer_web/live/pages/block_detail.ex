@@ -397,7 +397,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             phx-hook="Copy"
           >
             <div class="relative">
-              <div class="break-all text-hover-blue"><%= Utils.shorten_block_hash(hash) %></div>
+              <a href={Utils.network_path(@network, "transactions/#{hash}")} class="text-hover-blue">
+                <div class="break-all text-hover-blue"><%= Utils.shorten_block_hash(hash) %></div>
+              </a>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
                   <img class="copy-btn copy-text w-4 h-4" src={~p"/images/copy.svg"} data-text={hash} />
