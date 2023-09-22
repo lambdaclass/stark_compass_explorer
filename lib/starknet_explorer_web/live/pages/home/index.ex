@@ -287,8 +287,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
        transactions: transactions,
        entities_count: entities_count,
        latest_block: latest_block,
-       block_height:
-         StarknetExplorer.Utils.format_number_for_display(max_block_height.latest_block_number)
+       block_height: StarknetExplorer.Utils.format_number_for_display(max_block_height)
      )}
   end
 end
