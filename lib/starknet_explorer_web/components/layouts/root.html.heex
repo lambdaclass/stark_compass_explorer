@@ -41,8 +41,7 @@
     <header class="z-50 absolute top-0 left-0">
       <nav class="w-screen flex items-center justify-between p-5 lg:px-16">
         <a href={Utils.network_path(@conn.assigns.network)} } class="z-50 text-xl">
-          <span class="uppercase">Madara</span>
-          <span class="font-semibold">Explorer</span>
+          <img src={~p"/images/logo.svg"} class="h-9 xl:h-11" />
         </a>
         <img id="hamburger" class="z-50 lg:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
         <div
