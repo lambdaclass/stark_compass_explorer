@@ -108,7 +108,7 @@ form {
   @apply relative !w-full !max-w-7xl !mx-auto lg:!-mt-10 !mb-16;
 }
 input {
-  @apply !bg-container border !border-gray-700 !text-se-green !pr-10 !w-full text-ellipsis;
+  @apply !bg-container border !border-gray-700 !text-white !pr-10 !w-full text-ellipsis;
 }
 
 /* Detail pages */
