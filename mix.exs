@@ -65,7 +65,8 @@ defmodule StarknetExplorer.MixProject do
       {:sweet_xml, "~> 0.7.0"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
       {:scrivener_ecto, "~> 2.7"},
-      {:new_relic_agent, "~> 1.0", only: :prod}
+      {:new_relic_agent, "~> 1.0", only: :prod},
+      {:sentry, "~> 8.0", only: :prod}
     ] ++ db_adapter
   end
 

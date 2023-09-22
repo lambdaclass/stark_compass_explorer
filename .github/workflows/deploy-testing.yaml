@@ -59,5 +59,7 @@ jobs:
         CONTINUATION_TOKEN_FORMAT: "large"
         NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
         NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
+        SENTRY_ENV: "testing"
+        SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       run: |
         ansible-playbook -i ansible/inventory.yaml ansible/playbooks/deployment.yaml
