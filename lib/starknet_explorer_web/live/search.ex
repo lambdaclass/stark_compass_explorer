@@ -24,7 +24,7 @@ defmodule StarknetExplorerWeb.SearchLive do
     <div id="dropdownInformation" class="hidden z-10 bg-container divide-y divide-gray-100 rounded-lg shadow w-full max-w-7xl mx-auto dark:bg-[#232331] dark:divide-gray-600">
       <div>
       <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
-        <div>Blocks</div>
+        <div>Block</div>
       </div>
       <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownInformationButton">
         <li>
@@ -37,7 +37,7 @@ defmodule StarknetExplorerWeb.SearchLive do
   end
 
   def mount(_params, session, socket) do
-    new_assigns = [query: "", loading: false, matches: [], errors: []]
+    new_assigns = [query: "", block: {}, loading: false, matches: [], errors: []]
 
     socket =
       socket
@@ -47,6 +47,13 @@ defmodule StarknetExplorerWeb.SearchLive do
   end
 
   def handle_event("update-input", %{"search-input" => query}, socket) do
+    block = case try_search(query, socket.assigns.network) do
+      {:block, block} ->
+      #fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
+      IO.inspect(block.number)
+      assign(socket, block: block)
+
+    end
     {:noreply, assign(socket, :query, query)}
   end
 
@@ -57,7 +64,6 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def handle_info({:search, query}, socket) do
     query = String.trim(query)
-
     navigate_fun =
       case try_search(query, socket.assigns.network) do
         {:tx, _tx} ->
@@ -65,8 +71,9 @@ defmodule StarknetExplorerWeb.SearchLive do
             push_navigate(socket, to: ~p"/#{socket.assigns.network}/transactions/#{query}")
           end
 
-        {:block, _block} ->
-          fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
+        {:block, block} ->
+          #fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
+          fn -> assign(socket, tag: block) end
 
         {:message, _message} ->
           fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
