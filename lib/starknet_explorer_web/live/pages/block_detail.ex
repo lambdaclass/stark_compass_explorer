@@ -7,6 +7,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorer.S3
   alias StarknetExplorer.Message
   alias StarknetExplorer.Gateway
+  alias StarknetExplorer.Events
 
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
   defp num_or_hash(_num), do: :num
@@ -802,7 +803,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Name</div>
           <div>
-            <%= Data.get_event_name(event, @network) %>
+            <%= Events.get_event_name(event, @network) %>
           </div>
         </div>
         <div class="list-h">From Address</div>

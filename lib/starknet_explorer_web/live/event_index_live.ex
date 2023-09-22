@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.EventIndexLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.{Data, BlockUtils, Rpc}
+  alias StarknetExplorer.{Data, BlockUtils, Rpc, Events}
 
   @page_size 30
 
@@ -88,7 +88,7 @@ defmodule StarknetExplorerWeb.EventIndexLive do
             <div>
               <div class="list-h">Name</div>
               <div>
-                <%= Data.get_event_name(event, @network) %>
+                <%= Events.get_event_name(event, @network) %>
               </div>
             </div>
             <div class="list-h">From Address</div>

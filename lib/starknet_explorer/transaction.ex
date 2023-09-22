@@ -179,4 +179,8 @@ defmodule StarknetExplorer.Transaction do
     changeset
     |> validate_required(@l1_handler_tx_fields)
   end
+
+  def get_total_count() do
+    StarknetExplorer.Transaction |> Repo.aggregate(:count, :hash)
+  end
 end

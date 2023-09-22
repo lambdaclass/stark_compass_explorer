@@ -1,7 +1,16 @@
 defmodule StarknetExplorer.Data do
   require Logger
-  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata}
-  alias StarknetExplorerWeb.Utils
+
+  alias StarknetExplorer.{
+    Rpc,
+    Transaction,
+    Message,
+    Events,
+    Block,
+    TransactionReceipt,
+    Calldata,
+    Gateway
+  }
 
   @common_event_hash_to_name %{
     "0x99cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9" => "Transfer",
@@ -29,12 +38,6 @@ defmodule StarknetExplorer.Data do
   }
 
   @common_event_hashes Map.keys(@common_event_hash_to_name)
-  @condition_to_match 15
-
-  # Defines the separator used to distinguish between modules and event names in Cairo0 events.
-  # In Cairo0 events, event names may include module information in the format:
-  # `Module1::SubModule::EventName`
-  @event_module_separator "::"
 
   @doc """
   Fetch `block_amount` blocks (defaults to 15), first
@@ -167,16 +170,6 @@ defmodule StarknetExplorer.Data do
     {:ok, tx}
   end
 
-  # This behavior is modified for testing porpouses.
-  # def get_block_events_paginated(block, pagination, network) do
-  #   # If the entries are empty, means that the events was not fetch yet.
-  #   with %Scrivener.Page{entries: []} <- Events.paginate_events(pagination, block.number, network) do
-  #     :ok = Events.store_events_from_rpc(block, network)
-  #     get_block_events_paginated(block, pagination, network)
-  #   else
-  #     page -> page
-  #   end
-  # end
   def get_block_events_paginated(block_hash, pagination, network) do
     {:ok, events} = Rpc.get_block_events_paginated(block_hash, pagination, network)
 
@@ -219,55 +212,85 @@ defmodule StarknetExplorer.Data do
     class_hash
   end
 
-  defp last_n_characters(input_string) do
-    # Calculate the starting index
-    start_index = String.length(input_string) - @condition_to_match
+  def get_event_name(%{keys: [event_name_hashed | _]}, _network)
+      when event_name_hashed in @common_event_hashes,
+      do: @common_event_hash_to_name[event_name_hashed]
 
-    # Keep the last N characters
-    String.slice(input_string, start_index..-1)
+  def get_event_name(%{keys: [event_name_hashed | _]}, _network) do
+    event_name_hashed
   end
 
-  defp _get_event_name(abi, event_name_hashed) when is_list(abi) do
-    abi
-    |> Enum.filter(fn abi_entry -> abi_entry["type"] == "event" end)
-    |> Map.new(fn abi_event ->
-      {abi_event["name"]
-       |> String.split(@event_module_separator)
-       |> List.last()
-       |> ExKeccak.hash_256()
-       |> Base.encode16(case: :lower)
-       |> last_n_characters(),
-       List.last(String.split(abi_event["name"], @event_module_separator))}
+  def get_event_name(%{"keys" => [event_name_hashed | _]}, _network)
+      when event_name_hashed in @common_event_hashes,
+      do: @common_event_hash_to_name[event_name_hashed]
+
+  def get_event_name(%{"keys" => [event_name_hashed | _]}, _network) do
+    event_name_hashed
+  end
+
+  def internal_calls(tx, network) do
+    {:ok, trace} = Gateway.trace_transaction(tx.hash, network)
+
+    trace["function_invocation"]
+    |> StarknetExplorerWeb.Utils.atomize_keys()
+    |> flatten_internal_calls(0)
+    |> Enum.with_index()
+    |> Enum.map(fn {call_data, index} ->
+      # TODO: this can be optimized because we are going out to the Rpc/DB for every call, but contracts might be repeated
+      # (like in the case of CALL and DELEGATE call types) so those can be coalesced
+
+      functions_data = Calldata.get_functions_data("latest", call_data.contract_address, network)
+      {input_data, _structs} = Calldata.get_input_data(functions_data, call_data.selector)
+
+      call_data =
+        Map.put(
+          call_data,
+          :selector_name,
+          input_data["name"] || default_internal_call_name(tx.type)
+        )
+
+      {index, call_data}
     end)
-    |> Map.get(
-      last_n_characters(event_name_hashed),
-      Utils.shorten_block_hash(event_name_hashed)
-    )
+    |> Map.new()
   end
 
-  defp _get_event_name(abi, event_name_hashed) do
-    abi
-    |> Jason.decode!()
-    |> _get_event_name(event_name_hashed)
+  defp default_internal_call_name(tx_type) do
+    case tx_type do
+      "L1_HANDLER" -> "handle_deposit"
+      "DEPLOY_ACCOUNT" -> "constructor"
+      _ -> "__execute__"
+    end
   end
 
-  def get_event_name(%{keys: [event_name_hashed | _]} = _event, _network)
-      when event_name_hashed in @common_event_hashes,
-      do: @common_event_hash_to_name[event_name_hashed]
+  defp flatten_internal_calls(%{internal_calls: inner_list_of_calls} = outer_map, height)
+       when is_list(inner_list_of_calls) do
+    outer_details = [
+      %{
+        call_type: outer_map.call_type,
+        contract_address: outer_map.contract_address,
+        caller_address: outer_map.caller_address,
+        selector: Map.get(outer_map, :selector),
+        scope: height
+      }
+    ]
 
-  def get_event_name(%{keys: [event_name_hashed | _]} = event, network) do
-    get_class_at(event["block_number"], event["from_address"], network)
-    |> Map.get("abi")
-    |> _get_event_name(event_name_hashed)
+    inner_details = Enum.flat_map(inner_list_of_calls, &flatten_internal_calls(&1, height + 1))
+
+    outer_details ++ inner_details
   end
 
-  def get_event_name(%{"keys" => [event_name_hashed | _]} = _event, _network)
-      when event_name_hashed in @common_event_hashes,
-      do: @common_event_hash_to_name[event_name_hashed]
+  defp flatten_internal_calls(%{internal_calls: []} = _outer_map, _height) do
+    []
+  end
 
-  def get_event_name(%{"keys" => [event_name_hashed | _]} = event, network) do
-    get_class_at(event["block_number"], event["from_address"], network)
-    |> Map.get("abi")
-    |> _get_event_name(event_name_hashed)
+  defp flatten_internal_calls(list, _height) when is_list(list) do
+    []
+  end
+
+  def get_entity_count() do
+    Map.new()
+    |> Map.put(:message_count, Message.get_total_count())
+    |> Map.put(:events_count, Events.get_total_count())
+    |> Map.put(:transaction_count, Transaction.get_total_count())
   end
 end

@@ -13,6 +13,18 @@ services:
       --db-path /var/lib/juno
       --eth-node "${ETH_NODE_URL}"
       --network mainnet
+  postgres:
+    container_name: madaraexplorer_db
+    image: postgres:14.6
+    ports:
+      - 127.0.0.1:5432:5432
+    environment:
+      - POSTGRES_USER=madaraexplorer_user
+      - POSTGRES_PASSWORD=madaraexplorerlambda
+      - POSTGRES_DB=madaraexplorer_dev
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./docker-data/postgres/data:/var/lib/postgresql/data/
 
 networks:
   default:
