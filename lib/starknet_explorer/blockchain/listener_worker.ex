@@ -7,8 +7,6 @@ defmodule StarknetExplorer.Blockchain.ListenerWorker do
   use GenServer
   require Logger
   @fetch_timer :timer.seconds(5)
-  # TODO: parametrize this.
-  @network :mainnet
 
   def start_link(arg) do
     GenServer.start_link(__MODULE__, arg, name: __MODULE__)
@@ -17,13 +15,12 @@ defmodule StarknetExplorer.Blockchain.ListenerWorker do
   ## Callbacks
 
   @impl true
-  def init(_arg) do
-    {:ok, block_height} = Rpc.get_block_height_no_cache(@network)
+  def init([network: network]) do
+    {:ok, block_height} = Rpc.get_block_height_no_cache(network)
 
     state = %ListenerWorker{
       latest_block_number: block_height,
-      # Use this parametrized.
-      network: @network
+      network: network
     }
 
     Process.send_after(self(), :fetch_latest, @fetch_timer)

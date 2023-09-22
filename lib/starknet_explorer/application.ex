@@ -29,12 +29,7 @@ defmodule StarknetExplorer.Application do
         # {StarknetExplorer.Worker, arg}
         {DynamicSupervisor, strategy: :one_for_one, name: StarknetExplorer.BlockFetcher}
         | cache_child_specs
-      ] ++
-        if Application.get_env(:starknet_explorer, :enable_listener) do
-          [{StarknetExplorer.BlockListener, network: :mainnet}]
-        else
-          []
-        end
+      ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

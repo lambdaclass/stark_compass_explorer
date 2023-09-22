@@ -8,9 +8,19 @@ defmodule StarknetExplorer.Blockchain.ListenerSupervisor do
 
   @impl true
   def init(_init_arg) do
-    children = [
-      ListenerWorker
-    ]
+    children =
+      if Mix.env() == :prod do
+        [
+          {ListenerWorker, [network: :mainnet]},
+          {ListenerWorker, [network: :testnet]},
+          {ListenerWorker, [network: :testnet2]}
+        ]
+      else
+        [{ListenerWorker, [network: :mainnet]},
+        # Delete this two before merging.
+        {ListenerWorker, [network: :testnet]},
+        {ListenerWorker, [network: :testnet2]}]
+      end
 
     Supervisor.init(children, strategy: :one_for_one)
   end
