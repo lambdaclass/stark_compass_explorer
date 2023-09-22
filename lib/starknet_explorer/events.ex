@@ -3,10 +3,8 @@ defmodule StarknetExplorer.Events do
   import Ecto.Changeset
   import Ecto.Query
   alias StarknetExplorer.Events
-  alias StarknetExplorer.Data
   alias StarknetExplorer.Repo
   alias StarknetExplorer.Rpc
-  alias StarknetExplorerWeb.Utils
   @primary_key {:id, :binary_id, autogenerate: true}
 
   @fields [
@@ -47,13 +45,13 @@ defmodule StarknetExplorer.Events do
   }
 
   @common_event_hashes Map.keys(@common_event_hash_to_name)
-  @condition_to_match 15
+  # @condition_to_match 15
   @chunk_size 1000
 
   # Defines the separator used to distinguish between modules and event names in Cairo0 events.
   # In Cairo0 events, event names may include module information in the format:
   # `Module1::SubModule::EventName`
-  @event_module_separator "::"
+  # @event_module_separator "::"
 
   schema "events" do
     # belongs_to :transaction_hash, Transaction, references: :hash
@@ -84,29 +82,31 @@ defmodule StarknetExplorer.Events do
     |> Repo.insert()
   end
 
-  defp _get_event_name(abi, event_name_hashed) when is_list(abi) do
-    abi
-    |> Enum.filter(fn abi_entry -> abi_entry["type"] == "event" end)
-    |> Map.new(fn abi_event ->
-      {abi_event["name"]
-       |> String.split(@event_module_separator)
-       |> List.last()
-       |> ExKeccak.hash_256()
-       |> Base.encode16(case: :lower)
-       |> StarknetExplorer.Utils.last_n_characters(@condition_to_match),
-       List.last(String.split(abi_event["name"], @event_module_separator))}
-    end)
-    |> Map.get(
-      StarknetExplorer.Utils.last_n_characters(event_name_hashed, @condition_to_match),
-      Utils.shorten_block_hash(event_name_hashed)
-    )
-  end
+  # This is commented until prior use when we resolve how and when to fetch
+  # the contract class data.
+  # defp _get_event_name(abi, event_name_hashed) when is_list(abi) do
+  #   abi
+  #   |> Enum.filter(fn abi_entry -> abi_entry["type"] == "event" end)
+  #   |> Map.new(fn abi_event ->
+  #     {abi_event["name"]
+  #      |> String.split(@event_module_separator)
+  #      |> List.last()
+  #      |> ExKeccak.hash_256()
+  #      |> Base.encode16(case: :lower)
+  #      |> StarknetExplorer.Utils.last_n_characters(@condition_to_match),
+  #      List.last(String.split(abi_event["name"], @event_module_separator))}
+  #   end)
+  #   |> Map.get(
+  #     StarknetExplorer.Utils.last_n_characters(event_name_hashed, @condition_to_match),
+  #     Utils.shorten_block_hash(event_name_hashed)
+  #   )
+  # end
 
-  defp _get_event_name(abi, event_name_hashed) do
-    abi
-    |> Jason.decode!()
-    |> _get_event_name(event_name_hashed)
-  end
+  # defp _get_event_name(abi, event_name_hashed) do
+  #   abi
+  #   |> Jason.decode!()
+  #   |> _get_event_name(event_name_hashed)
+  # end
 
   # TODO: refactor this functions.
   def get_event_name(%{"keys" => [event_name_hashed]} = _event, _network)
@@ -117,7 +117,7 @@ defmodule StarknetExplorer.Events do
       when event_name_hashed in @common_event_hashes,
       do: @common_event_hash_to_name[event_name_hashed]
 
-  def get_event_name(%{"keys" => keys} = event, network), do: List.first(keys)
+  def get_event_name(%{"keys" => keys} = _event, _network), do: List.first(keys)
   # This was too heavy to compute when fetching blocks and related structures.
   # TODO: revisit this.
   #   Data.get_class_at(event["block_number"], event["from_address"], network)

@@ -44,6 +44,8 @@ defmodule StarknetExplorerWeb.Utils do
     |> Decimal.new()
     |> Decimal.div(@wei_to_eth_constant)
     |> Decimal.to_string(:normal)
+    |> String.trim_trailing("0")
+    |> String.replace_suffix(".", ".0")
   end
 
   def atomize_keys(map) when is_map(map) do
@@ -68,6 +70,16 @@ defmodule StarknetExplorerWeb.Utils do
 
   def format_arg_value(%{
         :type => "Uint256",
+        :value => [<<"0x", high::binary>>, <<"0x", low::binary>>]
+      }) do
+    "0x" <>
+      ((String.to_integer(high, 16) * 2 ** 252 + String.to_integer(low, 16))
+       |> Integer.to_string(16)
+       |> String.downcase())
+  end
+
+  def format_arg_value(%{
+        :type => "core::integer::u256",
         :value => [<<"0x", high::binary>>, <<"0x", low::binary>>]
       }) do
     "0x" <>

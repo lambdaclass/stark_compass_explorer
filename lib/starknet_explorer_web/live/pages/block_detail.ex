@@ -153,7 +153,14 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       block_age: Utils.get_block_age(block)
     ]
 
-    Process.send_after(self(), :get_gateway_information, 200)
+    case Application.get_env(:starknet_explorer, :enable_gateway_data) do
+      true ->
+        Process.send_after(self(), :get_gateway_information, 200)
+
+      _ ->
+        :skip
+    end
+
     {:ok, assign(socket, assigns)}
   end
 
@@ -163,7 +170,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       case Gateway.fetch_block(socket.assigns.block.number, socket.assigns.network) do
         {:ok, block = %{"gas_price" => gas_price}} ->
           execution_resources = BlockUtils.calculate_gateway_block_steps(block)
-          gas_price = BlockUtils.format_hex_for_display(gas_price)
+          gas_price = Utils.hex_wei_to_eth(gas_price)
 
           {gas_price, execution_resources}
 
@@ -380,7 +387,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>Type</div>
       <div>Version</div>
     </div>
-    <%= for _transaction = %StarknetExplorer.Transaction{hash: hash, type: type, version: version} <- @block.transactions do %>
+    <%= for _transaction = %{hash: hash, type: type, version: version} <- @block.transactions do %>
       <div class="grid-3 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
@@ -692,32 +699,34 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     </div>
-    <div class="grid-4 custom-list-item">
-      <div class="block-label">
-        Gas Price
-      </div>
-      <div class="col-span-3">
-        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-          <div
-            class="break-all bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1"
-            phx-update="replace"
-            id="gas-price"
-          >
-            <%= @gas_price %> ETH
+    <%= if Application.get_env(:starknet_explorer, :enable_gateway_data) do %>
+      <div class="grid-4 custom-list-item">
+        <div class="block-label">
+          Gas Price
+        </div>
+        <div class="col-span-3">
+          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+            <div
+              class="break-all bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1"
+              phx-update="replace"
+              id="gas-price"
+            >
+              <%= @gas_price %> ETH
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="grid-4 custom-list-item">
-      <div class="block-label">
-        Total execution resources
-      </div>
-      <div class="col-span-3">
-        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-          <%= "#{@execution_resources} steps" %>
+      <div class="grid-4 custom-list-item">
+        <div class="block-label">
+          Total execution resources
+        </div>
+        <div class="col-span-3">
+          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+            <%= "#{@execution_resources} steps" %>
+          </div>
         </div>
       </div>
-    </div>
+    <% end %>
     """
   end
 
