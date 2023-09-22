@@ -1,6 +1,5 @@
 defmodule StarknetExplorer.Data do
   require Logger
-  alias Expo.Message
   alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata, Gateway}
   alias StarknetExplorerWeb.Utils
 
