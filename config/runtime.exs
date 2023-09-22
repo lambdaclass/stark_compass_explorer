@@ -48,7 +48,8 @@ config :starknet_explorer,
   testnet_host: testnet_rpc_host,
   testnet_2_host: testnet_2_rpc_host,
   enable_listener: enable_listener?,
-  continuation_token_format: continuation_token_format
+  continuation_token_format: continuation_token_format,
+  enable_gateway_data: System.get_env("ENABLE_GATEWAY_DATA") == "true"
 
 config :starknet_explorer, rpc_host: rpc_host
 
@@ -118,6 +119,21 @@ if config_env() == :prod do
       port: port
     ],
     secret_key_base: secret_key_base
+
+  # Newrelic agent
+  newrelic_license_key =
+    System.get_env("NEWRELIC_KEY") ||
+      raise "environment variable NEWRELIC_KEY is missing."
+
+  newrelic_app_name =
+    System.get_env("NEWRELIC_APP_NAME") ||
+      raise "environment variable NEWRELIC_APP_NAME is missing."
+
+  config :new_relic_agent,
+    app_name: newrelic_app_name,
+    license_key: newrelic_license_key,
+    # Logs are forwarded directly from Elixir to New Relic
+    logs_in_context: :direct
 
   # ## SSL Support
   #

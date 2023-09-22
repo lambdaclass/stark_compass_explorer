@@ -58,7 +58,8 @@ defmodule StarknetExplorer.MixProject do
       {:sweet_xml, "~> 0.7.0"},
       {:ecto_sqlite3, ">= 0.0.0"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
-      {:scrivener_ecto, "~> 2.7"}
+      {:scrivener_ecto, "~> 2.7"},
+      {:new_relic_agent, "~> 1.0", only: :prod}
     ]
   end
 
