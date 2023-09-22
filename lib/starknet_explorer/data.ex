@@ -70,11 +70,13 @@ defmodule StarknetExplorer.Data do
   def block_by_hash(hash, network) do
     case Block.get_by_hash(hash, network) do
       nil ->
-        {:ok, block} = Rpc.get_block_by_hash(hash, network)
-        StarknetExplorer.BlockUtils.store_block(block, network)
-
-        block = Block.from_rpc_block(block, network)
-        {:ok, block}
+        with {:ok, block} <- Rpc.get_block_by_hash(hash, network) do
+          StarknetExplorer.BlockUtils.store_block(block, network)
+          block = Block.from_rpc_block(block, network)
+          {:ok, block}
+        else
+          err -> {:error, err}
+        end
 
       block ->
         {:ok, block}
@@ -149,22 +151,20 @@ defmodule StarknetExplorer.Data do
     [block]
   end
 
-  def transaction(tx_hash, network) do
-    tx =
-      case Transaction.get_by_hash_with_receipt(tx_hash) do
-        nil ->
-          {:ok, tx} = Rpc.get_transaction(tx_hash, network)
-          {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
-
-          tx
-          |> Transaction.from_rpc_tx()
-          |> Map.put(:receipt, receipt |> StarknetExplorerWeb.Utils.atomize_keys())
-
-        tx ->
-          tx
-      end
-
-    {:ok, tx}
+ def transaction(tx_hash, network) do
+    case Transaction.get_by_hash_with_receipt(tx_hash) do
+      nil ->
+        with {:ok, %{"transaction_hash" => _transaction} = tx} <- Rpc.get_transaction(tx_hash, network),
+        {:ok, receipt} <- Rpc.get_transaction_receipt(tx_hash, network) do
+        {:ok, tx
+        |> Transaction.from_rpc_tx()
+        |> Map.put(:receipt, receipt |> StarknetExplorerWeb.Utils.atomize_keys())}
+        else
+          err -> {:error, err}
+        end
+      tx ->
+        {:ok, tx}
+    end
   end
 
   # This behavior is modified for testing porpouses.
