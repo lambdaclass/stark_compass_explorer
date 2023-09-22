@@ -345,5 +345,6 @@ defmodule StarknetExplorer.Data do
     Map.new()
     |> Map.put(:message_count, Message.get_total_count())
     |> Map.put(:events_count, Events.get_total_count())
+    |> Map.put(:transaction_count, Transaction.get_total_count())
   end
 end
