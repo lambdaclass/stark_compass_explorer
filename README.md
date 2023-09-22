@@ -125,6 +125,13 @@ Madara Explorer provides support for that, you can set the credentials to the Po
 export DB_TYPE=postgresql
 ```
 
+If you previously compiled the application without the flag, you need to clean the dependencies and then compile again:
+
+```bash
+mix deps.clean --all
+mix deps.get
+```
+
 A Docker image of PostgreSQL is provided in the `docker-compose.yml` file, you can get the service up and running with the command:
 
 ```bash
