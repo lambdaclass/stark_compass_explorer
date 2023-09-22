@@ -91,9 +91,12 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
         >
           <div class="relative">
             <div class="col-span-3">
-              <%= live_redirect(@message.transaction_hash,
-                to: ~p"/#{@network}/transactions/#{@message.transaction_hash}"
-              ) %>
+              <a
+                href={Utils.network_path(@network, "/transactions/#{@message.transaction_hash}")}
+                class="text-hover-blue"
+              >
+                <span><%= @message.transaction_hash %></span>
+              </a>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
                   <img

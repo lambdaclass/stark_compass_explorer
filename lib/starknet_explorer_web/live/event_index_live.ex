@@ -38,11 +38,12 @@ defmodule StarknetExplorerWeb.EventIndexLive do
               >
                 <div class="relative">
                   <div class="break-all text-hover-blue">
-                    <%= live_redirect(
-                      identifier,
-                      to: ~p"/#{@network}/events/#{identifier}",
-                      class: "text-hover-blue"
-                    ) %>
+                    <a
+                      href={Utils.network_path(@network, "/events/#{identifier}")}
+                      class="text-hover-blue"
+                    >
+                      <span><%= identifier %></span>
+                    </a>
                   </div>
                   <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                     <div class="relative">
@@ -64,18 +65,24 @@ defmodule StarknetExplorerWeb.EventIndexLive do
               <div class="list-h">Block Number</div>
               <div>
                 <span class="blue-label">
-                  <%= live_redirect(to_string(block_number),
-                    to: ~p"/#{@network}/blocks/#{event["block_hash"]}"
-                  ) %>
+                  <a
+                    href={Utils.network_path(@network, "/blocks/#{event["block_hash"]}")}
+                    class="text-hover-blue"
+                  >
+                    <span><%= to_string(block_number) %></span>
+                  </a>
                 </span>
               </div>
             </div>
             <div>
               <div class="list-h">Transaction Hash</div>
               <div>
-                <%= live_redirect(tx_hash |> Utils.shorten_block_hash(),
-                  to: ~p"/#{@network}/transactions/#{tx_hash}"
-                ) %>
+                <a
+                  href={Utils.network_path(@network, "/transactions/#{tx_hash}")}
+                  class="text-hover-blue"
+                >
+                  <span><%= tx_hash |> Utils.shorten_block_hash() %></span>
+                </a>
               </div>
             </div>
             <div>
@@ -86,9 +93,12 @@ defmodule StarknetExplorerWeb.EventIndexLive do
             </div>
             <div class="list-h">From Address</div>
             <div>
-              <%= live_redirect(from_address |> Utils.shorten_block_hash(),
-                to: ~p"/#{@network}/contracts/#{from_address}"
-              ) %>
+              <a
+                href={Utils.network_path(@network, "/contracts/#{from_address}")}
+                class="text-hover-blue"
+              >
+                <span><%= from_address |> Utils.shorten_block_hash() %></span>
+              </a>
             </div>
             <div>
               <div class="list-h">Age</div>

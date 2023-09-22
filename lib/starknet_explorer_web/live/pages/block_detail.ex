@@ -448,9 +448,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             >
               <div class="relative">
                 <div class="break-all text-hover-blue">
-                  <%= live_redirect(message.message_hash |> Utils.shorten_block_hash(),
-                    to: ~p"/#{@network}/messages/#{message.message_hash}"
-                  ) %>
+                  <a
+                    href={Utils.network_path(@network, "/messages/#{message.message_hash}")}
+                    class="text-hover-blue"
+                  >
+                    <span><%= message.message_hash |> Utils.shorten_block_hash() %></span>
+                  </a>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                   <div class="relative">
@@ -545,9 +548,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             >
               <div class="relative">
                 <div class="break-all text-hover-blue">
-                  <%= live_redirect(message.transaction_hash |> Utils.shorten_block_hash(),
-                    to: ~p"/#{@network}/transactions/#{message.transaction_hash}"
-                  ) %>
+                  <a
+                    href={Utils.network_path(@network, "/transactions/#{message.transaction_hash}")}
+                    class="text-hover-blue"
+                  >
+                    <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
+                  </a>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                   <div class="relative">
@@ -752,11 +758,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           >
             <div class="relative">
               <div class="break-all text-hover-blue">
-                <%= live_redirect(
-                  identifier,
-                  to: ~p"/#{@network}/events/#{identifier}",
-                  class: "text-hover-blue"
-                ) %>
+                <a
+                  href={Utils.network_path(@network, "/events/#{identifier}")}
+                  class="text-hover-blue"
+                >
+                  <span><%= identifier %></span>
+                </a>
               </div>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
@@ -778,18 +785,18 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="list-h">Block Number</div>
           <div>
             <span class="blue-label">
-              <%= live_redirect(to_string(block_number),
-                to: ~p"/#{@network}/blocks/#{@block.hash}"
-              ) %>
+              <a href={Utils.network_path(@network, "/blocks/#{@block.hash}")} class="text-hover-blue">
+                <span><%= to_string(block_number) %></span>
+              </a>
             </span>
           </div>
         </div>
         <div>
           <div class="list-h">Transaction Hash</div>
           <div>
-            <%= live_redirect(tx_hash |> Utils.shorten_block_hash(),
-              to: ~p"/#{@network}/transactions/#{tx_hash}"
-            ) %>
+            <a href={Utils.network_path(@network, "/transactions/#{tx_hash}")} class="text-hover-blue">
+              <span><%= tx_hash |> Utils.shorten_block_hash() %></span>
+            </a>
           </div>
         </div>
         <div>
@@ -800,9 +807,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div class="list-h">From Address</div>
         <div>
-          <%= live_redirect(from_address |> Utils.shorten_block_hash(),
-            to: ~p"/#{@network}/contracts/#{from_address}"
-          ) %>
+          <a href={Utils.network_path(@network, "/contracts/#{from_address}")} class="text-hover-blue">
+            <span><%= from_address |> Utils.shorten_block_hash() %></span>
+          </a>
         </div>
         <div>
           <div class="list-h">Age</div>
@@ -845,7 +852,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   #               <div class="break-all text-hover-blue">
   #                 <%= live_redirect(
   #                   event.id,
-  #                   to: ~p"/#{@network}/events/#{event.id}",
+  #                   to: Utils.network_path(@network, "/events/#{event.id}"),
   #                   class: "text-hover-blue"
   #                 ) %>
   #               </div>
@@ -870,7 +877,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   #           <div>
   #             <span class="blue-label">
   #               <%= live_redirect(to_string(event.block_number),
-  #                 to: ~p"/#{@network}/blocks/#{@block.hash}"
+  #                 to: Utils.network_path(@network, "/blocks/#{@block.hash}")
   #               ) %>
   #             </span>
   #           </div>
@@ -879,7 +886,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   #           <div class="list-h">Transaction Hash</div>
   #           <div>
   #             <%= live_redirect(event.transaction_hash |> Utils.shorten_block_hash(),
-  #               to: ~p"/#{@network}/transactions/#{event.transaction_hash}"
+  #               to: Utils.network_path(@network, "/transactions/#{event.transaction_hash}")
   #             ) %>
   #           </div>
   #         </div>
@@ -892,7 +899,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   #         <div class="list-h">From Address</div>
   #         <div>
   #           <%= live_redirect(event.from_address |> Utils.shorten_block_hash(),
-  #             to: ~p"/#{@network}/contracts/#{event.from_address}"
+  #             to: Utils.network_path(@network, "/contracts/#{event.from_address}")
   #           ) %>
   #         </div>
   #         <div>

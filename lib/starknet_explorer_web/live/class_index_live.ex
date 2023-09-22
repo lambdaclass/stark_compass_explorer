@@ -40,14 +40,21 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
           <div id={"class-#{idx}"} class="grid-3 custom-list-item">
             <div>
               <div class="list-h">Class Hash</div>
-              <%= live_redirect(
-                Utils.shorten_block_hash(
-                  "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-                ),
-                to:
-                  ~p"/#{@network}/classes/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2",
-                class: "text-hover-blue"
-              ) %>
+              <a
+                href={
+                  Utils.network_path(
+                    @network,
+                    "/classes/0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
+                  )
+                }
+                class="text-hover-blue"
+              >
+                <span>
+                  <%= Utils.shorten_block_hash(
+                    "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
+                  ) %>
+                </span>
+              </a>
             </div>
             <div>
               <div class="list-h">Type</div>

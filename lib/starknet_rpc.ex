@@ -95,9 +95,16 @@ defmodule StarknetExplorer.Rpc do
   end
 
   defp send_request_no_cache(method, args, network)
-       when network in [:mainnet, :testnet, :testnet2] do
+       when network in [:testnet, :testnet2] do
     payload = build_payload(method, args)
     host = fetch_rpc_host(network)
+    {:ok, rsp} = post(host, payload)
+    handle_response(rsp)
+  end
+
+  defp send_request_no_cache(method, args, _network) do
+    payload = build_payload(method, args)
+    host = fetch_rpc_host(:mainnet)
     {:ok, rsp} = post(host, payload)
     handle_response(rsp)
   end
