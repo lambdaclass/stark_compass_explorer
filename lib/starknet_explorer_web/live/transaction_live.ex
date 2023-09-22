@@ -292,63 +292,69 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   def render_info(%{transaction_view: "internal_calls"} = assigns) do
     ~H"""
-    <div class="grid-5 table-th !pt-7 border-t border-gray-700">
-      <div>Identifier</div>
-      <div>Transaction Hash</div>
-      <div>Type</div>
-      <div>Name</div>
-      <div>Contract Address</div>
-    </div>
-    <%= for {index, call} <- @internal_calls do %>
-      <div class="grid-5 custom-list-item">
-        <div>
-          <div class="list-h">Identifier</div>
+    <div class="table-block">
+      <div class="grid-5 table-th !pt-7 border-t border-gray-700">
+        <div>Identifier</div>
+        <div>Transaction Hash</div>
+        <div>Type</div>
+        <div>Name</div>
+        <div>Contract Address</div>
+      </div>
+      <%= for {index, call} <- @internal_calls do %>
+        <div class="grid-5 custom-list-item">
           <div>
-            <%= "#{@transaction.hash}_#{call.scope}_#{index}" |> Utils.shorten_block_hash() %>
+            <div class="list-h">Identifier</div>
+            <div>
+              <%= "#{@transaction.hash}_#{call.scope}_#{index}" |> Utils.shorten_block_hash() %>
+            </div>
           </div>
-        </div>
-        <div>
-          <div class="list-h">Transaction Hash</div>
           <div>
-            <%= @transaction.hash
-            |> Utils.shorten_block_hash() %>
+            <div class="list-h">Transaction Hash</div>
+            <div>
+              <%= @transaction.hash
+              |> Utils.shorten_block_hash() %>
+            </div>
           </div>
-        </div>
-        <div>
-          <div class="list-h">Type</div>
           <div>
-            <%= if call.call_type=="CALL" do %>
-              <span class="green-label"><%= call.call_type %></span>
-            <% else %>
-              <span class="lilac-label"><%= call.call_type %></span>
-            <% end %>
+            <div class="list-h">Type</div>
+            <div>
+              <%= if call.call_type=="CALL" do %>
+                <span class="green-label"><%= call.call_type %></span>
+              <% else %>
+                <span class="lilac-label"><%= call.call_type %></span>
+              <% end %>
+            </div>
           </div>
-        </div>
-        <div>
-          <div class="list-h">Name</div>
-          <div><span class="blue-label"><%= call.selector_name %></span></div>
-        </div>
-        <div class="copy-container" id={"tsx-overview-hash-#{call.contract_address}"} phx-hook="Copy">
-          <div class="relative break-all text-hover-blue">
-            <%= call.contract_address
-            |> Utils.shorten_block_hash() %>
-            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-              <div class="relative">
-                <img
-                  class="copy-btn copy-text w-4 h-4"
-                  src={~p"/images/copy.svg"}
-                  data-text={call.contract_address}
-                />
-                <img
-                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                  src={~p"/images/check-square.svg"}
-                />
+          <div>
+            <div class="list-h">Name</div>
+            <div><span class="blue-label"><%= call.selector_name %></span></div>
+          </div>
+          <div
+            class="copy-container"
+            id={"tsx-internal-calls-hash-#{call.contract_address}"}
+            phx-hook="Copy"
+          >
+            <div class="relative break-all text-hover-blue">
+              <%= call.contract_address
+              |> Utils.shorten_block_hash() %>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={call.contract_address}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
     """
   end
 
@@ -611,11 +617,11 @@ defmodule StarknetExplorerWeb.TransactionLive do
     transaction =
       case transaction.type do
         "L1_HANDLER" ->
-          max_fee = Utils.hex_wei_to_eth(transaction.max_fee)
-          transaction |> Map.put(:max_fee, max_fee)
+          transaction
 
         _ ->
-          transaction
+          max_fee = Utils.hex_wei_to_eth(transaction.max_fee)
+          transaction |> Map.put(:max_fee, max_fee)
       end
 
     receipt = transaction.receipt |> Map.put(:actual_fee, actual_fee)
