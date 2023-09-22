@@ -4,7 +4,8 @@ defmodule StarknetExplorer.Calldata do
   @implementation_selectors [
     "0x3a0ed1f62da1d3048614c2c1feb566f041c8467eb00fb8294776a9179dc1643",
     "0x1d15dd5e6cac14c959221a0b45927b113a91fcfffa4c7bbab19b28d345467df",
-    "0x1f01da52d973fb13ba47dbc8e4ca94015dc4e581e2cc20b2050e87b0a743fae"
+    "0x1f01da52d973fb13ba47dbc8e4ca94015dc4e581e2cc20b2050e87b0a743fae",
+    "0x21691762da057c1b71f851f9b709e0c143628acf6e0cbc9735411a65663d747"
   ]
 
   def parse_calldata(%{type: "INVOKE"} = tx, block_id, network) do
