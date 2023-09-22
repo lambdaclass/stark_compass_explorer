@@ -10,6 +10,7 @@ defmodule StarknetExplorer.Blockchain.ListenerWorker do
 
   def start_link([network: _network, name: name] = arg) do
     GenServer.start_link(__MODULE__, arg, name: name)
+
   end
 
   ## Callbacks
