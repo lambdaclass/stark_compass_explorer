@@ -24,4 +24,18 @@ defmodule StarknetExplorer.Utils do
     # Keep the last N characters
     String.slice(input_string, start_index..-1)
   end
+
+  def format_number_for_display(n) when is_number(n) do
+    n
+    |> to_charlist()
+    |> Enum.reverse()
+    |> Enum.chunk_every(3)
+    |> Enum.map(&Enum.reverse(&1))
+    |> Enum.reverse()
+    |> Enum.join(",")
+  end
+
+  def listener_atom(network) do
+    String.to_atom("listener_#{network}")
+  end
 end

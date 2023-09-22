@@ -13,6 +13,8 @@ defmodule StarknetExplorer.Application do
 
     children =
       [
+        # Start the Blockchain supervisor
+        StarknetExplorer.Blockchain.BlockchainSupervisor,
         # Start the Telemetry supervisor
         StarknetExplorerWeb.Telemetry,
         # Start the Ecto repository
@@ -27,12 +29,7 @@ defmodule StarknetExplorer.Application do
         # {StarknetExplorer.Worker, arg}
         {DynamicSupervisor, strategy: :one_for_one, name: StarknetExplorer.BlockFetcher}
         | cache_child_specs
-      ] ++
-        if Application.get_env(:starknet_explorer, :enable_listener) do
-          [{StarknetExplorer.BlockListener, network: :mainnet}]
-        else
-          []
-        end
+      ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

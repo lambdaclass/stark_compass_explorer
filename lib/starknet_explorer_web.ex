@@ -90,6 +90,7 @@ defmodule StarknetExplorerWeb do
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
+      alias StarknetExplorerWeb.Utils
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())

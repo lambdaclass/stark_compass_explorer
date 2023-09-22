@@ -41,12 +41,13 @@
       mix phx.gen.release
     environment:
       MIX_ENV: prod
-      RPC_API_HOST:
-      TESTNET_RPC_API_HOST:
-      TESTNET_2_RPC_API_HOST:
+      RPC_API_HOST: "{{ lookup('ansible.builtin.env', 'RPC_API_HOST') }}"
+      TESTNET_RPC_API_HOST: "{{ lookup('ansible.builtin.env', 'TESTNET_RPC_API_HOST') }}"
+      TESTNET_2_RPC_API_HOST: "{{ lookup('ansible.builtin.env', 'TESTNET_2_RPC_API_HOST') }}"
+      DB_TYPE: "{{ lookup('ansible.builtin.env', 'DB_TYPE') }}"
+      DATABASE_URL: "{{ lookup('ansible.builtin.env', 'DATABASE_URL') }}"
       NEWRELIC_KEY:
       NEWRELIC_APP_NAME:
-      DATABASE_PATH: "{{ lookup('ansible.builtin.env', 'DATABASE_PATH') }}"
       SECRET_KEY_BASE: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
       PORT: "4100"
     args:
@@ -73,7 +74,8 @@
     vars:
       phx_host: "{{ lookup('ansible.builtin.env', 'PHX_HOST') }}"
       secret_key_base: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
-      database_path: "{{ lookup('ansible.builtin.env', 'DATABASE_PATH') }}"
+      db_type: "{{ lookup('ansible.builtin.env', 'DB_TYPE') }}"
+      database_url: "{{ lookup('ansible.builtin.env', 'DATABASE_URL') }}"
       rpc_api_host: "{{ lookup('ansible.builtin.env', 'RPC_API_HOST') }}"
       testnet_rpc_api_host: "{{ lookup('ansible.builtin.env', 'TESTNET_RPC_API_HOST') }}"
       testnet_2_rpc_api_host: "{{ lookup('ansible.builtin.env', 'TESTNET_2_RPC_API_HOST') }}"
