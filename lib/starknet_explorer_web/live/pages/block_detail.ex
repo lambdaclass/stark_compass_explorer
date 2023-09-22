@@ -396,7 +396,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             phx-hook="Copy"
           >
             <div class="relative">
-              <div class="break-all text-hover-blue"><%= Utils.shorten_block_hash(hash) %></div>
+              <div class="break-all text-hover-blue">
+                <%= live_redirect(Utils.shorten_block_hash(hash),
+                  to: ~p"/#{@network}/transactions/#{hash}"
+                ) %>
+              </div>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
                   <img class="copy-btn copy-text w-4 h-4" src={~p"/images/copy.svg"} data-text={hash} />
@@ -491,7 +495,15 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             >
               <div class="relative">
                 <div class="break-all">
-                  <%= Utils.shorten_block_hash(message.from_address) %>
+                  <%= if Message.is_l2_to_l1(message.type) do %>
+                    <%= live_redirect(Utils.shorten_block_hash(message.from_address),
+                      to: ~p"/#{@network}/contracts/#{message.from_address}"
+                    ) %>
+                  <% else %>
+                    <%= live_redirect(Utils.shorten_block_hash(message.from_address),
+                      to: "https://etherscan.io/address/#{message.from_address}"
+                    ) %>
+                  <% end %>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                   <div class="relative">
@@ -518,7 +530,15 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             >
               <div class="relative">
                 <div class="break-all">
-                  <%= Utils.shorten_block_hash(message.to_address) %>
+                  <%= if Message.is_l2_to_l1(message.type) do %>
+                    <%= live_redirect(Utils.shorten_block_hash(message.to_address),
+                      to: "https://etherscan.io/address/#{message.to_address}"
+                    ) %>
+                  <% else %>
+                    <%= live_redirect(Utils.shorten_block_hash(message.to_address),
+                      to: ~p"/#{@network}/contracts/#{message.to_address}"
+                    ) %>
+                  <% end %>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                   <div class="relative">
