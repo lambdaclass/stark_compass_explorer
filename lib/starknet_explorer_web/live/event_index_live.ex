@@ -39,7 +39,7 @@ defmodule StarknetExplorerWeb.EventIndexLive do
                 <div class="relative">
                   <div class="break-all text-hover-blue">
                     <a
-                      href={Utils.network_path(@network, "/events/#{identifier}")}
+                      href={Utils.network_path(@network, "events/#{identifier}")}
                       class="text-hover-blue"
                     >
                       <span><%= identifier %></span>
@@ -66,7 +66,7 @@ defmodule StarknetExplorerWeb.EventIndexLive do
               <div>
                 <span class="blue-label">
                   <a
-                    href={Utils.network_path(@network, "/blocks/#{event["block_hash"]}")}
+                    href={Utils.network_path(@network, "blocks/#{event["block_hash"]}")}
                     class="text-hover-blue"
                   >
                     <span><%= to_string(block_number) %></span>
@@ -78,7 +78,7 @@ defmodule StarknetExplorerWeb.EventIndexLive do
               <div class="list-h">Transaction Hash</div>
               <div>
                 <a
-                  href={Utils.network_path(@network, "/transactions/#{tx_hash}")}
+                  href={Utils.network_path(@network, "transactions/#{tx_hash}")}
                   class="text-hover-blue"
                 >
                   <span><%= tx_hash |> Utils.shorten_block_hash() %></span>

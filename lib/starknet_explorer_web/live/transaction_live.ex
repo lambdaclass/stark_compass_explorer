@@ -168,7 +168,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
               <div class="relative">
                 <div class="break-all text-hover-blue">
                   <a
-                    href={Utils.network_path(@network, "/messages/#{message.message_hash}")}
+                    href={Utils.network_path(@network, "messages/#{message.message_hash}")}
                     class="text-hover-blue"
                   >
                     <span><%= message.message_hash |> Utils.shorten_block_hash() %></span>
@@ -268,7 +268,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
               <div class="relative">
                 <div class="break-all text-hover-blue">
                   <a
-                    href={Utils.network_path(@network, "/transactions/#{message.transaction_hash}")}
+                    href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
                     class="text-hover-blue"
                   >
                     <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
@@ -419,9 +419,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="block-label">Block Number</div>
       <div class="col-span-3">
         <span class="blue-label">
-          <%= live_redirect(@transaction_receipt.block_number,
-            to: ~p"/#{@network}/blocks/#{@transaction_receipt.block_hash}"
-          ) %>
+          <a
+            href={Utils.network_path(@network, "blocks/#{@transaction_receipt.block_hash}")}
+            class="text-hover-blue"
+          >
+            <span><%= @transaction_receipt.block_number %></span>
+          </a>
         </span>
       </div>
     </div>
@@ -434,9 +437,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
           phx-hook="Copy"
         >
           <div class="relative">
-            <%= live_redirect(@transaction_receipt.block_hash |> Utils.shorten_block_hash(),
-              to: ~p"/#{@network}/blocks/#{@transaction_receipt.block_hash}"
-            ) %>
+            <a
+              href={Utils.network_path(@network, "blocks/#{@transaction_receipt.block_hash}")}
+              class="text-hover-blue"
+            >
+              <span><%= @transaction_receipt.block_hash |> Utils.shorten_block_hash() %></span>
+            </a>
 
             <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
               <div class="relative">

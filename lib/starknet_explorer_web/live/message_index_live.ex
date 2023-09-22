@@ -36,7 +36,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
                 <div class="relative">
                   <div class="break-all text-hover-blue">
                     <a
-                      href={Utils.network_path(@network, "/messages/#{message.message_hash}")}
+                      href={Utils.network_path(@network, "messages/#{message.message_hash}")}
                       class="text-hover-blue"
                     >
                       <span><%= message.message_hash |> Utils.shorten_block_hash() %></span>
@@ -144,7 +144,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
                 <div class="relative">
                   <div class="break-all text-hover-blue">
                     <a
-                      href={Utils.network_path(@network, "/transactions/#{message.transaction_hash}")}
+                      href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
                       class="text-hover-blue"
                     >
                       <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>

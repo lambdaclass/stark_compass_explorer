@@ -28,12 +28,17 @@ defmodule StarknetExplorerWeb.EventDetailLive do
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Block Hash</div>
         <div>
-          <%= live_redirect(
-            "0x014570bdb1ed38e71bb11709b2fff208101d74231c1b973bd5d1e3ab717c659a"
-            |> Utils.shorten_block_hash(),
-            to:
-              ~p"/#{@network}/blocks/0x014570bdb1ed38e71bb11709b2fff208101d74231c1b973bd5d1e3ab717c659a"
-          ) %>
+          <a
+            href={
+              Utils.network_path(
+                @network,
+                "blocks/0x014570bdb1ed38e71bb11709b2fff208101d74231c1b973bd5d1e3ab717c659a"
+              )
+            }
+            class="text-hover-blue"
+          >
+            <span> 0x014570bdb1ed38e71bb11709b2fff208101d74231c1b973bd5d1e3ab717c659a </span>
+          </a>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
