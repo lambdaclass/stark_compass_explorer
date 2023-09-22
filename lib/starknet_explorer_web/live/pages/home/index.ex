@@ -43,7 +43,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <div>
           <%= live_render(@socket, TPSComponent,
             id: "tps-number",
-            session: %{"network" => @network}
+            session: %{"network" => Map.get(assigns, :network)}
           ) %>
         </div>
       </div>
@@ -116,7 +116,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <div class="table-header">
           <div class="table-title">Latest Blocks</div>
           <a
-            href={~p"/#{@network}/blocks"}
+            href={Utils.network_path(@network, "blocks")}
             class="text-gray-300 hover:text-white transition-all duration-300"
           >
             <div class="flex gap-2 items-center">
@@ -185,7 +185,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <div class="table-header">
           <div class="table-title">Latest Transactions</div>
           <a
-            href={~p"/#{@network}/transactions"}
+            href={Utils.network_path(@network, "transactions")}
             class="text-gray-300 hover:text-white transition-all duration-300"
           >
             <div class="flex gap-2 items-center">
@@ -276,13 +276,19 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       end)
       |> Map.new()
 
+    max_block_height =
+      StarknetExplorer.Blockchain.ListenerWorker.get_height(
+        StarknetExplorer.Utils.listener_atom(socket.assigns.network)
+      )
+
     {:noreply,
      assign(socket,
        blocks: blocks,
        transactions: transactions,
        entities_count: entities_count,
        latest_block: latest_block,
-       block_height: StarknetExplorer.Utils.format_number_for_display(latest_block.number)
+       block_height:
+         StarknetExplorer.Utils.format_number_for_display(max_block_height.latest_block_number)
      )}
   end
 end
