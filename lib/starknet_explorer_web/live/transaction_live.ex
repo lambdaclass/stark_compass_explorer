@@ -134,7 +134,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </div>
         <div>
           <div class="list-h">From Address</div>
-          <div><%= event.from_address |> Utils.shorten_block_hash() %></div>
+          <div><%= event["from_address"] |> Utils.shorten_block_hash() %></div>
         </div>
         <div>
           <div class="list-h">Age</div>
