@@ -18,7 +18,8 @@ config :starknet_explorer, StarknetExplorerWeb.Endpoint,
     layout: false
   ],
   pubsub_server: StarknetExplorer.PubSub,
-  live_view: [signing_salt: "zWxY2ubk"]
+  live_view: [signing_salt: "zWxY2ubk"],
+  env: Mix.env()
 
 # Configures the mailer
 #
