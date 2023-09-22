@@ -49,6 +49,10 @@ defmodule StarknetExplorerWeb.Utils do
     |> String.replace_suffix(".", ".0")
   end
 
+  def hex_wei_to_eth("0") do
+    "0.0"
+  end
+
   def atomize_keys(map) when is_map(map) do
     map
     |> Map.new(fn
