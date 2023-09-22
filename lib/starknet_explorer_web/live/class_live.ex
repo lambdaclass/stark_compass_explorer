@@ -117,8 +117,12 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
       <div class="grid-4 custom-list-item">
         <div>
           <div class="list-h">Contract Address</div>
-          <%= Utils.shorten_block_hash(
-            "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
+          <%= live_redirect(
+            Utils.shorten_block_hash(
+              "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
+            ),
+            to:
+              ~p"/#{@network}/contracts/0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
           ) %>
         </div>
         <div>
@@ -150,8 +154,12 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     <%= for _ <- 0..10 do %>
       <div class="grid-4 custom-list-item">
         <div>
-          <%= Utils.shorten_block_hash(
-            "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
+          <%= live_redirect(
+            Utils.shorten_block_hash(
+              "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
+            ),
+            to:
+              ~p"/#{@network}/contracts/0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
           ) %>
         </div>
         <div>ERC20</div>
@@ -177,15 +185,23 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     <div class="grid-4 custom-list-item">
       <div>Declared By Contract Address</div>
       <div class="cols-span-3">
-        <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
-        |> Utils.shorten_block_hash() %>
+        <%= live_redirect(
+          "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
+          |> Utils.shorten_block_hash(),
+          to:
+            ~p"/#{@network}/contracts/0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
+        ) %>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
       <div>Declared At Transaction Hash</div>
       <div class="cols-span-3">
-        <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
-        |> Utils.shorten_block_hash() %>
+        <%= live_redirect(
+          "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
+          |> Utils.shorten_block_hash(),
+          to:
+            ~p"/#{@network}/transactions/0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
+        ) %>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
