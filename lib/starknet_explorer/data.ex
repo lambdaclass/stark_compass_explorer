@@ -281,13 +281,9 @@ defmodule StarknetExplorer.Data do
     |> Enum.map(fn {call_data, index} ->
       # TODO: this can be optimized because we are going out to the Rpc/DB for every call, but contracts might be repeated
       # (like in the case of CALL and DELEGATE call types) so those can be coalesced
-      input_data =
-        Calldata.get_input_data(
-          "latest",
-          call_data.contract_address,
-          call_data.selector,
-          network
-        )
+
+      functions_data = Calldata.get_functions_data("latest", call_data.contract_address, network)
+      {input_data, _structs} = Calldata.get_input_data(functions_data, call_data.selector)
 
       call_data =
         Map.put(
