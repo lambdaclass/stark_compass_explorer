@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.{Data, Message, Rpc}
+  alias StarknetExplorer.{Data, Message, Rpc, Events}
 
   defp transaction_header(assigns) do
     ~H"""
@@ -127,7 +127,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <div>
           <div class="list-h">Name</div>
           <div>
-            <%= Data.get_event_name(event, @network) %>
+            <%= Events.get_event_name(event, @network) %>
           </div>
         </div>
         <div>

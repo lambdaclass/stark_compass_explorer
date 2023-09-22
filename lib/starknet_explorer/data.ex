@@ -2,9 +2,6 @@ defmodule StarknetExplorer.Data do
   require Logger
   alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata}
 
-  @implementation_selector "0x3a0ed1f62da1d3048614c2c1feb566f041c8467eb00fb8294776a9179dc1643"
-  @implementation_hash_selector "0x1d15dd5e6cac14c959221a0b45927b113a91fcfffa4c7bbab19b28d345467df"
-
   @doc """
   Fetch `block_amount` blocks (defaults to 15), first
   look them up in the db, if not found check the RPC
