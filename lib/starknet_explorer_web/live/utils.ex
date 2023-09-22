@@ -97,6 +97,15 @@ defmodule StarknetExplorerWeb.Utils do
        |> String.downcase())
   end
 
+  def format_arg_value(%{
+        :type => "core::array::Array::<" <> _rest,
+        :value => value
+      }) do
+    value
+    |> Jason.encode!()
+    |> Jason.Formatter.pretty_print()
+  end
+
   def format_arg_value(%{:type => type, :value => value}) do
     case String.ends_with?(type, "*") do
       true ->
