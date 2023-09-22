@@ -45,6 +45,7 @@
       TESTNET_RPC_API_HOST:
       TESTNET_2_RPC_API_HOST:
       DB_TYPE: "{{ lookup('ansible.builtin.env', 'DB_TYPE') }}"
+      DATABASE_URL: "{{ lookup('ansible.builtin.env', 'DATABASE_URL') }}"
       NEWRELIC_KEY:
       NEWRELIC_APP_NAME:
       SECRET_KEY_BASE: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
