@@ -91,8 +91,6 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
 
   @impl true
   def handle_info(:load_blocks, socket) do
-    IO.inspect("testffff")
-    IO.inspect(Data.latest_block_with_transactions(socket.assigns.network))
     {:noreply,
      assign(socket,
        latest_block: Data.latest_block_with_transactions(socket.assigns.network)

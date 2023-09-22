@@ -40,6 +40,15 @@ defmodule StarknetExplorer.Blockchain.ListenerWorker do
     {:noreply, state}
   end
 
+  def get_height(network_listener \\ :listener_mainnet) do
+    GenServer.call(network_listener, :get_height)
+  end
+
+  @impl true
+  def handle_call(:get_height, _from, state) do
+    {:reply, state, state.latest_block_number}
+  end
+
   defp try_fetch(true, state = %ListenerWorker{network: network}) do
     next_to_fetch = state.latest_block_number + 1
 

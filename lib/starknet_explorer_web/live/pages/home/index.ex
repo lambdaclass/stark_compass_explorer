@@ -261,13 +261,19 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       end)
       |> Map.new()
 
+    max_block_height =
+      StarknetExplorer.Blockchain.ListenerWorker.get_height(
+        StarknetExplorer.Utils.listener_atom(socket.assigns.network)
+      )
+
     {:noreply,
      assign(socket,
        blocks: blocks,
        transactions: transactions,
        entities_count: entities_count,
        latest_block: latest_block,
-       block_height: StarknetExplorer.Utils.format_number_for_display(latest_block.number)
+       block_height:
+         StarknetExplorer.Utils.format_number_for_display(max_block_height.latest_block_number)
      )}
   end
 end
