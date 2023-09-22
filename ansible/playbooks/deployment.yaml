@@ -45,6 +45,8 @@
       TESTNET_RPC_API_HOST:
       TESTNET_2_RPC_API_HOST:
       DB_TYPE: "{{ lookup('ansible.builtin.env', 'DB_TYPE') }}"
+      NEWRELIC_KEY:
+      NEWRELIC_APP_NAME:
       SECRET_KEY_BASE: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
       PORT: "4100"
     args:

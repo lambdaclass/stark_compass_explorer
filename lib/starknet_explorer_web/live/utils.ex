@@ -68,6 +68,17 @@ defmodule StarknetExplorerWeb.Utils do
     shorten_block_hash(value)
   end
 
+  def format_arg_value(%{:type => "core::felt252", :value => value}) do
+    shorten_block_hash(value)
+  end
+
+  def format_arg_value(%{
+        :type => "core::starknet::contract_address::ContractAddress",
+        :value => value
+      }) do
+    shorten_block_hash(value)
+  end
+
   def format_arg_value(%{
         :type => "Uint256",
         :value => [<<"0x", high::binary>>, <<"0x", low::binary>>]
@@ -88,7 +99,27 @@ defmodule StarknetExplorerWeb.Utils do
        |> String.downcase())
   end
 
-  def format_arg_value(%{:value => value}) do
-    shorten_block_hash(value)
+  def format_arg_value(%{
+        :type => "core::array::Array::<" <> _rest,
+        :value => value
+      }) do
+    value
+    |> Jason.encode!()
+    |> Jason.Formatter.pretty_print()
+  end
+
+  def format_arg_value(%{:type => type, :value => value}) do
+    case String.ends_with?(type, "*") do
+      true ->
+        type = String.replace_suffix(type, "*", "")
+
+        value
+        |> Enum.map(&format_arg_value(%{:type => type, :value => &1}))
+        |> Jason.encode!()
+        |> Jason.Formatter.pretty_print()
+
+      _ ->
+        value
+    end
   end
 end
