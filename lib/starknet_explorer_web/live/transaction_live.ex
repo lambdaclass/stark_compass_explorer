@@ -412,7 +412,11 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Number</div>
       <div class="col-span-3">
-        <span class="blue-label"><%= @transaction_receipt.block_number %></span>
+        <span class="blue-label">
+          <%= live_redirect(@transaction_receipt.block_number,
+            to: ~p"/#{@network}/blocks/#{@transaction_receipt.block_hash}"
+          ) %>
+        </span>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
@@ -424,7 +428,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
           phx-hook="Copy"
         >
           <div class="relative">
-            <%= @transaction_receipt.block_hash |> Utils.shorten_block_hash() %>
+            <%= live_redirect(@transaction_receipt.block_hash |> Utils.shorten_block_hash(),
+              to: ~p"/#{@network}/blocks/#{@transaction_receipt.block_hash}"
+            ) %>
+
             <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
               <div class="relative">
                 <img
@@ -510,7 +517,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
                   enum={input.call.args}
                 ><:separator>, </:separator>
                   <span class="text-blue-400"><%= arg.name %></span></.intersperse>)
-                <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
+                <span class="text-blue-400">-></span> <%= live_redirect(Utils.shorten_block_hash(input.selector),
+                    to: ~p"/#{@network}/contracts/#{input.selector}"
+                  ) %>
               </div>
               <div class="w-full bg-black/10 p-5">
                 <div class="grid-3 table-th">
