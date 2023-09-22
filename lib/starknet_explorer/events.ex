@@ -3,11 +3,10 @@ defmodule StarknetExplorer.Events do
   import Ecto.Changeset
   import Ecto.Query
   alias StarknetExplorer.Events
-  alias StarknetExplorer.Data
   alias StarknetExplorer.Repo
   alias StarknetExplorer.Rpc
-  alias StarknetExplorerWeb.Utils
-  @primary_key {:id, :string, autogenerate: false}
+  @primary_key {:id, :binary_id, autogenerate: true}
+
   @fields [
     :name,
     :from_address,
@@ -46,14 +45,13 @@ defmodule StarknetExplorer.Events do
   }
 
   @common_event_hashes Map.keys(@common_event_hash_to_name)
-  @condition_to_match 15
-  @continuation_tokens ["0", "1000", "2000", "3000", "4000"]
+  # @condition_to_match 15
   @chunk_size 1000
-  @chunk_every 50
+
   # Defines the separator used to distinguish between modules and event names in Cairo0 events.
   # In Cairo0 events, event names may include module information in the format:
   # `Module1::SubModule::EventName`
-  @event_module_separator "::"
+  # @event_module_separator "::"
 
   schema "events" do
     # belongs_to :transaction_hash, Transaction, references: :hash
@@ -70,72 +68,72 @@ defmodule StarknetExplorer.Events do
     timestamps()
   end
 
-  def changeset(schema, %{"keys" => [name_hashed | _]} = params, network) do
+  def changeset(schema, params) do
     schema
     |> cast(params, @fields)
-    |> cast(
-      %{
-        id:
-          Integer.to_string(params["block_number"]) <>
-            "_" <> Integer.to_string(params["index_in_block"])
-      },
-      [:id]
-    )
-    |> cast(%{index_in_block: params["index_in_block"]}, [:index_in_block])
-    |> cast(%{name: get_event_name(params, network)}, [:name])
-    |> cast(%{name_hashed: name_hashed}, [:name_hashed])
     |> foreign_key_constraint(:block_number)
     |> foreign_key_constraint(:transaction_hash)
-    |> unique_constraint(:id)
     |> validate_required(@fields)
   end
 
-  def insert(event, relative_idx, continuation_token, network, block) do
+  def insert(event) do
     %StarknetExplorer.Events{}
-    |> changeset(
-      event
-      |> Map.put("index_in_block", relative_idx + String.to_integer(continuation_token))
-      |> Map.put("age", block.timestamp)
-      |> Map.put("block_number", block.number)
-      |> Map.put("network", network),
-      network
-    )
+    |> changeset(event)
     |> Repo.insert()
   end
 
-  defp _get_event_name(abi, event_name_hashed) when is_list(abi) do
-    abi
-    |> Enum.filter(fn abi_entry -> abi_entry["type"] == "event" end)
-    |> Map.new(fn abi_event ->
-      {abi_event["name"]
-       |> String.split(@event_module_separator)
-       |> List.last()
-       |> ExKeccak.hash_256()
-       |> Base.encode16(case: :lower)
-       |> StarknetExplorer.Utils.last_n_characters(@condition_to_match),
-       List.last(String.split(abi_event["name"], @event_module_separator))}
-    end)
-    |> Map.get(
-      StarknetExplorer.Utils.last_n_characters(event_name_hashed, @condition_to_match),
-      Utils.shorten_block_hash(event_name_hashed)
-    )
-  end
+  # This is commented until prior use when we resolve how and when to fetch
+  # the contract class data.
+  # defp _get_event_name(abi, event_name_hashed) when is_list(abi) do
+  #   abi
+  #   |> Enum.filter(fn abi_entry -> abi_entry["type"] == "event" end)
+  #   |> Map.new(fn abi_event ->
+  #     {abi_event["name"]
+  #      |> String.split(@event_module_separator)
+  #      |> List.last()
+  #      |> ExKeccak.hash_256()
+  #      |> Base.encode16(case: :lower)
+  #      |> StarknetExplorer.Utils.last_n_characters(@condition_to_match),
+  #      List.last(String.split(abi_event["name"], @event_module_separator))}
+  #   end)
+  #   |> Map.get(
+  #     StarknetExplorer.Utils.last_n_characters(event_name_hashed, @condition_to_match),
+  #     Utils.shorten_block_hash(event_name_hashed)
+  #   )
+  # end
 
-  defp _get_event_name(abi, event_name_hashed) do
-    abi
-    |> Jason.decode!()
-    |> _get_event_name(event_name_hashed)
-  end
+  # defp _get_event_name(abi, event_name_hashed) do
+  #   abi
+  #   |> Jason.decode!()
+  #   |> _get_event_name(event_name_hashed)
+  # end
+
+  # TODO: refactor this functions.
+  def get_event_name(%{"keys" => [event_name_hashed]} = _event, _network)
+      when event_name_hashed in @common_event_hashes,
+      do: @common_event_hash_to_name[event_name_hashed]
 
   def get_event_name(%{"keys" => [event_name_hashed | _]} = _event, _network)
       when event_name_hashed in @common_event_hashes,
       do: @common_event_hash_to_name[event_name_hashed]
 
-  def get_event_name(%{"keys" => [event_name_hashed | _]} = event, network) do
-    Data.get_class_at(event["block_number"], event["from_address"], network)
-    |> Map.get("abi")
-    |> _get_event_name(event_name_hashed)
-  end
+  def get_event_name(%{"keys" => keys} = _event, _network), do: List.first(keys)
+  # This was too heavy to compute when fetching blocks and related structures.
+  # TODO: revisit this.
+  #   Data.get_class_at(event["block_number"], event["from_address"], network)
+  #   |> Map.get("abi")
+  #   |> _get_event_name(List.first(keys))
+  # end
+
+  def get_event_name(%{keys: [event_name_hashed]} = _event, _network)
+      when event_name_hashed in @common_event_hashes,
+      do: @common_event_hash_to_name[event_name_hashed]
+
+  def get_event_name(%{keys: [event_name_hashed | _]} = _event, _network)
+      when event_name_hashed in @common_event_hashes,
+      do: @common_event_hash_to_name[event_name_hashed]
+
+  def get_event_name(%{keys: keys} = _event, _network), do: List.first(keys)
 
   def paginate_events(params, block_number, network) do
     Events
@@ -144,52 +142,43 @@ defmodule StarknetExplorer.Events do
     |> Repo.paginate(params)
   end
 
+  def try_fetch_next_page(block_hash, network, continuation_token \\ nil) do
+    Rpc.get_block_events_paginated(
+      block_hash,
+      %{
+        "continuation_token" => continuation_token,
+        "chunk_size" => @chunk_size
+      },
+      network
+    )
+  end
+
   def get_total_count() do
     StarknetExplorer.Events |> Repo.aggregate(:count, :id)
   end
 
-  def store_events_from_rpc(block, network) do
-    Enum.reduce_while(@continuation_tokens, :ok, fn continuation_token, acc ->
-      with {:ok, %{"events" => events = [_first_elem | _]} = _rpc_response} <-
-             Rpc.get_block_events_paginated(
-               block.hash,
-               %{
-                 "chunk_size" => @chunk_size,
-                 "continuation_token" => continuation_token
-               },
-               network
-             ) do
-        # [[event * @chunk_every]]
-        events
-        |> Enum.chunk_every(@chunk_every)
-        |> Enum.with_index(fn events, idx -> {events, idx} end)
-        |> Enum.map(fn {events, idx} ->
-          StarknetExplorer.Repo.transaction(fn ->
-            events
-            |> Enum.with_index(
-              &insert(
-                &1,
-                &2,
-                Integer.to_string(String.to_integer(continuation_token) + @chunk_every * idx),
-                network,
-                block
-              )
-            )
-          end)
-        end)
+  def fetch_from_rpc(block_hash, network) do
+    # 1..1000 is a made up number, we are capable of bringing at most 1000 * @chunk_size events.
+    # It will halt when the last page is received.
+    {events, _acc} =
+      Enum.flat_map_reduce(1..1000, nil, fn _, acc ->
+        if acc == "last_page_reached" do
+          {:halt, acc}
+        end
 
-        {:cont, acc}
-      else
-        # This means that we fetch all the events from a block.
-        {:error, %{"code" => 33}} ->
-          {:cont, acc}
+        case try_fetch_next_page(block_hash, network, acc) do
+          {:ok, %{"events" => events, "continuation_token" => continuation_token}} ->
+            {events, continuation_token}
 
-        {:ok, %{"events" => []} = _rpc_response} ->
-          {:halt, {:err, "Empty events from RPC."}}
+          # when no continuation token is present, this means that we reached the end of the events.
+          {:ok, %{"events" => events}} ->
+            {events, "last_page_reached"}
 
-        err ->
-          {:halt, err}
-      end
-    end)
+          _err ->
+            {:halt, acc}
+        end
+      end)
+
+    events
   end
 end
