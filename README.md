@@ -9,6 +9,7 @@
     - [RPC with Juno](#rpc-with-juno)
     - [Database](#database)
     - [Up and running](#up-and-running)
+  - [Using Madara Explorer with PostgreSQL](#using-madara-explorer-with-postgresql)
 
 ## Requirements
 - SQLite
@@ -48,6 +49,12 @@ export RPC_API_HOST=your_rpc_hostname
 export TESTNET_RPC_API_HOST=testnet_rpc_hostname
 export TESTNET_2_RPC_API_HOST=testnet_2_rpc_hostname
 ```
+
+Some of the desired data related to Starknet is not currently available through the RPC standard. Because of this, the explorer also gets information through the feeder gateway API. In order to enable this functionality, the variable `ENABLE_GATEWAY_DATA` needs to be set to `true` (if nothing is set, it will default to `false`). Note that this is only pertinent to the Starknet networks and not other particular networks that are compatible with the RPC standard.
+
+```bash
+export ENABLE_GATEWAY_DATA=true
+``````
 
 ### RPC with Juno
 
@@ -106,4 +113,20 @@ From now on, if you want to restart the app, you can just do:
 
 ```bash
 make run
+```
+
+## Using Madara Explorer with PostgreSQL
+
+If you want to handle multiple concurrent connections and a more scalable application, you may consider using PostgreSQL.
+
+Madara Explorer provides support for that, you can set the credentials to the PostgreSQL DB in the `runtime.exs` and set the environment variable `DB_TYPE` to `postgresql`.
+
+```bash
+export DB_TYPE=postgresql
+```
+
+A Docker image of PostgreSQL is provided in the `docker-compose.yml` file, you can get the service up and running with the command:
+
+```bash
+docker-compose up postgres
 ```

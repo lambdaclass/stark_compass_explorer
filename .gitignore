@@ -48,3 +48,6 @@ juno_files
 *.db
 *.db-shm
 *.db-wal
+
+# Ignore docker files
+docker-data/

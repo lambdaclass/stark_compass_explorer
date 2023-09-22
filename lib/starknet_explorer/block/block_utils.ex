@@ -20,20 +20,32 @@ defmodule StarknetExplorer.BlockUtils do
   end
 
   def store_block(block = %{"block_number" => block_number}, network) do
-    with {:ok, receipts} <- receipts_for_block(block, network),
-         {:ok, gateway_block = %{"gas_price" => gas_price}} <-
-           StarknetExplorer.Gateway.fetch_block(block_number, network) do
+    with {:ok, receipts} <- receipts_for_block(block, network) do
       block =
         block
-        |> Map.put("gas_fee_in_wei", gas_price)
-        |> Map.put("execution_resources", calculate_gateway_block_steps(gateway_block))
         |> Map.put("network", network)
+
+      block =
+        case Application.get_env(:starknet_explorer, :enable_gateway_data) do
+          true ->
+            {:ok, gateway_block = %{"gas_price" => gas_price}} =
+              StarknetExplorer.Gateway.fetch_block(block_number, network)
+
+            block
+            |> Map.put("gas_fee_in_wei", gas_price)
+            |> Map.put("execution_resources", calculate_gateway_block_steps(gateway_block))
+
+          _ ->
+            block
+            |> Map.put("gas_fee_in_wei", "0")
+            |> Map.put("execution_resources", 0)
+        end
 
       Block.insert_from_rpc_response(block, receipts, network)
     end
   end
 
-  defp receipts_for_block(_block = %{"transactions" => transactions}, network) do
+  defp receipts_for_block(block = %{"transactions" => transactions}, network) do
     receipts =
       transactions
       |> Enum.chunk_every(75)
@@ -41,7 +53,12 @@ defmodule StarknetExplorer.BlockUtils do
         tasks =
           Enum.map(chunk, fn %{"transaction_hash" => tx_hash} ->
             Task.async(fn ->
-              {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
+              {:ok, receipt} = case Rpc.get_transaction_receipt(tx_hash, network) do
+                {:ok, receipt} -> {:ok, receipt}
+                err ->
+                  Logger.error("Failed to fetch transaction: #{tx_hash}, from block: #{block["block_number"]}")
+                  {:err, err}
+              end
 
               {tx_hash, receipt |> Map.put("network", network)}
             end)
@@ -70,13 +87,6 @@ defmodule StarknetExplorer.BlockUtils do
 
       {:error, _} ->
         :error
-    end
-  end
-
-  def format_hex_for_display(hex) do
-    case Integer.parse(hex |> String.replace_prefix("0x", ""), 16) do
-      {decimal, _} -> (decimal / :math.pow(10, 18)) |> :erlang.float_to_binary([{:decimals, 18}])
-      :error -> "Wrong number formatting"
     end
   end
 
