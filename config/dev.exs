@@ -1,11 +1,20 @@
 import Config
 
 # Configure your database
-config :starknet_explorer, StarknetExplorer.Repo,
-  database: "./priv/repo/explorer_dev.db",
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+if System.get_env("DB_TYPE") == "postgresql" do
+  config :starknet_explorer, StarknetExplorer.Repo,
+    database: "madaraexplorer_dev",
+    username: "madaraexplorer_user",
+    password: "madaraexplorerlambda",
+    hostname: "localhost",
+    port: 5432
+else
+  config :starknet_explorer, StarknetExplorer.Repo,
+    database: "./priv/repo/explorer_dev.db",
+    stacktrace: true,
+    show_sensitive_data_on_connection_error: true,
+    pool_size: 10
+end
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
