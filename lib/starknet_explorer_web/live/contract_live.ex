@@ -161,8 +161,12 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Deployed At Transaction Hash</div>
         <div>
-          <%= "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
-          |> Utils.shorten_block_hash() %>
+          <%= live_redirect(
+            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
+            |> Utils.shorten_block_hash(),
+            to:
+              ~p"/#{@network}/transactions/0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
+          ) %>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
@@ -198,7 +202,12 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         </div>
         <div>
           <div class="list-h">Block Number</div>
-          <div>98133</div>
+          <div>
+            <%= live_redirect(
+              "98133",
+              to: ~p"/#{@network}/blocks/98133"
+            ) %>
+          </div>
         </div>
         <div>
           <div class="list-h">Status</div>
@@ -249,12 +258,21 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         </div>
         <div>
           <div class="list-h">Block Number</div>
-          <div>98133</div>
+          <div>
+            <%= live_redirect(
+              "98133",
+              to: ~p"/#{@network}/blocks/98133"
+            ) %>
+          </div>
         </div>
         <div>
           <div class="list-h">Transaction Hash</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
+          <%= live_redirect(
+            Utils.shorten_block_hash(
+              "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
+            ),
+            to:
+              ~p"/#{@network}/transactions/0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
           ) %>
         </div>
         <div>
