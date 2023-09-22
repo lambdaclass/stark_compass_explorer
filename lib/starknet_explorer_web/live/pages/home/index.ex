@@ -32,11 +32,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       flash: @flash,
       session: %{"network" => @network}
     ) %>
-    <div class="flex flex-col gap-1 justify-center items-center">
-      <h1>Welcome to</h1>
-      <h2>Madara Starknet Explorer</h2>
+    <div class="flex flex-col gap-1 justify-center items-center mb-16">
+      <h1>Madara Starknet Explorer</h1>
     </div>
-    <div class="relative w-52 flex items-start gap-3 bg-container p-3 text-sm ml-8">
+    <div class="relative w-full md:w-52 flex items-start gap-3 bg-container p-3 text-sm lg:ml-8">
       <img id="tps" class="absolute top-2 right-2 w-5 h-5" src={~p"/images/help-circle.svg"} />
       <img src={~p"/images/zap.svg"} class="my-auto" />
       <div class="flex">
@@ -49,79 +48,67 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </div>
       </div>
     </div>
-    <div class="mx-auto max-w-7xl grid grid-cols-2 lg:grid-cols-4 gap-5 mt-4 mb-5">
-      <div class="relative bg-container">
-        <div class="flex items-start gap-6 my-4 mx-8">
-          <img src={~p"/images/box.svg"} class="my-auto w-6 h-auto" />
-          <div>
-            <div class="text-sm text-gray-400">Blocks Height</div>
-            <div class="text-2xl mt-1"><%= assigns.block_height %></div>
+    <div class="mx-auto max-w-7xl grid md:grid-cols-2 lg:grid-cols-4 gap-5 mt-4 mb-5">
+      <a href={~p"/#{@network}/blocks"} class="bg-container text-gray-100">
+        <div class="relative bg-container">
+          <div class="flex items-start gap-6 my-4 mx-8">
+            <img src={~p"/images/box.svg"} class="my-auto w-6 h-auto" />
+            <div>
+              <div class="text-sm text-gray-400">Blocks Height</div>
+              <div class="text-2xl mt-1"><%= assigns.block_height %></div>
+            </div>
           </div>
-        </div>
-        <a
-          href={~p"/#{@network}/blocks"}
-          class="text-gray-300 hover:text-white transition-all duration-300"
-        >
           <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
             <div class="text-sm">View all blocks</div>
             <img src={~p"/images/arrow-right.svg"} />
           </div>
-        </a>
-      </div>
-      <div class="reative bg-container">
-        <div class="flex items-start gap-6 my-4 mx-8">
-          <img src={~p"/images/message-square.svg"} class="my-auto w-6 h-auto" />
-          <div>
-            <div class="text-sm text-gray-400">Messages</div>
-            <div class="text-2xl mt-1"><%= @entities_count.message_count %></div>
-          </div>
         </div>
-        <a
-          href={~p"/#{@network}/messages"}
-          class="text-gray-300 hover:text-white transition-all duration-300"
-        >
+      </a>
+      <a href={~p"/#{@network}/messages"} class="bg-container text-gray-100">
+        <div class="reative bg-container">
+          <div class="flex items-start gap-6 my-4 mx-8">
+            <img src={~p"/images/message-square.svg"} class="my-auto w-6 h-auto" />
+            <div>
+              <div class="text-sm text-gray-400">Messages</div>
+              <div class="text-2xl mt-1"><%= @entities_count.message_count %></div>
+            </div>
+          </div>
           <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
             <div class="text-sm">View all messages</div>
             <img src={~p"/images/arrow-right.svg"} />
           </div>
-        </a>
-      </div>
-      <div class="reative bg-container">
-        <div class="flex items-start gap-6 my-4 mx-8">
-          <img src={~p"/images/calendar.svg"} class="my-auto w-6 h-auto" />
-          <div>
-            <div class="text-sm text-gray-400">Events</div>
-            <div class="text-2xl mt-1"><%= @entities_count.events_count %></div>
-          </div>
         </div>
-        <a
-          href={~p"/#{@network}/events"}
-          class="text-gray-300 hover:text-white transition-all duration-300"
-        >
+      </a>
+      <a href={~p"/#{@network}/events"} class="bg-container text-gray-100">
+        <div class="reative bg-container">
+          <div class="flex items-start gap-6 my-4 mx-8">
+            <img src={~p"/images/calendar.svg"} class="my-auto w-6 h-auto" />
+            <div>
+              <div class="text-sm text-gray-400">Events</div>
+              <div class="text-2xl mt-1"><%= @entities_count.events_count %></div>
+            </div>
+          </div>
           <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
             <div class="text-sm">View all events</div>
             <img src={~p"/images/arrow-right.svg"} />
           </div>
-        </a>
-      </div>
-      <div class="reative bg-container">
-        <div class="flex items-start gap-6 my-4 mx-8">
-          <img src={~p"/images/check-square.svg"} class="my-auto w-6 h-auto" />
-          <div>
-            <div class="text-sm text-gray-400">Transactions</div>
-            <div class="text-2xl mt-1"><%= @entities_count.transaction_count %></div>
-          </div>
         </div>
-        <a
-          href={~p"/#{@network}/transactions"}
-          class="text-gray-300 hover:text-white transition-all duration-300"
-        >
+      </a>
+      <a href={~p"/#{@network}/transactions"} class="bg-container text-gray-100">
+        <div class="reative bg-container">
+          <div class="flex items-start gap-6 my-4 mx-8">
+            <img src={~p"/images/check-square.svg"} class="my-auto w-6 h-auto" />
+            <div>
+              <div class="text-sm text-gray-400">Transactions</div>
+              <div class="text-2xl mt-1"><%= @entities_count.transaction_count %></div>
+            </div>
+          </div>
           <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
             <div class="text-sm">View all transactions</div>
             <img src={~p"/images/arrow-right.svg"} />
           </div>
-        </a>
-      </div>
+        </div>
+      </a>
     </div>
 
     <div class="mx-auto max-w-7xl grid lg:grid-cols-2 lg:gap-5 xl:gap-16 mt-16">
