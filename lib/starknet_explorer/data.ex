@@ -1,5 +1,6 @@
 defmodule StarknetExplorer.Data do
   require Logger
+
   alias StarknetExplorer.{
     Rpc,
     Transaction,
@@ -10,6 +11,7 @@ defmodule StarknetExplorer.Data do
     Calldata,
     Gateway
   }
+
   alias StarknetExplorerWeb.Utils
 
   @common_event_hash_to_name %{
