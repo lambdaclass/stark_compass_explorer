@@ -45,7 +45,7 @@ defmodule StarknetExplorer.Data do
   provider.
   """
   def many_blocks(network, block_amount \\ 15) do
-    blocks = Block.latest_blocks_with_txs(block_amount, network)
+    Block.latest_blocks_with_txs(block_amount, network)
   end
 
   @doc """
