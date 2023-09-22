@@ -194,7 +194,7 @@ defmodule StarknetExplorer.Calldata do
   end
 
   def get_functions_data(block_id, address, network) do
-    case Rpc.get_class_at(block_id, address, network) |> IO.inspect() do
+    case Rpc.get_class_at(block_id, address, network) do
       {:ok, class} ->
         selectors = get_selectors(class)
 
