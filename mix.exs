@@ -31,11 +31,12 @@ defmodule StarknetExplorer.MixProject do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    db_adapter = if System.get_env("DB_TYPE") == "postgresql" do
-      [{:postgrex, ">= 0.0.0"}]
-    else
-      [{:ecto_sqlite3, ">= 0.0.0"}]
-    end
+    db_adapter =
+      if System.get_env("DB_TYPE") == "postgresql" do
+        [{:postgrex, ">= 0.0.0"}]
+      else
+        [{:ecto_sqlite3, ">= 0.0.0"}]
+      end
 
     [
       {:phoenix, "~> 1.7.6"},
