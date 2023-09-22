@@ -25,7 +25,7 @@ defmodule StarknetExplorer.Repo.Migrations.AddEventsTable do
       add :name_hashed, :string
       # array of felts.
       add :data, {:array, :string}
-      add :id, :string
+      add :id, :uuid, primary_key: true
       add :index_in_block, :integer
       add :block_number, :integer
       add :transaction_hash, :string

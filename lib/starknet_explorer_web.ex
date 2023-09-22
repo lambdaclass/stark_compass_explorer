@@ -17,7 +17,7 @@ defmodule StarknetExplorerWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images priv/assets/favicon.ico robots.txt)
+  def static_paths, do: ~w(assets fonts images favicon-16x16.png favicon-32x32.png robots.txt)
 
   def router do
     quote do
@@ -90,6 +90,7 @@ defmodule StarknetExplorerWeb do
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
+      alias StarknetExplorerWeb.Utils
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
