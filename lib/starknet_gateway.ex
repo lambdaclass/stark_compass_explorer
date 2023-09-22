@@ -14,6 +14,9 @@ defmodule StarknetExplorer.Gateway do
   def fetch_block(block_number, network) when is_integer(block_number),
     do: get_block_request(%{blockNumber: block_number}, network)
 
+  def trace_transaction(transaction_hash, network),
+    do: gateway_request("get_transaction_trace", %{transactionHash: transaction_hash}, network)
+
   defp get_block_request(query, network), do: gateway_request("get_block", query, network)
 
   defp gateway_request(method, query, network) do
