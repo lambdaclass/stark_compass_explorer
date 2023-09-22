@@ -1,4 +1,8 @@
 name: Deploy https://madaraexplorer.com/
+
+concurrency:
+  group: ${{ github.workflow }}
+
 on:
   push:
     tags:

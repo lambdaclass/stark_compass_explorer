@@ -1,4 +1,8 @@
 name: Deploy https://testing.madaraexplorer.com/
+
+concurrency:
+  group: ${{ github.workflow }}
+
 on:
   push:
     branches:
