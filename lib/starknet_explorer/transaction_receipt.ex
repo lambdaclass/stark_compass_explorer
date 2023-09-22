@@ -14,7 +14,8 @@ defmodule StarknetExplorer.TransactionReceipt do
     :block_hash,
     :block_number,
     :messages_sent,
-    :events
+    :events,
+    :execution_resources
   ]
 
   @l1_receipt_handler [
@@ -26,7 +27,8 @@ defmodule StarknetExplorer.TransactionReceipt do
     :block_hash,
     :block_number,
     :messages_sent,
-    :events
+    :events,
+    :execution_resources
   ]
 
   @declare_tx_receipt [
@@ -38,7 +40,8 @@ defmodule StarknetExplorer.TransactionReceipt do
     :block_hash,
     :block_number,
     :messages_sent,
-    :events
+    :events,
+    :execution_resources
   ]
 
   @deploy_tx_receipt [
@@ -50,7 +53,8 @@ defmodule StarknetExplorer.TransactionReceipt do
     :messages_sent,
     :events,
     :type,
-    :contract_address
+    :contract_address,
+    :execution_resources
   ]
 
   @deploy_account_tx_receipt [
@@ -63,7 +67,8 @@ defmodule StarknetExplorer.TransactionReceipt do
     :messages_sent,
     :events,
     :type,
-    :contract_address
+    :contract_address,
+    :execution_resources
   ]
 
   # @pending_receipt [
@@ -101,6 +106,7 @@ defmodule StarknetExplorer.TransactionReceipt do
     field :events, {:array, :map}
     field :contract_address
     field :network, Ecto.Enum, values: @networks
+    field :execution_resources, :map
     timestamps()
   end
 

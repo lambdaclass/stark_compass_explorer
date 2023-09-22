@@ -16,6 +16,7 @@ defmodule StarknetExplorer.Repo.Migrations.TransactionReceipts do
       add :messages_sent, {:array, :map}, null: true
       add :events, {:array, :map}, null: true
       add :contract_address, :string
+      add :execution_resources, :map
       timestamps()
     end
 
