@@ -24,6 +24,16 @@ defmodule StarknetExplorer.Rpc do
         network
       )
 
+  def get_events(params, network),
+    do:
+      send_request(
+        "starknet_getEvents",
+        [
+          params
+        ],
+        network
+      )
+
   def get_block_height_no_cache(network),
     do: send_request_no_cache("starknet_blockNumber", [], network)
 
@@ -41,6 +51,23 @@ defmodule StarknetExplorer.Rpc do
 
   def get_transaction_receipt(transaction_hash, network),
     do: send_request("starknet_getTransactionReceipt", [transaction_hash], network)
+
+  def get_class_at(block_id, contract_address, network),
+    do: send_request("starknet_getClassAt", [block_id, contract_address], network)
+
+  def get_class(block_id, class_hash, network),
+    do: send_request("starknet_getClass", [block_id, class_hash], network)
+
+  def call(block_id, contract_address, selector, network),
+    do:
+      send_request(
+        "starknet_call",
+        [
+          %{contract_address: contract_address, entry_point_selector: selector, calldata: []},
+          block_id
+        ],
+        network
+      )
 
   defp send_request(method, args, network) when network in [:mainnet, :testnet, :testnet2] do
     payload = build_payload(method, args)

@@ -1,6 +1,7 @@
 defmodule StarknetExplorerWeb.MessageDetailLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.Message
 
   def render(assigns) do
     ~H"""
@@ -10,80 +11,162 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
       session: %{"network" => @network}
     ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
-      <div class="flex flex-col lg:flex-row gap-2 items-baseline pb-5">
-        <h2>Message</h2>
+      <%= render_info(assigns) %>
+    </div>
+    """
+  end
+
+  def render_info(assigns) do
+    ~H"""
+    <div
+      id="dropdown"
+      class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
+      phx-hook="Dropdown"
+    >
+      <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
+        <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
+      </span>
+    </div>
+    <div class="options hidden"></div>
+    <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
+      <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
         <div class="font-semibold">
-          <%= "0x5d29af220b92806d04896b6aabe719bf3da66da7bcdc4136ab78b0fefce08b26"
-          |> Utils.shorten_block_hash() %>
+          <h3>Message <%= @message.message_hash %></h3>
         </div>
-        <span class="gray-label text-sm">Mocked</span>
-      </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">Message Log ID</div>
-        <div class="col-span-3">
-          <%= "0xa6fa8326f220bd4ed2a77eab4fc79cd9b93a6b89207a07af16a5c3cca0291ed5_117_284_2"
-          |> Utils.shorten_block_hash() %>
+        <div class="text-gray-400">
+          <%= @message.timestamp
+          |> DateTime.from_unix()
+          |> then(fn {:ok, time} -> time end)
+          |> Calendar.strftime("%c") %> UTC
         </div>
       </div>
+      <div class="flex flex-col lg:flex-row gap-2 items-baseline pb-5"></div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Message Hash</div>
-        <div class="col-span-3">
-          <%= "0x5d29af220b92806d04896b6aabe719bf3da66da7bcdc4136ab78b0fefce08b26"
-          |> Utils.shorten_block_hash() %>
+        <div
+          class="copy-container col-span-3 text-hover-blue"
+          id={"copy-block-hash-#{@message.message_hash}"}
+          phx-hook="Copy"
+        >
+          <div class="relative">
+            <div class="col-span-3">
+              <%= @message.message_hash %>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={@message.message_hash}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Type</div>
-        <div class="col-span-3">CONSUMED_ON_L1</div>
+        <div class="col-span-3"><%= Message.friendly_message_type(@message.type) %></div>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Message Direction</div>
-        <div class="col-span-3">L2 -> L1</div>
-      </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">L1 Transaction Hash</div>
         <div class="col-span-3">
-          <%= "0xa6fa8326f220bd4ed2a77eab4fc79cd9b93a6b89207a07af16a5c3cca0291ed5"
-          |> Utils.shorten_block_hash() %>
+          <%= if Message.is_l2_to_l1(@message.type) do %>
+            <div><span class="green-label">L2</span>→<span class="blue-label">L1</span></div>
+          <% else %>
+            <div><span class="blue-label">L1</span>→<span class="green-label">L2</span></div>
+          <% end %>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">L1 Block Hash</div>
-        <div class="col-span-3">
-          <%= "0x93f4c763b869dd008594f8a976c7f0bb60942db7bf314a70339e7e8c94fcfd1a"
-          |> Utils.shorten_block_hash() %>
-        </div>
-      </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">L1 Block Number</div>
-        <div class="col-span-3">17630003</div>
-      </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">L1 Address</div>
-        <div class="col-span-3">
-          <%= "0xc662c410c0ecf747543f5ba90660f6abebd9c8c4"
-          |> Utils.shorten_block_hash() %>
+        <div class="block-label !mt-0">Transaction Hash</div>
+        <div
+          class="copy-container col-span-3 text-hover-blue"
+          id={"copy-block-hash-#{@message.message_hash}"}
+          phx-hook="Copy"
+        >
+          <div class="relative">
+            <div class="col-span-3">
+              <%= live_redirect(@message.transaction_hash,
+                to: ~p"/#{@network}/transactions/#{@message.transaction_hash}"
+              ) %>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={@message.transaction_hash}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Timestamp</div>
-        <div class="col-span-3">July 5, 2023 at 5:17:35 PM GMT-3</div>
+        <div class="col-span-3"><%= Utils.get_block_age_from_timestamp(@message.timestamp) %></div>
       </div>
+      <%= if !Message.is_l2_to_l1(@message.type) do %>
+        <div class="custom-list-item grid-4 w-full">
+          <div class="custom-list-item grid-4 w-full !border-none">
+            <div class="block-label !mt-0">L2 Selector</div>
+          </div>
+          <div>
+            <%= @message.selector %>
+          </div>
+        </div>
+        <div class="custom-list-item grid-4 w-full">
+          <div class="custom-list-item grid-4 w-full !border-none">
+            <div class="block-label !mt-0">Nonce</div>
+          </div>
+          <div>
+            <span class="pink-label">
+              <%= @message.nonce %>
+            </span>
+          </div>
+        </div>
+      <% end %>
       <div class="custom-list-item">
         <div class="block-label !mt-0">Message Details</div>
         <div class="bg-black/10 p-5">
           <div class="custom-list-item grid-4 w-full !border-none">
-            <div class="block-label !mt-0">From L2 Contract Address</div>
-            <div>
-              <%= "0x073314940630fd6dcda0d772d4c972c4e0a9946bef9dabf4ef84eda8ef542b82"
-              |> Utils.shorten_block_hash() %>
+            <%= if Message.is_l2_to_l1(@message.type) do %>
+              <div class="block-label !mt-0">From L2 Contract Address</div>
+            <% else %>
+              <div class="block-label !mt-0">From L1 Contract Address</div>
+            <% end %>
+
+            <div
+              class="copy-container col-span-3 text-hover-blue"
+              id={"copy-block-hash-#{@message.to_address}"}
+              phx-hook="Copy"
+            >
+              <%= @message.from_address %>
             </div>
           </div>
           <div class="custom-list-item grid-4 w-full">
-            <div class="block-label !mt-0">To L1 Contract Address</div>
-            <div>
-              <%= "0xae0ee0a63a2ce6baeeffe56e7714fb4efe48d419"
-              |> Utils.shorten_block_hash() %>
+            <div class="custom-list-item grid-4 w-full !border-none">
+              <%= if Message.is_l2_to_l1(@message.type) do %>
+                <div class="block-label !mt-0">To L1 Contract Address</div>
+              <% else %>
+                <div class="block-label !mt-0">To L2 Contract Address</div>
+              <% end %>
+            </div>
+            <div
+              class="copy-container col-span-3 text-hover-blue"
+              id={"copy-block-hash-#{@message.to_address}"}
+              phx-hook="Copy"
+            >
+              <%= @message.to_address %>
             </div>
           </div>
         </div>
@@ -98,13 +181,17 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
           <div class="w-full grid-8 custom-list-item">
             <div>
               <div class="list-h">Index</div>
-              <div class="break-all">0</div>
+              <%= for {_, id} <- Enum.with_index(@message.payload) do %>
+                <div class="break-all"><%= id %></div>
+              <% end %>
             </div>
             <div>
               <div class="list-h">Value</div>
-              <div class="break-all col-span-7">
-                <%= "0xae0ee0a63a2ce6baeeffe56e7714fb4efe48d419" |> Utils.shorten_block_hash() %>
-              </div>
+              <%= for {payload_item, _} <- Enum.with_index(@message.payload) do %>
+                <div class="col-span-7">
+                  <%= payload_item %>
+                </div>
+              <% end %>
             </div>
           </div>
         </div>
@@ -113,9 +200,22 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
     """
   end
 
-  def mount(_params = %{"identifier" => _}, _session, socket) do
+  def mount(_params = %{"identifier" => hash}, _session, socket) do
+    message = Message.get_by_hash(hash, socket.assigns.network)
+
+    message =
+      case Message.is_l2_to_l1(message) do
+        false ->
+          tx = StarknetExplorer.Transaction.get_by_hash(message.transaction_hash)
+          decimal_nonce = tx.nonce |> String.replace("0x", "") |> String.to_integer(16)
+          message |> Map.put(:selector, tx.entry_point_selector) |> Map.put(:nonce, decimal_nonce)
+
+        _ ->
+          message
+      end
+
     assigns = [
-      message: nil
+      message: message
     ]
 
     {:ok, assign(socket, assigns)}

@@ -44,6 +44,8 @@ defmodule StarknetExplorerWeb.Utils do
     |> Decimal.new()
     |> Decimal.div(@wei_to_eth_constant)
     |> Decimal.to_string(:normal)
+    |> String.trim_trailing("0")
+    |> String.replace_suffix(".", ".0")
   end
 
   def atomize_keys(map) when is_map(map) do
@@ -61,4 +63,63 @@ defmodule StarknetExplorerWeb.Utils do
   end
 
   def atomize_keys(not_a_map), do: not_a_map
+
+  def format_arg_value(%{:type => "felt", :value => value}) do
+    shorten_block_hash(value)
+  end
+
+  def format_arg_value(%{:type => "core::felt252", :value => value}) do
+    shorten_block_hash(value)
+  end
+
+  def format_arg_value(%{
+        :type => "core::starknet::contract_address::ContractAddress",
+        :value => value
+      }) do
+    shorten_block_hash(value)
+  end
+
+  def format_arg_value(%{
+        :type => "Uint256",
+        :value => [<<"0x", high::binary>>, <<"0x", low::binary>>]
+      }) do
+    "0x" <>
+      ((String.to_integer(high, 16) * 2 ** 252 + String.to_integer(low, 16))
+       |> Integer.to_string(16)
+       |> String.downcase())
+  end
+
+  def format_arg_value(%{
+        :type => "core::integer::u256",
+        :value => [<<"0x", high::binary>>, <<"0x", low::binary>>]
+      }) do
+    "0x" <>
+      ((String.to_integer(high, 16) * 2 ** 252 + String.to_integer(low, 16))
+       |> Integer.to_string(16)
+       |> String.downcase())
+  end
+
+  def format_arg_value(%{
+        :type => "core::array::Array::<" <> _rest,
+        :value => value
+      }) do
+    value
+    |> Jason.encode!()
+    |> Jason.Formatter.pretty_print()
+  end
+
+  def format_arg_value(%{:type => type, :value => value}) do
+    case String.ends_with?(type, "*") do
+      true ->
+        type = String.replace_suffix(type, "*", "")
+
+        value
+        |> Enum.map(&format_arg_value(%{:type => type, :value => &1}))
+        |> Jason.encode!()
+        |> Jason.Formatter.pretty_print()
+
+      _ ->
+        value
+    end
+  end
 end

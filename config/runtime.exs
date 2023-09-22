@@ -40,11 +40,16 @@ testnet_2_rpc_host =
     environment variable for testnet 2 is missing.
     """
 
+continuation_token_format =
+  System.get_env("CONTINUATION_TOKEN_FORMAT", "short")
+
 config :starknet_explorer,
   rpc_host: rpc_host,
   testnet_host: testnet_rpc_host,
   testnet_2_host: testnet_2_rpc_host,
-  enable_listener: enable_listener?
+  enable_listener: enable_listener?,
+  continuation_token_format: continuation_token_format,
+  enable_gateway_data: System.get_env("ENABLE_GATEWAY_DATA") == "true"
 
 config :starknet_explorer, rpc_host: rpc_host
 
@@ -63,19 +68,43 @@ config :starknet_explorer,
   enable_block_verification: System.get_env("ENABLE_BLOCK_VERIFICATION") || false
 
 if config_env() == :prod do
-  database_path =
-    System.get_env("DATABASE_PATH") ||
+  db_type =
+    System.get_env("DB_TYPE") ||
       raise """
-      environment variable DATABASE_PATH is missing.
-      For example: /etc/my_app/my_app.db
+      environment variable DB_TYPE is missing.
+      For example: "postgres" or "sqlite"
       """
 
-  # maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
+  if db_type == "postgresql" do
+    database_url =
+      System.get_env("DATABASE_URL") ||
+        raise """
+        environment variable DATABASE_URL is missing.
+        For example: ecto://USER:PASS@HOST/DATABASE
+        """
 
-  config :starknet_explorer, StarknetExplorer.Repo,
-    # ssl: true,
-    database: database_path,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
+    maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
+
+    config :starknet_explorer, StarknetExplorer.Repo,
+      url: database_url,
+      pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+      socket_options: maybe_ipv6,
+      stacktrace: true,
+      show_sensitive_data_on_connection_error: true
+  else
+    database_path =
+      System.get_env("DATABASE_PATH") ||
+        raise """
+        environment variable DATABASE_PATH is missing.
+        For example: /etc/my_app/my_app.db
+        """
+
+    config :starknet_explorer, StarknetExplorer.Repo,
+      database: database_path,
+      pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+      stacktrace: true,
+      show_sensitive_data_on_connection_error: true
+  end
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
@@ -112,6 +141,21 @@ if config_env() == :prod do
       port: port
     ],
     secret_key_base: secret_key_base
+
+  # Newrelic agent
+  newrelic_license_key =
+    System.get_env("NEWRELIC_KEY") ||
+      raise "environment variable NEWRELIC_KEY is missing."
+
+  newrelic_app_name =
+    System.get_env("NEWRELIC_APP_NAME") ||
+      raise "environment variable NEWRELIC_APP_NAME is missing."
+
+  config :new_relic_agent,
+    app_name: newrelic_app_name,
+    license_key: newrelic_license_key,
+    # Logs are forwarded directly from Elixir to New Relic
+    logs_in_context: :direct
 
   # ## SSL Support
   #

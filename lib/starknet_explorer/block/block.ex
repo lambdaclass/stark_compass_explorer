@@ -2,10 +2,35 @@ defmodule StarknetExplorer.Block do
   use Ecto.Schema
   import Ecto.Query
   import Ecto.Changeset
-  alias StarknetExplorer.{Repo, Transaction, Block}
+  alias StarknetExplorer.Events
+  alias StarknetExplorer.{Repo, Transaction, Block, Message}
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.TransactionReceipt, as: Receipt
   require Logger
+  @networks [:mainnet, :testnet, :testnet2]
+  @cast_fields [
+    :number,
+    :status,
+    :hash,
+    :parent_hash,
+    :new_root,
+    :timestamp,
+    :sequencer_address,
+    :gas_fee_in_wei,
+    :execution_resources,
+    :network
+  ]
+
+  @required_fields [
+    :number,
+    :status,
+    :hash,
+    :parent_hash,
+    :new_root,
+    :timestamp,
+    :network
+  ]
+
   @primary_key {:number, :integer, []}
   schema "blocks" do
     field :status, :string
@@ -16,7 +41,7 @@ defmodule StarknetExplorer.Block do
     field :sequencer_address, :string, default: ""
     field :gas_fee_in_wei, :string
     field :execution_resources, :integer
-    field :original_json, :binary, load_in_query: false
+    field :network, Ecto.Enum, values: @networks
 
     has_many :transactions, StarknetExplorer.Transaction,
       foreign_key: :block_number,
@@ -27,27 +52,8 @@ defmodule StarknetExplorer.Block do
 
   def changeset(block = %__MODULE__{}, attrs) do
     block
-    |> cast(attrs, [
-      :number,
-      :status,
-      :hash,
-      :parent_hash,
-      :new_root,
-      :timestamp,
-      :sequencer_address,
-      :gas_fee_in_wei,
-      :original_json,
-      :execution_resources
-    ])
-    |> validate_required([
-      :number,
-      :status,
-      :hash,
-      :parent_hash,
-      :new_root,
-      :timestamp,
-      :original_json
-    ])
+    |> cast(attrs, @cast_fields)
+    |> validate_required(@required_fields)
     |> unique_constraint(:number)
     |> unique_constraint(:hash)
   end
@@ -56,11 +62,8 @@ defmodule StarknetExplorer.Block do
   Given a block from the RPC response, and transactions receipts
   insert them into the DB.
   """
-  def insert_from_rpc_response(block = %{"transactions" => txs}, receipts) when is_map(block) do
-    # Store the original response, in case we need it
-    # in the future, as a binary blob.
-    original_json = :erlang.term_to_binary(block)
-
+  def insert_from_rpc_response(block = %{"transactions" => txs}, receipts, network)
+      when is_map(block) do
     # This is a bit awful, and I'm sure Ecto/Elixir
     # has a better way of doing this.
     # I rename some fields from the RPC response to
@@ -68,31 +71,38 @@ defmodule StarknetExplorer.Block do
     block =
       block
       |> rename_rpc_fields
-      |> Map.put("original_json", original_json)
+      |> Map.put("network", network)
 
     transaction_result =
       StarknetExplorer.Repo.transaction(fn ->
-        block_changeset = Block.changeset(%Block{original_json: original_json}, block)
+        block_changeset = Block.changeset(%Block{}, block)
 
         {:ok, block} = Repo.insert(block_changeset)
+        Events.store_events_from_rpc(block, network)
 
         _txs_changeset =
           Enum.map(txs, fn tx ->
-            tx =
+            tx = tx |> Map.put("network", network)
+
+            inserted_tx =
               Ecto.build_assoc(block, :transactions, tx)
               |> Transaction.changeset(tx)
               |> Repo.insert!()
 
-            receipt = receipts[tx.hash]
-            receipt_binary = :erlang.term_to_binary(receipt)
+            receipt = receipts[inserted_tx.hash] |> Map.put("network", network)
 
             receipt =
               receipt
-              |> Map.put("original_json", receipt_binary)
+              |> Map.put("timestamp", block.timestamp)
+              |> Map.put("block_hash", block.hash)
+              |> Map.put("block_number", block.number)
 
-            Ecto.build_assoc(tx, :receipt, receipt)
+            Ecto.build_assoc(inserted_tx, :receipt, receipt)
             |> Receipt.changeset(receipt)
             |> Repo.insert!()
+
+            Message.insert_from_transaction_receipt(receipt, network)
+            Message.insert_from_transaction(inserted_tx, block.timestamp, network)
           end)
       end)
 
@@ -106,9 +116,9 @@ defmodule StarknetExplorer.Block do
     end
   end
 
-  def from_rpc_block(rpc_block) do
+  def from_rpc_block(rpc_block, network) do
     rpc_block =
-      rpc_block |> rename_rpc_fields |> Utils.atomize_keys()
+      rpc_block |> rename_rpc_fields |> Map.put("network", network) |> Utils.atomize_keys()
 
     struct(__MODULE__, rpc_block)
   end
@@ -116,12 +126,13 @@ defmodule StarknetExplorer.Block do
   @doc """
   Returns the highest block number fetched from the RPC.
   """
-  def highest_fetched_block_number() do
+  def highest_fetched_block_number(network) do
     query =
       from b in "blocks",
         select: [:number],
         order_by: [desc: b.number],
-        limit: 1
+        limit: 1,
+        where: b.network == ^network
 
     case Repo.all(query) do
       [] -> 0
@@ -132,11 +143,12 @@ defmodule StarknetExplorer.Block do
   @doc """
   Returns the n latests blocks
   """
-  def latest_n_blocks(n \\ 20) do
+  def latest_n_blocks(n \\ 20, network) do
     query =
       from b in Block,
         order_by: [desc: b.number],
-        limit: ^n
+        limit: ^n,
+        where: b.network == ^network
 
     Repo.all(query)
   end
@@ -144,11 +156,11 @@ defmodule StarknetExplorer.Block do
   @doc """
   Returns amount blocks starting at block number up_to
   """
-  def latest_blocks_with_txs(amount, up_to) do
+  def latest_blocks_with_txs(amount, up_to, network) do
     query =
       from b in Block,
         order_by: [desc: b.number],
-        where: b.number <= ^up_to and b.number >= ^(up_to - amount)
+        where: b.number <= ^up_to and b.number >= ^(up_to - amount) and b.network == ^network
 
     query
     |> Repo.all()
@@ -172,47 +184,48 @@ defmodule StarknetExplorer.Block do
     end)
   end
 
-  def get_by_hash(hash) do
+  def get_by_hash(hash, network) do
     query =
       from b in Block,
-        where: b.hash == ^hash
+        where: b.hash == ^hash and b.network == ^network
 
     Repo.one(query)
     |> Repo.preload(:transactions)
   end
 
-  def get_by_num(num) do
+  def get_by_num(num, network) do
     query =
       from b in Block,
-        where: b.number == ^num
+        where: b.number == ^num and b.network == ^network
 
     Repo.one(query)
     |> Repo.preload(:transactions)
   end
 
-  def get_by_height(height) when is_integer(height) do
+  def get_by_height(height, network) when is_integer(height) do
     query =
       from b in Block,
-        where: b.number == ^height
+        where: b.number == ^height and b.network == ^network
 
     Repo.one(query)
   end
 
-  def get_with_missing_gas_fees_or_resources(limit \\ 10) do
+  def get_with_missing_gas_fees_or_resources(limit \\ 10, network) do
     query =
       from b in Block,
         where:
           is_nil(b.gas_fee_in_wei) or b.gas_fee_in_wei == "" or is_nil(b.execution_resources),
+        where: b.network == ^network,
         limit: ^limit
 
     Repo.all(query)
   end
 
-  def update_block_gas_and_resources(block_number, gas_fee, execution_resources)
+  def update_block_gas_and_resources(block_number, gas_fee, execution_resources, network)
       when is_number(block_number) do
     query =
       from b in Block,
-        where: b.number == ^block_number
+        where: b.number == ^block_number and b.network == ^network
 
     Repo.update_all(query,
       set: [gas_fee_in_wei: gas_fee, execution_resources: execution_resources]

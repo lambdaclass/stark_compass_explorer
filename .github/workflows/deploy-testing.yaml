@@ -33,7 +33,8 @@ jobs:
     - name: "Deploy with ansible"
       env:
         MIX_ENV: ${{ vars.MIX_ENV }}
-        DATABASE_PATH: ${{ vars.DATABASE_PATH }}
+        DB_TYPE: ${{ vars.DB_TYPE }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
         SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         PHX_HOST: ${{ vars.PHX_HOST }}
         PHX_SERVER: ${{ vars.PHX_SERVER }}
@@ -48,5 +49,11 @@ jobs:
         SSH_HOST: ${{ vars.SSH_HOST }}
         ENABLE_FETCHER: ${{ vars.ENABLE_FETCHER }}
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
+        ANSIBLE_STDOUT_CALLBACK: "yaml"
+        ENABLE_LISTENER: "true"
+        ENABLE_GATEWAY_DATA: "true"
+        CONTINUATION_TOKEN_FORMAT: "large"
+        NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
+        NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
       run: |
         ansible-playbook -i ansible/inventory.yaml ansible/playbooks/deployment.yaml

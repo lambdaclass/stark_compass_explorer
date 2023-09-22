@@ -84,8 +84,10 @@ defmodule StarknetExplorer.TransactionReceipt do
   #   :contract_address
   # ]
 
+  @networks [:mainnet, :testnet, :testnet2]
+
   @fields @invoke_tx_receipt_fields ++
-            @l1_receipt_handler ++ @declare_tx_receipt ++ @deploy_account_tx_receipt
+            @l1_receipt_handler ++ @declare_tx_receipt ++ @deploy_account_tx_receipt ++ [:network]
   schema "transaction_receipts" do
     belongs_to :transaction, Transaction
     field :transaction_hash
@@ -98,7 +100,7 @@ defmodule StarknetExplorer.TransactionReceipt do
     field :messages_sent, {:array, :map}
     field :events, {:array, :map}
     field :contract_address
-    field :original_json, :binary, load_in_query: false
+    field :network, Ecto.Enum, values: @networks
     timestamps()
   end
 
@@ -106,7 +108,7 @@ defmodule StarknetExplorer.TransactionReceipt do
     receipt
     |> cast(
       attrs,
-      @fields ++ [:original_json]
+      @fields
     )
     |> validate_according_to_type(attrs)
   end
