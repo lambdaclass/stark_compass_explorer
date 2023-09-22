@@ -143,8 +143,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       (receipts |> Enum.flat_map(&Message.from_transaction_receipt/1)) ++ l1_to_l2_messages
 
     assigns = [
-      gas_price: "Loading...",
-      execution_resources: "Loading",
+      gas_price: Utils.hex_wei_to_eth(block.gas_fee_in_wei),
+      execution_resources: block.execution_resources,
       block: block,
       messages: messages,
       view: "overview",
@@ -154,8 +154,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     ]
 
     case Application.get_env(:starknet_explorer, :enable_gateway_data) do
-      true ->
-        Process.send_after(self(), :get_gateway_information, 200)
+      #      true ->
+      #       Process.send_after(self(), :get_gateway_information, 200)
 
       _ ->
         :skip

@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.{Data, Message, Rpc, Events}
+  alias StarknetExplorer.{Data, Message, Events}
 
   defp transaction_header(assigns) do
     ~H"""
@@ -611,8 +611,8 @@ defmodule StarknetExplorerWeb.TransactionLive do
     {:ok, transaction = %{receipt: receipt}} =
       Data.full_transaction(transaction_hash, socket.assigns.network)
 
-    {:ok, %{"timestamp" => block_timestamp}} =
-      Rpc.get_block_by_hash(receipt.block_hash, socket.assigns.network)
+    {:ok, %{:timestamp => block_timestamp}} =
+      Data.block_by_hash(receipt.block_hash, socket.assigns.network)
 
     # a tx should not have both L1->L2 and L2->L1 messages AFAIK, but just in case merge both scenarios
     messages_sent =
