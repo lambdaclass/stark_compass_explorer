@@ -126,14 +126,14 @@ defmodule StarknetExplorer.Events do
   # end
 
   def get_event_name(%{keys: [event_name_hashed]} = _event, _network)
-  when event_name_hashed in @common_event_hashes,
-  do: @common_event_hash_to_name[event_name_hashed]
+      when event_name_hashed in @common_event_hashes,
+      do: @common_event_hash_to_name[event_name_hashed]
 
-def get_event_name(%{keys: [event_name_hashed | _]} = _event, _network)
-  when event_name_hashed in @common_event_hashes,
-  do: @common_event_hash_to_name[event_name_hashed]
+  def get_event_name(%{keys: [event_name_hashed | _]} = _event, _network)
+      when event_name_hashed in @common_event_hashes,
+      do: @common_event_hash_to_name[event_name_hashed]
 
-def get_event_name(%{keys: keys} = _event, _network), do: List.first(keys)
+  def get_event_name(%{keys: keys} = _event, _network), do: List.first(keys)
 
   def paginate_events(params, block_number, network) do
     Events
@@ -152,6 +152,7 @@ def get_event_name(%{keys: keys} = _event, _network), do: List.first(keys)
       network
     )
   end
+
   def get_total_count() do
     StarknetExplorer.Events |> Repo.aggregate(:count, :id)
   end
