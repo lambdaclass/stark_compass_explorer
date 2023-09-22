@@ -1,6 +1,16 @@
 defmodule StarknetExplorer.Data do
   require Logger
-  alias StarknetExplorer.{Rpc, Transaction, Block, TransactionReceipt, Calldata, Gateway}
+
+  alias StarknetExplorer.{
+    Rpc,
+    Transaction,
+    Message,
+    Events,
+    Block,
+    TransactionReceipt,
+    Calldata,
+    Gateway
+  }
 
   @common_event_hash_to_name %{
     "0x99cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9" => "Transfer",
@@ -285,5 +295,12 @@ defmodule StarknetExplorer.Data do
 
   defp flatten_internal_calls(list, _height) when is_list(list) do
     []
+  end
+
+  def get_entity_count() do
+    Map.new()
+    |> Map.put(:message_count, Message.get_total_count())
+    |> Map.put(:events_count, Events.get_total_count())
+    |> Map.put(:transaction_count, Transaction.get_total_count())
   end
 end
