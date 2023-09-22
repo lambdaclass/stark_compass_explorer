@@ -15,6 +15,24 @@ defmodule StarknetExplorerWeb.Router do
   end
 
   live_session :default, on_mount: {StarknetExplorerWeb.Live.CommonAssigns, :network} do
+    scope "/", StarknetExplorerWeb do
+      pipe_through :browser
+
+      live "/", HomeLive.Index, :index
+      live "/blocks", BlockIndexLive
+      live "/blocks/:number_or_hash", BlockDetailLive
+      live "/transactions", TransactionIndexLive
+      live "/transactions/:transaction_hash", TransactionLive
+      live "/contracts", ContractIndexLive
+      live "/contracts/:address", ContractDetailLive
+      live "/events", EventIndexLive
+      live "/events/:identifier", EventDetailLive
+      live "/messages", MessageIndexLive
+      live "/messages/:identifier", MessageDetailLive
+      live "/classes", ClassIndexLive
+      live "/classes/:hash", ClassDetailLive
+    end
+
     scope "/:network", StarknetExplorerWeb do
       pipe_through :browser
 
@@ -53,6 +71,5 @@ defmodule StarknetExplorerWeb.Router do
 
   scope "/" do
     pipe_through :browser
-    forward "/", StarknetExplorerWeb.Plug.Redirect
   end
 end
