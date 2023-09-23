@@ -7,9 +7,9 @@ defmodule StarknetExplorer.Application do
   @networks Application.compile_env(:starknet_explorer, :allowed_networks)
   @impl true
   def start(_type, _args) do
-    cache_child_specs =
-      @networks
-      |> Enum.flat_map(fn net -> cache_supervisor_spec(net) end)
+    # cache_child_specs =
+    #   @networks
+    #   |> Enum.flat_map(fn net -> cache_supervisor_spec(net) end)
 
     children =
       [
