@@ -75,6 +75,12 @@ defmodule StarknetExplorer.BlockUtils do
     end
   end
 
+  def block_height(network) do
+    StarknetExplorer.Blockchain.ListenerWorker.get_height(
+      StarknetExplorer.Utils.listener_atom(network)
+    )
+  end
+
   def fetch_block(number, network) when is_integer(number) do
     case Rpc.get_block_by_number(number, network) do
       {:ok, block} ->
