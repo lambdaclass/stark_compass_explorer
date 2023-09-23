@@ -75,16 +75,6 @@ defmodule StarknetExplorer.BlockUtils do
     end
   end
 
-  def block_height(network) do
-    case Rpc.get_block_height_no_cache(network) do
-      {:ok, height} ->
-        height
-
-      err = {:error, _} ->
-        err
-    end
-  end
-
   def fetch_block(number, network) when is_integer(number) do
     case Rpc.get_block_by_number(number, network) do
       {:ok, block} ->
