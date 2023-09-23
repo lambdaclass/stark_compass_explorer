@@ -163,3 +163,6 @@ main .options {
 main .option {
   @apply border-b border-b-gray-800 py-3  px-3 transition-all duration-300;
 }
+.option:hover {
+  cursor: pointer;
+}

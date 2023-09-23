@@ -213,15 +213,26 @@ defmodule StarknetExplorer.Data do
   def internal_calls(tx, network) do
     {:ok, trace} = Gateway.trace_transaction(tx.hash, network)
 
-    trace["function_invocation"]
-    |> StarknetExplorerWeb.Utils.atomize_keys()
-    |> flatten_internal_calls(0)
+    function_calls =
+      trace["function_invocation"]
+      |> StarknetExplorerWeb.Utils.atomize_keys()
+      |> flatten_internal_calls(0)
+
+    functions_data_cache =
+      function_calls
+      |> Enum.map(fn x -> x.contract_address end)
+      |> Enum.uniq()
+      |> Enum.map(fn addr ->
+        {addr, Calldata.get_functions_data("latest", addr, network)}
+      end)
+      |> Map.new()
+
+    function_calls
     |> Enum.with_index()
     |> Enum.map(fn {call_data, index} ->
       # TODO: this can be optimized because we are going out to the Rpc/DB for every call, but contracts might be repeated
       # (like in the case of CALL and DELEGATE call types) so those can be coalesced
-
-      functions_data = Calldata.get_functions_data("latest", call_data.contract_address, network)
+      functions_data = Map.get(functions_data_cache, call_data.contract_address, nil)
       {input_data, _structs} = Calldata.get_input_data(functions_data, call_data.selector)
 
       call_data =

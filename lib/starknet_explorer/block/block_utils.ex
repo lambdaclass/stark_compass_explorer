@@ -65,6 +65,16 @@ defmodule StarknetExplorer.BlockUtils do
     {:ok, Map.new(receipts)}
   end
 
+  def block_height_rpc(network) do
+    case Rpc.get_block_height_no_cache(network) do
+      {:ok, height} ->
+        height
+
+      err = {:error, _} ->
+        err
+    end
+  end
+
   def block_height(network) do
     case Rpc.get_block_height_no_cache(network) do
       {:ok, height} ->

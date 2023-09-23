@@ -812,12 +812,63 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Name</div>
           <div>
-            <%= Events.get_event_name(event, @network) %>
+            <% name = Events.get_event_name(event, @network) %>
+            <%= if !String.starts_with?(name, "0x") do %>
+              <%= name %>
+            <% else %>
+              <div
+                class="flex gap-2 items-center copy-container"
+                id={"copy-transaction-hash-#{name}"}
+                phx-hook="Copy"
+              >
+                <div class="relative">
+                  <div class="break-all">
+                    <span><%= name |> Utils.shorten_block_hash() %></span>
+                  </div>
+                  <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                    <div class="relative">
+                      <img
+                        class="copy-btn copy-text w-4 h-4"
+                        src={~p"/images/copy.svg"}
+                        data-text={name}
+                      />
+                      <img
+                        class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                        src={~p"/images/check-square.svg"}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
           </div>
         </div>
         <div class="list-h">From Address</div>
         <div>
-          <%= from_address |> Utils.shorten_block_hash() %>
+          <div
+            class="flex gap-2 items-center copy-container"
+            id={"copy-transaction-hash-#{name}"}
+            phx-hook="Copy"
+          >
+            <div class="relative">
+              <div class="break-all">
+                <span><%= from_address |> Utils.shorten_block_hash() %></span>
+              </div>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={from_address}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div>
           <div class="list-h">Age</div>
