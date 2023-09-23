@@ -28,7 +28,6 @@ defmodule StarknetExplorer.Application do
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
         {DynamicSupervisor, strategy: :one_for_one, name: StarknetExplorer.BlockFetcher}
-        | cache_child_specs
       ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
