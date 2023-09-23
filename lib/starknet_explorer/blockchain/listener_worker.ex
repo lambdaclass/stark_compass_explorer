@@ -46,7 +46,7 @@ defmodule StarknetExplorer.Blockchain.ListenerWorker do
 
   @impl true
   def handle_call(:get_height, _from, state) do
-    {:reply, state, state.latest_block_number}
+    {:reply, state.latest_block_number, state}
   end
 
   defp try_fetch(true, state = %ListenerWorker{network: network}) do
