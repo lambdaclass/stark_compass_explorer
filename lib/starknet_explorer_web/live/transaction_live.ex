@@ -241,7 +241,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
             <div class="list-h">Message Hash</div>
             <div
               class="flex gap-2 items-center copy-container"
-              id={"copy-transaction-hash-#{message.message_hash}"}
+              id={"copy-message-hash-#{message.message_hash}"}
               phx-hook="Copy"
             >
               <div class="relative">
@@ -287,7 +287,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
             <div class="list-h">From Address</div>
             <div
               class="flex gap-2 items-center copy-container"
-              id={"copy-from-addr-#{message.hash}"}
+              id={"copy-from-addr-#{message.message_hash}"}
               phx-hook="Copy"
             >
               <div class="relative">
@@ -314,7 +314,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
             <div class="list-h">To Address</div>
             <div
               class="flex gap-2 items-center copy-container"
-              id={"copy-to-addr-#{message.hash}"}
+              id={"copy-to-addr-#{message.message_hash}"}
               phx-hook="Copy"
             >
               <div class="relative">
