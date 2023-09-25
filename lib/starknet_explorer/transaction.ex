@@ -125,6 +125,16 @@ defmodule StarknetExplorer.Transaction do
     Repo.one(query)
   end
 
+  def get_missing_tx_receipt(limit \\ 10, network) do
+    query =
+      from t in Transaction,
+        left_join: rc in assoc(t, :receipt),
+        where: t.network == ^network and is_nil(rc),
+        limit: ^limit
+
+    Repo.all(query)
+  end
+
   def get_by_hash_with_receipt(hash) do
     query =
       from tx in Transaction,

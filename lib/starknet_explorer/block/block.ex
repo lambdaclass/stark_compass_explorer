@@ -225,6 +225,17 @@ defmodule StarknetExplorer.Block do
     Repo.one(query)
   end
 
+  def get_with_not_finalized_blocks(limit \\ 10, network) do
+    query =
+      from b in Block,
+        where: b.status != "ACCEPTED_ON_L1",
+        where: b.network == ^network,
+        limit: ^limit,
+        order_by: [asc: :number]
+
+    Repo.all(query)
+  end
+
   def get_with_missing_gas_fees_or_resources(limit \\ 10, network) do
     query =
       from b in Block,
@@ -244,6 +255,16 @@ defmodule StarknetExplorer.Block do
 
     Repo.update_all(query,
       set: [gas_fee_in_wei: gas_fee, execution_resources: execution_resources]
+    )
+  end
+
+  def update_block_status(block_number, status, network) do
+    query =
+      from b in Block,
+        where: b.number == ^block_number and b.network == ^network
+
+    Repo.update_all(query,
+      set: [status: status]
     )
   end
 end
