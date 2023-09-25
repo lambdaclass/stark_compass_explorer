@@ -33,14 +33,14 @@ defmodule StarknetExplorerWeb.SearchLive do
               <div class="text-hover-blue">
               <img class="inline-block" src={~p"/images/box.svg"} />
               <div class="py-1 inline-block">
-                <%= if assigns[:block] do %>
+              <%= if assigns[:block] do %>
                 <%= get_number(@block)%> -
                   <%= live_redirect(Utils.shorten_block_hash(get_hash(@block)),
                   to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
                   class: "text-hover-blue",
                   title:  get_hash(@block)
                 ) %>
-                <% end %>
+              <% end %>
               </div>
               </div>
             </div>
@@ -64,13 +64,8 @@ defmodule StarknetExplorerWeb.SearchLive do
   end
 
   def handle_event("update-input", %{"search-input" => query}, socket) do
-    case try_search(query, socket.assigns.network) do
-      {:tx, hash} -> assign(socket, tx: hash)
-      {:block, block} -> assign(socket, block: block)
-      {:message, hash} -> assign(socket, message: hash)
-      {:noquery, _} -> nil
-    end
-    {:noreply, socket}
+    send(self(), {:search, query})
+    {:noreply, assign(socket, query: query, result: "Searching...", loading: true, matches: [])}
   end
 
   def handle_event("search", %{"search-input" => query}, socket) when byte_size(query) <= 100 do
@@ -83,15 +78,11 @@ defmodule StarknetExplorerWeb.SearchLive do
     navigate_fun =
       case try_search(query, socket.assigns.network) do
         {:tx, _tx} ->
-          fn ->
-            push_navigate(socket,
-              to: Utils.network_path(socket.assigns.network, "transactions/#{query}")
-            )
-          end
+          fn -> assign(socket, tx: query) end
         {:block, block} ->
           fn -> assign(socket, block: block) end
         {:message, _message} ->
-          fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
+          fn -> assign(socket, message: query) end
         :noquery ->
           fn ->
             socket
@@ -147,5 +138,7 @@ defmodule StarknetExplorerWeb.SearchLive do
   defp get_number(_), do: ""
 
   defp get_hash(%StarknetExplorer.Block{hash: hash}), do: "#{hash}"
+  defp get_hash(%StarknetExplorer.Transaction{hash: hash}), do: "#{hash}"
+  defp get_hash(%StarknetExplorer.Message{message_hash: hash}), do: "#{hash}"
   defp  get_hash(_), do: ""
 end
