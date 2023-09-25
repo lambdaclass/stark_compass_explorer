@@ -6,7 +6,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    Process.send_after(self(), :load_blocks, 100, [])
+    Process.send(self(), :load_blocks, [])
 
     entities_count = %{
       message_count: "Loading...",
