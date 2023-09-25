@@ -276,7 +276,7 @@ defmodule StarknetExplorer.Data do
     []
   end
 
-  defp flatten_internal_calls(list, _height) when is_list(list) do
+  defp flatten_internal_calls(_list, _height) do
     []
   end
 
