@@ -65,7 +65,9 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def handle_event("update-input", %{"search-input" => query}, socket) do
     case try_search(query, socket.assigns.network) do
+      {:tx, hash} -> assign(socket, tx: hash)
       {:block, block} -> assign(socket, block: block)
+      {:message, hash} -> assign(socket, message: hash)
       {:noquery, _} -> nil
     end
     {:noreply, socket}
