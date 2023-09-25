@@ -579,22 +579,20 @@ defmodule StarknetExplorerWeb.TransactionLive do
     </div>
     <div class="pt-3 mb-3 border-t border-t-gray-700">
       <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
-        <span>Execution Resourcesss</span><span class="gray-label text-sm">Mocked</span>
+        <span>Execution Resourcesss</span>
       </div>
       <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
         <div class="flex flex-col justify-center items-center gap-2">
-          <span class="blue-label">STEPS</span> <%= "#{@transaction_receipt.execution_resources["n_steps"]} stepss" %>
-
+          <span class="blue-label">STEPS</span> <%= "#{@transaction_receipt.execution_resources["n_steps"]}" %>
         </div>
         <div class="flex flex-col justify-center items-center gap-2">
-          <span class="green-label">MEMORY</span> 224
+          <span class="green-label">MEMORY HOLES</span> <%= "#{@transaction_receipt.execution_resources["n_memory_holes"]}" %>
         </div>
-        <div class="flex flex-col justify-center items-center gap-2">
-          <span class="pink-label">PEDERSEN_BUILTIN</span> 21
-        </div>
-        <div class="flex flex-col justify-center items-center gap-2">
-          <span class="violet-label">RANGE_CHECK_BUILTIN</span> <%= "#{@transaction_receipt.execution_resources["builtin_instance_counter"]["range_check_builtin"]}" %>
-        </div>
+        <%= for {builtin_name , instance_counter} <- @transaction_receipt.execution_resources["builtin_instance_counter"] do %>
+          <div class="flex flex-col justify-center items-center gap-2">
+            <span class={Utils.builtin_color(builtin_name)}><%= String.upcase(builtin_name) %></span> <%= instance_counter %>
+          </div>
+        <% end %>
       </div>
     </div>
     """
@@ -630,10 +628,8 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
     {:ok, receipt_2} = Gateway.get_transaction_receipt(transaction_hash, socket.assigns.network)
 
-
-    receipt = transaction.receipt |> Map.put(:execution_resources, receipt_2["execution_resources"])
-    IO.inspect("ASDF 1")
-    IO.inspect(receipt)
+    receipt =
+      transaction.receipt |> Map.put(:execution_resources, receipt_2["execution_resources"])
 
     internal_calls =
       case receipt.execution_status != "REVERTED" &&

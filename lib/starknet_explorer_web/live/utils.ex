@@ -122,4 +122,12 @@ defmodule StarknetExplorerWeb.Utils do
         value
     end
   end
+
+  def builtin_color(builtin_name) do
+    case builtin_name do
+      "pedersen_builtin" -> "pink-label"
+      "range_check_builtin" -> "violet-label"
+      _ -> "green-label"
+    end
+  end
 end
