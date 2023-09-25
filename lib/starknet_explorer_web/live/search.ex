@@ -7,46 +7,48 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def render(assigns) do
     ~H"""
-    <form class="normal-form" phx-change="update-input" phx-submit="search">
-      <.input
-        phx-change="update-input"
-        type="text"
-        name="search-input"
-        value={@query}
-        phx-hook="SearchHook"
-        id="searchHook"
-        class="search-hook"
-        placeholder="Search Blocks, Transactions, Classes, Messages, Contracts or Events"
-      />
-      <button class=" absolute top-1/2 right-2 transform -translate-y-1/2" type="submit">
-        <img src={~p"/images/search.svg"} />
-      </button>
-    </form>
-    <div id="dropdownInformation" class="hidden z-10 bg-container divide-y divide-gray-100 rounded-lg shadow w-full max-w-7xl mx-auto dark:bg-[#232331] dark:divide-gray-600">
-      <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
-        Blocks
-      <div>
-      <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownInformationButton">
-        <li>
-          <div class="cursor-pointer flex flex-row justify-start items-start block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-            <div class="text-hover-blue">
-            <img class="inline-block" src={~p"/images/box.svg"} />
-            <div class="py-1  inline-block">
-              <%= if assigns[:block] do %>
-              <%= get_number(@block)%> -
-                <%= live_redirect(Utils.shorten_block_hash(get_hash(@block)),
-                to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
-                class: "text-hover-blue",
-                title:  get_hash(@block)
-              ) %>
-              <% end %>
+    <div class="mb-16">
+      <form class="normal-form" phx-change="update-input" phx-submit="search">
+        <.input
+          phx-change="update-input"
+          type="text"
+          name="search-input"
+          value={@query}
+          phx-hook="SearchHook"
+          id="searchHook"
+          class="search-hook"
+          placeholder="Search Blocks, Transactions, Classes, Messages, Contracts or Events"
+        />
+        <button class=" absolute top-1/2 right-2 transform -translate-y-1/2" type="submit">
+          <img src={~p"/images/search.svg"} />
+        </button>
+      </form>
+      <div id="dropdownInformation" class="hidden z-10 bg-container divide-y divide-gray-100 rounded-lg shadow w-full max-w-7xl mx-auto dark:bg-container dark:divide-gray-600 mb-5">
+        <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+          Blocks
+        <div>
+        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownInformationButton">
+          <li>
+            <div class="cursor-pointer flex flex-row justify-start items-start block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+              <div class="text-hover-blue">
+              <img class="inline-block" src={~p"/images/box.svg"} />
+              <div class="py-1 inline-block">
+                <%= if assigns[:block] do %>
+                <%= get_number(@block)%> -
+                  <%= live_redirect(Utils.shorten_block_hash(get_hash(@block)),
+                  to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
+                  class: "text-hover-blue",
+                  title:  get_hash(@block)
+                ) %>
+                <% end %>
+              </div>
+              </div>
             </div>
-            </div>
-          </div>
-        </li>
-      </ul>
+          </li>
+        </ul>
+        </div>
       </div>
-    </div>
+      </div>
     </div>
     """
   end

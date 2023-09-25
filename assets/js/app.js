@@ -29,7 +29,10 @@ import topbar from "../vendor/topbar";
 // };
 // setYear();
 
-let Hooks = { };
+let Hooks = {};
+
+const ESC_KEY_CODE = 27;
+const K_KEY_CODE = 75;
 
 // Hamburger menu
 Hooks.Nav = {
@@ -335,6 +338,23 @@ window.addEventListener("phx:page-loading-stop", () => {
   topBarScheduled = undefined;
   topbar.hide();
 });
+
+function KeyPress(e) {
+  const evntObj = e;
+  const input = document.querySelector("#searchHook");
+  if ((evntObj.ctrlKey || evntObj.metaKey) && evntObj.keyCode === K_KEY_CODE) {
+    evntObj.preventDefault();
+    input.classList.remove("un-focus");
+    input.classList.add("focus");
+  }
+  if (evntObj.keyCode === ESC_KEY_CODE) { 
+    evntObj.preventDefault();
+    input.classList.add("un-focus");
+    input.classList.remove("focus");
+  }
+}
+
+document.onkeydown = KeyPress;
 
 
 // connect if there are any LiveViews on the page
