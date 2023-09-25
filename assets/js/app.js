@@ -304,18 +304,15 @@ Hooks.Dropdown = {
 };
 
 Hooks.SearchHook = {
-  mounted() {
-    const input = document.querySelector("#searchHook");
-    const searchDropdown = document.querySelector("#dropdownInformation");
-    input.addEventListener("click", () => { 
-    })
-    searchDropdown.classList.remove("hidden");
-  },
   updated() {
     const input = document.querySelector("#searchHook");
     const searchDropdown = document.querySelector("#dropdownInformation");
-    input.addEventListener("click", () => { 
-      console.log(input);
+    input.addEventListener("change", () => { 
+      if (input.value) {
+        searchDropdown.classList.remove("hidden");
+      } else {
+        searchDropdown.classList.add("hidden");
+      }
     })
   }
 };

@@ -22,29 +22,29 @@ defmodule StarknetExplorerWeb.SearchLive do
         <img src={~p"/images/search.svg"} />
       </button>
     </form>
-    <div id="dropdownInformation" class="z-10 bg-container divide-y divide-gray-100 rounded-lg shadow w-full max-w-7xl mx-auto dark:bg-[#232331] dark:divide-gray-600">
-      <div>
+    <div id="dropdownInformation" class="hidden z-10 bg-container divide-y divide-gray-100 rounded-lg shadow w-full max-w-7xl mx-auto dark:bg-[#232331] dark:divide-gray-600">
       <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+        Blocks
       <div>
-    </div>
-      </div>
       <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownInformationButton">
         <li>
-
-        <div class="cursor-pointer block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-        <div class="text-hover-blue">
-        <%= get_number(@block)%> -
-        <%= live_redirect(Utils.shorten_block_hash(get_hash(@block)),
-          to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
-          class: "text-hover-blue",
-          title:  get_hash(@block)
-        ) %>
-        </div>
-
-        </div>
+          <div class="cursor-pointer flex flex-row justify-start items-start block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+            <div class="text-hover-blue">
+            <img class="inline-block" src={~p"/images/box.svg"} />
+            <div class="py-1  inline-block">
+              <%= get_number(@block)%> -
+              <%= live_redirect(Utils.shorten_block_hash(get_hash(@block)),
+              to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
+              class: "text-hover-blue",
+              title:  get_hash(@block)
+            ) %>
+            </div>
+            </div>
+          </div>
         </li>
       </ul>
       </div>
+    </div>
     </div>
     """
   end
