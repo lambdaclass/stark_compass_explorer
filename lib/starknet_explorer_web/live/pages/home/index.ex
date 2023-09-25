@@ -278,7 +278,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
         # get entities count and format for display
         entities_count =
-          StarknetExplorer.Data.get_entity_count()
+          StarknetExplorer.Data.get_entity_count(socket.assigns.network)
           |> Enum.map(fn {entity, count} ->
             {entity, StarknetExplorer.Utils.format_number_for_display(count)}
           end)
