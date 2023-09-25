@@ -113,79 +113,103 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div>From Address</div>
       <div>Age</div>
     </div>
-    <%= for {event,idx}  <- Enum.with_index(@transaction_receipt.events) do %>
+    <%= for event <- @events do %>
       <div class="custom-list-item grid-5">
         <div>
           <div class="list-h">Identifier</div>
-          <div>
-            <%= # TODO, this wont work yet. Fix when using SQL.
-            @transaction_receipt.block_number %>
-          </div>
-        </div>
-        <div>
-          <div class="list-h">Block Number</div>
-          <div><span class="blue-label"><%= @transaction_receipt.block_number %></span></div>
-        </div>
-        <div>
-          <div>
-            <div class="list-h">Name</div>
-            <div>
-              <% name = Events.get_event_name(event, @network) %>
-              <%= if !String.starts_with?(name, "0x") do %>
-                <%= name %>
-              <% else %>
-                <div
-                  class="flex gap-2 items-center copy-container"
-                  id={"copy-transaction-event-name-#{idx}"}
-                  phx-hook="Copy"
-                >
-                  <div class="relative">
-                    <div class="break-all">
-                      <span><%= name |> Utils.shorten_block_hash() %></span>
-                    </div>
-                    <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                      <div class="relative">
-                        <img
-                          class="copy-btn copy-text w-4 h-4"
-                          src={~p"/images/copy.svg"}
-                          data-text={name}
-                        />
-                        <img
-                          class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                          src={~p"/images/check-square.svg"}
-                        />
-                      </div>
-                    </div>
-                  </div>
+          <div
+            class="flex gap-2 items-center copy-container"
+            id={"copy-transaction-hash-#{event.id}"}
+            phx-hook="Copy"
+          >
+            <div class="relative">
+              <div class="break-all text-hover-blue">
+                <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-blue">
+                  <span><%= event.id |> Utils.shorten_block_hash() %></span>
+                </a>
+              </div>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={event.id}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
                 </div>
-              <% end %>
+              </div>
             </div>
           </div>
         </div>
         <div>
-          <div class="list-h">From Address</div>
+          <div class="list-h">Block Number</div>
           <div>
-            <div
-              class="flex gap-2 items-center copy-container"
-              id={"copy-event-from-addr-#{idx}"}
-              phx-hook="Copy"
-            >
-              <div class="relative">
-                <div class="break-all">
-                  <span><%= event["from_address"] |> Utils.shorten_block_hash() %></span>
-                </div>
-                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                  <div class="relative">
-                    <img
-                      class="copy-btn copy-text w-4 h-4"
-                      src={~p"/images/copy.svg"}
-                      data-text={event["from_address"]}
-                    />
-                    <img
-                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                      src={~p"/images/check-square.svg"}
-                    />
+            <span class="blue-label">
+              <a
+                href={Utils.network_path(@network, "blocks/#{event.block_number}")}
+                class="text-hover-blue"
+              >
+                <span><%= to_string(event.block_number) %></span>
+              </a>
+            </span>
+          </div>
+        </div>
+        <div>
+          <div class="list-h">Name</div>
+          <div>
+            <%= if !String.starts_with?(event.name, "0x") do %>
+              <%= event.name %>
+            <% else %>
+              <div
+                class="flex gap-2 items-center copy-container"
+                id={"copy-transaction-hash-#{event.name}"}
+                phx-hook="Copy"
+              >
+                <div class="relative">
+                  <div class="break-all">
+                    <span><%= event.name |> Utils.shorten_block_hash() %></span>
                   </div>
+                  <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                    <div class="relative">
+                      <img
+                        class="copy-btn copy-text w-4 h-4"
+                        src={~p"/images/copy.svg"}
+                        data-text={event.name}
+                      />
+                      <img
+                        class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                        src={~p"/images/check-square.svg"}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <div class="list-h">From Address</div>
+        <div>
+          <div
+            class="flex gap-2 items-center copy-container"
+            id={"copy-from-addr-#{event.id}"}
+            phx-hook="Copy"
+          >
+            <div class="relative">
+              <span><%= event.from_address |> Utils.shorten_block_hash() %></span>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={event.from_address}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
                 </div>
               </div>
             </div>
@@ -193,7 +217,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </div>
         <div>
           <div class="list-h">Age</div>
-          <div><%= Utils.get_block_age_from_timestamp(@block_timestamp) %></div>
+          <div><%= Utils.get_block_age_from_timestamp(event.age) %></div>
         </div>
       </div>
     <% end %>
@@ -705,13 +729,15 @@ defmodule StarknetExplorerWeb.TransactionLive do
         _ -> nil
       end
 
+    events = Events.get_by_tx_hash(transaction_hash, socket.assigns.network)
+
     assigns = [
       transaction: transaction,
       transaction_receipt: receipt,
       transaction_hash: transaction_hash,
       internal_calls: internal_calls,
       transaction_view: "overview",
-      events: receipt.events,
+      events: events,
       messages: messages_sent,
       block_timestamp: block_timestamp
     ]

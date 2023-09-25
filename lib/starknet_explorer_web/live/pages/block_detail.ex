@@ -682,7 +682,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             <div class="relative">
               <div class="break-all text-hover-blue">
                 <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-blue">
-                  <span><%= event.id %></span>
+                  <span><%= event.id |> Utils.shorten_block_hash() %></span>
                 </a>
               </div>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -705,7 +705,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="list-h">Block Number</div>
           <div>
             <span class="blue-label">
-              <a href={Utils.network_path(@network, "/blocks/#{@block.hash}")} class="text-hover-blue">
+              <a href={Utils.network_path(@network, "blocks/#{@block.hash}")} class="text-hover-blue">
                 <span><%= to_string(@block.number) %></span>
               </a>
             </span>
@@ -715,7 +715,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="list-h">Transaction Hash</div>
           <div>
             <a
-              href={Utils.network_path(@network, "/transactions/#{event.transaction_hash}")}
+              href={Utils.network_path(@network, "transactions/#{event.transaction_hash}")}
               class="text-hover-blue"
             >
               <span><%= event.transaction_hash |> Utils.shorten_block_hash() %></span>
@@ -763,12 +763,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             phx-hook="Copy"
           >
             <div class="relative">
-              <a
-                href={Utils.network_path(@network, "/contracts/#{event.from_address}")}
-                class="text-hover-blue"
-              >
-                <span><%= event.from_address |> Utils.shorten_block_hash() %></span>
-              </a>
+              <span><%= event.from_address |> Utils.shorten_block_hash() %></span>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
                   <img
