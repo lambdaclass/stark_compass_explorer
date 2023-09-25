@@ -1,9 +1,7 @@
 defmodule StarknetExplorerWeb.EventIndexLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.{Data, BlockUtils, Rpc, Events}
-
-  @page_size 30
+  alias StarknetExplorer.{BlockUtils, Events}
 
   @impl true
   def render(assigns) do
@@ -25,24 +23,22 @@ defmodule StarknetExplorerWeb.EventIndexLive do
           <div>From Address</div>
           <div>Age</div>
         </div>
-        <%= for {idx, event = %{"block_number" => block_number, "from_address" => from_address, "transaction_hash" => tx_hash}} <- Enum.with_index(@page["events"], fn element, index -> {index, element} end) do %>
+        <%= for {event, _index} <- Enum.with_index(@page.entries) do %>
           <div class="custom-list-item grid-6">
             <div>
               <div class="list-h">Identifier</div>
-              <% identifier =
-                Integer.to_string(block_number) <> "_" <> Integer.to_string(idx + @page_number) %>
               <div
                 class="flex gap-2 items-center copy-container"
-                id={"copy-transaction-hash-#{identifier}"}
+                id={"copy-event-id-#{event.id}"}
                 phx-hook="Copy"
               >
                 <div class="relative">
                   <div class="break-all text-hover-blue">
                     <a
-                      href={Utils.network_path(@network, "events/#{identifier}")}
+                      href={Utils.network_path(@network, "events/#{event.id}")}
                       class="text-hover-blue"
                     >
-                      <span><%= identifier %></span>
+                      <span><%= event.id |> Utils.shorten_block_hash() %></span>
                     </a>
                   </div>
                   <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -50,7 +46,7 @@ defmodule StarknetExplorerWeb.EventIndexLive do
                       <img
                         class="copy-btn copy-text w-4 h-4"
                         src={~p"/images/copy.svg"}
-                        data-text={identifier}
+                        data-text={event.id}
                       />
                       <img
                         class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -66,10 +62,10 @@ defmodule StarknetExplorerWeb.EventIndexLive do
               <div>
                 <span class="blue-label">
                   <a
-                    href={Utils.network_path(@network, "blocks/#{event["block_hash"]}")}
+                    href={Utils.network_path(@network, "blocks/#{event.block_number}")}
                     class="text-hover-blue"
                   >
-                    <span><%= to_string(block_number) %></span>
+                    <span><%= to_string(event.block_number) %></span>
                   </a>
                 </span>
               </div>
@@ -78,25 +74,52 @@ defmodule StarknetExplorerWeb.EventIndexLive do
               <div class="list-h">Transaction Hash</div>
               <div>
                 <a
-                  href={Utils.network_path(@network, "transactions/#{tx_hash}")}
+                  href={Utils.network_path(@network, "transactions/#{event.transaction_hash}")}
                   class="text-hover-blue"
                 >
-                  <span><%= tx_hash |> Utils.shorten_block_hash() %></span>
+                  <span><%= event.transaction_hash |> Utils.shorten_block_hash() %></span>
                 </a>
               </div>
             </div>
             <div>
               <div class="list-h">Name</div>
               <div>
-                <%= Events.get_event_name(event, @network) %>
+                <%= if !String.starts_with?(event.name, "0x") do %>
+                  <%= event.name %>
+                <% else %>
+                  <div
+                    class="flex gap-2 items-center copy-container"
+                    id={"copy-name-#{event.id}"}
+                    phx-hook="Copy"
+                  >
+                    <div class="relative">
+                      <div class="break-all">
+                        <span><%= event.name |> Utils.shorten_block_hash() %></span>
+                      </div>
+                      <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                        <div class="relative">
+                          <img
+                            class="copy-btn copy-text w-4 h-4"
+                            src={~p"/images/copy.svg"}
+                            data-text={event.name}
+                          />
+                          <img
+                            class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                            src={~p"/images/check-square.svg"}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
               </div>
             </div>
             <div class="list-h">From Address</div>
-            <div><%= from_address |> Utils.shorten_block_hash() %></div>
+            <div><%= event.from_address |> Utils.shorten_block_hash() %></div>
             <div>
               <div class="list-h">Age</div>
               <div>
-                <%= Utils.get_block_age(@block) %>
+                <%= Utils.get_block_age_from_timestamp(event.age) %>
               </div>
             </div>
           </div>
@@ -108,23 +131,18 @@ defmodule StarknetExplorerWeb.EventIndexLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    block_height = BlockUtils.block_height(socket.assigns.network) - 1
-    {:ok, block} = Rpc.get_block_by_number(block_height, socket.assigns.network)
+    {:ok, block_height} = BlockUtils.block_height(socket.assigns.network)
 
-    {:ok, page} =
-      Data.get_events(
-        %{
-          "chunk_size" => @page_size,
-          "from_block" => %{"block_number" => block_height},
-          "to_block" => %{"block_number" => block_height}
-        },
+    page =
+      Events.paginate_events(
+        %{page: 1},
+        block_height,
         socket.assigns.network
       )
 
     assigns = [
       page: page,
-      page_number: 0,
-      block: block
+      page_number: 0
     ]
 
     {:ok, assign(socket, assigns)}

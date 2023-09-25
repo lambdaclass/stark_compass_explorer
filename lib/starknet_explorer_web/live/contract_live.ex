@@ -16,7 +16,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
     </div>
     <div
       id="dropdown"
-      class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
+      class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
       phx-hook="Dropdown"
     >
       <span class="networkSelected capitalize"><%= assigns.view %></span>
@@ -161,12 +161,6 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Deployed At Transaction Hash</div>
         <div>
-          <%= live_redirect(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
-            |> Utils.shorten_block_hash(),
-            to:
-              ~p"/#{@network}/transactions/0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
-          ) %>
           <a
             href={
               Utils.network_path(

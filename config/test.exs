@@ -6,8 +6,8 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :starknet_explorer, StarknetExplorer.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "madaraexplorer_user",
+  password: "madaraexplorerlambda",
   hostname: "localhost",
   database: "starknet_explorer_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
