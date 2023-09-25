@@ -255,7 +255,17 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
     case List.first(blocks) do
       nil ->
-        {:noreply, socket}
+        assign(socket,
+          blocks: [],
+          transactions: [],
+          entities_count: %{
+            message_count: 0,
+            events_count: 0,
+            transaction_count: 0
+          },
+          latest_block: 0,
+          block_height: 0
+        )
 
       latest_block ->
         transactions =
