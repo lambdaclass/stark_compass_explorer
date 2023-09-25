@@ -46,11 +46,17 @@ defmodule StarknetExplorerWeb.SearchLive do
       case try_search(query, socket.assigns.network) do
         {:tx, _tx} ->
           fn ->
-            push_navigate(socket, to: ~p"/#{socket.assigns.network}/transactions/#{query}")
+            push_navigate(socket,
+              to: Utils.network_path(socket.assigns.network, "transactions/#{query}")
+            )
           end
 
         {:block, _block} ->
-          fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
+          fn ->
+            push_navigate(socket,
+              to: Utils.network_path(socket.assigns.network, "blocks/#{query}")
+            )
+          end
 
         :noquery ->
           fn ->

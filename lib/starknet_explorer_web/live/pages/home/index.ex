@@ -50,7 +50,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </div>
       </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-        <a href={~p"/#{@network}/blocks"} class="bg-container text-gray-100">
+        <a href={Utils.network_path(@network, "blocks")} class="bg-container text-gray-100">
           <div class="relative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
               <img src={~p"/images/box.svg"} class="my-auto w-6 h-auto" />
@@ -65,7 +65,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             </div>
           </div>
         </a>
-        <a href={~p"/#{@network}/messages"} class="bg-container text-gray-100">
+        <a href={Utils.network_path(@network, "messages")} class="bg-container text-gray-100">
           <div class="reative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
               <img src={~p"/images/message-square.svg"} class="my-auto w-6 h-auto" />
@@ -80,7 +80,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             </div>
           </div>
         </a>
-        <a href={~p"/#{@network}/events"} class="bg-container text-gray-100">
+        <a href={Utils.network_path(@network, "events")} class="bg-container text-gray-100">
           <div class="reative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
               <img src={~p"/images/calendar.svg"} class="my-auto w-6 h-auto" />
@@ -95,7 +95,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             </div>
           </div>
         </a>
-        <a href={~p"/#{@network}/transactions"} class="bg-container text-gray-100">
+        <a href={Utils.network_path(@network, "transactions")} class="bg-container text-gray-100">
           <div class="reative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
               <img src={~p"/images/check-square.svg"} class="my-auto w-6 h-auto" />
@@ -138,19 +138,23 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             <div id={"block-#{block.number}"} class="grid-6 custom-list-item">
               <div>
                 <div class="list-h">Number</div>
-                <%= live_redirect(to_string(block.number),
-                  to: ~p"/#{assigns.network}/blocks/#{block.number}"
-                ) %>
+                <a
+                  href={Utils.network_path(assigns.network, "blocks/#{block.number}")}
+                  class="text-hover-blue"
+                >
+                  <span><%= to_string(block.number) %></span>
+                </a>
               </div>
               <div class="col-span-2">
                 <div class="list-h">Block Hash</div>
                 <div class="copy-container" id={"copy-block-#{block.number}"} phx-hook="Copy">
                   <div class="relative">
-                    <%= live_redirect(Utils.shorten_block_hash(block.hash),
-                      to: ~p"/#{assigns.network}/blocks/#{block.hash}",
-                      class: "text-hover-blue",
-                      title: block.hash
-                    ) %>
+                    <a
+                      href={Utils.network_path(assigns.network, "blocks/#{block.hash}")}
+                      class="text-hover-blue"
+                    >
+                      <span><%= Utils.shorten_block_hash(block.hash) %></span>
+                    </a>
                     <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                       <div class="relative">
                         <img
@@ -209,10 +213,12 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <div class="list-h">Transaction Hash</div>
                 <div class="copy-container" id={"copy-transaction-#{idx}"} phx-hook="Copy">
                   <div class="relative">
-                    <%= live_redirect(Utils.shorten_block_hash(transaction.hash),
-                      to: ~p"/#{assigns.network}/transactions/#{transaction.hash}",
-                      class: "text-hover-blue"
-                    ) %>
+                    <a
+                      href={Utils.network_path(assigns.network, "transactions/#{transaction.hash}")}
+                      class="text-hover-blue"
+                    >
+                      <span><%= Utils.shorten_block_hash(transaction.hash) %></span>
+                    </a>
                     <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                       <div class="relative">
                         <img
