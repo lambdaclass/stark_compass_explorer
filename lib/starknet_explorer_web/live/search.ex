@@ -32,12 +32,14 @@ defmodule StarknetExplorerWeb.SearchLive do
             <div class="text-hover-blue">
             <img class="inline-block" src={~p"/images/box.svg"} />
             <div class="py-1  inline-block">
+              <%= if assigns[:block] do %>
               <%= get_number(@block)%> -
-              <%= live_redirect(Utils.shorten_block_hash(get_hash(@block)),
-              to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
-              class: "text-hover-blue",
-              title:  get_hash(@block)
-            ) %>
+                <%= live_redirect(Utils.shorten_block_hash(get_hash(@block)),
+                to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
+                class: "text-hover-blue",
+                title:  get_hash(@block)
+              ) %>
+              <% end %>
             </div>
             </div>
           </div>
@@ -48,9 +50,14 @@ defmodule StarknetExplorerWeb.SearchLive do
     </div>
     """
   end
+          #    <%= live_redirect(Utils.shorten_block_hash(@hash),
+          #  to: ~p"/#{@network}/blocks/#{@hash}",
+           # class: "text-hover-blue",
+           #   title:  @block
+           # ) %>
 
   def mount(_params, session, socket) do
-    new_assigns = [query: "", block: %{}, loading: false, matches: [], errors: []]
+    new_assigns = [query: "", loading: false, matches: [], errors: []]
 
     socket =
       socket
@@ -60,16 +67,16 @@ defmodule StarknetExplorerWeb.SearchLive do
   end
 
   def handle_event("update-input", %{"search-input" => query}, socket) do
-    block = case try_search(query, socket.assigns.network) do
-      {:block, block} ->
+    case try_search(query, socket.assigns.network) do
+      {:block, block} -> assign(socket, block: block)
       #fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
-        assign(socket, block: block)
       {:noquery, _} -> nil
     end
-
-    socket = socket |> assign(:block, block) |> assign(:query, query)
-
     {:noreply, socket}
+
+    #socket = socket |> assign(:hash, hash) |> assign(:query, query)
+
+    #{:noreply, assign(socket, block: try_search(query, socket.assigns.network))}
   end
 
   def handle_event("search", %{"search-input" => query}, socket) when byte_size(query) <= 100 do
@@ -102,7 +109,7 @@ defmodule StarknetExplorerWeb.SearchLive do
 
     IO.inspect(socket.assigns.block, label: :wea)
 
-    {:noreply, socket}
+    {:noreply, navigate_fun.()}
   end
 
   defp try_search(query, network) do
