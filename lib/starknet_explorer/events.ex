@@ -153,6 +153,18 @@ defmodule StarknetExplorer.Events do
     )
   end
 
+  def get_by_id(id, network) do
+    Events
+    |> where([p], p.id == ^id and p.network == ^network)
+    |> Repo.one()
+  end
+
+  def get_by_tx_hash(tx_hash, network) do
+    Events
+    |> where([p], p.transaction_hash == ^tx_hash and p.network == ^network)
+    |> Repo.all()
+  end
+
   def get_total_count(network) do
     from(event in __MODULE__, where: event.network == ^network, select: count())
     |> Repo.one()
