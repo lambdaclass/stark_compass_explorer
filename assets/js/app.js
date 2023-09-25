@@ -308,22 +308,11 @@ Hooks.Dropdown = {
 };
 
 Hooks.SearchHook = {
-  mounted() {
-    const input = document.querySelector("#searchHook");
-    const searchDropdown = document.querySelector("#dropdownInformation");
-    input.addEventListener("input", () => { 
-      if (input.value) {
-        searchDropdown.classList.remove("hidden");
-      } else {
-        searchDropdown.classList.add("hidden");
-      }
-    })
-  },
   updated() {
-    const input = document.querySelector("#searchHook");
+    const form = document.querySelector(".normal-form");
     const searchDropdown = document.querySelector("#dropdownInformation");
     searchDropdown.classList.remove("hidden");
-    toggleFocus(input, searchDropdown);
+    toggleFocus(form, searchDropdown);
   }
 };
 
@@ -348,31 +337,32 @@ window.addEventListener("phx:page-loading-stop", () => {
 
 function KeyPress(e) {
   const evntObj = e;
-  const input = document.querySelector("#searchHook");
+  const form = document.querySelector(".normal-form");
+  const input = form.querySelector("input");
   const searchDropdown = document.querySelector("#dropdownInformation");
   if ((evntObj.ctrlKey || evntObj.metaKey) && evntObj.keyCode === K_KEY_CODE) {
     evntObj.preventDefault();
     focused = true;
-    toggleFocus(input, searchDropdown);
+    toggleFocus(form, searchDropdown);
     input.focus();
   }
   if (evntObj.keyCode === ESC_KEY_CODE) { 
     evntObj.preventDefault();
     focused = false;
-    toggleFocus(input, searchDropdown);
+    toggleFocus(form, searchDropdown);
     input.blur();
   }
 }
 
-function toggleFocus(input,searchDropdown) {
+function toggleFocus(form,searchDropdown) {
   if (focused) { 
-    input.classList.remove("un-focus");
-    input.classList.add("focus");
+    form.classList.remove("un-focus");
+    form.classList.add("focus");
     searchDropdown.classList.add("focus");
     searchDropdown.classList.remove("un-focus");
   } else {
-    input.classList.remove("focus");
-    input.classList.add("un-focus");
+    form.classList.remove("focus");
+    form.classList.add("un-focus");
     searchDropdown.classList.remove("focus");
     searchDropdown.classList.add("un-focus");
   }

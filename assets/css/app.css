@@ -112,13 +112,12 @@ input {
 }
 
 .focus {
-  @apply transition ease-in-out delay-150 bg-blue-500 translate-y-1 scale-90 duration-300;
+  @apply transition ease-in-out delay-150 translate-y-1 scale-90 duration-300;
 }
 
 .un-focus {
-  @apply transition ease-in-out delay-150 bg-blue-500 -translate-y-0 scale-100 duration-300
+  @apply transition ease-in-out delay-150 -translate-y-0 scale-100 duration-300
 }
-
 
 /* Detail pages */
 .block-label {
