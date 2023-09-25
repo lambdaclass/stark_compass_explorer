@@ -3,7 +3,6 @@ defmodule StarknetExplorerWeb.TransactionLive do
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.{Data, Message, Rpc, Gateway}
 
-
   defp transaction_header(assigns) do
     ~H"""
     <div class="flex flex-col lg:flex-row gap-2 items-baseline mb-5 lg:mb-0">
@@ -590,7 +589,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </div>
         <%= for {builtin_name , instance_counter} <- @transaction_receipt.execution_resources["builtin_instance_counter"] do %>
           <div class="flex flex-col justify-center items-center gap-2">
-            <span class={Utils.builtin_color(builtin_name)}><%= String.upcase(builtin_name) %></span> <%= instance_counter %>
+            <span class={Utils.builtin_color(builtin_name)}>
+              <%= Utils.builtin_name(builtin_name) %>
+            </span>
+            <%= instance_counter %>
           </div>
         <% end %>
       </div>
@@ -624,12 +626,26 @@ defmodule StarknetExplorerWeb.TransactionLive do
           transaction |> Map.put(:max_fee, max_fee)
       end
 
-    receipt = transaction.receipt |> Map.put(:actual_fee, actual_fee)
+    execution_resources =
+      case Application.get_env(:starknet_explorer, :enable_gateway_data) do
+        false ->
+          {:ok, receipt} =
+            Gateway.get_transaction_receipt(transaction_hash, socket.assigns.network)
 
-    {:ok, receipt_2} = Gateway.get_transaction_receipt(transaction_hash, socket.assigns.network)
+          receipt["execution_resources"]
+
+        true ->
+          %{
+            "builtin_instance_counter" => %{},
+            "n_memory_holes" => "-",
+            "n_steps" => "-"
+          }
+      end
 
     receipt =
-      transaction.receipt |> Map.put(:execution_resources, receipt_2["execution_resources"])
+      transaction.receipt
+      |> Map.put(:execution_resources, execution_resources)
+      |> Map.put(:actual_fee, actual_fee)
 
     internal_calls =
       case receipt.execution_status != "REVERTED" &&
@@ -639,6 +655,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       end
 
     transaction |> Map.put(:receipt, receipt)
+
     assigns = [
       transaction: transaction,
       transaction_receipt: receipt,
