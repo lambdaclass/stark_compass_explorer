@@ -33,6 +33,7 @@ let Hooks = {};
 
 const ESC_KEY_CODE = 27;
 const K_KEY_CODE = 75;
+let focused = false;
 
 // Hamburger menu
 Hooks.Nav = {
@@ -311,7 +312,6 @@ Hooks.SearchHook = {
     const input = document.querySelector("#searchHook");
     const searchDropdown = document.querySelector("#dropdownInformation");
     input.addEventListener("input", () => { 
-      console.log(input.value);
       if (input.value) {
         searchDropdown.classList.remove("hidden");
       } else {
@@ -323,6 +323,7 @@ Hooks.SearchHook = {
     const input = document.querySelector("#searchHook");
     const searchDropdown = document.querySelector("#dropdownInformation");
     searchDropdown.classList.remove("hidden");
+    toggleFocus(input, searchDropdown);
   }
 };
 
@@ -348,17 +349,32 @@ window.addEventListener("phx:page-loading-stop", () => {
 function KeyPress(e) {
   const evntObj = e;
   const input = document.querySelector("#searchHook");
+  const searchDropdown = document.querySelector("#dropdownInformation");
   if ((evntObj.ctrlKey || evntObj.metaKey) && evntObj.keyCode === K_KEY_CODE) {
     evntObj.preventDefault();
-    input.classList.remove("un-focus");
-    input.classList.add("focus");
+    focused = true;
+    toggleFocus(input, searchDropdown);
     input.focus();
   }
   if (evntObj.keyCode === ESC_KEY_CODE) { 
     evntObj.preventDefault();
-    input.classList.add("un-focus");
-    input.classList.remove("focus");
+    focused = false;
+    toggleFocus(input, searchDropdown);
     input.blur();
+  }
+}
+
+function toggleFocus(input,searchDropdown) {
+  if (focused) { 
+    input.classList.remove("un-focus");
+    input.classList.add("focus");
+    searchDropdown.classList.add("focus");
+    searchDropdown.classList.remove("un-focus");
+  } else {
+    input.classList.remove("focus");
+    input.classList.add("un-focus");
+    searchDropdown.classList.remove("focus");
+    searchDropdown.classList.add("un-focus");
   }
 }
 
