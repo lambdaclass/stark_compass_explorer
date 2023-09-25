@@ -25,6 +25,12 @@ defmodule StarknetExplorer.Blockchain.ListenerSupervisor do
         [
           Supervisor.child_spec({ListenerWorker, [network: :mainnet, name: :listener_mainnet]},
             id: "listener_mainnet"
+          ),
+          Supervisor.child_spec({ListenerWorker, [network: :testnet, name: :listener_testnet]},
+            id: "listener_testnet"
+          ),
+          Supervisor.child_spec({ListenerWorker, [network: :testnet2, name: :listener_testnet2]},
+            id: "listener_testnet2"
           )
         ]
       end

@@ -158,10 +158,10 @@ input {
 
 /* Dropdown */
 main .options {
-  @apply bg-black/20 lg:bg-transparent lg:flex lg:flex-row mt-2 lg:mt-0 mb-10 lg:mb-0;
+  @apply bg-black/20 lg:bg-transparent lg:flex lg:flex-row mt-2 lg:mt-0 mb-10 lg:mb-0 lg:border-b border-b-gray-700;
 }
 main .option {
-  @apply border-b border-b-gray-800 py-3  px-3 transition-all duration-300;
+  @apply border-b border-b-transparent py-3 px-3 transition-all duration-300 -mb-px;
 }
 .option:hover {
   cursor: pointer;

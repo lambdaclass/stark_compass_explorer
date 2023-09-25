@@ -75,7 +75,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     </div>
     <div
       id="dropdown"
-      class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
+      class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
       phx-hook="Dropdown"
     >
       <span class="networkSelected capitalize"><%= assigns.view %></span>
@@ -85,7 +85,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     </div>
     <div class="options hidden">
       <div
-        class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
         phx-click="select-view"
         ,
         phx-value-view="overview"
@@ -93,7 +93,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         Overview
       </div>
       <div
-        class={"option #{if assigns.view == "transactions", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "transactions", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
         phx-click="select-view"
         ,
         phx-value-view="transactions"
@@ -101,7 +101,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         Transactions
       </div>
       <div
-        class={"option #{if assigns.view == "messages", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "messages", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
         phx-click="select-view"
         ,
         phx-value-view="messages"
@@ -109,7 +109,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         Message Logs
       </div>
       <div
-        class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
         phx-click="select-view"
         ,
         phx-value-view="events"
@@ -294,7 +294,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   def render_info(assigns = %{block: _, view: "transactions"}) do
     ~H"""
-    <div class="grid-3 table-th !pt-7 border-t border-gray-700">
+    <div class="grid-3 table-th !pt-7">
       <div>Hash</div>
       <div>Type</div>
       <div>Version</div>
@@ -527,7 +527,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
-    <div class="grid-4 custom-list-item">
+    <div class="grid-4 custom-list-item lg:border-transparent">
       <div class="block-label">Block Hash</div>
       <div
         class="copy-container col-span-3 text-hover-blue"
@@ -662,7 +662,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   def render_info(assigns = %{block: _block, view: "events"}) do
     ~H"""
-    <div class="table-th !pt-7 border-t border-gray-700 grid-6">
+    <div class="table-th !pt-7 grid-6">
       <div>Identifier</div>
       <div>Block Number</div>
       <div>Transaction Hash</div>

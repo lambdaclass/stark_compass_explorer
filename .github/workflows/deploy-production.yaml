@@ -47,8 +47,10 @@ jobs:
         ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_production"
         SSH_HOST: ${{ vars.SSH_HOST }}
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
-        CONTINUATION_TOKEN_FORMAT: "large"
         NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
         NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
+        ENABLE_LISTENER: "true"
+        ENABLE_UPDATER: "true"
+        ENABLE_FETCHER: "true"
       run: |
         ansible-playbook -i ansible/inventory.yaml ansible/playbooks/deployment.yaml
