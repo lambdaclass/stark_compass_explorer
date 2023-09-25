@@ -105,9 +105,9 @@ defmodule StarknetExplorerWeb.Utils do
   end
 
   def format_arg_value(%{
-        :type => "core::array::Array::<" <> _rest,
         :value => value
-      }) do
+      })
+      when is_map(value) or is_list(value) do
     value
     |> Jason.encode!()
     |> Jason.Formatter.pretty_print()
@@ -124,15 +124,7 @@ defmodule StarknetExplorerWeb.Utils do
         |> Jason.Formatter.pretty_print()
 
       _ ->
-        case value do
-          value when is_map(value) or is_list(value) ->
-            value
-            |> Jason.encode!()
-            |> Jason.Formatter.pretty_print()
-
-          _ ->
-            value
-        end
+        value
     end
   end
 
