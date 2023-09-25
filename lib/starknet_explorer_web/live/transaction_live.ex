@@ -34,7 +34,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     </div>
     <div
       id="dropdown"
-      class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
+      class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
       phx-hook="Dropdown"
     >
       <span class="networkSelected capitalize"><%= assigns.transaction_view %></span>
@@ -44,7 +44,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     </div>
     <div class="options hidden">
       <div
-        class={"option #{if assigns.transaction_view == "overview", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "overview", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="overview"
@@ -52,7 +52,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         Overview
       </div>
       <div
-        class={"option #{if assigns.transaction_view == "events", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "events", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="events"
@@ -60,7 +60,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         Events
       </div>
       <div
-        class={"option #{if assigns.transaction_view == "message_logs", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "message_logs", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="message_logs"
@@ -69,7 +69,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </div>
       <%= if @internal_calls != nil do %>
         <div
-          class={"option #{if assigns.transaction_view == "internal_calls", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+          class={"option #{if assigns.transaction_view == "internal_calls", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
           phx-click="select-view"
           ,
           phx-value-view="internal_calls"
@@ -106,7 +106,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   def render_info(%{transaction_view: "events"} = assigns) do
     ~H"""
-    <div class="table-th !pt-7 border-t border-gray-700 grid-5">
+    <div class="table-th !pt-7 grid-5">
       <div>Identifier</div>
       <div>Block Number</div>
       <div>Name</div>
@@ -241,7 +241,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
             <div class="list-h">Message Hash</div>
             <div
               class="flex gap-2 items-center copy-container"
-              id={"copy-transaction-hash-#{message.message_hash}"}
+              id={"copy-message-hash-#{message.message_hash}"}
               phx-hook="Copy"
             >
               <div class="relative">
@@ -287,7 +287,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
             <div class="list-h">From Address</div>
             <div
               class="flex gap-2 items-center copy-container"
-              id={"copy-from-addr-#{message.hash}"}
+              id={"copy-from-addr-#{message.message_hash}"}
               phx-hook="Copy"
             >
               <div class="relative">
@@ -314,7 +314,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
             <div class="list-h">To Address</div>
             <div
               class="flex gap-2 items-center copy-container"
-              id={"copy-to-addr-#{message.hash}"}
+              id={"copy-to-addr-#{message.message_hash}"}
               phx-hook="Copy"
             >
               <div class="relative">
@@ -445,7 +445,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   # Execution resources
   def render_info(%{transaction_view: "overview"} = assigns) do
     ~H"""
-    <div class="grid-4 custom-list-item">
+    <div class="grid-4 custom-list-item lg:border-transparent">
       <div class="block-label">Transaction Hash</div>
       <div class="col-span-3 break-all">
         <div class="copy-container" id={"tsx-overview-hash-#{@transaction.hash}"} phx-hook="Copy">
@@ -672,7 +672,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <% end %>
       </div>
     </div>
-    <div class="pt-3 mb-3 border-t border-t-gray-700">
+    <div class="pt-3 mb-3">
       <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
         <span>Execution Resources</span><span class="gray-label text-sm">Mocked</span>
       </div>
