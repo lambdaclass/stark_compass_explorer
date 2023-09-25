@@ -15,6 +15,5 @@ defmodule StarknetExplorer.Repo.Migrations.Block do
     end
 
     create unique_index("blocks", [:number])
-    create index("blocks", [:timestamp])
   end
 end

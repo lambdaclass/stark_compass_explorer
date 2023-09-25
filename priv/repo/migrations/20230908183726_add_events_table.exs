@@ -34,6 +34,5 @@ defmodule StarknetExplorer.Repo.Migrations.AddEventsTable do
     end
 
     create unique_index("events", [:id])
-    create index("events", [:transaction_hash])
   end
 end

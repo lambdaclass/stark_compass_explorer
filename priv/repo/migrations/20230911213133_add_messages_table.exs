@@ -32,6 +32,5 @@ defmodule StarknetExplorer.Repo.Migrations.AddMessagesTable do
     end
 
     create unique_index("messages", [:message_hash])
-    create index("messages", [:timestamp])
   end
 end
