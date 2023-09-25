@@ -258,36 +258,50 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def handle_info(:load_blocks, socket) do
     blocks = StarknetExplorer.Data.many_blocks(socket.assigns.network)
-    latest_block = blocks |> hd
 
-    transactions =
-      latest_block.transactions
-      |> Enum.map(fn tx ->
-        tx
-        |> Map.put(:block_timestamp, latest_block.timestamp)
-        |> Map.put(:block_status, latest_block.status)
-      end)
+    case List.first(blocks) do
+      nil ->
+        {:noreply, socket}
 
-    # get entities count and format for display
-    entities_count =
-      StarknetExplorer.Data.get_entity_count()
-      |> Enum.map(fn {entity, count} ->
-        {entity, StarknetExplorer.Utils.format_number_for_display(count)}
-      end)
-      |> Map.new()
+      latest_block ->
+        transactions =
+          latest_block.transactions
+          |> Enum.map(fn tx ->
+            tx
+            |> Map.put(:block_timestamp, latest_block.timestamp)
+            |> Map.put(:block_status, latest_block.status)
+          end)
 
-    max_block_height =
-      StarknetExplorer.Blockchain.ListenerWorker.get_height(
-        StarknetExplorer.Utils.listener_atom(socket.assigns.network)
-      )
+        # get entities count and format for display
+        entities_count =
+          StarknetExplorer.Data.get_entity_count()
+          |> Enum.map(fn {entity, count} ->
+            {entity, StarknetExplorer.Utils.format_number_for_display(count)}
+          end)
+          |> Map.new()
 
-    {:noreply,
-     assign(socket,
-       blocks: blocks,
-       transactions: transactions,
-       entities_count: entities_count,
-       latest_block: latest_block,
-       block_height: StarknetExplorer.Utils.format_number_for_display(max_block_height)
-     )}
+        max_block_height =
+          case StarknetExplorer.Blockchain.ListenerWorker.get_height(
+                 StarknetExplorer.Utils.listener_atom(socket.assigns.network)
+               ) do
+            {:ok, max_block_height} ->
+              max_block_height
+
+            {:err, _} ->
+              {:ok, max_block_height} =
+                StarknetExplorer.Rpc.get_block_height(socket.assigns.network)
+
+              max_block_height
+          end
+
+        {:noreply,
+         assign(socket,
+           blocks: blocks,
+           transactions: transactions,
+           entities_count: entities_count,
+           latest_block: latest_block,
+           block_height: StarknetExplorer.Utils.format_number_for_display(max_block_height)
+         )}
+    end
   end
 end
