@@ -17,7 +17,7 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
   end
 
   def render_info(assigns) do
-  ~H"""
+    ~H"""
     <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
       <h2>Message</h2>
       <div class="font-normal text-gray-400 mt-2 lg:mt-0">
@@ -30,11 +30,7 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
     <div class="custom-list">
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Message Hash</div>
-        <div
-          class="copy-container"
-          id={"copy-block-hash-#{@message.message_hash}"}
-          phx-hook="Copy"
-        >
+        <div class="copy-container" id={"copy-block-hash-#{@message.message_hash}"} phx-hook="Copy">
           <div class="relative">
             <div class="hash">
               <%= @message.message_hash %>
@@ -55,15 +51,23 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Type</div>
-        <div class={"col-span-3 type #{@message.type}"}><%= Message.friendly_message_type(@message.type) %></div>
+        <div class={"col-span-3 type #{@message.type}"}>
+          <%= Message.friendly_message_type(@message.type) %>
+        </div>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Message Direction</div>
         <div class="col-span-3">
           <%= if Message.is_l2_to_l1(@message.type) do %>
-            <div><span class="info-label green-label">L2</span> → <span class="info-label blue-label">L1</span></div>
+            <div>
+              <span class="info-label green-label">L2</span>
+              → <span class="info-label blue-label">L1</span>
+            </div>
           <% else %>
-            <div><span class="info-label blue-label">L1</span> → <span class="info-label green-label">L2</span></div>
+            <div>
+              <span class="info-label blue-label">L1</span>
+              → <span class="info-label green-label">L2</span>
+            </div>
           <% end %>
         </div>
       </div>
@@ -210,11 +214,7 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
                 <%= id %>
               </div>
               <div class="hash">
-                <div
-                  class="copy-container"
-                  id={"copy-payload-#{id}"}
-                  phx-hook="Copy"
-                >
+                <div class="copy-container" id={"copy-payload-#{id}"} phx-hook="Copy">
                   <div class="relative">
                     <div class="hash">
                       <%= payload_item %>
