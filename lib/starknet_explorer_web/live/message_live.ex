@@ -71,7 +71,7 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
         <div class="block-label !mt-0">Transaction Hash</div>
         <div
           class="copy-container col-span-3 text-se-link"
-          id={"copy-block-hash-#{@message.message_hash}"}
+          id={"copy-transaction-hash-#{@message.message_hash}"}
           phx-hook="Copy"
         >
           <div class="relative">
