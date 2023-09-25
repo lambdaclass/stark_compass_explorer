@@ -681,7 +681,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           >
             <div class="relative">
               <div class="break-all text-hover-blue">
-                <a href={Utils.network_path(@network, "/events/#{event.id}")} class="text-hover-blue">
+                <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-blue">
                   <span><%= event.id %></span>
                 </a>
               </div>
@@ -725,25 +725,24 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Name</div>
           <div>
-            <% name = Events.get_event_name(event, @network) %>
-            <%= if !String.starts_with?(name, "0x") do %>
-              <%= name %>
+            <%= if !String.starts_with?(event.name, "0x") do %>
+              <%= event.name %>
             <% else %>
               <div
                 class="flex gap-2 items-center copy-container"
-                id={"copy-transaction-hash-#{name}"}
+                id={"copy-transaction-hash-#{event.name}"}
                 phx-hook="Copy"
               >
                 <div class="relative">
                   <div class="break-all">
-                    <span><%= name |> Utils.shorten_block_hash() %></span>
+                    <span><%= event.name |> Utils.shorten_block_hash() %></span>
                   </div>
                   <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                     <div class="relative">
                       <img
                         class="copy-btn copy-text w-4 h-4"
                         src={~p"/images/copy.svg"}
-                        data-text={name}
+                        data-text={event.name}
                       />
                       <img
                         class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -760,7 +759,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div
             class="flex gap-2 items-center copy-container"
-            id={"copy-transaction-hash-#{name}"}
+            id={"copy-from-addr-#{event.id}"}
             phx-hook="Copy"
           >
             <div class="relative">
@@ -775,7 +774,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
                   <img
                     class="copy-btn copy-text w-4 h-4"
                     src={~p"/images/copy.svg"}
-                    data-text={from_address}
+                    data-text={event.from_address}
                   />
                   <img
                     class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
