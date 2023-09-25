@@ -19,7 +19,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       flash: @flash,
       session: %{"network" => @network}
     ) %>
-    <div class="flex flex-col gap-1 justify-center items-center mb-16">
+    <div class="flex flex-col gap-1 justify-center items-center my-16">
       <h1>Madara Starknet Explorer</h1>
     </div>
     <div class="mx-auto max-w-7xl mt-4 mb-5">
