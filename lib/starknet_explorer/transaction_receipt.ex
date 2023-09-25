@@ -141,6 +141,26 @@ defmodule StarknetExplorer.TransactionReceipt do
     Repo.all(query)
   end
 
+  def get_status_not_finalized(limit \\ 10, network) do
+    query =
+      from t in TransactionReceipt,
+        where: t.finality_status != "ACCEPTED_ON_L1" and t.execution_status == "SUCCEEDED",
+        where: t.network == ^network,
+        limit: ^limit
+
+    Repo.all(query)
+  end
+
+  def update_transaction_status(tx_hash, finality_status, execution_status, network) do
+    query =
+      from t in TransactionReceipt,
+        where: t.transaction_hash == ^tx_hash and t.network == ^network
+
+    Repo.update_all(query,
+      set: [execution_status: execution_status, finality_status: finality_status]
+    )
+  end
+
   def from_rpc_tx(rpc_receipt) do
     struct(%__MODULE__{}, rpc_receipt |> StarknetExplorerWeb.Utils.atomize_keys())
   end
