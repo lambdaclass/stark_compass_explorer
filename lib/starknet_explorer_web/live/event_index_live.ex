@@ -108,7 +108,9 @@ defmodule StarknetExplorerWeb.EventIndexLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    block_height = BlockUtils.block_height(socket.assigns.network) - 1
+    {:ok, block_height} = BlockUtils.block_height(socket.assigns.network)
+    block_height = block_height - 1
+
     {:ok, block} = Rpc.get_block_by_number(block_height, socket.assigns.network)
 
     {:ok, page} =
