@@ -1,9 +1,7 @@
 defmodule StarknetExplorerWeb.EventIndexLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.{Data, BlockUtils, Rpc, Events}
-
-  @page_size 30
+  alias StarknetExplorer.{BlockUtils, Events}
 
   @impl true
   def render(assigns) do
