@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.{Data, Message, Events, Rpc, Gateway}
+  alias StarknetExplorer.{Data, Message, Events, Gateway}
 
   defp transaction_header(assigns) do
     ~H"""

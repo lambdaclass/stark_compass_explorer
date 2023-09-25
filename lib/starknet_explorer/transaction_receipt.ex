@@ -87,7 +87,8 @@ defmodule StarknetExplorer.TransactionReceipt do
   @networks [:mainnet, :testnet, :testnet2]
 
   @fields @invoke_tx_receipt_fields ++
-            @l1_receipt_handler ++ @declare_tx_receipt ++ @deploy_account_tx_receipt ++ [:network]
+            @l1_receipt_handler ++
+            @declare_tx_receipt ++ @deploy_account_tx_receipt ++ [:network, :execution_resources]
   schema "transaction_receipts" do
     belongs_to :transaction, Transaction
     field :transaction_hash
