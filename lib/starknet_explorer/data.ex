@@ -93,11 +93,13 @@ defmodule StarknetExplorer.Data do
   def block_by_number(number, network) do
     case Block.get_by_num(number, network) do
       nil ->
-        {:ok, block} = Rpc.get_block_by_number(number, network)
-        StarknetExplorer.BlockUtils.store_block(block, network)
-
-        block = Block.from_rpc_block(block, network)
-        {:ok, block}
+        with {:ok, block} <- Rpc.get_block_by_number(number, network) do
+          StarknetExplorer.BlockUtils.store_block(block, network)
+          block = Block.from_rpc_block(block, network)
+          {:ok, block}
+        else
+          err -> {:error, err}
+        end
 
       block ->
         {:ok, block}
@@ -304,3 +306,4 @@ defmodule StarknetExplorer.Data do
     |> Map.put(:transaction_count, Transaction.get_total_count())
   end
 end
+

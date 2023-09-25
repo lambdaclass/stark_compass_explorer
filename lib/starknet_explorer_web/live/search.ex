@@ -1,8 +1,8 @@
 defmodule StarknetExplorerWeb.SearchLive do
-  alias Expo.Messages
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorer.Data
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.Message
 
 
   def render(assigns) do
@@ -45,7 +45,7 @@ defmodule StarknetExplorerWeb.SearchLive do
         </li>
       </ul>
       </div>
-</div>
+    </div>
     """
   end
 
@@ -63,7 +63,7 @@ defmodule StarknetExplorerWeb.SearchLive do
     block = case try_search(query, socket.assigns.network) do
       {:block, block} ->
       #fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
-        block
+        assign(socket, block: block)
       {:noquery, _} -> nil
     end
 
@@ -130,6 +130,7 @@ defmodule StarknetExplorerWeb.SearchLive do
           {:error, _} ->
             case Message.get_by_hash(hash, network) do
               {:ok, _message} -> {:message, hash}
+              {:error, err} -> {:noquery, err}
             end
         end
     end
