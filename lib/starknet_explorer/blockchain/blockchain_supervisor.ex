@@ -15,11 +15,22 @@ defmodule StarknetExplorer.Blockchain.BlockchainSupervisor do
         []
       end
 
+    updater_supervisor =
+      if System.get_env("ENABLE_UPDATER") == "true" do
+        [UpdaterSupervisor]
+      else
+        []
+      end
+
+    listener_supervisor =
+      if System.get_env("ENABLE_LISTENER") == "true" do
+        [ListenerSupervisor]
+      else
+        []
+      end
+
     children =
-      [
-        ListenerSupervisor,
-        UpdaterSupervisor
-      ] ++ fetcher_supervisor
+      listener_supervisor ++ updater_supervisor ++ fetcher_supervisor
 
     Supervisor.init(children, strategy: :one_for_one)
   end
