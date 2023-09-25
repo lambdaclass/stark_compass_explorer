@@ -18,25 +18,7 @@ defmodule StarknetExplorer.Data do
   provider.
   """
   def many_blocks(network, block_amount \\ 15) do
-    block_number = StarknetExplorer.Data.latest_block_number(network)
-    blocks = Block.latest_blocks_with_txs(block_amount, block_number, network)
-    every_block_is_in_the_db = length(blocks) == block_amount
-
-    case blocks do
-      blocks when every_block_is_in_the_db ->
-        blocks
-
-      _ ->
-        upper = block_number
-        lower = block_number - block_amount
-
-        upper..lower
-        |> Enum.map(fn block_number ->
-          {:ok, block} = Rpc.get_block_by_number(block_number, network)
-
-          Block.from_rpc_block(block, network)
-        end)
-    end
+    Block.latest_blocks_with_txs(block_amount, network)
   end
 
   @doc """
@@ -120,9 +102,9 @@ defmodule StarknetExplorer.Data do
   end
 
   def latest_block_with_transactions(network) do
-    {:ok, block} = Rpc.get_block_by_number(latest_block_number(network), network)
+    blocks = Block.latest_blocks_with_txs(1, network)
 
-    [block]
+    blocks
   end
 
   def transaction(tx_hash, network) do

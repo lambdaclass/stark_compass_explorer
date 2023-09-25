@@ -34,4 +34,8 @@ defmodule StarknetExplorer.Utils do
     |> Enum.reverse()
     |> Enum.join(",")
   end
+
+  def listener_atom(network) do
+    String.to_atom("listener_#{network}")
+  end
 end

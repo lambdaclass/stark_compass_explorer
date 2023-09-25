@@ -40,9 +40,8 @@
   <body class="bg-se-black text-white relative">
     <header class="z-50 absolute top-0 left-0">
       <nav class="w-screen flex items-center justify-between p-5 lg:px-16">
-        <a href={~p"/#{@conn.assigns.network}/"} class="z-50 text-xl">
-          <span class="uppercase">Madara</span>
-          <span class="font-semibold">Explorer</span>
+        <a href={Utils.network_path(@conn.assigns.network)} } class="z-50 text-xl">
+          <img src={~p"/images/logo.svg"} class="h-9 xl:h-11" />
         </a>
         <img id="hamburger" class="z-50 lg:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
         <div
@@ -50,41 +49,41 @@
           class="pointer-events-none lg:pointer-events-auto absolute lg:relative top-0 left-0 w-screen lg:w-auto h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 flex flex-col lg:flex-row justify-start items-streach gap-7 lg:gap-10 bg-[#111118] my-16 lg:my-0 py-10 lg:py-0 border-t lg:border-t-0 px-5 lg:px-0"
         >
           <a
-            href={~p"/#{@conn.assigns.network}/blocks"}
+            href={Utils.network_path(@conn.assigns.network, "blocks")}
             class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
           >
             <img class="lg:hidden" src={~p"/images/box.svg"} /> <span>Blocks</span>
           </a>
           <a
-            href={~p"/#{@conn.assigns.network}/transactions"}
+            href={Utils.network_path(@conn.assigns.network, "transactions")}
             class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
           >
             <img class="lg:hidden" src={~p"/images/corner-up-right.svg"} />
             <span>Transactions</span>
           </a>
           <a
-            href={~p"/#{@conn.assigns.network}/classes"}
+            href={Utils.network_path(@conn.assigns.network, "classes")}
             class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center hidden"
           >
             <img class="lg:hidden" src={~p"/images/code.svg"} />
             <span>Classes</span>
           </a>
           <a
-            href={~p"/#{@conn.assigns.network}/messages"}
+            href={Utils.network_path(@conn.assigns.network, "messages")}
             class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
           >
             <img class="lg:hidden" src={~p"/images/message-square.svg"} />
             <span>Messages</span>
           </a>
           <a
-            href={~p"/#{@conn.assigns.network}/contracts"}
+            href={Utils.network_path(@conn.assigns.network, "contracts")}
             class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center hidden"
           >
             <img class="lg:hidden" src={~p"/images/file.svg"} />
             <span>Contracts</span>
           </a>
           <a
-            href={~p"/#{@conn.assigns.network}/events"}
+            href={Utils.network_path(@conn.assigns.network, "events")}
             class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
           >
             <img class="lg:hidden" src={~p"/images/calendar.svg"} />
@@ -107,7 +106,7 @@
               class="w-full hidden absolute z-10 mt-1 rounded-md bg-container py-1 text-base text-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
             >
               <div class="w-full py-2 hover:bg-se-violet">
-                <a class="option relative pl-10" href="/mainnet">
+                <a class="option relative pl-10" href="/">
                   <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
                   <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
                   </span>

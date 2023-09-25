@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.{Data, Message, Rpc, Events}
+  alias StarknetExplorer.{Data, Message, Events}
 
   defp transaction_header(assigns) do
     ~H"""
@@ -134,7 +134,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </div>
         <div>
           <div class="list-h">From Address</div>
-          <div><%= event.from_address |> Utils.shorten_block_hash() %></div>
+          <div><%= event["from_address"] |> Utils.shorten_block_hash() %></div>
         </div>
         <div>
           <div class="list-h">Age</div>
@@ -167,9 +167,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
             >
               <div class="relative">
                 <div class="break-all text-hover-blue">
-                  <%= live_redirect(message.message_hash |> Utils.shorten_block_hash(),
-                    to: ~p"/#{@network}/messages/#{message.message_hash}"
-                  ) %>
+                  <a
+                    href={Utils.network_path(@network, "messages/#{message.message_hash}")}
+                    class="text-hover-blue"
+                  >
+                    <span><%= message.message_hash |> Utils.shorten_block_hash() %></span>
+                  </a>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                   <div class="relative">
@@ -264,9 +267,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
             >
               <div class="relative">
                 <div class="break-all text-hover-blue">
-                  <%= live_redirect(message.transaction_hash |> Utils.shorten_block_hash(),
-                    to: ~p"/#{@network}/transactions/#{message.transaction_hash}"
-                  ) %>
+                  <a
+                    href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
+                    class="text-hover-blue"
+                  >
+                    <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
+                  </a>
                 </div>
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                   <div class="relative">
@@ -412,7 +418,14 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Number</div>
       <div class="col-span-3">
-        <span class="blue-label"><%= @transaction_receipt.block_number %></span>
+        <span class="blue-label">
+          <a
+            href={Utils.network_path(@network, "blocks/#{@transaction_receipt.block_hash}")}
+            class="text-hover-blue"
+          >
+            <span><%= @transaction_receipt.block_number %></span>
+          </a>
+        </span>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
@@ -424,7 +437,13 @@ defmodule StarknetExplorerWeb.TransactionLive do
           phx-hook="Copy"
         >
           <div class="relative">
-            <%= @transaction_receipt.block_hash |> Utils.shorten_block_hash() %>
+            <a
+              href={Utils.network_path(@network, "blocks/#{@transaction_receipt.block_hash}")}
+              class="text-hover-blue"
+            >
+              <span><%= @transaction_receipt.block_hash |> Utils.shorten_block_hash() %></span>
+            </a>
+
             <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
               <div class="relative">
                 <img
@@ -605,8 +624,8 @@ defmodule StarknetExplorerWeb.TransactionLive do
     {:ok, transaction = %{receipt: receipt}} =
       Data.full_transaction(transaction_hash, socket.assigns.network)
 
-    {:ok, %{"timestamp" => block_timestamp}} =
-      Rpc.get_block_by_hash(receipt.block_hash, socket.assigns.network)
+    {:ok, %{:timestamp => block_timestamp}} =
+      Data.block_by_hash(receipt.block_hash, socket.assigns.network)
 
     # a tx should not have both L1->L2 and L2->L1 messages AFAIK, but just in case merge both scenarios
     messages_sent =
