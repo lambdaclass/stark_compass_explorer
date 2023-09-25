@@ -11,12 +11,13 @@ defmodule StarknetExplorer.Blockchain.FetcherWorker do
   10 and finish = 1, then this process will fetch blocks 10 down to 1.
   """
 
-  def start_link(args) do
-    GenServer.start_link(__MODULE__, args)
+  def start_link(args = [start: _start, finish: _finish, network: _network, name: name]) do
+    GenServer.start_link(__MODULE__, args, name: name)
   end
 
   @impl true
-  def init(_args = %{start: start, finish: finish, network: network}) when start > finish do
+  def init(_args = [start: start, finish: finish, network: network, name: _name])
+      when start > finish do
     state = %FetcherWorker{
       finish: finish,
       next_to_fetch: start,
