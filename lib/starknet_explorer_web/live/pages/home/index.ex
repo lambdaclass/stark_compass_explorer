@@ -35,18 +35,16 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
     <div class="flex flex-col gap-1 justify-center items-center mb-16">
       <h1>Madara Starknet Explorer</h1>
     </div>
-    <div class="mx-auto max-w-7xl grid md:grid-cols-2 lg:grid-cols-4 gap-5 mt-4 mb-5">
-      <div class="relative w-full md:w-52 flex items-start gap-3 bg-container p-3 text-sm">
-        <img id="tps" class="absolute top-2 right-2 w-5 h-5" src={~p"/images/help-circle.svg"} />
-        <img src={~p"/images/zap.svg"} class="my-auto" />
-        <div class="flex">
-          <div class="border-r border-r-gray-700 pr-4 mr-4">TPS</div>
-          <div>
-            <%= live_render(@socket, TPSComponent,
-              id: "tps-number",
-              session: %{"network" => Map.get(assigns, :network)}
-            ) %>
-          </div>
+    <div class="relative w-full md:w-52 flex items-start gap-3 bg-container p-3 text-sm lg:ml-8">
+      <img id="tps" class="absolute top-2 right-2 w-5 h-5" src={~p"/images/help-circle.svg"} />
+      <img src={~p"/images/zap.svg"} class="my-auto" />
+      <div class="flex">
+        <div class="border-r border-r-gray-700 pr-4 mr-4">TPS</div>
+        <div>
+          <%= live_render(@socket, TPSComponent,
+            id: "tps-number",
+            session: %{"network" => Map.get(assigns, :network)}
+          ) %>
         </div>
       </div>
     </div>
@@ -260,36 +258,50 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def handle_info(:load_blocks, socket) do
     blocks = StarknetExplorer.Data.many_blocks(socket.assigns.network)
-    latest_block = blocks |> hd
 
-    transactions =
-      latest_block.transactions
-      |> Enum.map(fn tx ->
-        tx
-        |> Map.put(:block_timestamp, latest_block.timestamp)
-        |> Map.put(:block_status, latest_block.status)
-      end)
+    case List.first(blocks) do
+      nil ->
+        {:noreply, socket}
 
-    # get entities count and format for display
-    entities_count =
-      StarknetExplorer.Data.get_entity_count()
-      |> Enum.map(fn {entity, count} ->
-        {entity, StarknetExplorer.Utils.format_number_for_display(count)}
-      end)
-      |> Map.new()
+      latest_block ->
+        transactions =
+          latest_block.transactions
+          |> Enum.map(fn tx ->
+            tx
+            |> Map.put(:block_timestamp, latest_block.timestamp)
+            |> Map.put(:block_status, latest_block.status)
+          end)
 
-    max_block_height =
-      StarknetExplorer.Blockchain.ListenerWorker.get_height(
-        StarknetExplorer.Utils.listener_atom(socket.assigns.network)
-      )
+        # get entities count and format for display
+        entities_count =
+          StarknetExplorer.Data.get_entity_count()
+          |> Enum.map(fn {entity, count} ->
+            {entity, StarknetExplorer.Utils.format_number_for_display(count)}
+          end)
+          |> Map.new()
 
-    {:noreply,
-     assign(socket,
-       blocks: blocks,
-       transactions: transactions,
-       entities_count: entities_count,
-       latest_block: latest_block,
-       block_height: StarknetExplorer.Utils.format_number_for_display(max_block_height)
-     )}
+        max_block_height =
+          case StarknetExplorer.Blockchain.ListenerWorker.get_height(
+                 StarknetExplorer.Utils.listener_atom(socket.assigns.network)
+               ) do
+            {:ok, max_block_height} ->
+              max_block_height
+
+            {:err, _} ->
+              {:ok, max_block_height} =
+                StarknetExplorer.Rpc.get_block_height(socket.assigns.network)
+
+              max_block_height
+          end
+
+        {:noreply,
+         assign(socket,
+           blocks: blocks,
+           transactions: transactions,
+           entities_count: entities_count,
+           latest_block: latest_block,
+           block_height: StarknetExplorer.Utils.format_number_for_display(max_block_height)
+         )}
+    end
   end
 end
