@@ -681,7 +681,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           >
             <div class="relative">
               <div class="break-all text-hover-blue">
-                <a href={Utils.network_path(@network, "/events/#{event.id}")} class="text-hover-blue">
+                <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-blue">
                   <span><%= event.id %></span>
                 </a>
               </div>
@@ -725,17 +725,65 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Name</div>
           <div>
-            <%= event.name %>
+            <%= if !String.starts_with?(event.name, "0x") do %>
+              <%= event.name %>
+            <% else %>
+              <div
+                class="flex gap-2 items-center copy-container"
+                id={"copy-transaction-hash-#{event.name}"}
+                phx-hook="Copy"
+              >
+                <div class="relative">
+                  <div class="break-all">
+                    <span><%= event.name |> Utils.shorten_block_hash() %></span>
+                  </div>
+                  <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                    <div class="relative">
+                      <img
+                        class="copy-btn copy-text w-4 h-4"
+                        src={~p"/images/copy.svg"}
+                        data-text={event.name}
+                      />
+                      <img
+                        class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                        src={~p"/images/check-square.svg"}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
           </div>
         </div>
         <div class="list-h">From Address</div>
         <div>
-          <a
-            href={Utils.network_path(@network, "/contracts/#{event.from_address}")}
-            class="text-hover-blue"
+          <div
+            class="flex gap-2 items-center copy-container"
+            id={"copy-from-addr-#{event.id}"}
+            phx-hook="Copy"
           >
-            <span><%= event.from_address |> Utils.shorten_block_hash() %></span>
-          </a>
+            <div class="relative">
+              <a
+                href={Utils.network_path(@network, "/contracts/#{event.from_address}")}
+                class="text-hover-blue"
+              >
+                <span><%= event.from_address |> Utils.shorten_block_hash() %></span>
+              </a>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={event.from_address}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div>
           <div class="list-h">Age</div>

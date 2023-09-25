@@ -76,11 +76,9 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    Process.send_after(self(), :load_blocks, 100, [])
-
     {:ok,
      assign(socket,
-       blocks: []
+       blocks: Data.many_blocks(socket.assigns.network)
      )}
   end
 

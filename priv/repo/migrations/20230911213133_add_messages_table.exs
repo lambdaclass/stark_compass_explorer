@@ -22,7 +22,7 @@ defmodule StarknetExplorer.Repo.Migrations.AddMessagesTable do
       add :from_address, :string
       add :to_address, :string
       add :payload, {:array, :string}
-      add :transaction_hash, :string, primary_key: true, null: false
+      add :transaction_hash, :string
       add :message_hash, :string
       add :timestamp, :integer, null: false
       add :network, :string

@@ -88,11 +88,9 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    Process.send_after(self(), :load_blocks, 100, [])
-
     {:ok,
      assign(socket,
-       latest_block: []
+       latest_block: Data.latest_block_with_transactions(socket.assigns.network)
      )}
   end
 

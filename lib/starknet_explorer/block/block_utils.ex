@@ -65,7 +65,7 @@ defmodule StarknetExplorer.BlockUtils do
     {:ok, Map.new(receipts)}
   end
 
-  def block_height(network) do
+  def block_height_rpc(network) do
     case Rpc.get_block_height_no_cache(network) do
       {:ok, height} ->
         height
@@ -73,6 +73,12 @@ defmodule StarknetExplorer.BlockUtils do
       err = {:error, _} ->
         err
     end
+  end
+
+  def block_height(network) do
+    StarknetExplorer.Blockchain.ListenerWorker.get_height(
+      StarknetExplorer.Utils.listener_atom(network)
+    )
   end
 
   def fetch_block(number, network) when is_integer(number) do
