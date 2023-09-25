@@ -8,6 +8,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorer.Message
   alias StarknetExplorer.Gateway
   alias StarknetExplorer.Events
+  alias StarknetExplorer.Repo
 
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
   defp num_or_hash(_num), do: :num
@@ -134,6 +135,15 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       end
 
     {:ok, receipts} = Data.receipts_by_block(block, socket.assigns.network)
+
+    # add receipts to each block's transaction
+    block = %{
+      block
+      | transactions:
+          Enum.map(block.transactions, fn tx ->
+            %{tx | receipt: Enum.find(receipts, nil, fn r -> r.transaction_hash == tx.hash end)}
+          end)
+    }
 
     # note: most transactions receipt do not contain messages
     l1_to_l2_messages =
@@ -303,8 +313,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>Address</div>
       <div>Age</div>
     </div>
-    <%= for _transaction = %{hash: hash, type: type, version: version, sender_address: sender_address} <- @block.transactions do %>
-      <div class="grid-3 custom-list-item">
+    <%= for transaction = %{hash: hash, type: type, version: version, sender_address: sender_address} <- @block.transactions do %>
+      <div class="grid-7 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
           <div
@@ -333,7 +343,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Type</div>
           <div>
-            <span class={"#{if type == "INVOKE", do: "violet-label", else: "lilac-label"}"}> <!-- TODO: add more statuses -->
+            <span class={"#{if type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+              <!-- TODO: add more statuses -->
               <%= type %>
             </span>
           </div>
@@ -343,25 +354,32 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div><%= version %></div>
         </div>
         <div>
-          <div class="list-h">Status</div><!-- TODO -->
+          <div class="list-h">Status</div>
+          <div><%= transaction.receipt.finality_status %></div>
+        </div>
+        <div>
+          <div class="list-h">Calls</div>
+          <!-- TODO -->
           <div><%= version %></div>
         </div>
         <div>
-          <div class="list-h">Calls</div> <!-- TODO -->
-          <div><%= version %></div>
-        </div>
-        <div>
-        <div class="list-h">Address</div>
+          <div class="list-h">Address</div>
           <div
             class="flex gap-2 items-center copy-container"
             id={"copy-transaction-hash-#{sender_address}"}
             phx-hook="Copy"
           >
             <div class="relative">
-              <div class="break-all text-hover-blue"><%= Utils.shorten_block_hash(sender_address) %></div>
+              <div class="break-all text-hover-blue">
+                <%= Utils.shorten_block_hash(sender_address) %>
+              </div>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
-                  <img class="copy-btn copy-text w-4 h-4" src={~p"/images/copy.svg"} data-text={sender_address} />
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={sender_address}
+                  />
                   <img
                     class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
                     src={~p"/images/check-square.svg"}
