@@ -20,9 +20,6 @@ defmodule StarknetExplorer.Blockchain.UpdaterWorker do
 
   @impl true
   def init([network: network, name: _name] = _args) do
-    IO.inspect("FETCH TIMER")
-    IO.inspect(@fetch_timer)
-
     state = %UpdaterWorker{
       network: network
     }
