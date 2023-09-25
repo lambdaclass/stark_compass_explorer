@@ -8,7 +8,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorer.Message
   alias StarknetExplorer.Gateway
   alias StarknetExplorer.Events
-  alias StarknetExplorer.Repo
 
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
   defp num_or_hash(_num), do: :num
@@ -304,17 +303,16 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   def render_info(assigns = %{block: _, view: "transactions"}) do
     ~H"""
-    <div class="grid-7 table-th !pt-7">
+    <div class="grid-6 table-th !pt-7">
       <div>Hash</div>
       <div>Type</div>
       <div>Version</div>
       <div>Status</div>
-      <div>Calls</div>
       <div>Address</div>
       <div>Age</div>
     </div>
     <%= for transaction = %{hash: hash, type: type, version: version, sender_address: sender_address} <- @block.transactions do %>
-      <div class="grid-7 custom-list-item">
+      <div class="grid-6 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
           <div
@@ -355,12 +353,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div>
           <div class="list-h">Status</div>
-          <div><%= transaction.receipt.finality_status %></div>
-        </div>
-        <div>
-          <div class="list-h">Calls</div>
-          <!-- TODO -->
-          <div><%= version %></div>
+          <span class={"#{if transaction.receipt.finality_status == "ACCEPTED_ON_L2", do: "green-label"} #{if transaction.receipt.finality_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if transaction.receipt.finality_status == "PENDING", do: "pink-label"}"}>
+            <%= transaction.receipt.finality_status %>
+          </span>
         </div>
         <div>
           <div class="list-h">Address</div>
