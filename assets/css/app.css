@@ -1,7 +1,7 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;600&display=swap");
 
 /*
 Styles criteria:
@@ -22,7 +22,7 @@ with that being said, Blue, Green, Violet and Pink can be used for labels if nee
   @apply box-border p-0 m-0 scroll-smooth;
 }
 html {
-  @apply overflow-x-hidden;
+  @apply overflow-x-hidden font-ibm-plex;
 }
 
 /* Titles */
@@ -30,7 +30,7 @@ h1 {
   @apply font-ibm-plex text-center lg:text-left text-3xl lg:text-4xl uppercase font-semibold;
 }
 h2 {
-  @apply font-ibm-plex text-2xl lg:mb-4;
+  @apply font-ibm-plex text-2xl lg:mb-6;
 }
 
 a,
@@ -53,16 +53,28 @@ a,
   @apply font-semibold text-lg;
 }
 .custom-list-item {
-  @apply pt-3 mb-3 border-t border-t-gray-700;
+  @apply pb-3 mt-3 border-b border-se-list-border;
 }
 .custom-list-item > div {
-  @apply my-3 md:my-0 flex flex-col gap-2 items-start;
+  @apply my-1 md:my-0 flex flex-col gap-2 items-start justify-self-start;
+}
+.custom-list-item:last-of-type {
+  @apply border-b-0;
+}
+.custom-list-item .inner-block{
+  @apply px-5 py-1 my-3 lg:my-1 bg-se-inner-bg border border-dashed border-se-inner-border w-full;
+}
+.custom-list-item .inner-block .custom-list-item{
+  @apply w-full;
+}
+.custom-list-item .inner-block .block-label{
+  @apply mb-1;
 }
 .grid-3 {
   @apply md:grid grid-cols-3 items-center gap-1 md:gap-5;
 }
 .grid-4 {
-  @apply md:grid grid-cols-4 items-center gap-1 md:gap-5;
+  @apply grid grid-cols-4 items-center gap-0 md:gap-5;
 }
 .grid-5 {
   @apply md:grid grid-cols-5 items-center gap-1 md:gap-5;
@@ -79,16 +91,26 @@ a,
 .grid-9 {
   @apply lg:grid grid-cols-9 items-center gap-1 lg:gap-5;
 }
+.index-value-grid{
+  @apply grid gap-1 lg:gap-5;
+  grid-template-columns: 4rem 1fr;
+}
+.list-h{
+  @apply text-gray-500;
+}
 .grid-3 .list-h,
 .grid-4 .list-h,
 .grid-5 .list-h,
 .grid-6 .list-h,
 .grid-7 .list-h {
-  @apply font-ibm-plex text-sm pt-2 text-gray-500 md:hidden;
+  @apply font-ibm-plex text-sm pt-2 md:hidden;
 }
 .grid-8 .list-h,
 .grid-9 .list-h {
-  @apply font-ibm-plex text-sm pt-2 text-gray-500 lg:hidden;
+  @apply font-ibm-plex text-sm pt-2 lg:hidden;
+}
+.index-value-grid .list-h{
+  @apply block font-ibm-plex text-base mt-0 p-0;
 }
 
 .grid-3.table-th,
@@ -96,16 +118,16 @@ a,
 .grid-5.table-th,
 .grid-6.table-th,
 .grid-7.table-th {
-  @apply hidden md:grid font-ibm-plex text-sm pt-2 pb-4 text-gray-400;
+  @apply hidden md:grid font-ibm-plex text-sm pt-2 text-gray-400;
 }
 .grid-8.table-th,
 .grid-9.table-th {
-  @apply hidden lg:grid font-ibm-plex text-sm pt-2 pb-4 text-gray-400;
+  @apply hidden lg:grid font-ibm-plex text-sm pt-2 text-gray-400;
 }
 
 /* Search bar */
 form {
-  @apply relative !w-full !max-w-7xl !mx-auto lg:!-mt-10 !mb-16;
+  @apply relative !w-full !max-w-7xl !mx-auto lg:!-mt-10 mb-8 lg:!mb-10;
 }
 input {
   @apply !bg-container border !border-gray-700 !text-white !pr-10 !w-full text-ellipsis;
@@ -113,7 +135,10 @@ input {
 
 /* Detail pages */
 .block-label {
-  @apply col-span-full md:col-span-1 text-gray-500 md:text-white;
+  @apply col-span-full md:col-span-1 text-gray-500 self-start;
+}
+.custom-list-item > .block-label + *{
+  @apply col-span-full md:col-span-3;
 }
 
 /* Text Styles */
@@ -137,23 +162,26 @@ input {
 }
 
 /* Rounded Labels */
+.info-label{
+  @apply px-3 py-0.5 ml-0.5 border-l rounded-l-none rounded-md;
+}
 .pink-label {
-  @apply text-hover-pink bg-se-pink/5 px-4 py-1 rounded-full;
+  @apply text-hover-pink bg-se-pink/5 border-se-pink;
 }
 .blue-label {
-  @apply text-hover-blue bg-se-blue/5 px-4 py-1 rounded-full;
+  @apply text-hover-blue bg-se-blue/5 border-se-blue;
 }
 .green-label {
-  @apply text-hover-green bg-se-green/5 px-4 py-1 rounded-full;
+  @apply text-hover-green bg-se-green/5 border-se-green;
 }
 .violet-label {
-  @apply text-hover-violet bg-se-violet/5 px-4 py-1 rounded-full;
+  @apply text-hover-violet bg-se-violet/5 border-se-violet;
 }
 .lilac-label {
-  @apply text-hover-lilac bg-se-lilac/5 px-4 py-1 rounded-full;
+  @apply text-hover-lilac bg-se-lilac/5 border-se-lilac;
 }
 .gray-label {
-  @apply text-hover-gray bg-gray-400/5 px-4 py-1 rounded-full;
+  @apply text-hover-gray bg-gray-400/5 border-gray-400;
 }
 
 /* Dropdown */
@@ -165,4 +193,19 @@ main .option {
 }
 .option:hover {
   cursor: pointer;
+}
+
+.type{
+  @apply bg-[#292946] text-white border border-[#5D5D75] text-sm uppercase px-3 py-0.5 rounded-md -translate-x-0.5;
+}
+
+.type.l1_to_l2_executed_on_l2{
+  @apply text-se-green;
+}
+.type.l2_to_l1_executed_on_l2{
+  @apply text-se-blue;
+}
+
+.hash{
+  @apply font-mono flex items-center break-all;
 }
