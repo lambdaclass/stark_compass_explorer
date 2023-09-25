@@ -20,7 +20,7 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
     ~H"""
     <div
       id="dropdown"
-      class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
+      class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
       phx-hook="Dropdown"
     >
       <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
