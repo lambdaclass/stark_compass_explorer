@@ -4,7 +4,7 @@ defmodule StarknetExplorer.Message do
   import Ecto.Query
   alias StarknetExplorer.Repo
 
-  @primary_key {:message_hash, :string, autogenerate: false}
+  @primary_key {:id, :binary_id, autogenerate: true}
   @fields [
     :from_address,
     :to_address,
@@ -19,6 +19,7 @@ defmodule StarknetExplorer.Message do
   schema "messages" do
     field :from_address, :string
     field :transaction_hash, :string
+    field :message_hash, :string
     field :to_address, :string
     field :payload, {:array, :string}
     field :timestamp, :integer
@@ -66,7 +67,8 @@ defmodule StarknetExplorer.Message do
   def get_by_hash(message_hash, network) do
     query =
       from msg in StarknetExplorer.Message,
-        where: msg.message_hash == ^message_hash and msg.network == ^network
+        where: msg.message_hash == ^message_hash and msg.network == ^network,
+        limit: 1
 
     Repo.one(query)
   end
