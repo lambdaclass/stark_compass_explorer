@@ -190,122 +190,37 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     {:noreply, socket}
   end
 
-  # This behavior was changed temporary for testing.
-  # def handle_event("inc_events", _page, socket) do
-  #   page =
-  #     Data.get_block_events_paginated(
-  #       socket.assigns.block,
-  #       %{page: socket.assigns.page.page_number + 1},
-  #       socket.assigns.network
-  #     )
-
-  #   assigns = [
-  #     page: page,
-  #     view: "events"
-  #   ]
-
-  #   {:noreply, assign(socket, assigns)}
-  # end
-
-  # def handle_event("dec_events", _page, socket) do
-  #   page =
-  #     Data.get_block_events_paginated(
-  #       socket.assigns.block,
-  #       # This isn't working
-  #       %{page: socket.assigns.page.page_number - 1},
-  #       socket.assigns.network
-  #     )
-
-  #   assigns = [
-  #     page: page,
-  #     view: "events"
-  #   ]
-
-  #   {:noreply, assign(socket, assigns)}
-  # end
-
-  # @impl true
-  # def handle_event(
-  #       "select-view",
-  #       %{"view" => "events"},
-  #       socket
-  #     ) do
-  #   page =
-  #     Data.get_block_events_paginated(
-  #       socket.assigns.block,
-  #       %{},
-  #       socket.assigns.network
-  #     )
-
-  #   assigns = [
-  #     page: page,
-  #     view: "events"
-  #   ]
-
-  #   {:noreply, assign(socket, assigns)}
-  # end
-
-  @chunk_size 30
-  defp get_previous_continuation_token(token) when token < @chunk_size, do: 0
-  defp get_previous_continuation_token(token), do: token - @chunk_size
-
-  defp format_continuation_token(continuation_token, {:ok, "large"}, block_number) do
-    Integer.to_string(block_number) <> "-" <> Integer.to_string(continuation_token)
-  end
-
-  defp format_continuation_token(continuation_token, {:ok, "short"}, _block_number) do
-    Integer.to_string(continuation_token)
-  end
-
   def handle_event("inc_events", _value, socket) do
-    continuation_token = Map.get(socket.assigns, :idx_first, 0) + @chunk_size
+    new_page_number = socket.assigns.page.page_number + 1
 
-    continuation_token_for_request =
-      continuation_token
-      |> format_continuation_token(
-        Application.fetch_env(:starknet_explorer, :continuation_token_format),
-        socket.assigns.block.number
+    page =
+      Events.paginate_events(
+        %{page: new_page_number},
+        socket.assigns.block.number,
+        socket.assigns.network
       )
 
-    events =
-      Data.get_block_events_paginated(
-        socket.assigns.block.hash,
-        %{
-          "chunk_size" => @chunk_size,
-          "continuation_token" => continuation_token_for_request
-        },
-        socket.assigns.network
-      )["events"]
-
     assigns = [
-      events: events,
-      view: "events",
-      idx_first: continuation_token,
-      idx_last: length(events) + continuation_token
+      page: page,
+      view: "events"
     ]
 
     {:noreply, assign(socket, assigns)}
   end
 
   def handle_event("dec_events", _value, socket) do
-    continuation_token =
-      get_previous_continuation_token(Map.get(socket.assigns, :idx_first, @chunk_size))
+    new_page_number = socket.assigns.page.page_number - 1
 
-    events =
-      Data.get_block_events_paginated(
-        socket.assigns.block.hash,
-        %{
-          "chunk_size" => @chunk_size,
-          "continuation_token" => Integer.to_string(continuation_token)
-        },
+    page =
+      Events.paginate_events(
+        %{page: new_page_number},
+        socket.assigns.block.number,
         socket.assigns.network
-      )["events"]
+      )
 
     assigns = [
-      events: events,
-      view: "events",
-      idx_first: continuation_token,
-      idx_last: length(events) + continuation_token
+      page: page,
+      view: "events"
     ]
 
     {:noreply, assign(socket, assigns)}
@@ -317,19 +232,16 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         %{"view" => "events"},
         socket
       ) do
-    events =
-      Data.get_block_events_paginated(
-        socket.assigns.block.hash,
-        %{"chunk_size" => @chunk_size},
+    page =
+      Events.paginate_events(
+        %{page: 0},
+        socket.assigns.block.number,
         socket.assigns.network
       )
 
     assigns = [
-      events: events["events"],
       view: "events",
-      idx_first: 0,
-      idx_last: @chunk_size,
-      chunk_size: @chunk_size
+      page: page
     ]
 
     {:noreply, assign(socket, assigns)}
@@ -758,21 +670,19 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>From Address</div>
       <div>Age</div>
     </div>
-    <%= for {idx, event = %{"block_number" => block_number, "from_address" => from_address, "transaction_hash" => tx_hash}} <- Enum.with_index(@events, fn element, index -> {index, element} end) do %>
+    <%= for event <- @page.entries do %>
       <div class="custom-list-item grid-6">
         <div>
           <div class="list-h">Identifier</div>
-          <% identifier =
-            Integer.to_string(block_number) <> "_" <> Integer.to_string(idx + @idx_first) %>
           <div
             class="flex gap-2 items-center copy-container"
-            id={"copy-transaction-hash-#{identifier}"}
+            id={"copy-transaction-hash-#{event.id}"}
             phx-hook="Copy"
           >
             <div class="relative">
               <div class="break-all text-hover-blue">
-                <a href={Utils.network_path(@network, "events/#{identifier}")} class="text-hover-blue">
-                  <span><%= identifier %></span>
+                <a href={Utils.network_path(@network, "/events/#{event.id}")} class="text-hover-blue">
+                  <span><%= event.id %></span>
                 </a>
               </div>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -780,7 +690,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
                   <img
                     class="copy-btn copy-text w-4 h-4"
                     src={~p"/images/copy.svg"}
-                    data-text={identifier}
+                    data-text={event.id}
                   />
                   <img
                     class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -795,8 +705,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="list-h">Block Number</div>
           <div>
             <span class="blue-label">
-              <a href={Utils.network_path(@network, "blocks/#{@block.hash}")} class="text-hover-blue">
-                <span><%= to_string(block_number) %></span>
+              <a href={Utils.network_path(@network, "/blocks/#{@block.hash}")} class="text-hover-blue">
+                <span><%= to_string(@block.number) %></span>
               </a>
             </span>
           </div>
@@ -804,8 +714,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Transaction Hash</div>
           <div>
-            <a href={Utils.network_path(@network, "transactions/#{tx_hash}")} class="text-hover-blue">
-              <span><%= tx_hash |> Utils.shorten_block_hash() %></span>
+            <a
+              href={Utils.network_path(@network, "/transactions/#{event.transaction_hash}")}
+              class="text-hover-blue"
+            >
+              <span><%= event.transaction_hash |> Utils.shorten_block_hash() %></span>
             </a>
           </div>
         </div>
@@ -851,9 +764,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             phx-hook="Copy"
           >
             <div class="relative">
-              <div class="break-all">
-                <span><%= from_address |> Utils.shorten_block_hash() %></span>
-              </div>
+              <a
+                href={Utils.network_path(@network, "/contracts/#{event.from_address}")}
+                class="text-hover-blue"
+              >
+                <span><%= event.from_address |> Utils.shorten_block_hash() %></span>
+              </a>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
                   <img
@@ -877,104 +793,15 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       </div>
     <% end %>
     <div>
-      <%= if @idx_first != 0 do %>
+      <%= if @page.page_number != 1 do %>
         <button phx-click="dec_events">Previous</button>
       <% end %>
-      Showing from <%= @idx_first %> to <%= @idx_last %>
-      <%= if length(@events) >= @chunk_size do %>
+      Showing from <%= (@page.page_number - 1) * @page.page_size %> to <%= (@page.page_number - 1) *
+        @page.page_size + @page.page_size %>
+      <%= if @page.page_number != @page.total_pages do %>
         <button phx-click="inc_events">Next</button>
       <% end %>
     </div>
     """
   end
-
-  #   def render_info(assigns = %{block: _block, view: "events"}) do
-  #     ~H"""
-  #     <div class="table-th !pt-7 border-t border-gray-700 grid-6">
-  #       <div>Identifier</div>
-  #       <div>Block Number</div>
-  #       <div>Transaction Hash</div>
-  #       <div>Name</div>
-  #       <div>From Address</div>
-  #       <div>Age</div>
-  #     </div>
-  #     <%= for event <- @page.entries do %>
-  #       <div class="custom-list-item grid-6">
-  #         <div>
-  #           <div class="list-h">Identifier</div>
-  #           <div
-  #             class="flex gap-2 items-center copy-container"
-  #             id={"copy-transaction-hash-#{event.id}"}
-  #             phx-hook="Copy"
-  #           >
-  #             <div class="relative">
-  #               <div class="break-all text-hover-blue">
-  #                 <%= live_redirect(
-  #                   event.id,
-  #                   to: Utils.network_path(@network, "/events/#{event.id}"),
-  #                   class: "text-hover-blue"
-  #                 ) %>
-  #               </div>
-  #               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-  #                 <div class="relative">
-  #                   <img
-  #                     class="copy-btn copy-text w-4 h-4"
-  #                     src={~p"/images/copy.svg"}
-  #                     data-text={event.id}
-  #                   />
-  #                   <img
-  #                     class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-  #                     src={~p"/images/check-square.svg"}
-  #                   />
-  #                 </div>
-  #               </div>
-  #             </div>
-  #           </div>
-  #         </div>
-  #         <div>
-  #           <div class="list-h">Block Number</div>
-  #           <div>
-  #             <span class="blue-label">
-  #               <%= live_redirect(to_string(event.block_number),
-  #                 to: Utils.network_path(@network, "/blocks/#{@block.hash}")
-  #               ) %>
-  #             </span>
-  #           </div>
-  #         </div>
-  #         <div>
-  #           <div class="list-h">Transaction Hash</div>
-  #           <div>
-  #             <%= live_redirect(event.transaction_hash |> Utils.shorten_block_hash(),
-  #               to: Utils.network_path(@network, "/transactions/#{event.transaction_hash}")
-  #             ) %>
-  #           </div>
-  #         </div>
-  #         <div>
-  #           <div class="list-h">Name</div>
-  #           <div>
-  #             <%= event.name %>
-  #           </div>
-  #         </div>
-  #         <div class="list-h">From Address</div>
-  #         <div>
-  #           <%= live_redirect(event.from_address |> Utils.shorten_block_hash(),
-  #             to: Utils.network_path(@network, "/contracts/#{event.from_address}")
-  #           ) %>
-  #         </div>
-  #         <div>
-  #           <div class="list-h">Age</div>
-  #           <div><%= @block_age %></div>
-  #         </div>
-  #       </div>
-  #     <% end %>
-  #     <div>
-  #       <%= if @page.page_number > 1 do %>
-  #         <button phx-click="dec_events">Previous</button>
-  #       <% end %>
-  #       <%= if @page.page_number < @page.total_pages do %>
-  #         <button phx-click="inc_events">Next</button>
-  #       <% end %>
-  #     </div>
-  #     """
-  #   end
 end

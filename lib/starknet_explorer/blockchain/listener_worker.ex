@@ -41,7 +41,13 @@ defmodule StarknetExplorer.Blockchain.ListenerWorker do
   end
 
   def get_height(network_listener \\ :listener_mainnet) do
-    GenServer.call(network_listener, :get_height)
+    case Process.whereis(network_listener) do
+      nil ->
+        {:err, "Listener not enabled for that network."}
+
+      _ ->
+        {:ok, GenServer.call(network_listener, :get_height)}
+    end
   end
 
   @impl true
