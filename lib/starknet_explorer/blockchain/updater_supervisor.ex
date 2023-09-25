@@ -9,7 +9,7 @@ defmodule StarknetExplorer.Blockchain.UpdaterSupervisor do
   @impl true
   def init(_init_arg) do
     children =
-      if Mix.env() == :prod do
+      if Application.get_env(:starknet_explorer, :env) == :prod do
         [
           Supervisor.child_spec({UpdaterWorker, [network: :mainnet, name: :updater_mainnet]},
             id: "updater_mainnet"
