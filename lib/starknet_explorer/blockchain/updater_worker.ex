@@ -8,21 +8,23 @@ defmodule StarknetExplorer.Blockchain.UpdaterWorker do
   alias StarknetExplorer.Repo
   alias StarknetExplorer.Blockchain.UpdaterWorker
   defstruct [:network]
-  # Use this parametrized.
-  @network :mainnet
-  @fetch_timer :timer.seconds(2)
+
+  @fetch_timer :timer.seconds(String.to_integer(System.get_env("UPDATER_FETCH_TIMER", "2"), 10))
   @limit 10
 
-  def start_link(arg) do
-    GenServer.start_link(__MODULE__, arg, name: __MODULE__)
+  def start_link([network: _network, name: name] = arg) do
+    GenServer.start_link(__MODULE__, arg, name: name)
   end
 
   ## Callbacks
 
   @impl true
-  def init(_arg) do
+  def init([network: network, name: _name] = _args) do
+    IO.inspect("FETCH TIMER")
+    IO.inspect(@fetch_timer)
+
     state = %UpdaterWorker{
-      network: @network
+      network: network
     }
 
     Process.send_after(self(), :update, @fetch_timer)
