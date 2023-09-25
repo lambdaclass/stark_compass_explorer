@@ -14,8 +14,7 @@ defmodule StarknetExplorer.TransactionReceipt do
     :block_hash,
     :block_number,
     :messages_sent,
-    :events,
-    :execution_resources
+    :events
   ]
 
   @l1_receipt_handler [
@@ -27,8 +26,7 @@ defmodule StarknetExplorer.TransactionReceipt do
     :block_hash,
     :block_number,
     :messages_sent,
-    :events,
-    :execution_resources
+    :events
   ]
 
   @declare_tx_receipt [
@@ -40,8 +38,7 @@ defmodule StarknetExplorer.TransactionReceipt do
     :block_hash,
     :block_number,
     :messages_sent,
-    :events,
-    :execution_resources
+    :events
   ]
 
   @deploy_tx_receipt [
@@ -53,8 +50,7 @@ defmodule StarknetExplorer.TransactionReceipt do
     :messages_sent,
     :events,
     :type,
-    :contract_address,
-    :execution_resources
+    :contract_address
   ]
 
   @deploy_account_tx_receipt [
@@ -67,8 +63,7 @@ defmodule StarknetExplorer.TransactionReceipt do
     :messages_sent,
     :events,
     :type,
-    :contract_address,
-    :execution_resources
+    :contract_address
   ]
 
   # @pending_receipt [
@@ -145,6 +140,26 @@ defmodule StarknetExplorer.TransactionReceipt do
         where: tr.block_hash == ^block_hash
 
     Repo.all(query)
+  end
+
+  def get_status_not_finalized(limit \\ 10, network) do
+    query =
+      from t in TransactionReceipt,
+        where: t.finality_status != "ACCEPTED_ON_L1" and t.execution_status == "SUCCEEDED",
+        where: t.network == ^network,
+        limit: ^limit
+
+    Repo.all(query)
+  end
+
+  def update_transaction_status(tx_hash, finality_status, execution_status, network) do
+    query =
+      from t in TransactionReceipt,
+        where: t.transaction_hash == ^tx_hash and t.network == ^network
+
+    Repo.update_all(query,
+      set: [execution_status: execution_status, finality_status: finality_status]
+    )
   end
 
   def from_rpc_tx(rpc_receipt) do

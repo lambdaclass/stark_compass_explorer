@@ -1,6 +1,7 @@
 defmodule StarknetExplorerWeb.Utils do
   require Logger
   alias StarknetExplorer.DateUtils
+  use StarknetExplorerWeb, :verified_routes
 
   def shorten_block_hash(nil), do: ""
 
@@ -46,6 +47,10 @@ defmodule StarknetExplorerWeb.Utils do
     |> Decimal.to_string(:normal)
     |> String.trim_trailing("0")
     |> String.replace_suffix(".", ".0")
+  end
+
+  def hex_wei_to_eth("0") do
+    "0.0"
   end
 
   def atomize_keys(map) when is_map(map) do
@@ -100,9 +105,9 @@ defmodule StarknetExplorerWeb.Utils do
   end
 
   def format_arg_value(%{
-        :type => "core::array::Array::<" <> _rest,
         :value => value
-      }) do
+      })
+      when is_map(value) or is_list(value) do
     value
     |> Jason.encode!()
     |> Jason.Formatter.pretty_print()
@@ -139,5 +144,22 @@ defmodule StarknetExplorerWeb.Utils do
       "range_check_builtin" -> "violet-label"
       _ -> "green-label"
     end
+  end
+
+  # This case is for mainnet
+  def network_path(:mainnet), do: "/"
+  def network_path(:testnet), do: "/testnet/"
+  def network_path(:testnet2), do: "/testnet2/"
+
+  def network_path(:mainnet, remaining_path) do
+    "/#{remaining_path}"
+  end
+
+  def network_path(:testnet, remaining_path) do
+    "/testnet/#{remaining_path}"
+  end
+
+  def network_path(:testnet2, remaining_path) do
+    "/testnet2/#{remaining_path}"
   end
 end

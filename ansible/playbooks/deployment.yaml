@@ -41,15 +41,18 @@
       mix phx.gen.release
     environment:
       MIX_ENV: prod
-      RPC_API_HOST:
-      TESTNET_RPC_API_HOST:
-      TESTNET_2_RPC_API_HOST:
+      RPC_API_HOST: "{{ lookup('ansible.builtin.env', 'RPC_API_HOST') }}"
+      TESTNET_RPC_API_HOST: "{{ lookup('ansible.builtin.env', 'TESTNET_RPC_API_HOST') }}"
+      TESTNET_2_RPC_API_HOST: "{{ lookup('ansible.builtin.env', 'TESTNET_2_RPC_API_HOST') }}"
       DB_TYPE: "{{ lookup('ansible.builtin.env', 'DB_TYPE') }}"
       DATABASE_URL: "{{ lookup('ansible.builtin.env', 'DATABASE_URL') }}"
       NEWRELIC_KEY:
       NEWRELIC_APP_NAME:
       SECRET_KEY_BASE: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
       PORT: "4100"
+      ENABLE_LISTENER: "true"
+      ENABLE_UPDATER: "true"
+      ENABLE_FETCHER: "true"
     args:
       chdir: /home/starknet_explorer/tmp/madara_explorer
     register: build_output
@@ -87,6 +90,9 @@
       enable_gateway_data: "{{ lookup('ansible.builtin.env', 'ENABLE_GATEWAY_DATA') }}"
       newrelic_key: "{{ lookup('ansible.builtin.env', 'NEWRELIC_KEY') }}"
       newrelic_app_name: "{{ lookup('ansible.builtin.env', 'NEWRELIC_APP_NAME') }}"
+      enable_listener: "true"
+      enable_updater: "true"
+      enable_fetcher: "true"
 
   - name: Create user systemd directory
     ansible.builtin.file:

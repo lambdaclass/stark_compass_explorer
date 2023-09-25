@@ -35,9 +35,12 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
               >
                 <div class="relative">
                   <div class="break-all text-hover-blue">
-                    <%= live_redirect(message.message_hash |> Utils.shorten_block_hash(),
-                      to: ~p"/#{@network}/messages/#{message.message_hash}"
-                    ) %>
+                    <a
+                      href={Utils.network_path(@network, "messages/#{message.message_hash}")}
+                      class="text-hover-blue"
+                    >
+                      <span><%= message.message_hash |> Utils.shorten_block_hash() %></span>
+                    </a>
                   </div>
                   <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                     <div class="relative">
@@ -78,7 +81,11 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
               >
                 <div class="relative">
                   <div class="break-all">
-                    <%= Utils.shorten_block_hash(message.from_address) %>
+                    <%= if Message.is_l2_to_l1(message.type) do %>
+                      <%= Utils.shorten_block_hash(message.from_address) %>
+                    <% else %>
+                      <%= Utils.shorten_block_hash(message.from_address) %>
+                    <% end %>
                   </div>
                   <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                     <div class="relative">
@@ -105,7 +112,11 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
               >
                 <div class="relative">
                   <div class="break-all">
-                    <%= Utils.shorten_block_hash(message.to_address) %>
+                    <%= if Message.is_l2_to_l1(message.type) do %>
+                      <%= Utils.shorten_block_hash(message.to_address) %>
+                    <% else %>
+                      <%= Utils.shorten_block_hash(message.to_address) %>
+                    <% end %>
                   </div>
                   <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                     <div class="relative">
@@ -132,9 +143,12 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
               >
                 <div class="relative">
                   <div class="break-all text-hover-blue">
-                    <%= live_redirect(message.transaction_hash |> Utils.shorten_block_hash(),
-                      to: ~p"/#{@network}/transactions/#{message.transaction_hash}"
-                    ) %>
+                    <a
+                      href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
+                      class="text-hover-blue"
+                    >
+                      <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
+                    </a>
                   </div>
                   <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                     <div class="relative">
@@ -162,14 +176,14 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
   @impl true
   def mount(_params, _session, socket) do
     Process.send(self(), :load_messages, [])
-    messages = Message.latest_n_messages(20)
+    messages = Message.latest_n_messages(socket.assigns.network, 20)
     {:ok, assign(socket, messages: messages)}
   end
 
   @impl true
   def handle_info(:load_messages, socket) do
     # TODO: Fetch this from the db
-    messages = Message.latest_n_messages(20)
+    messages = Message.latest_n_messages(socket.assigns.network, 20)
     {:noreply, assign(socket, messages: messages)}
   end
 end
