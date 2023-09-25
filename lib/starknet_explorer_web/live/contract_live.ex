@@ -161,8 +161,20 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Deployed At Transaction Hash</div>
         <div>
-          <%= "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
-          |> Utils.shorten_block_hash() %>
+          <a
+            href={
+              Utils.network_path(
+                @network,
+                "transactions/0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
+              )
+            }
+            class="text-hover-blue"
+          >
+            <span>
+              <%= "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
+              |> Utils.shorten_block_hash() %>
+            </span>
+          </a>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
@@ -198,7 +210,19 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         </div>
         <div>
           <div class="list-h">Block Number</div>
-          <div>98133</div>
+          <div>
+            <a
+              href={
+                Utils.network_path(
+                  @network,
+                  "blocks/98133"
+                )
+              }
+              class="text-hover-blue"
+            >
+              <span> 98133 </span>
+            </a>
+          </div>
         </div>
         <div>
           <div class="list-h">Status</div>
@@ -249,13 +273,37 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         </div>
         <div>
           <div class="list-h">Block Number</div>
-          <div>98133</div>
+          <div>
+            <a
+              href={
+                Utils.network_path(
+                  @network,
+                  "blocks/98133"
+                )
+              }
+              class="text-hover-blue"
+            >
+              <span> 98133 </span>
+            </a>
+          </div>
         </div>
         <div>
           <div class="list-h">Transaction Hash</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
-          ) %>
+          <a
+            href={
+              Utils.network_path(
+                @network,
+                "transactions/0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
+              )
+            }
+            class="text-hover-blue"
+          >
+            <span>
+              <%= Utils.shorten_block_hash(
+                "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
+              ) %>
+            </span>
+          </a>
         </div>
         <div>
           <div class="list-h">Name</div>

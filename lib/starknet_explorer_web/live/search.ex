@@ -50,11 +50,6 @@ defmodule StarknetExplorerWeb.SearchLive do
     </div>
     """
   end
-          #    <%= live_redirect(Utils.shorten_block_hash(@hash),
-          #  to: ~p"/#{@network}/blocks/#{@hash}",
-           # class: "text-hover-blue",
-           #   title:  @block
-           # ) %>
 
   def mount(_params, session, socket) do
     new_assigns = [query: "", loading: false, matches: [], errors: []]
@@ -69,14 +64,9 @@ defmodule StarknetExplorerWeb.SearchLive do
   def handle_event("update-input", %{"search-input" => query}, socket) do
     case try_search(query, socket.assigns.network) do
       {:block, block} -> assign(socket, block: block)
-      #fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
       {:noquery, _} -> nil
     end
     {:noreply, socket}
-
-    #socket = socket |> assign(:hash, hash) |> assign(:query, query)
-
-    #{:noreply, assign(socket, block: try_search(query, socket.assigns.network))}
   end
 
   def handle_event("search", %{"search-input" => query}, socket) when byte_size(query) <= 100 do
@@ -90,13 +80,12 @@ defmodule StarknetExplorerWeb.SearchLive do
       case try_search(query, socket.assigns.network) do
         {:tx, _tx} ->
           fn ->
-            push_navigate(socket, to: ~p"/#{socket.assigns.network}/transactions/#{query}")
+            push_navigate(socket,
+              to: Utils.network_path(socket.assigns.network, "transactions/#{query}")
+            )
           end
-
         {:block, block} ->
-          #fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
           fn -> assign(socket, block: block) end
-
         {:message, _message} ->
           fn -> push_navigate(socket, to: ~p"/#{socket.assigns.network}/blocks/#{query}") end
         :noquery ->
@@ -106,8 +95,6 @@ defmodule StarknetExplorerWeb.SearchLive do
             |> push_navigate(to: "/#{socket.assigns.network}")
           end
       end
-
-    IO.inspect(socket.assigns.block, label: :wea)
 
     {:noreply, navigate_fun.()}
   end

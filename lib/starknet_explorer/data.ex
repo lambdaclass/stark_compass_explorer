@@ -45,25 +45,7 @@ defmodule StarknetExplorer.Data do
   provider.
   """
   def many_blocks(network, block_amount \\ 15) do
-    block_number = StarknetExplorer.Data.latest_block_number(network)
-    blocks = Block.latest_blocks_with_txs(block_amount, block_number, network)
-    every_block_is_in_the_db = length(blocks) == block_amount
-
-    case blocks do
-      blocks when every_block_is_in_the_db ->
-        blocks
-
-      _ ->
-        upper = block_number
-        lower = block_number - block_amount
-
-        upper..lower
-        |> Enum.map(fn block_number ->
-          {:ok, block} = Rpc.get_block_by_number(block_number, network)
-
-          Block.from_rpc_block(block, network)
-        end)
-    end
+    Block.latest_blocks_with_txs(block_amount, network)
   end
 
   @doc """
@@ -151,9 +133,9 @@ defmodule StarknetExplorer.Data do
   end
 
   def latest_block_with_transactions(network) do
-    {:ok, block} = Rpc.get_block_by_number(latest_block_number(network), network)
+    blocks = Block.latest_blocks_with_txs(1, network)
 
-    [block]
+    blocks
   end
 
  def transaction(tx_hash, network) do
@@ -172,16 +154,6 @@ defmodule StarknetExplorer.Data do
     end
   end
 
-  # This behavior is modified for testing porpouses.
-  # def get_block_events_paginated(block, pagination, network) do
-  #   # If the entries are empty, means that the events was not fetch yet.
-  #   with %Scrivener.Page{entries: []} <- Events.paginate_events(pagination, block.number, network) do
-  #     :ok = Events.store_events_from_rpc(block, network)
-  #     get_block_events_paginated(block, pagination, network)
-  #   else
-  #     page -> page
-  #   end
-  # end
   def get_block_events_paginated(block_hash, pagination, network) do
     {:ok, events} = Rpc.get_block_events_paginated(block_hash, pagination, network)
 
@@ -243,15 +215,26 @@ defmodule StarknetExplorer.Data do
   def internal_calls(tx, network) do
     {:ok, trace} = Gateway.trace_transaction(tx.hash, network)
 
-    trace["function_invocation"]
-    |> StarknetExplorerWeb.Utils.atomize_keys()
-    |> flatten_internal_calls(0)
+    function_calls =
+      trace["function_invocation"]
+      |> StarknetExplorerWeb.Utils.atomize_keys()
+      |> flatten_internal_calls(0)
+
+    functions_data_cache =
+      function_calls
+      |> Enum.map(fn x -> x.contract_address end)
+      |> Enum.uniq()
+      |> Enum.map(fn addr ->
+        {addr, Calldata.get_functions_data("latest", addr, network)}
+      end)
+      |> Map.new()
+
+    function_calls
     |> Enum.with_index()
     |> Enum.map(fn {call_data, index} ->
       # TODO: this can be optimized because we are going out to the Rpc/DB for every call, but contracts might be repeated
       # (like in the case of CALL and DELEGATE call types) so those can be coalesced
-
-      functions_data = Calldata.get_functions_data("latest", call_data.contract_address, network)
+      functions_data = Map.get(functions_data_cache, call_data.contract_address, nil)
       {input_data, _structs} = Calldata.get_input_data(functions_data, call_data.selector)
 
       call_data =
@@ -295,7 +278,7 @@ defmodule StarknetExplorer.Data do
     []
   end
 
-  defp flatten_internal_calls(list, _height) when is_list(list) do
+  defp flatten_internal_calls(_list, _height) do
     []
   end
 

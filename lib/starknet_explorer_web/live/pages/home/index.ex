@@ -27,72 +27,89 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col gap-1 justify-center items-center mt-16 lg:mt-10">
-      <h1>Welcome to</h1>
-      <h2>Madara Starknet Explorer</h2>
-    </div>
     <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
       id: "search-bar",
       flash: @flash,
       session: %{"network" => @network}
     ) %>
-    <div class="mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 my-5">
-      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5">
-        <img src={~p"/images/box.svg"} />
-        <div class="text-sm">
-          <div>Blocks Height</div>
-          <div><%= assigns.block_height %></div>
-        </div>
-      </div>
-      <div class="relative flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5">
+    <div class="flex flex-col gap-1 justify-center items-center mb-16">
+      <h1>Madara Starknet Explorer</h1>
+    </div>
+    <div class="mx-auto max-w-7xl mt-4 mb-5">
+      <div class="relative w-full md:w-52 flex items-start gap-3 bg-container p-3 text-sm mb-3">
         <img id="tps" class="absolute top-2 right-2 w-5 h-5" src={~p"/images/help-circle.svg"} />
-        <img src={~p"/images/zap.svg"} />
-        <div class="text-sm">
-          <div>TPS</div>
+        <img src={~p"/images/zap.svg"} class="my-auto" />
+        <div class="flex">
+          <div class="border-r border-r-gray-700 pr-4 mr-4">TPS</div>
           <div>
             <%= live_render(@socket, TPSComponent,
               id: "tps-number",
-              session: %{"network" => @network}
+              session: %{"network" => Map.get(assigns, :network)}
             ) %>
           </div>
         </div>
       </div>
-      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <div class="absolute top-2 right-2 gray-label text-[.7rem]">Mocked</div>
-        <img src={~p"/images/code.svg"} />
-        <div class="text-sm">
-          <div>Classes</div>
-          <div>4,536</div>
-        </div>
-      </div>
-      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <img src={~p"/images/message-square.svg"} />
-        <div class="text-sm">
-          <div>Messages</div>
-          <div><%= @entities_count.message_count %></div>
-        </div>
-      </div>
-      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <div class="absolute top-2 right-2 gray-label text-[.7rem]">Mocked</div>
-        <img src={~p"/images/file.svg"} />
-        <div class="text-sm">
-          <div>Contracts</div>
-          <div>1,525,792</div>
-        </div>
-      </div>
-      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <img src={~p"/images/calendar.svg"} />
-        <div class="text-sm">
-          <div>Events</div>
-          <div><%= @entities_count.events_count %></div>
-        </div>
-      </div>
-      <div class="flex items-start gap-3 bg-container pt-7 pb-5 px-4 md:px-5 relative">
-        <img src={~p"/images/check-square.svg"} />
-        <div class="text-sm">
-          <div>Transactions</div>
-          <div><%= @entities_count.transaction_count %></div>
-        </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <a href={Utils.network_path(@network, "blocks")} class="bg-container text-gray-100">
+          <div class="relative bg-container">
+            <div class="flex items-start gap-6 my-4 mx-8">
+              <img src={~p"/images/box.svg"} class="my-auto w-6 h-auto" />
+              <div>
+                <div class="text-sm text-gray-400">Blocks Height</div>
+                <div class="text-2xl mt-1"><%= assigns.block_height %></div>
+              </div>
+            </div>
+            <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
+              <div class="text-sm">View all blocks</div>
+              <img src={~p"/images/arrow-right.svg"} />
+            </div>
+          </div>
+        </a>
+        <a href={Utils.network_path(@network, "messages")} class="bg-container text-gray-100">
+          <div class="reative bg-container">
+            <div class="flex items-start gap-6 my-4 mx-8">
+              <img src={~p"/images/message-square.svg"} class="my-auto w-6 h-auto" />
+              <div>
+                <div class="text-sm text-gray-400">Messages</div>
+                <div class="text-2xl mt-1"><%= @entities_count.message_count %></div>
+              </div>
+            </div>
+            <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
+              <div class="text-sm">View all messages</div>
+              <img src={~p"/images/arrow-right.svg"} />
+            </div>
+          </div>
+        </a>
+        <a href={Utils.network_path(@network, "events")} class="bg-container text-gray-100">
+          <div class="reative bg-container">
+            <div class="flex items-start gap-6 my-4 mx-8">
+              <img src={~p"/images/calendar.svg"} class="my-auto w-6 h-auto" />
+              <div>
+                <div class="text-sm text-gray-400">Events</div>
+                <div class="text-2xl mt-1"><%= @entities_count.events_count %></div>
+              </div>
+            </div>
+            <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
+              <div class="text-sm">View all events</div>
+              <img src={~p"/images/arrow-right.svg"} />
+            </div>
+          </div>
+        </a>
+        <a href={Utils.network_path(@network, "transactions")} class="bg-container text-gray-100">
+          <div class="reative bg-container">
+            <div class="flex items-start gap-6 my-4 mx-8">
+              <img src={~p"/images/check-square.svg"} class="my-auto w-6 h-auto" />
+              <div>
+                <div class="text-sm text-gray-400">Transactions</div>
+                <div class="text-2xl mt-1"><%= @entities_count.transaction_count %></div>
+              </div>
+            </div>
+            <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
+              <div class="text-sm">View all transactions</div>
+              <img src={~p"/images/arrow-right.svg"} />
+            </div>
+          </div>
+        </a>
       </div>
     </div>
 
@@ -101,7 +118,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <div class="table-header">
           <div class="table-title">Latest Blocks</div>
           <a
-            href={~p"/#{@network}/blocks"}
+            href={Utils.network_path(@network, "blocks")}
             class="text-gray-300 hover:text-white transition-all duration-300"
           >
             <div class="flex gap-2 items-center">
@@ -121,19 +138,23 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             <div id={"block-#{block.number}"} class="grid-6 custom-list-item">
               <div>
                 <div class="list-h">Number</div>
-                <%= live_redirect(to_string(block.number),
-                  to: ~p"/#{assigns.network}/blocks/#{block.number}"
-                ) %>
+                <a
+                  href={Utils.network_path(assigns.network, "blocks/#{block.number}")}
+                  class="text-hover-blue"
+                >
+                  <span><%= to_string(block.number) %></span>
+                </a>
               </div>
               <div class="col-span-2">
                 <div class="list-h">Block Hash</div>
                 <div class="copy-container" id={"copy-block-#{block.number}"} phx-hook="Copy">
                   <div class="relative">
-                    <%= live_redirect(Utils.shorten_block_hash(block.hash),
-                      to: ~p"/#{assigns.network}/blocks/#{block.hash}",
-                      class: "text-hover-blue",
-                      title: block.hash
-                    ) %>
+                    <a
+                      href={Utils.network_path(assigns.network, "blocks/#{block.hash}")}
+                      class="text-hover-blue"
+                    >
+                      <span><%= Utils.shorten_block_hash(block.hash) %></span>
+                    </a>
                     <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                       <div class="relative">
                         <img
@@ -170,7 +191,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <div class="table-header">
           <div class="table-title">Latest Transactions</div>
           <a
-            href={~p"/#{@network}/transactions"}
+            href={Utils.network_path(@network, "transactions")}
             class="text-gray-300 hover:text-white transition-all duration-300"
           >
             <div class="flex gap-2 items-center">
@@ -192,10 +213,12 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <div class="list-h">Transaction Hash</div>
                 <div class="copy-container" id={"copy-transaction-#{idx}"} phx-hook="Copy">
                   <div class="relative">
-                    <%= live_redirect(Utils.shorten_block_hash(transaction.hash),
-                      to: ~p"/#{assigns.network}/transactions/#{transaction.hash}",
-                      class: "text-hover-blue"
-                    ) %>
+                    <a
+                      href={Utils.network_path(assigns.network, "transactions/#{transaction.hash}")}
+                      class="text-hover-blue"
+                    >
+                      <span><%= Utils.shorten_block_hash(transaction.hash) %></span>
+                    </a>
                     <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                       <div class="relative">
                         <img
@@ -243,31 +266,50 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def handle_info(:load_blocks, socket) do
     blocks = StarknetExplorer.Data.many_blocks(socket.assigns.network)
-    latest_block = blocks |> hd
 
-    transactions =
-      latest_block.transactions
-      |> Enum.map(fn tx ->
-        tx
-        |> Map.put(:block_timestamp, latest_block.timestamp)
-        |> Map.put(:block_status, latest_block.status)
-      end)
+    case List.first(blocks) do
+      nil ->
+        {:noreply, socket}
 
-    # get entities count and format for display
-    entities_count =
-      StarknetExplorer.Data.get_entity_count()
-      |> Enum.map(fn {entity, count} ->
-        {entity, StarknetExplorer.Utils.format_number_for_display(count)}
-      end)
-      |> Map.new()
+      latest_block ->
+        transactions =
+          latest_block.transactions
+          |> Enum.map(fn tx ->
+            tx
+            |> Map.put(:block_timestamp, latest_block.timestamp)
+            |> Map.put(:block_status, latest_block.status)
+          end)
 
-    {:noreply,
-     assign(socket,
-       blocks: blocks,
-       transactions: transactions,
-       entities_count: entities_count,
-       latest_block: latest_block,
-       block_height: StarknetExplorer.Utils.format_number_for_display(latest_block.number)
-     )}
+        # get entities count and format for display
+        entities_count =
+          StarknetExplorer.Data.get_entity_count()
+          |> Enum.map(fn {entity, count} ->
+            {entity, StarknetExplorer.Utils.format_number_for_display(count)}
+          end)
+          |> Map.new()
+
+        max_block_height =
+          case StarknetExplorer.Blockchain.ListenerWorker.get_height(
+                 StarknetExplorer.Utils.listener_atom(socket.assigns.network)
+               ) do
+            {:ok, max_block_height} ->
+              max_block_height
+
+            {:err, _} ->
+              {:ok, max_block_height} =
+                StarknetExplorer.Rpc.get_block_height(socket.assigns.network)
+
+              max_block_height
+          end
+
+        {:noreply,
+         assign(socket,
+           blocks: blocks,
+           transactions: transactions,
+           entities_count: entities_count,
+           latest_block: latest_block,
+           block_height: StarknetExplorer.Utils.format_number_for_display(max_block_height)
+         )}
+    end
   end
 end
