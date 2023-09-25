@@ -628,13 +628,13 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
     execution_resources =
       case Application.get_env(:starknet_explorer, :enable_gateway_data) do
-        false ->
+        true ->
           {:ok, receipt} =
             Gateway.get_transaction_receipt(transaction_hash, socket.assigns.network)
 
           receipt["execution_resources"]
 
-        true ->
+        false ->
           %{
             "builtin_instance_counter" => %{},
             "n_memory_holes" => "-",
