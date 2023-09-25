@@ -8,7 +8,8 @@
 import Config
 
 config :starknet_explorer,
-  ecto_repos: [StarknetExplorer.Repo]
+  ecto_repos: [StarknetExplorer.Repo],
+  env: Mix.env()
 
 # Configures the endpoint
 config :starknet_explorer, StarknetExplorerWeb.Endpoint,

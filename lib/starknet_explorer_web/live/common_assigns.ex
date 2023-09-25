@@ -1,10 +1,10 @@
 defmodule StarknetExplorerWeb.Live.CommonAssigns do
   import Phoenix.Component
 
-  def on_mount(:network, _params = %{"network" => network}, _session, socket) do
+  def on_mount(:network, params, _session, socket) do
     socket =
-      case network do
-        network when network in ["mainnet", "testnet", "testnet2"] ->
+      case Map.get(params, "network") do
+        network when network in ["testnet", "testnet2"] ->
           network =
             network
             |> String.to_existing_atom()

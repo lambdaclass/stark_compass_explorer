@@ -137,7 +137,7 @@ defmodule StarknetExplorer.Calldata do
   def get_value_for_type(%{"type" => type, "name" => name}, so_far, calldata, structs) do
     case String.ends_with?(type, "*") do
       true ->
-        type = String.replace_suffix(type, "*", "!")
+        type = String.replace_suffix(type, "*", "")
         get_multiple_values_for_type(get_array_len(name, so_far), type, calldata, structs)
 
       _ ->
@@ -279,8 +279,20 @@ defmodule StarknetExplorer.Calldata do
   end
 
   def functions_by_selector_and_version(abi, nil) do
-    {abi
-     |> List.foldl(%{}, &Map.put(&2, &1["name"] |> keccak(), &1)), %{}}
+    abi
+    |> List.foldl(
+      {%{}, %{}},
+      fn
+        elem = %{"type" => "function"}, {fn_acc, struct_acc} ->
+          {Map.put(fn_acc, elem["name"] |> keccak(), elem), struct_acc}
+
+        elem = %{"type" => "struct"}, {fn_acc, struct_acc} ->
+          {fn_acc, Map.put(struct_acc, elem["name"], elem)}
+
+        _elem, {fn_acc, struct_acc} ->
+          {fn_acc, struct_acc}
+      end
+    )
   end
 
   # we assume contract_class_version 0.1.0

@@ -20,7 +20,7 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
     ~H"""
     <div
       id="dropdown"
-      class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
+      class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
       phx-hook="Dropdown"
     >
       <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
@@ -91,9 +91,12 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
         >
           <div class="relative">
             <div class="col-span-3">
-              <%= live_redirect(@message.transaction_hash,
-                to: ~p"/#{@network}/transactions/#{@message.transaction_hash}"
-              ) %>
+              <a
+                href={Utils.network_path(@network, "transactions/#{@message.transaction_hash}")}
+                class="text-hover-blue"
+              >
+                <span><%= @message.transaction_hash %></span>
+              </a>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
                   <img
@@ -124,16 +127,18 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
             <%= @message.selector %>
           </div>
         </div>
-        <div class="custom-list-item grid-4 w-full">
-          <div class="custom-list-item grid-4 w-full !border-none">
-            <div class="block-label !mt-0">Nonce</div>
+        <%= if @message.nonce != nil do %>
+          <div class="custom-list-item grid-4 w-full">
+            <div class="custom-list-item grid-4 w-full !border-none">
+              <div class="block-label !mt-0">Nonce</div>
+            </div>
+            <div>
+              <span class="pink-label">
+                <%= @message.nonce %>
+              </span>
+            </div>
           </div>
-          <div>
-            <span class="pink-label">
-              <%= @message.nonce %>
-            </span>
-          </div>
-        </div>
+        <% end %>
       <% end %>
       <div class="custom-list-item">
         <div class="block-label !mt-0">Message Details</div>
@@ -202,12 +207,19 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
 
   def mount(_params = %{"identifier" => hash}, _session, socket) do
     message = Message.get_by_hash(hash, socket.assigns.network)
+    IO.inspect(message)
 
     message =
       case Message.is_l2_to_l1(message) do
         false ->
           tx = StarknetExplorer.Transaction.get_by_hash(message.transaction_hash)
-          decimal_nonce = tx.nonce |> String.replace("0x", "") |> String.to_integer(16)
+
+          decimal_nonce =
+            case tx.nonce do
+              nil -> nil
+              nonce -> nonce |> String.replace("0x", "") |> String.to_integer(16)
+            end
+
           message |> Map.put(:selector, tx.entry_point_selector) |> Map.put(:nonce, decimal_nonce)
 
         _ ->

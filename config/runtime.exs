@@ -20,8 +20,6 @@ if System.get_env("PHX_SERVER") do
   config :starknet_explorer, StarknetExplorerWeb.Endpoint, server: true
 end
 
-enable_listener? = System.get_env("ENABLE_LISTENER") == "true"
-
 rpc_host =
   System.get_env("RPC_API_HOST") ||
     raise """
@@ -40,15 +38,10 @@ testnet_2_rpc_host =
     environment variable for testnet 2 is missing.
     """
 
-continuation_token_format =
-  System.get_env("CONTINUATION_TOKEN_FORMAT", "short")
-
 config :starknet_explorer,
   rpc_host: rpc_host,
   testnet_host: testnet_rpc_host,
   testnet_2_host: testnet_2_rpc_host,
-  enable_listener: enable_listener?,
-  continuation_token_format: continuation_token_format,
   enable_gateway_data: System.get_env("ENABLE_GATEWAY_DATA") == "true"
 
 config :starknet_explorer, rpc_host: rpc_host

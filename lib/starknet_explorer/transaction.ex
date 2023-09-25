@@ -125,6 +125,16 @@ defmodule StarknetExplorer.Transaction do
     Repo.one(query)
   end
 
+  def get_missing_tx_receipt(limit \\ 10, network) do
+    query =
+      from t in Transaction,
+        left_join: rc in assoc(t, :receipt),
+        where: t.network == ^network and is_nil(rc),
+        limit: ^limit
+
+    Repo.all(query)
+  end
+
   def get_by_hash_with_receipt(hash) do
     query =
       from tx in Transaction,
@@ -178,5 +188,10 @@ defmodule StarknetExplorer.Transaction do
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "L1_HANDLER"}) do
     changeset
     |> validate_required(@l1_handler_tx_fields)
+  end
+
+  def get_total_count(network) do
+    from(tx in __MODULE__, where: tx.network == ^network, select: count())
+    |> Repo.one()
   end
 end
