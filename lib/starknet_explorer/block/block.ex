@@ -168,6 +168,20 @@ defmodule StarknetExplorer.Block do
   end
 
   @doc """
+  Returns the n latests blocks with transactions preloaded
+  """
+  def latest_n_blocks_with_txs(n \\ 20, network) do
+    query =
+      from b in Block,
+        order_by: [desc: b.number],
+        limit: ^n,
+        where: b.network == ^network
+
+    Repo.all(query)
+    |> Repo.preload(:transactions)
+  end
+
+  @doc """
   Returns amount blocks starting at block number up_to
   """
   def latest_blocks_with_txs(amount, network) do
