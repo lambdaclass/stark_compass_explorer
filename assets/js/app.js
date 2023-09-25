@@ -307,16 +307,22 @@ Hooks.Dropdown = {
 };
 
 Hooks.SearchHook = {
-  updated() {
+  mounted() {
     const input = document.querySelector("#searchHook");
     const searchDropdown = document.querySelector("#dropdownInformation");
-    input.addEventListener("change", () => { 
+    input.addEventListener("input", () => { 
+      console.log(input.value);
       if (input.value) {
         searchDropdown.classList.remove("hidden");
       } else {
         searchDropdown.classList.add("hidden");
       }
     })
+  },
+  updated() {
+    const input = document.querySelector("#searchHook");
+    const searchDropdown = document.querySelector("#dropdownInformation");
+    searchDropdown.classList.remove("hidden");
   }
 };
 
@@ -346,11 +352,13 @@ function KeyPress(e) {
     evntObj.preventDefault();
     input.classList.remove("un-focus");
     input.classList.add("focus");
+    input.focus();
   }
   if (evntObj.keyCode === ESC_KEY_CODE) { 
     evntObj.preventDefault();
     input.classList.add("un-focus");
     input.classList.remove("focus");
+    input.blur();
   }
 }
 
