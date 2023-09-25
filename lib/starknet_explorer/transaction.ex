@@ -190,7 +190,8 @@ defmodule StarknetExplorer.Transaction do
     |> validate_required(@l1_handler_tx_fields)
   end
 
-  def get_total_count() do
-    StarknetExplorer.Transaction |> Repo.aggregate(:count, :hash)
+  def get_total_count(network) do
+    from(tx in __MODULE__, where: tx.network == ^network, select: count())
+    |> Repo.one()
   end
 end
