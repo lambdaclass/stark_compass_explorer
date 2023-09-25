@@ -23,7 +23,7 @@ defmodule StarknetExplorerWeb.SearchLive do
           <img src={~p"/images/search.svg"} />
         </button>
       </form>
-      <div id="dropdownInformation" class="hidden z-10 bg-container divide-y divide-gray-100 rounded-lg shadow w-full max-w-7xl mx-auto dark:bg-container dark:divide-gray-600 mb-5">
+      <div id="dropdownInformation" class="hidden z-10 bg-container divide-y divide-gray-100 rounded-lg shadow w-full max-w-6xl mx-auto dark:bg-container dark:divide-gray-600 mb-5">
         <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
           Blocks
         <div>

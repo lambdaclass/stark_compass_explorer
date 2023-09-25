@@ -105,18 +105,19 @@ a,
 
 /* Search bar */
 form {
-  @apply relative !w-full !max-w-7xl !mx-auto lg:!-mt-10 !mb-1;
+  @apply relative !w-full !max-w-6xl !mx-auto lg:!-mt-10 lg:!mb-1 mb-3;
 }
+
 input {
   @apply !bg-container border !border-gray-700 !text-white !pr-10 !w-full text-ellipsis;
 }
 
 .focus {
-  @apply transition ease-in-out delay-150 translate-y-1 scale-90 duration-300;
+  @apply transition ease-in-out delay-150 translate-y-1 scale-110 duration-300 mt-1;
 }
 
 .un-focus {
-  @apply transition ease-in-out delay-150 -translate-y-0 scale-100 duration-300
+  @apply transition ease-in-out delay-150 -translate-y-0 scale-100 duration-300 mt-2;
 }
 
 /* Detail pages */
