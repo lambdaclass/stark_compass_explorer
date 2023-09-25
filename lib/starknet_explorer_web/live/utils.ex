@@ -124,7 +124,15 @@ defmodule StarknetExplorerWeb.Utils do
         |> Jason.Formatter.pretty_print()
 
       _ ->
-        value
+        case value do
+          value when is_map(value) or is_list(value) ->
+            value
+            |> Jason.encode!()
+            |> Jason.Formatter.pretty_print()
+
+          _ ->
+            value
+        end
     end
   end
 
