@@ -81,8 +81,12 @@ defmodule StarknetExplorer.Message do
     Repo.all(query)
   end
 
-  def get_total_count() do
-    StarknetExplorer.Message |> Repo.aggregate(:count, :to_address)
+  def get_total_count(network \\ :mainnet) do
+    Repo.one(
+      from m in StarknetExplorer.Message,
+        where: m.network == ^network,
+        select: count(m.to_address)
+    )
   end
 
   def insert_from_transaction(transaction, timestamp, network) do

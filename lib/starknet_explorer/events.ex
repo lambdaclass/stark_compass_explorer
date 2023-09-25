@@ -153,8 +153,8 @@ defmodule StarknetExplorer.Events do
     )
   end
 
-  def get_total_count() do
-    StarknetExplorer.Events |> Repo.aggregate(:count, :id)
+  def get_total_count(network \\ :mainnet) do
+    Repo.one(from e in StarknetExplorer.Events, where: e.network == ^network, select: count(e.id))
   end
 
   def fetch_from_rpc(block_hash, network) do
