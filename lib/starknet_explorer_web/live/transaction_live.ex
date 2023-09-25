@@ -578,7 +578,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     </div>
     <div class="pt-3 mb-3 border-t border-t-gray-700">
       <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
-        <span>Execution Resourcesss</span>
+        <span>Execution Resources</span>
       </div>
       <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
         <div class="flex flex-col justify-center items-center gap-2">
@@ -653,8 +653,6 @@ defmodule StarknetExplorerWeb.TransactionLive do
         true -> Data.internal_calls(transaction, socket.assigns.network)
         _ -> nil
       end
-
-    transaction |> Map.put(:receipt, receipt)
 
     assigns = [
       transaction: transaction,
