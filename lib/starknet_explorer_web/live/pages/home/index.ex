@@ -6,22 +6,9 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    Process.send_after(self(), :load_blocks, 100, [])
+    socket = load_blocks(socket)
 
-    entities_count = %{
-      message_count: "Loading...",
-      events_count: "Loading...",
-      transaction_count: "Loading..."
-    }
-
-    {:ok,
-     assign(socket,
-       blocks: [],
-       latest_block: [],
-       block_height: "Loading...",
-       entities_count: entities_count,
-       transactions: []
-     )}
+    {:ok, socket}
   end
 
   @impl true
@@ -263,8 +250,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
     """
   end
 
-  @impl true
-  def handle_info(:load_blocks, socket) do
+  def load_blocks(socket) do
     blocks = StarknetExplorer.Data.many_blocks(socket.assigns.network)
 
     case List.first(blocks) do
@@ -302,14 +288,13 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               max_block_height
           end
 
-        {:noreply,
-         assign(socket,
-           blocks: blocks,
-           transactions: transactions,
-           entities_count: entities_count,
-           latest_block: latest_block,
-           block_height: StarknetExplorer.Utils.format_number_for_display(max_block_height)
-         )}
+        assign(socket,
+          blocks: blocks,
+          transactions: transactions,
+          entities_count: entities_count,
+          latest_block: latest_block,
+          block_height: StarknetExplorer.Utils.format_number_for_display(max_block_height)
+        )
     end
   end
 end
