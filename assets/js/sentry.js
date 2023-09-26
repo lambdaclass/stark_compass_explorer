@@ -22,3 +22,4 @@ Sentry.init({
 });
 
 Sentry.setTag("runtime", "javascript");
+Sentry.setTag("environment", process.env.SENTRY_ENV);
