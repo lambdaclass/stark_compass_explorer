@@ -20,3 +20,5 @@ Sentry.init({
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
 });
+
+Sentry.setTag("runtime", "javascript");
