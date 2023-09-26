@@ -92,6 +92,8 @@
       enable_gateway_data: "{{ lookup('ansible.builtin.env', 'ENABLE_GATEWAY_DATA') }}"
       newrelic_key: "{{ lookup('ansible.builtin.env', 'NEWRELIC_KEY') }}"
       newrelic_app_name: "{{ lookup('ansible.builtin.env', 'NEWRELIC_APP_NAME') }}"
+      sentry_env: "{{ lookup('ansible.builtin.env', 'SENTRY_ENV') }}"
+      sentry_dsn: "{{ lookup('ansible.builtin.env', 'SENTRY_DSN') }}"
       enable_listener: "true"
       enable_updater: "true"
       enable_fetcher: "true"
