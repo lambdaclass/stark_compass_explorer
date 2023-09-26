@@ -19,7 +19,7 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     </div>
     <div
       id="dropdown"
-      class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
+      class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
       phx-hook="Dropdown"
     >
       <span class="networkSelected capitalize"><%= assigns.view %></span>
@@ -184,8 +184,20 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     <div class="grid-4 custom-list-item">
       <div>Declared At Transaction Hash</div>
       <div class="cols-span-3">
-        <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
-        |> Utils.shorten_block_hash() %>
+        <a
+          href={
+            Utils.network_path(
+              @network,
+              "transactions/0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
+            )
+          }
+          class="text-hover-blue"
+        >
+          <span>
+            <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
+            |> Utils.shorten_block_hash() %>
+          </span>
+        </a>
       </div>
     </div>
     <div class="grid-4 custom-list-item">

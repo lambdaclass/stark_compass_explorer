@@ -50,8 +50,11 @@
       NEWRELIC_APP_NAME:
       SECRET_KEY_BASE: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
       PORT: "4100"
-      SENTRY_ENV: "{{ lookup('ansible.builtin.env', 'SENTRY_ENV') }}"
-      SENTRY_DSN: "{{ lookup('ansible.builtin.env', 'SENTRY_DSN') }}"
+      SENTRY_ENV:
+      SENTRY_DSN:
+      ENABLE_LISTENER: "true"
+      ENABLE_UPDATER: "true"
+      ENABLE_FETCHER: "true"
     args:
       chdir: /home/starknet_explorer/tmp/madara_explorer
     register: build_output
@@ -91,6 +94,9 @@
       newrelic_app_name: "{{ lookup('ansible.builtin.env', 'NEWRELIC_APP_NAME') }}"
       sentry_env: "{{ lookup('ansible.builtin.env', 'SENTRY_ENV') }}"
       sentry_dsn: "{{ lookup('ansible.builtin.env', 'SENTRY_DSN') }}"
+      enable_listener: "true"
+      enable_updater: "true"
+      enable_fetcher: "true"
 
   - name: Create user systemd directory
     ansible.builtin.file:

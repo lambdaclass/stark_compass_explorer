@@ -8,7 +8,8 @@
 import Config
 
 config :starknet_explorer,
-  ecto_repos: [StarknetExplorer.Repo]
+  ecto_repos: [StarknetExplorer.Repo],
+  env: Mix.env()
 
 # Configures the endpoint
 config :starknet_explorer, StarknetExplorerWeb.Endpoint,
@@ -18,8 +19,7 @@ config :starknet_explorer, StarknetExplorerWeb.Endpoint,
     layout: false
   ],
   pubsub_server: StarknetExplorer.PubSub,
-  live_view: [signing_salt: "zWxY2ubk"],
-  env: Mix.env()
+  live_view: [signing_salt: "zWxY2ubk"]
 
 # Configures the mailer
 #

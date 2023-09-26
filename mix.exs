@@ -19,7 +19,7 @@ defmodule StarknetExplorer.MixProject do
   def application do
     [
       mod: {StarknetExplorer.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :observer]
     ]
   end
 
@@ -67,6 +67,9 @@ defmodule StarknetExplorer.MixProject do
       {:scrivener_ecto, "~> 2.7"},
       {:new_relic_agent, "~> 1.0", only: :prod},
       {:sentry, "~> 8.0"}
+      {:etop, "~> 0.7"},
+      {:rexbug, ">= 1.0.0"},
+      {:eep, github: "virtan/eep"}
     ] ++ db_adapter
   end
 
