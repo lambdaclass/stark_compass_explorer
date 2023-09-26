@@ -90,6 +90,21 @@ defmodule StarknetExplorer.BlockUtils do
     end
   end
 
+  @doc """
+  Get the lowest block number from DB.
+  If any block is present in the DB, use RPC.
+  """
+  def get_lowest_block_number(network) do
+    case Block.get_lowest_block_number(network) do
+      nil ->
+        {:ok, block_number} = Rpc.get_block_height_no_cache(network)
+        block_number
+
+      block_number ->
+        block_number
+    end
+  end
+
   def fetch_block(number, network) when is_integer(number) do
     case Rpc.get_block_by_number(number, network) do
       {:ok, block} ->

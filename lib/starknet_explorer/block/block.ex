@@ -138,7 +138,21 @@ defmodule StarknetExplorer.Block do
   end
 
   @doc """
-  Returns the highest block number fetched from the RPC.
+  Returns the lowest block number stored in the DB.
+  """
+  def get_lowest_block_number(network) do
+    query =
+      from(b in Block,
+        where: b.network == ^network,
+        order_by: [asc: b.number],
+        limit: 1
+      )
+
+    Repo.one(query).number
+  end
+
+  @doc """
+  Returns the highest block number stored in the DB.
   """
   def block_height(network) do
     query =

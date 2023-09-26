@@ -16,15 +16,16 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   @impl true
   def init([network: network, name: _name] = _args) do
     block_height = BlockUtils.block_height(Atom.to_string(network))
+    oldest_block_number = BlockUtils.get_lowest_block_number(Atom.to_string(network))
 
     state = %StateSyncSystem{
       current_block_number: block_height,
-      next_to_fetch: block_height,
+      next_to_fetch: oldest_block_number,
       network: network
     }
 
     Process.send_after(self(), :listener, @fetch_timer)
-    # Process.send_after(self(), :fetcher, @fetch_timer)
+    Process.send_after(self(), :fetcher, @fetch_timer)
     # Process.send_after(self(), :updater, @fetch_timer)
     Logger.info("State Sync System enabled for network #{network}.")
     {:ok, state}
