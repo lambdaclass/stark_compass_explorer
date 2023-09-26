@@ -84,6 +84,21 @@ defmodule StarknetExplorer.Data do
     end
   end
 
+  def block_by_partial_hash(hash, network) do
+    case Block.get_by_partial_hash(hash, network) do
+      no_blocks when no_blocks == nil or no_blocks == [] -> 
+        with {:ok, blocks} <- many_blocks(network, 50) do
+          {:ok, (for nth_block <- blocks, 
+            String.contains?(Integer.to_string(nth_block.hash), Integer.to_string(hash)), 
+            do: nth_block) }
+        else
+          err -> {:error, err}
+        end
+      blocks ->
+        {:ok, blocks}
+    end
+  end
+
   @doc """
   Fetch a block by number, first look up in
   the db, if not found, fetch from the RPC provider

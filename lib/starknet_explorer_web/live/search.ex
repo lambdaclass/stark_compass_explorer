@@ -33,15 +33,13 @@ defmodule StarknetExplorerWeb.SearchLive do
               <div class="text-hover-blue">
               <img class="inline-block" src={~p"/images/box.svg"} />
               <div class="py-1 inline-block">
-              <%= if assigns[:blocks] do %>
-              <%= for block <- @blocks do %>
-                <%= to_string(block.number)%> -
-                  <%= live_redirect(Utils.shorten_block_hash(block.hash),
-                  to: ~p"/#{@network}/blocks/#{block.hash}",
+              <%= if assigns[:block] do %>
+                <%= get_number(@block)%> -
+                  <%= live_redirect(Utils.shorten_block_hash(get_hash(@block)),
+                  to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
                   class: "text-hover-blue",
-                  title:  block.hash
+                  title:  get_hash(@block)
                 ) %>
-              <% end %>
               <% end %>
               </div>
               </div>
@@ -81,8 +79,8 @@ defmodule StarknetExplorerWeb.SearchLive do
       case try_search(query, socket.assigns.network) do
         {:tx, _tx} ->
           fn -> assign(socket, tx: query) end
-        {:blocks, blocks} ->
-          fn -> assign(socket, blocks: blocks) end
+        {:block, block} ->
+          fn -> assign(socket, block: block) end
         {:message, _message} ->
           fn -> assign(socket, message: query) end
         :noquery ->
@@ -105,7 +103,7 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def try_by_number(number, network) do
     case Data.block_by_partial_number(number, network) do
-      {:ok, blocks} -> {:blocks, blocks}
+      {:ok, blocks} -> {:block, List.first(blocks)}
       {:error, _} -> :noquery
     end
   end
@@ -115,8 +113,8 @@ defmodule StarknetExplorerWeb.SearchLive do
       {:ok, _transaction} ->
         {:tx, hash}
       {:error, _} ->
-        case Data.block_by_hash(hash, network) do
-          {:ok, block} -> {:block, block}
+        case Data.block_by_partial_hash(hash, network) do
+          {:ok, blocks} -> {:block, List.first(blocks)}
           {:error, _} ->
             case Message.get_by_hash(hash, network) do
               {:ok, _message} -> {:message, hash}
