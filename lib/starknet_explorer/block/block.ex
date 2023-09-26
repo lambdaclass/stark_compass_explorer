@@ -140,6 +140,18 @@ defmodule StarknetExplorer.Block do
   @doc """
   Returns the highest block number fetched from the RPC.
   """
+  def block_height(network) do
+    query =
+      from b in "blocks",
+        select: max(b.number),
+        where: b.network == ^network
+
+    Repo.one(query)
+  end
+
+  @doc """
+  Returns the highest block number fetched from the RPC.
+  """
   def highest_fetched_block_number(network) do
     query =
       from b in "blocks",

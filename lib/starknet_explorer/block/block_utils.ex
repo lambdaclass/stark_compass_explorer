@@ -75,10 +75,19 @@ defmodule StarknetExplorer.BlockUtils do
     end
   end
 
+  @doc """
+  Get block height from DB.
+  If any block is present in the DB, use RPC.
+  """
   def block_height(network) do
-    StarknetExplorer.Blockchain.ListenerWorker.get_height(
-      StarknetExplorer.Utils.listener_atom(network)
-    )
+    case Block.block_height(network) do
+      {:ok, block_height} ->
+        block_height
+
+      _not_in_db ->
+        {:ok, block_height} = Rpc.get_block_height_no_cache(network)
+        block_height
+    end
   end
 
   def fetch_block(number, network) when is_integer(number) do

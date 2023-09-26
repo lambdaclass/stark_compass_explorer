@@ -11,10 +11,41 @@ defmodule StarknetExplorer.Application do
     #   @networks
     #   |> Enum.flat_map(fn net -> cache_supervisor_spec(net) end)
 
+    mainnet_state_sync =
+      if System.get_env("ENABLE_MAINNET_SYNC") == "true" do
+        # Start the State Sync System server for mainnet.
+        [
+          {StarknetExplorer.Blockchain.StateSyncSystem,
+           [network: :mainnet, name: :mainnet_state_sync]}
+        ]
+      else
+        []
+      end
+
+    testnet_state_sync =
+      if System.get_env("ENABLE_TESTNET_SYNC") == "true" do
+        # Start the State Sync System server for testnet.
+        [
+          {StarknetExplorer.Blockchain.StateSyncSystem,
+           [network: :testnet, name: :testnet_state_sync]}
+        ]
+      else
+        []
+      end
+
+    testnet2_state_sync =
+      if System.get_env("ENABLE_TESTNET2_SYNC") == "true" do
+        # Start the State Sync System server for testnet2.
+        [
+          {StarknetExplorer.Blockchain.StateSyncSystem,
+           [network: :testnet2, name: :testnet2_state_sync]}
+        ]
+      else
+        []
+      end
+
     children =
       [
-        # Start the Blockchain supervisor
-        StarknetExplorer.Blockchain.BlockchainSupervisor,
         # Start the Telemetry supervisor
         StarknetExplorerWeb.Telemetry,
         # Start the Ecto repository
@@ -28,7 +59,7 @@ defmodule StarknetExplorer.Application do
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
         {DynamicSupervisor, strategy: :one_for_one, name: StarknetExplorer.BlockFetcher}
-      ]
+      ] ++ testnet2_state_sync ++ testnet_state_sync ++ mainnet_state_sync
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
