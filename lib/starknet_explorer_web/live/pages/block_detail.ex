@@ -135,7 +135,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
     {:ok, receipts} = Data.receipts_by_block(block, socket.assigns.network)
 
-    # add receipts to each block's transaction
+    # add receipts to each transaction inside the block
     block = %{
       block
       | transactions:
