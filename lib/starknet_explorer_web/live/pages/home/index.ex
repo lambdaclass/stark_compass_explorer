@@ -24,15 +24,17 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       <h1>Madara Starknet Explorer</h1>
     </div>
     <div class="mx-auto max-w-7xl mt-4 mb-5">
-      <div class="relative w-full md:w-52 flex items-start gap-3 bg-container p-3 text-sm mb-3">
-        <CoreComponents.tooltip
-          id="tps-tooltip"
-          text="The average transactions per second calculated from the last block"
-          class="absolute top-2 right-2 z-10"
-        />
+      <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
         <img src={~p"/images/zap.svg"} class="my-auto" />
         <div class="flex">
-          <div class="border-r border-r-gray-700 pr-4 mr-4">TPS</div>
+          <div class="flex items-center gap-2 border-r border-r-gray-700 pr-2 mr-2">
+            TPS
+            <CoreComponents.tooltip
+              id="tps-tooltip"
+              text="The average transactions per second calculated from the last block"
+              class="translate-y-px"
+            />
+          </div>
           <div>
             <%= live_render(@socket, TPSComponent,
               id: "tps-number",
