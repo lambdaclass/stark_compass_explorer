@@ -191,7 +191,10 @@ input {
   @apply text-se-lilac bg-se-lilac/5 border-se-lilac;
 }
 .gray-label {
-  @apply text-gray-200 bg-gray-400/5 border-gray-400;
+  @apply text-gray-400 bg-gray-400/5 border-gray-400;
+}
+.cash-label {
+  @apply text-se-cash-green bg-se-cash-green/5 border-se-cash-green;
 }
 
 /* Dropdown */

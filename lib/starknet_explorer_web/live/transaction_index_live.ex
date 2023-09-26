@@ -37,7 +37,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
                             "transactions/#{transaction.hash}"
                           )
                         }
-                        class="text-hover-blue"
+                        class="text-hover-pink"
                       >
                         <span><%= Utils.shorten_block_hash(transaction.hash) %></span>
                       </a>
@@ -60,7 +60,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
                 <div class="col-span-2">
                   <div class="list-h">Type</div>
                   <div>
-                    <span class={"#{if transaction.type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+                    <span class={"type #{String.downcase(transaction.type)}"}>
                       <%= transaction.type %>
                     </span>
                   </div>
@@ -68,7 +68,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
                 <div class="col-span-2">
                   <div class="list-h">Status</div>
                   <div>
-                    <span class={"#{if block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if block.status == "PENDING", do: "pink-label"}"}>
+                    <span class={"info-label #{String.downcase(block.status)}"}>
                       <%= block.status %>
                     </span>
                   </div>

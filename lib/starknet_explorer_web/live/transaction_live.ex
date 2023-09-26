@@ -123,8 +123,8 @@ defmodule StarknetExplorerWeb.TransactionLive do
             phx-hook="Copy"
           >
             <div class="relative">
-              <div class="break-all text-hover-blue">
-                <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-blue">
+              <div class="break-all">
+                <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-pink">
                   <span><%= event.id |> Utils.shorten_block_hash() %></span>
                 </a>
               </div>
@@ -147,10 +147,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <div>
           <div class="list-h">Block Number</div>
           <div>
-            <span class="blue-label">
+            <span>
               <a
                 href={Utils.network_path(@network, "blocks/#{event.block_number}")}
-                class="text-hover-blue"
+                class="text-hover-pink"
               >
                 <span><%= to_string(event.block_number) %></span>
               </a>
@@ -345,10 +345,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
               phx-hook="Copy"
             >
               <div class="relative">
-                <div class="break-all text-hover-blue">
+                <div class="break-all">
                   <a
                     href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
-                    class="text-hover-blue"
+                    class="text-hover-pink"
                   >
                     <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
                   </a>
@@ -415,7 +415,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
             <div><span class="blue-label"><%= call.selector_name %></span></div>
           </div>
           <div class="copy-container" id={"tsx-internal-calls-address-#{index}"} phx-hook="Copy">
-            <div class="relative break-all text-hover-blue">
+            <div class="relative break-all text-hover-pink">
               <%= call.contract_address
               |> Utils.shorten_block_hash() %>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -445,7 +445,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   # Execution resources
   def render_info(%{transaction_view: "overview"} = assigns) do
     ~H"""
-    <div class="grid-4 custom-list-item lg:border-transparent">
+    <div class="grid-4 custom-list-item">
       <div class="block-label">Transaction Hash</div>
       <div class="col-span-3 break-all">
         <div class="copy-container" id={"tsx-overview-hash-#{@transaction.hash}"} phx-hook="Copy">
@@ -471,7 +471,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Transaction Type</div>
       <div class="col-span-3">
-        <span class={"#{if @transaction.type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+        <span class={"type #{String.downcase(@transaction.type)}"}>
           <%= @transaction.type %>
         </span>
       </div>
@@ -484,7 +484,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
             REVERTED
           </span>
         <% else %>
-          <span class={"#{if @transaction_receipt.finality_status == "ACCEPTED_ON_L2", do: "green-label"} #{if @transaction_receipt.finality_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if @transaction_receipt.finality_status == "PENDING", do: "pink-label"}"}>
+          <span class={"info-label #{String.downcase(@transaction_receipt.finality_status)}"}>
             <%= @transaction_receipt.finality_status %>
           </span>
         <% end %>
@@ -493,10 +493,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Number</div>
       <div class="col-span-3">
-        <span class="blue-label">
+        <span>
           <a
             href={Utils.network_path(@network, "blocks/#{@transaction_receipt.block_hash}")}
-            class="text-hover-blue"
+            class="type"
           >
             <span><%= @transaction_receipt.block_number %></span>
           </a>
@@ -505,7 +505,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Hash</div>
-      <div class="col-span-3 text-hover-blue break-all">
+      <div class="col-span-3 text-hover-pink break-all">
         <div
           class="copy-container"
           id={"tsx-overview-block-#{@transaction_receipt.block_hash}"}
@@ -514,7 +514,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <div class="relative">
             <a
               href={Utils.network_path(@network, "blocks/#{@transaction_receipt.block_hash}")}
-              class="text-hover-blue"
+              class="text-hover-pink"
             >
               <span><%= @transaction_receipt.block_hash |> Utils.shorten_block_hash() %></span>
             </a>
@@ -568,7 +568,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Actual Fee</div>
       <div class="col-span-3">
-        <span class="blue-label rounded-full px-4 py-1">
+        <span class="info-label cash-label">
           <%= @transaction_receipt.actual_fee %> ETH
         </span>
       </div>
@@ -577,7 +577,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="grid-4 custom-list-item">
         <div class="block-label">Max Fee</div>
         <div class="col-span-3">
-          <span class="text-se-cash-green green-label rounded-full px-4 py-1">
+          <span class="info-label gray-label">
             <%= @transaction.max_fee %> ETH
           </span>
         </div>
@@ -593,14 +593,15 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </div>
     </div>
     <div class="custom-list-item">
-      <div class="mb-5 text-gray-500 md:text-white !flex-row gap-2">
-        <span>Input Data</span>
+      <div class="block-label !mt-8 !mb-5">
+        Input Data
       </div>
       <%= unless is_nil(@transaction.input_data) do %>
         <div class="col-span-full">
           <%= for input <- @transaction.input_data do %>
             <%= unless is_nil(input.call) do %>
-              <div class="w-full bg-black/20 p-5 mt-5" phx-no-format>
+              <div class="inner-block custom-list !p-0">
+                <div class="w-full bg-black/20 p-5" phx-no-format>
                 call <span class="text-se-violet"><%= input.call.name %></span>(<.intersperse
                   :let={arg}
                   enum={input.call.args}
@@ -608,34 +609,35 @@ defmodule StarknetExplorerWeb.TransactionLive do
                   <span class="text-blue-400"><%= arg.name %></span></.intersperse>)
                 <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
               </div>
-              <div class="w-full bg-black/10 p-5">
-                <div class="grid-3 table-th">
-                  <div>Input</div>
-                  <div>Type</div>
-                  <div>Value</div>
-                </div>
-                <%= for arg <- input.call.args do %>
-                  <div class="grid-3 custom-list-item">
-                    <div>
-                      <div class="list-h">Input</div>
-                      <div>
-                        <%= arg.name %>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="list-h">Type</div>
-                      <div>
-                        <%= arg.type %>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="list-h">Value</div>
-                      <div class="break-all">
-                        <pre><%= Utils.format_arg_value(arg) %></pre>
-                      </div>
-                    </div>
+                <div class="w-full bg-[#202037]/25 p-5">
+                  <div class="grid-3 table-th">
+                    <div>Input</div>
+                    <div>Type</div>
+                    <div>Value</div>
                   </div>
-                <% end %>
+                  <%= for arg <- input.call.args do %>
+                    <div class="grid-3 custom-list-item">
+                      <div>
+                        <div class="list-h">Input</div>
+                        <div>
+                          <%= arg.name %>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="list-h">Type</div>
+                        <div>
+                          <%= arg.type %>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="list-h">Value</div>
+                        <div class="break-all">
+                          <pre><%= Utils.format_arg_value(arg) %></pre>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
               </div>
             <% else %>
               <div class="w-full bg-black/20 p-5 mt-5">
