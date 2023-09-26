@@ -9,7 +9,7 @@ defmodule StarknetExplorer.Blockchain.UpdaterWorker do
   alias StarknetExplorer.Blockchain.UpdaterWorker
   defstruct [:network]
 
-  @fetch_timer :timer.seconds(String.to_integer(System.get_env("UPDATER_FETCH_TIMER", "2"), 10))
+  @fetch_timer :timer.seconds(String.to_integer(System.get_env("UPDATER_FETCH_TIMER", "10"), 10))
   @limit 10
 
   def start_link([network: _network, name: name] = arg) do
