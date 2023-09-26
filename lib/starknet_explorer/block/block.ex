@@ -53,9 +53,44 @@ defmodule StarknetExplorer.Block do
   def changeset(block = %__MODULE__{}, attrs) do
     block
     |> cast(attrs, @cast_fields)
+  end
+
+  def changeset_with_validations(block = %__MODULE__{}, attrs) do
+    block
+    |> cast(attrs, @cast_fields)
     |> validate_required(@required_fields)
     |> unique_constraint(:number)
     |> unique_constraint(:hash)
+  end
+
+  @doc """
+  Given a block from the RPC response, our block from SQL, and transactions receipts
+  update them into the DB.
+  """
+  def update_from_rpc_response(
+        block_from_sql,
+        block_from_rpc = %{
+          "transactions" => txs,
+          "status" => status,
+          "gas_fee_in_wei" => gas_fee_in_wei,
+          "execution_resources" => execution_resources
+        },
+        receipts,
+        network
+      ) do
+    StarknetExplorer.Repo.transaction(fn ->
+      block_changeset =
+        Ecto.Changeset.change(block_from_sql,
+          status: status,
+          gas_fee_in_wei: gas_fee_in_wei,
+          execution_resources: execution_resources
+        )
+
+      Repo.update!(block_changeset)
+
+      # TODO:
+      # - update tx receipts.
+    end)
   end
 
   @doc """
@@ -88,7 +123,7 @@ defmodule StarknetExplorer.Block do
 
     transaction_result =
       StarknetExplorer.Repo.transaction(fn ->
-        block_changeset = Block.changeset(%Block{}, block)
+        block_changeset = Block.changeset_with_validations(%Block{}, block)
 
         {:ok, block} = Repo.insert(block_changeset)
 
@@ -251,6 +286,19 @@ defmodule StarknetExplorer.Block do
         where: b.number == ^height and b.network == ^network
 
     Repo.one(query)
+  end
+
+  def get_lowest_not_completed_block(network) do
+    query =
+      from b in Block,
+        where:
+          b.status != "ACCEPTED_ON_L1" or is_nil(b.gas_fee_in_wei) or b.gas_fee_in_wei == "" or
+            is_nil(b.execution_resources),
+        where: b.network == ^network,
+        limit: 1,
+        order_by: [asc: b.number]
+
+    Repo.one(query).number
   end
 
   def get_with_not_finalized_blocks(limit \\ 10, network) do
