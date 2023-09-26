@@ -142,11 +142,13 @@ defmodule StarknetExplorer.Block do
   """
   def block_height(network) do
     query =
-      from b in "blocks",
-        select: max(b.number),
-        where: b.network == ^network
+      from(b in Block,
+        where: b.network == ^network,
+        order_by: [desc: b.number],
+        limit: 1
+      )
 
-    Repo.one(query)
+    Repo.one(query).number
   end
 
   @doc """

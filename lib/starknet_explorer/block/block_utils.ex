@@ -81,11 +81,11 @@ defmodule StarknetExplorer.BlockUtils do
   """
   def block_height(network) do
     case Block.block_height(network) do
-      {:ok, block_height} ->
+      nil ->
+        {:ok, block_height} = Rpc.get_block_height_no_cache(network)
         block_height
 
-      _not_in_db ->
-        {:ok, block_height} = Rpc.get_block_height_no_cache(network)
+      block_height ->
         block_height
     end
   end
