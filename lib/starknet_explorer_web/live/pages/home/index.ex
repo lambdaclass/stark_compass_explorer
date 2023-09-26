@@ -266,6 +266,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
       {:ok, blocks} ->
         latest_block = List.first(blocks)
+
         transactions =
           latest_block.transactions
           |> Enum.map(fn tx ->
