@@ -351,6 +351,7 @@ function KeyPress(e) {
     focused = false;
     toggleFocus(form, searchDropdown);
     input.blur();
+    // searchDropdown.classList.add("hidden");
   }
 }
 
@@ -366,24 +367,36 @@ function toggleFocus(form, searchDropdown) {
     form.classList.add("un-focus");
     searchDropdown.classList.remove("focus");
     searchDropdown.classList.add("un-focus");
+    // searchDropdown.classList.add("hidden")
     toggleBlur();
   }
 }
 
 function toggleBlur() {
-  let children = document.querySelector("#main").children;
+  const logo = document.querySelector("#logo");
+  const footer = document.querySelector("footer");
+  const main = document.querySelector("#main");
+  const options = document.querySelector("#menu-options").children;
+
   if (focused) {
-    for (let i = 0; i < children.length; i++) { 
-      if (children[i].id !== "search-bar") {
-        children[i].classList.add("blur-sm");
+    footer.classList.add("blur-sm");
+    main.classList.add("blur-sm");
+    logo.classList.add("blur-sm");
+    for (let i = 0; i < options.length; i++) { 
+      if (options[i].id !== "nav-search-bar") {
+        options[i].classList.add("blur-sm");
       }
     }
   } else {
-    for (let i = 0; i < children.length; i++) { 
-      if (children[i].id !== "search-bar") {
-        children[i].classList.remove("blur-sm");
+    main.classList.remove("blur-sm");
+    logo.classList.remove("blur-sm");
+    footer.classList.remove("blur-sm");
+    for (let i = 0; i < options.length; i++) { 
+      if (options[i].id !== "nav-search-bar") {
+        options[i].classList.remove("blur-sm");
       }
     }
+
   }
 }
 
@@ -399,11 +412,12 @@ function activateFocus() {
     toggleBlur();
   })
 
-  input.addEventListener("focusout", () => {
-    focused = false;
-    toggleFocus(form,searchDropdown);
-    toggleBlur();
-  })
+
+  // input.addEventListener("focusout", () => {
+  //   focused = false;
+  //   toggleFocus(form,searchDropdown);
+  //   toggleBlur();
+  // })
 
 }
 

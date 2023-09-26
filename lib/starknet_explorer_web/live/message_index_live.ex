@@ -6,11 +6,6 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-      id: "search-bar",
-      flash: @flash,
-      session: %{"network" => @network}
-    ) %>
     <div class="max-w-7xl mx-auto">
       <div class="table-header !justify-start gap-5">
         <h2>Messages</h2>

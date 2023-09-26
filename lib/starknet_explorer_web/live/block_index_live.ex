@@ -5,11 +5,6 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-      id: "search-bar",
-      flash: @flash,
-      session: %{"network" => @network}
-    ) %>
     <div class="max-w-7xl mx-auto lg:mt-20">
       <div class="table-header">
         <h2>Blocks</h2>

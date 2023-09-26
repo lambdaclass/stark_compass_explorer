@@ -1,155 +1,165 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="csrf-token" content={get_csrf_token()} />
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <!-- Primary Meta Tags -->
-    <title>Madara Explorer</title>
-    <meta name="title" content="Madara Explorer" />
-    <meta
-      name="description"
-      content="Scout the Starknet chain through the Madara Explorer. Keep track of every transaction, block and any other relevant information of Madara Starknet."
-    />
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://madarastark.com/" />
-    <meta property="og:title" content="Madara Explorer" />
-    <meta
-      property="og:description"
-      content="Scout the Starknet chain through the Madara Explorer. Keep track of every transaction, block and any other relevant information of Madara Starknet."
-    />
-    <meta property="og:image" content={~p"/images/preview.webp"} />
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://madarastark.com/" />
-    <meta property="twitter:title" content="Madara Explorer" />
-    <meta
-      property="twitter:description"
-      content="Scout the Starknet chain through the Madara Explorer. Keep track of every transaction, block and any other relevant information of Madara Starknet."
-    />
-    <meta property="twitter:image" content={~p"/images/preview.webp"} />
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="csrf-token" content={get_csrf_token()} />
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <!-- Primary Meta Tags -->
+        <title>Madara Explorer</title>
+        <meta name="title" content="Madara Explorer" />
+        <meta
+          name="description"
+          content="Scout the Starknet chain through the Madara Explorer. Keep track of every transaction, block and any other relevant information of Madara Starknet."
+        />
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://madarastark.com/" />
+        <meta property="og:title" content="Madara Explorer" />
+        <meta
+          property="og:description"
+          content="Scout the Starknet chain through the Madara Explorer. Keep track of every transaction, block and any other relevant information of Madara Starknet."
+        />
+        <meta property="og:image" content={~p"/images/preview.webp"} />
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="https://madarastark.com/" />
+        <meta property="twitter:title" content="Madara Explorer" />
+        <meta
+          property="twitter:description"
+          content="Scout the Starknet chain through the Madara Explorer. Keep track of every transaction, block and any other relevant information of Madara Starknet."
+        />
+        <meta property="twitter:image" content={~p"/images/preview.webp"} />
 
-    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
-    <script defer phx-track-static type="module" src={~p"/assets/app.js"}>
-    </script>
-  </head>
-  <body class="bg-se-black text-white relative">
-    <header class="z-50 absolute top-0 left-0">
-      <nav class="w-screen flex items-center justify-between p-5 lg:px-16">
-        <a href={Utils.network_path(@conn.assigns.network)} } class="z-50 text-xl">
-          <img src={~p"/images/logo.svg"} class="h-9 xl:h-11" />
-        </a>
-        <img id="hamburger" class="z-50 lg:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
-        <div
-          id="menu-options"
-          class="pointer-events-none lg:pointer-events-auto absolute lg:relative top-0 left-0 w-screen lg:w-auto h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 flex flex-col lg:flex-row justify-start items-streach gap-7 lg:gap-10 bg-[#111118] my-16 lg:my-0 py-10 lg:py-0 border-t lg:border-t-0 px-5 lg:px-0"
-        >
-          <a
-            href={Utils.network_path(@conn.assigns.network, "blocks")}
-            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
-          >
-            <img class="lg:hidden" src={~p"/images/box.svg"} /> <span>Blocks</span>
-          </a>
-          <a
-            href={Utils.network_path(@conn.assigns.network, "transactions")}
-            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
-          >
-            <img class="lg:hidden" src={~p"/images/corner-up-right.svg"} />
-            <span>Transactions</span>
-          </a>
-          <a
-            href={Utils.network_path(@conn.assigns.network, "classes")}
-            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center hidden"
-          >
-            <img class="lg:hidden" src={~p"/images/code.svg"} />
-            <span>Classes</span>
-          </a>
-          <a
-            href={Utils.network_path(@conn.assigns.network, "messages")}
-            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
-          >
-            <img class="lg:hidden" src={~p"/images/message-square.svg"} />
-            <span>Messages</span>
-          </a>
-          <a
-            href={Utils.network_path(@conn.assigns.network, "contracts")}
-            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center hidden"
-          >
-            <img class="lg:hidden" src={~p"/images/file.svg"} />
-            <span>Contracts</span>
-          </a>
-          <a
-            href={Utils.network_path(@conn.assigns.network, "events")}
-            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
-          >
-            <img class="lg:hidden" src={~p"/images/calendar.svg"} />
-            <span>Events</span>
-          </a>
-          <div class="relative w-fit">
+        <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+        <script defer phx-track-static type="module" src={~p"/assets/app.js"}>
+        </script>
+      </head>
+      <body class="bg-se-black text-white relative">
+        <header class="z-50 absolute top-0 left-0">
+          <nav class="w-screen flex items-center justify-between p-5 lg:px-16">
+            <a id="logo" href={Utils.network_path(@conn.assigns.network)} } class="z-50 text-xl">
+              <img src={~p"/images/logo.svg"} class="h-9 xl:h-11" />
+            </a>
+            <img id="hamburger" class="z-50 lg:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
             <div
-              id="nav-dropdown"
-              phx-hook="Network"
-              class="dropdown cursor-pointer rounded-md bg-container flex gap-2 items-center px-4 py-2 relative w-fit"
+              id="menu-options"
+              class="pointer-events-none lg:pointer-events-auto absolute lg:relative top-0 left-0 w-screen lg:w-full h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 flex flex-col lg:flex-row justify-start lg:justify-end items-streach gap-7 lg:gap-10 bg-[#111118] my-16 lg:my-0 py-10 lg:py-0 border-t lg:border-t-0 px-5 lg:px-0"
             >
-              <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
-              <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
-              </span>
-              <span class="block truncate capitalize"><%= @network %></span>
-              <img class="transform rotate-90 w-4 h-4" src={~p"/images/dropdown.svg"} />
+              <div id="nav-search-bar" class="lg:w-full lg:pl-32 lg:my-auto">
+                  <%= live_render(@conn, StarknetExplorerWeb.SearchLive,
+                  id: "search-bar",
+                  flash: @flash, 
+                  session: %{"network" => @network},
+                  router: StarknetExplorerWeb.Router
+                ) %></div>
+              <a
+                href={Utils.network_path(@conn.assigns.network, "blocks")}
+                class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+              >
+                <img class="lg:hidden" src={~p"/images/box.svg"} /> <span>Blocks</span>
+              </a>
+              <a
+                href={Utils.network_path(@conn.assigns.network, "transactions")}
+                class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+              >
+                <img class="lg:hidden" src={~p"/images/corner-up-right.svg"} />
+                <span>Transactions</span>
+              </a>
+              <a
+                href={Utils.network_path(@conn.assigns.network, "classes")}
+                class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center hidden"
+              >
+                <img class="lg:hidden" src={~p"/images/code.svg"} />
+                <span>Classes</span>
+              </a>
+              <a
+                href={Utils.network_path(@conn.assigns.network, "messages")}
+                class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+              >
+                <img class="lg:hidden" src={~p"/images/message-square.svg"} />
+                <span>Messages</span>
+              </a>
+              <a
+                href={Utils.network_path(@conn.assigns.network, "contracts")}
+                class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center hidden"
+              >
+                <img class="lg:hidden" src={~p"/images/file.svg"} />
+                <span>Contracts</span>
+              </a>
+              <a
+                href={Utils.network_path(@conn.assigns.network, "events")}
+                class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+              >
+                <img class="lg:hidden" src={~p"/images/calendar.svg"} />
+                <span>Events</span>
+              </a>
+              <div class="relative w-fit">
+                <div
+                  id="nav-dropdown"
+                  phx-hook="Network"
+                  class="dropdown cursor-pointer rounded-md bg-container flex gap-2 items-center px-4 py-2 relative w-fit"
+                >
+                  <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
+                  <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
+                  </span>
+                  <span class="block truncate capitalize"><%= @network %></span>
+                  <img class="transform rotate-90 w-4 h-4" src={~p"/images/dropdown.svg"} />
+                </div>
+                <div
+                  id="options"
+                  class="w-full hidden absolute z-10 mt-1 rounded-md bg-container py-1 text-base text-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                >
+                  <div class="w-full py-2 hover:bg-se-violet">
+                    <a class="option relative pl-10" href="/">
+                      <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
+                      <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
+                      </span>
+                      <span>Mainnet</span>
+                    </a>
+                  </div>
+                  <div class="w-full py-2 hover:bg-se-violet">
+                    <a class="option relative pl-10" href="/testnet">
+                      <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
+                      <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
+                      </span>
+                      <span>Testnet</span>
+                    </a>
+                  </div>
+                  <div class="w-full py-2 hover:bg-se-violet">
+                    <a class="option relative pl-10" href="/testnet2">
+                      <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
+                      <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
+                      </span>
+                      <span>Testnet2</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div
-              id="options"
-              class="w-full hidden absolute z-10 mt-1 rounded-md bg-container py-1 text-base text-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-            >
-              <div class="w-full py-2 hover:bg-se-violet">
-                <a class="option relative pl-10" href="/">
-                  <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
-                  <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
-                  </span>
-                  <span>Mainnet</span>
-                </a>
-              </div>
-              <div class="w-full py-2 hover:bg-se-violet">
-                <a class="option relative pl-10" href="/testnet">
-                  <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
-                  <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
-                  </span>
-                  <span>Testnet</span>
-                </a>
-              </div>
-              <div class="w-full py-2 hover:bg-se-violet">
-                <a class="option relative pl-10" href="/testnet2">
-                  <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
-                  <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
-                  </span>
-                  <span>Testnet2</span>
-                </a>
-              </div>
-            </div>
+          </nav>
+        </header>
+        <main class="px-5 md:px-10 min-h-screen py-16 lg:py-32 lg:block">
+          <div id="main">
+            <%= @inner_content %>
           </div>
-        </div>
-      </nav>
-    </header>
-    <%= @inner_content %>
-    <footer class="absolute bottom-0 left-0 right-0 flex justify-center items-center mt-10 py-4 text-gray-500">
-      <p>Made by LambdaClass</p>
-    </footer>
-    <!-- Development -->
-    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js">
-    </script>
-    <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js">
-    </script>
-    <!-- Production -->
-    <script src="https://unpkg.com/@popperjs/core@2">
-    </script>
-    <script src="https://unpkg.com/tippy.js@6">
-    </script>
-    <!-- ApexChart -->
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts">
-    </script>
-  </body>
-</html>
+        </main>         <footer class="absolute bottom-0 left-0 right-0 flex justify-center items-center mt-10 py-4 text-gray-500">
+          <p>Made by LambdaClass</p>
+        </footer>
+        <!-- Development -->
+        <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js">
+        </script>
+        <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js">
+        </script>
+        <!-- Production -->
+        <script src="https://unpkg.com/@popperjs/core@2">
+        </script>
+        <script src="https://unpkg.com/tippy.js@6">
+        </script>
+        <!-- ApexChart -->
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts">
+        </script>
+      </body>
+    </html>
