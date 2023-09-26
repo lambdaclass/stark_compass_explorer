@@ -680,15 +680,13 @@ defmodule StarknetExplorerWeb.CoreComponents do
   end
 
   def tooltip(assigns) do
-    css_class = assigns[:class] || ""
-
     ~H"""
     <img
       id={@id}
       phx-hook="Tooltip"
       data-tip={@text}
       src="/images/help-circle.svg"
-      class={"tooltip w-4 h-4 #{css_class}"}
+      class={"tooltip w-4 h-4 #{assigns[:class] || ""}"}
     />
     """
   end
