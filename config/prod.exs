@@ -23,7 +23,8 @@ config :sentry,
   enable_source_code_context: true,
   root_source_code_path: File.cwd!(),
   tags: %{
-    env: System.get_env("SENTRY_ENV")
+    env: System.get_env("SENTRY_ENV"),
+    runtime: "elixir"
   },
   included_environments: [
     if(System.get_env("SENTRY_ENV") == "production", do: :production, else: :testing)
