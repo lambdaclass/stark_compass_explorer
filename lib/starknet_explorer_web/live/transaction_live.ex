@@ -609,27 +609,27 @@ defmodule StarknetExplorerWeb.TransactionLive do
                   <span class="text-blue-400"><%= arg.name %></span></.intersperse>)
                 <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
               </div>
-                <div class="w-full bg-[#202037]/25 p-5">
-                  <div class="grid-3 table-th">
+                <div class="w-full bg-[#202037]/25 p-5 overflow-x-auto">
+                  <div class="grid-5 table-th">
                     <div>Input</div>
-                    <div>Type</div>
-                    <div>Value</div>
+                    <div class="col-span-2">Type</div>
+                    <div class="col-span-2">Value</div>
                   </div>
                   <%= for arg <- input.call.args do %>
-                    <div class="grid-3 custom-list-item">
+                    <div class="grid-5 custom-list-item">
                       <div>
                         <div class="list-h">Input</div>
                         <div>
                           <%= arg.name %>
                         </div>
                       </div>
-                      <div>
+                      <div class="col-span-2">
                         <div class="list-h">Type</div>
                         <div>
                           <%= arg.type %>
                         </div>
                       </div>
-                      <div>
+                      <div class="col-span-2">
                         <div class="list-h">Value</div>
                         <div class="break-all">
                           <pre><%= Utils.format_arg_value(arg) %></pre>

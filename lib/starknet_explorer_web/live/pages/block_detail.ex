@@ -341,7 +341,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Type</div>
           <div>
-            <span class={"#{if type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+            <span class={"type #{String.downcase(type)}"}>
               <!-- TODO: add more statuses -->
               <%= type %>
             </span>
