@@ -309,8 +309,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             phx-hook="Copy"
           >
             <div class="relative">
-              <div class="break-all text-hover-blue">
-                <a href={Utils.network_path(@network, "transactions/#{hash}")} class="text-hover-blue">
+              <div class="break-all">
+                <a href={Utils.network_path(@network, "transactions/#{hash}")} class="text-hover-link">
                   <span><%= Utils.shorten_block_hash(hash) %></span>
                 </a>
               </div>
@@ -329,7 +329,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Type</div>
           <div>
-            <span class={"#{if type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+            <span class={"type #{String.downcase(type)}"}>
               <%= type %>
             </span>
           </div>
@@ -364,10 +364,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
               phx-hook="Copy"
             >
               <div class="relative">
-                <div class="break-all text-hover-blue">
+                <div class="break-all">
                   <a
                     href={Utils.network_path(@network, "messages/#{message.message_hash}")}
-                    class="text-hover-blue"
+                    class="text-hover-link"
                   >
                     <span><%= message.message_hash |> Utils.shorten_block_hash() %></span>
                   </a>
@@ -391,15 +391,20 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div>
             <div class="list-h">Direction</div>
             <%= if Message.is_l2_to_l1(message.type) do %>
-              <div><span class="green-label">L2</span>→<span class="blue-label">L1</span></div>
+              <div>
+                <span class="info-label blue-label">L2</span>→<span class="info-label green-label">L1</span>
+              </div>
             <% else %>
-              <div><span class="blue-label">L1</span>→<span class="green-label">L2</span></div>
+              <div>
+                <span class="info-label green-label">L1</span>→<span class="info-label blue-label">L2</span>
+              </div>
             <% end %>
           </div>
           <div>
             <div class="list-h">Type</div>
-            <div>
-              <%= Message.friendly_message_type(message.type) %>
+            <% message_type = Message.friendly_message_type(message.type) %>
+            <div class={"type #{String.downcase(String.replace(message_type, " ", "-"))}"}>
+              <%= message_type %>
             </div>
           </div>
           <div>
@@ -472,10 +477,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
               phx-hook="Copy"
             >
               <div class="relative">
-                <div class="break-all text-hover-blue">
+                <div class="break-all">
                   <a
                     href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
-                    class="text-hover-blue"
+                    class="text-hover-link"
                   >
                     <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
                   </a>
@@ -527,13 +532,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
-    <div class="grid-4 custom-list-item lg:border-transparent">
+    <div class="grid-4 custom-list-item">
       <div class="block-label">Block Hash</div>
-      <div
-        class="copy-container col-span-3 text-hover-blue"
-        id={"copy-block-hash-#{@block.number}"}
-        phx-hook="Copy"
-      >
+      <div class="copy-container col-span-3" id={"copy-block-hash-#{@block.number}"} phx-hook="Copy">
         <div class="relative">
           <%= Utils.shorten_block_hash(@block.hash) %>
           <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -555,7 +556,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Status</div>
       <div class="col-span-3">
-        <span class={"#{if @block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if @block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if @block.status == "PENDING", do: "pink-label"}"}>
+        <span class={"info-label #{String.downcase(@block.status)}"}>
           <%= @block.status %>
         </span>
       </div>
@@ -607,7 +608,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         Sequencer Address
       </div>
       <div
-        class="copy-container col-span-3 text-hover-blue"
+        class="copy-container col-span-3"
         id={"copy-block-sequencer-#{@block.number}"}
         phx-hook="Copy"
       >
@@ -662,16 +663,15 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   def render_info(assigns = %{block: _block, view: "events"}) do
     ~H"""
-    <div class="table-th !pt-7 grid-6">
+    <div class="table-th !pt-7 grid-5">
       <div>Identifier</div>
-      <div>Block Number</div>
       <div>Transaction Hash</div>
       <div>Name</div>
       <div>From Address</div>
       <div>Age</div>
     </div>
     <%= for event <- @page.entries do %>
-      <div class="custom-list-item grid-6">
+      <div class="custom-list-item grid-5">
         <div>
           <div class="list-h">Identifier</div>
           <div
@@ -680,8 +680,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             phx-hook="Copy"
           >
             <div class="relative">
-              <div class="break-all text-hover-blue">
-                <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-blue">
+              <div class="break-all">
+                <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-link">
                   <span><%= event.id |> Utils.shorten_block_hash() %></span>
                 </a>
               </div>
@@ -702,21 +702,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           </div>
         </div>
         <div>
-          <div class="list-h">Block Number</div>
-          <div>
-            <span class="blue-label">
-              <a href={Utils.network_path(@network, "blocks/#{@block.hash}")} class="text-hover-blue">
-                <span><%= to_string(@block.number) %></span>
-              </a>
-            </span>
-          </div>
-        </div>
-        <div>
           <div class="list-h">Transaction Hash</div>
           <div>
             <a
               href={Utils.network_path(@network, "transactions/#{event.transaction_hash}")}
-              class="text-hover-blue"
+              class="text-hover-link"
             >
               <span><%= event.transaction_hash |> Utils.shorten_block_hash() %></span>
             </a>
@@ -726,7 +716,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="list-h">Name</div>
           <div>
             <%= if !String.starts_with?(event.name, "0x") do %>
-              <%= event.name %>
+              <div class={"info-label #{String.downcase(event.name)}"}><%= event.name %></div>
             <% else %>
               <div
                 class="flex gap-2 items-center copy-container"

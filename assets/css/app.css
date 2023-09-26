@@ -80,10 +80,10 @@ a,
   @apply md:grid grid-cols-5 items-center gap-1 md:gap-5;
 }
 .grid-6 {
-  @apply md:grid grid-cols-6 items-center gap-1 md:gap-5;
+  @apply lg:grid grid-cols-6 items-center gap-1 lg:gap-5;
 }
 .grid-7 {
-  @apply md:grid grid-cols-7 items-center gap-1 md:gap-5;
+  @apply lg:grid grid-cols-7 items-center gap-1 lg:gap-5;
 }
 .grid-8 {
   @apply lg:grid grid-cols-8 items-center gap-1 lg:gap-5;
@@ -100,11 +100,12 @@ a,
 }
 .grid-3 .list-h,
 .grid-4 .list-h,
-.grid-5 .list-h,
-.grid-6 .list-h,
-.grid-7 .list-h {
+.grid-5 .list-h {
   @apply font-ibm-plex text-sm pt-2 md:hidden;
 }
+
+.grid-6 .list-h,
+.grid-7 .list-h,
 .grid-8 .list-h,
 .grid-9 .list-h {
   @apply font-ibm-plex text-sm pt-2 lg:hidden;
@@ -115,11 +116,12 @@ a,
 
 .grid-3.table-th,
 .grid-4.table-th,
-.grid-5.table-th,
-.grid-6.table-th,
-.grid-7.table-th {
+.grid-5.table-th {
   @apply hidden md:grid font-ibm-plex text-sm pt-2 text-gray-400;
 }
+
+.grid-6.table-th,
+.grid-7.table-th,
 .grid-8.table-th,
 .grid-9.table-th {
   @apply hidden lg:grid font-ibm-plex text-sm pt-2 text-gray-400;
@@ -168,7 +170,8 @@ input {
 .info-label {
   @apply px-3 py-0.5 ml-0.5 border-l rounded-l-none rounded-md;
 }
-.pink-label {
+.pink-label,
+.approval {
   @apply text-se-pink bg-se-pink/5 border-se-pink;
 }
 .blue-label,
@@ -179,10 +182,12 @@ input {
 .accepted_on_l1 {
   @apply text-se-green bg-se-green/5 border-se-green;
 }
-.violet-label {
+.violet-label,
+.swap {
   @apply text-se-violet bg-se-violet/5 border-se-violet;
 }
-.lilac-label {
+.lilac-label,
+.transfer {
   @apply text-se-lilac bg-se-lilac/5 border-se-lilac;
 }
 .gray-label {
@@ -204,11 +209,13 @@ main .option {
   @apply bg-[#202037] text-white border border-[#5D5D75] text-sm uppercase px-3 py-0.5 rounded-md -translate-x-0.5;
 }
 
-.type.l1_to_l2_executed_on_l2 {
+.type.l1_to_l2_executed_on_l2,
+.sent-on-l2 {
   @apply text-se-green;
 }
 .type.l2_to_l1_executed_on_l2,
-.type-blue {
+.type-blue,
+.consumed-on-l2 {
   @apply text-se-blue;
 }
 .type.deploy_account {

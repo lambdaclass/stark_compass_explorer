@@ -25,7 +25,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
           <div id={"block-#{block.number}"} class="grid-6 custom-list-item">
             <div>
               <div class="list-h">Number</div>
-              <a href={Utils.network_path(@network, "blocks/#{block.number}")} class="text-hover-blue">
+              <a href={Utils.network_path(@network, "blocks/#{block.number}")} class="type">
                 <span><%= to_string(block.number) %></span>
               </a>
             </div>
@@ -35,7 +35,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
                 <div class="relative">
                   <a
                     href={Utils.network_path(@network, "blocks/#{block.hash}")}
-                    class="text-hover-blue"
+                    class="text-hover-link"
                   >
                     <span><%= Utils.shorten_block_hash(block.hash) %></span>
                   </a>
@@ -58,7 +58,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
             <div class="col-span-2">
               <div class="list-h">Status</div>
               <div>
-                <span class={"#{if block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if block.status == "PENDING", do: "pink-label"}"}>
+                <span class={"info-label #{String.downcase(block.status)}"}>
                   <%= block.status %>
                 </span>
               </div>
