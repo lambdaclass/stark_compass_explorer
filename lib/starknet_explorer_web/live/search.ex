@@ -76,19 +76,23 @@ defmodule StarknetExplorerWeb.SearchLive do
   def handle_info({:search, query}, socket) do
     query = String.trim(query)
     navigate_fun =
-      case try_search(query, socket.assigns.network) do
-        {:tx, _tx} ->
-          fn -> assign(socket, tx: query) end
-        {:block, block} ->
-          fn -> assign(socket, block: block) end
-        {:message, _message} ->
-          fn -> assign(socket, message: query) end
-        :noquery ->
-          fn ->
-            socket
-            |> put_flash(:error, "No results found")
-            |> push_navigate(to: "/#{socket.assigns.network}")
-          end
+      if String.length(query) > 0 do
+        case try_search(query, socket.assigns.network) do
+          {:tx, _tx} ->
+            fn -> assign(socket, tx: query) end
+          {:block, block} ->
+            fn -> assign(socket, block: block) end
+          {:message, _message} ->
+            fn -> assign(socket, message: query) end
+          :noquery ->
+            fn ->
+              socket
+              |> put_flash(:error, "No results found")
+              |> push_navigate(to: "/#{socket.assigns.network}")
+            end
+        end
+      else
+        fn -> socket end
       end
     {:noreply, navigate_fun.()}
   end
