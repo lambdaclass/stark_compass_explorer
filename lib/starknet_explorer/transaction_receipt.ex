@@ -141,12 +141,12 @@ defmodule StarknetExplorer.TransactionReceipt do
     Repo.all(query)
   end
 
-  def get_status_not_finalized(limit \\ 10, network) do
+  def get_status_not_finalized(block_number, network) do
     query =
       from t in TransactionReceipt,
         where: t.finality_status != "ACCEPTED_ON_L1" and t.execution_status == "SUCCEEDED",
-        where: t.network == ^network,
-        limit: ^limit
+        # TODO add index in block_number.
+        where: t.network == ^network and t.block_number == ^block_number
 
     Repo.all(query)
   end

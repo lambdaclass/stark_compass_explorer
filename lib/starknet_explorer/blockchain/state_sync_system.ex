@@ -19,7 +19,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     lowest_block_number = BlockUtils.get_lowest_block_number(Atom.to_string(network))
 
     lowest_not_finished_block_number =
-      Block.get_lowest_not_completed_block(Atom.to_string(network))
+      BlockUtils.get_lowest_not_completed_block(Atom.to_string(network))
 
     state = %StateSyncSystem{
       current_block_number: block_height,
@@ -40,7 +40,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
         :updater,
         state = %StateSyncSystem{network: network, updater_block_number: nil}
       ) do
-    state = %{state | updater_block_number: Block.get_lowest_not_completed_block(network)}
+    state = %{state | updater_block_number: Block.get_lowest_not_completed_block(network).number}
 
     Process.send_after(self(), :updater, @fetch_timer)
     {:noreply, state}
@@ -53,7 +53,10 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
       ) do
     {:ok, _} = BlockUtils.fetch_and_update(updater_block_number, network)
 
-    state = %{state | updater_block_number: BlockUtils.get_lowest_not_completed_block(network)}
+    state = %{
+      state
+      | updater_block_number: BlockUtils.get_lowest_not_completed_block(network)
+    }
 
     Process.send_after(self(), :updater, @fetch_timer)
     {:noreply, state}

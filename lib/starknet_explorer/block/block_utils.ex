@@ -19,7 +19,7 @@ defmodule StarknetExplorer.BlockUtils do
     with block_from_sql <- Block.get_by_num(block_height, network),
          {:ok, block_from_rpc = %{"block_number" => block_number}} <-
            fetch_block(block_height, network),
-         {:ok, _update} <- update_block(block_from_sql, block_from_rpc, network) do
+         {:ok, _update} <- update_block_and_transactions(block_from_sql, block_from_rpc, network) do
       {:ok, block_number}
     else
       true ->
@@ -34,7 +34,11 @@ defmodule StarknetExplorer.BlockUtils do
     not is_nil(Block.get_by_num(block_height, network))
   end
 
-  def update_block(block_from_sql, block_from_rpc = %{"block_number" => block_number}, network) do
+  def update_block_and_transactions(
+        block_from_sql,
+        block_from_rpc = %{"block_number" => block_number},
+        network
+      ) do
     with {:ok, receipts} <- receipts_for_block(block_from_rpc, network) do
       block_from_rpc =
         block_from_rpc
@@ -127,7 +131,7 @@ defmodule StarknetExplorer.BlockUtils do
         block_height
 
       block_height ->
-        block_height
+        block_height.number
     end
   end
 
@@ -142,7 +146,7 @@ defmodule StarknetExplorer.BlockUtils do
         block_number
 
       block_number ->
-        block_number
+        block_number.number
     end
   end
 
@@ -160,7 +164,7 @@ defmodule StarknetExplorer.BlockUtils do
         block_number
 
       block_number ->
-        block_number
+        block_number.number
     end
   end
 

@@ -69,7 +69,7 @@ defmodule StarknetExplorer.Block do
   """
   def update_from_rpc_response(
         block_from_sql,
-        block_from_rpc = %{
+        _block_from_rpc = %{
           "transactions" => txs,
           "status" => status,
           "gas_fee_in_wei" => gas_fee_in_wei,
@@ -78,6 +78,19 @@ defmodule StarknetExplorer.Block do
         receipts,
         network
       ) do
+    tx_receipts =
+      Enum.map(txs, fn transaction ->
+        tx_receipt =
+          StarknetExplorer.TransactionReceipt.get_by_transaction_hash(
+            transaction["transaction_hash"]
+          )
+
+        {:ok, rpc_tx_receipt} =
+          StarknetExplorer.Rpc.get_transaction_receipt(transaction["transaction_hash"], network)
+
+        {tx_receipt, rpc_tx_receipt}
+      end)
+
     StarknetExplorer.Repo.transaction(fn ->
       block_changeset =
         Ecto.Changeset.change(block_from_sql,
@@ -88,8 +101,16 @@ defmodule StarknetExplorer.Block do
 
       Repo.update!(block_changeset)
 
-      # TODO:
-      # - update tx receipts.
+      Enum.each(tx_receipts, fn {tx_receipt, rpc_tx_receipt} ->
+        tx_receipt_changeset =
+          Ecto.Changeset.change(tx_receipt,
+            actual_fee: rpc_tx_receipt["actual_fee"],
+            finality_status: rpc_tx_receipt["finality_status"],
+            execution_status: rpc_tx_receipt["execution_status"]
+          )
+
+        Repo.update!(tx_receipt_changeset)
+      end)
     end)
   end
 
@@ -183,7 +204,7 @@ defmodule StarknetExplorer.Block do
         limit: 1
       )
 
-    Repo.one(query).number
+    Repo.one(query)
   end
 
   @doc """
@@ -197,7 +218,7 @@ defmodule StarknetExplorer.Block do
         limit: 1
       )
 
-    Repo.one(query).number
+    Repo.one(query)
   end
 
   @doc """
@@ -298,7 +319,7 @@ defmodule StarknetExplorer.Block do
         limit: 1,
         order_by: [asc: b.number]
 
-    Repo.one(query).number
+    Repo.one(query)
   end
 
   def get_with_not_finalized_blocks(limit \\ 10, network) do
