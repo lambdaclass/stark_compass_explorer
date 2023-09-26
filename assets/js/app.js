@@ -311,8 +311,8 @@ Hooks.SearchHook = {
   updated() {
     const form = document.querySelector(".normal-form");
     const searchDropdown = document.querySelector("#dropdownInformation");
-    searchDropdown.classList.remove("hidden");
     toggleFocus(form, searchDropdown);
+    searchDropdown.classList.remove("hidden");
   }
 };
 
@@ -351,7 +351,6 @@ function KeyPress(e) {
     focused = false;
     toggleFocus(form, searchDropdown);
     input.blur();
-    // searchDropdown.classList.add("hidden");
   }
 }
 
@@ -367,7 +366,6 @@ function toggleFocus(form, searchDropdown) {
     form.classList.add("un-focus");
     searchDropdown.classList.remove("focus");
     searchDropdown.classList.add("un-focus");
-    // searchDropdown.classList.add("hidden")
     toggleBlur();
   }
 }
@@ -381,6 +379,7 @@ function toggleBlur() {
   if (focused) {
     footer.classList.add("blur-sm");
     main.classList.add("blur-sm");
+    main.classList.add("pointer-events-none");
     logo.classList.add("blur-sm");
     for (let i = 0; i < options.length; i++) { 
       if (options[i].id !== "nav-search-bar") {
@@ -391,6 +390,7 @@ function toggleBlur() {
     main.classList.remove("blur-sm");
     logo.classList.remove("blur-sm");
     footer.classList.remove("blur-sm");
+    main.classList.add("pointer-events-auto");
     for (let i = 0; i < options.length; i++) { 
       if (options[i].id !== "nav-search-bar") {
         options[i].classList.remove("blur-sm");
@@ -412,12 +412,30 @@ function activateFocus() {
     toggleBlur();
   })
 
+  document.addEventListener("click", (event) => {
+    const outsideDropdown = !searchDropdown.contains(event.target);
+    const outsideInput = !input.contains(event.target);
+    if (outsideDropdown && outsideInput) {
+      focused = false;
+      toggleFocus(form, searchDropdown);
+      toggleBlur();
+      searchDropdown.classList.add("hidden")
+      event.stopPropagation();
+      input.value = "";
+    }
+  })
 
-  // input.addEventListener("focusout", () => {
-  //   focused = false;
-  //   toggleFocus(form,searchDropdown);
-  //   toggleBlur();
-  // })
+  // window.onclick = function (event) {
+  //   if (event.target.contains(searchDropdown || input) && event.target !== (searchDropdown || input)) {
+  //     focused = false;
+  //     toggleFocus(form, searchDropdown);
+  //     toggleBlur();
+  //     searchDropdown.classList.add("hidden")
+  //     event.stopPropagation();
+  //   } else {
+  //     console.log('You clicked inside the box!'); 
+  //   }
+  // }
 
 }
 

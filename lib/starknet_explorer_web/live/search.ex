@@ -19,11 +19,11 @@ defmodule StarknetExplorerWeb.SearchLive do
           class="search-hook"
           placeholder="Search Blocks, Transactions, Classes, Messages, Contracts or Events"
         />
-        <button class=" absolute top-1/2 right-2 transform -translate-y-1/2" type="submit">
+        <button class="absolute top-1/2 right-2 transform -translate-y-1/2" type="submit">
           <img src={~p"/images/search.svg"} />
         </button>
       </form>
-      <div id="dropdownInformation" class="hidden mt-6 z-10 bg-container divide-y divide-gray-100 rounded-lg shadow w-full max-w-6xl mx-auto dark:bg-container dark:divide-gray-600">
+      <div id="dropdownInformation" class="absolute hidden mt-6 z-10 bg-container rounded-lg shadow w-full lg:max-w-md mx-auto dark:bg-container dark:divide-gray-600">
         <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
           Blocks
         <div>

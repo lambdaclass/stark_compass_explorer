@@ -105,7 +105,7 @@ a,
 
 /* Search bar */
 form {
-  @apply relative !w-full !max-w-7xl !mx-auto ;
+  @apply !relative !w-full !max-w-7xl !mx-auto;
 }
 
 input {
