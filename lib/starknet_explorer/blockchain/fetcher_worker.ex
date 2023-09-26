@@ -1,5 +1,5 @@
 defmodule StarknetExplorer.Blockchain.FetcherWorker do
-  @fetch_interval 100
+  @fetch_interval :timer.seconds(100)
   alias StarknetExplorer.{Blockchain.FetcherWorker, BlockUtils}
   defstruct [:finish, :next_to_fetch, :network]
   require Logger
