@@ -33,13 +33,15 @@ defmodule StarknetExplorerWeb.SearchLive do
               <div class="text-hover-blue">
               <img class="inline-block" src={~p"/images/box.svg"} />
               <div class="py-1 inline-block">
-              <%= if assigns[:block] do %>
-                <%= get_number(@block)%> -
-                  <%= live_redirect(Utils.shorten_block_hash(get_hash(@block)),
-                  to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
+              <%= if assigns[:blocks] do %>
+              <%= for block <- @blocks do %>
+                <%= to_string(block.number)%> -
+                  <%= live_redirect(Utils.shorten_block_hash(block.hash),
+                  to: ~p"/#{@network}/blocks/#{block.hash}",
                   class: "text-hover-blue",
-                  title:  get_hash(@block)
+                  title:  block.hash
                 ) %>
+              <% end %>
               <% end %>
               </div>
               </div>
@@ -79,8 +81,8 @@ defmodule StarknetExplorerWeb.SearchLive do
       case try_search(query, socket.assigns.network) do
         {:tx, _tx} ->
           fn -> assign(socket, tx: query) end
-        {:block, block} ->
-          fn -> assign(socket, block: block) end
+        {:blocks, blocks} ->
+          fn -> assign(socket, blocks: blocks) end
         {:message, _message} ->
           fn -> assign(socket, message: query) end
         :noquery ->
@@ -90,7 +92,6 @@ defmodule StarknetExplorerWeb.SearchLive do
             |> push_navigate(to: "/#{socket.assigns.network}")
           end
       end
-
     {:noreply, navigate_fun.()}
   end
 
@@ -103,8 +104,8 @@ defmodule StarknetExplorerWeb.SearchLive do
   end
 
   def try_by_number(number, network) do
-    case Data.block_by_number(number, network) do
-      {:ok, _block} -> {:block, number}
+    case Data.block_by_partial_number(number, network) do
+      {:ok, blocks} -> {:blocks, blocks}
       {:error, _} -> :noquery
     end
   end

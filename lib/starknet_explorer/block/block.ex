@@ -208,12 +208,31 @@ defmodule StarknetExplorer.Block do
     |> Repo.preload(:transactions)
   end
 
+  def get_by_partial_hash(hash, network) do
+    query =
+      from b in Block,
+        where: b.hash in ^hash and b.network == ^network
+
+    Repo.all(query)
+    |> Repo.preload(:transactions)
+  end
+
   def get_by_num(num, network) do
     query =
       from b in Block,
         where: b.number == ^num and b.network == ^network
 
     Repo.one(query)
+    |> Repo.preload(:transactions)
+  end
+
+  def get_by_partial_num(num, network) do
+    query =
+      from b in Block,
+        order_by: [desc: b.number],
+        where: like(^("#{num}"), b.number) and b.network == ^network,
+        limit: 25
+    Repo.all(query)
     |> Repo.preload(:transactions)
   end
 

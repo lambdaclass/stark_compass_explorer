@@ -265,13 +265,12 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
   @impl true
   def handle_info(:load_blocks, socket) do
-    blocks = StarknetExplorer.Data.many_blocks(socket.assigns.network)
-
-    case List.first(blocks) do
-      nil ->
+    case StarknetExplorer.Data.many_blocks(socket.assigns.network) do
+      {:error, _} ->
         {:noreply, socket}
 
-      latest_block ->
+      {:ok, blocks} ->
+        latest_block = List.first(blocks)
         transactions =
           latest_block.transactions
           |> Enum.map(fn tx ->

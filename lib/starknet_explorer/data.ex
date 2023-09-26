@@ -45,7 +45,23 @@ defmodule StarknetExplorer.Data do
   provider.
   """
   def many_blocks(network, block_amount \\ 15) do
-    Block.latest_blocks_with_txs(block_amount, network)
+    case Block.latest_blocks_with_txs(block_amount, network) do
+      no_blocks when no_blocks == nil or no_blocks == [] ->
+        with {:ok, latest_block} <- Rpc.get_latest_block(network),
+          blocks = [_|_] <- (
+            # Create a list getting all blocks from the latest block to the 
+            # latest - block_amount discards any error, returns error if 
+            # the list is empty
+            for n <- 1..block_amount, 
+            block = Rpc.get_block_by_number(latest_block.number - n, network), 
+            match?({:ok, _}, block), do: block
+          ) do
+            {:ok, blocks}
+        else
+          _ -> {:error, "list is empty"}
+        end
+      blocks -> {:ok, blocks}
+    end
   end
 
   @doc """
@@ -85,6 +101,21 @@ defmodule StarknetExplorer.Data do
 
       block ->
         {:ok, block}
+    end
+  end
+
+  def block_by_partial_number(number, network) do
+    case Block.get_by_partial_num(number, network) do
+      no_blocks when no_blocks == nil or no_blocks == [] -> 
+        with {:ok, blocks} <- many_blocks(network, 50) do
+          {:ok, (for nth_block <- blocks, 
+            String.contains?(Integer.to_string(nth_block.number), Integer.to_string(number)), 
+            do: nth_block) }
+        else
+          err -> {:error, err}
+        end
+      blocks ->
+        {:ok, blocks}
     end
   end
 
