@@ -16,3 +16,16 @@ config :logger, level: :info
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
+config :sentry,
+  dsn: System.get_env("SENTRY_DSN"),
+  environment_name:
+    if(System.get_env("SENTRY_ENV") == "production", do: :production, else: :testing),
+  enable_source_code_context: true,
+  root_source_code_path: File.cwd!(),
+  tags: %{
+    env: System.get_env("SENTRY_ENV"),
+    runtime: "elixir"
+  },
+  included_environments: [
+    if(System.get_env("SENTRY_ENV") == "production", do: :production, else: :testing)
+  ]

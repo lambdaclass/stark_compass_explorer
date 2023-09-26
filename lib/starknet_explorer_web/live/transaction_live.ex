@@ -1,7 +1,7 @@
 defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.{Data, Message, Events}
+  alias StarknetExplorer.{Data, Message, Events, Gateway}
 
   defp transaction_header(assigns) do
     ~H"""
@@ -674,21 +674,23 @@ defmodule StarknetExplorerWeb.TransactionLive do
     </div>
     <div class="pt-3 mb-3">
       <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
-        <span>Execution Resources</span><span class="gray-label text-sm">Mocked</span>
+        <span>Execution Resources</span>
       </div>
       <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
         <div class="flex flex-col justify-center items-center gap-2">
-          <span class="blue-label">STEPS</span> 5083
+          <span class="blue-label">STEPS</span> <%= "#{@transaction_receipt.execution_resources["n_steps"]}" %>
         </div>
         <div class="flex flex-col justify-center items-center gap-2">
-          <span class="green-label">MEMORY</span> 224
+          <span class="green-label">MEMORY HOLES</span> <%= "#{@transaction_receipt.execution_resources["n_memory_holes"]}" %>
         </div>
-        <div class="flex flex-col justify-center items-center gap-2">
-          <span class="pink-label">PEDERSEN_BUILTIN</span> 21
-        </div>
-        <div class="flex flex-col justify-center items-center gap-2">
-          <span class="violet-label">RANGE_CHECK_BUILTIN</span> 224
-        </div>
+        <%= for {builtin_name , instance_counter} <- @transaction_receipt.execution_resources["builtin_instance_counter"] do %>
+          <div class="flex flex-col justify-center items-center gap-2">
+            <span class={Utils.builtin_color(builtin_name)}>
+              <%= Utils.builtin_name(builtin_name) %>
+            </span>
+            <%= instance_counter %>
+          </div>
+        <% end %>
       </div>
     </div>
     """
@@ -720,7 +722,26 @@ defmodule StarknetExplorerWeb.TransactionLive do
           transaction |> Map.put(:max_fee, max_fee)
       end
 
-    receipt = transaction.receipt |> Map.put(:actual_fee, actual_fee)
+    execution_resources =
+      case Application.get_env(:starknet_explorer, :enable_gateway_data) do
+        true ->
+          {:ok, receipt} =
+            Gateway.get_transaction_receipt(transaction_hash, socket.assigns.network)
+
+          receipt["execution_resources"]
+
+        false ->
+          %{
+            "builtin_instance_counter" => %{},
+            "n_memory_holes" => "-",
+            "n_steps" => "-"
+          }
+      end
+
+    receipt =
+      transaction.receipt
+      |> Map.put(:execution_resources, execution_resources)
+      |> Map.put(:actual_fee, actual_fee)
 
     internal_calls =
       case receipt.execution_status != "REVERTED" &&
