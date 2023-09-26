@@ -137,12 +137,10 @@ if config_env() == :prod do
 
   # Newrelic agent
   newrelic_license_key =
-    System.get_env("NEWRELIC_KEY") ||
-      raise "environment variable NEWRELIC_KEY is missing."
+    System.get_env("NEWRELIC_KEY")
 
   newrelic_app_name =
-    System.get_env("NEWRELIC_APP_NAME") ||
-      raise "environment variable NEWRELIC_APP_NAME is missing."
+    System.get_env("NEWRELIC_APP_NAME")
 
   config :new_relic_agent,
     app_name: newrelic_app_name,

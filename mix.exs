@@ -66,6 +66,7 @@ defmodule StarknetExplorer.MixProject do
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
       {:scrivener_ecto, "~> 2.7"},
       {:new_relic_agent, "~> 1.0", only: :prod},
+      {:sentry, "~> 8.0"},
       {:etop, "~> 0.7"},
       {:rexbug, ">= 1.0.0"},
       {:eep, github: "virtan/eep"}
