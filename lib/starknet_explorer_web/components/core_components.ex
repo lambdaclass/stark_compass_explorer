@@ -683,7 +683,13 @@ defmodule StarknetExplorerWeb.CoreComponents do
     css_class = assigns[:class] || ""
 
     ~H"""
-    <img id={@id} phx-hook="Tooltip" data-tip={@text} src={"/images/help-circle.svg"} class={"tooltip w-4 h-4 #{css_class}"} />
+    <img
+      id={@id}
+      phx-hook="Tooltip"
+      data-tip={@text}
+      src="/images/help-circle.svg"
+      class={"tooltip w-4 h-4 #{css_class}"}
+    />
     """
   end
 end

@@ -25,7 +25,11 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
     </div>
     <div class="mx-auto max-w-7xl mt-4 mb-5">
       <div class="relative w-full md:w-52 flex items-start gap-3 bg-container p-3 text-sm mb-3">
-        <CoreComponents.tooltip id="tps-tooltip" text="The average transactions per second calculated from the last block" class="absolute top-2 right-2 z-10" />
+        <CoreComponents.tooltip
+          id="tps-tooltip"
+          text="The average transactions per second calculated from the last block"
+          class="absolute top-2 right-2 z-10"
+        />
         <img src={~p"/images/zap.svg"} class="my-auto" />
         <div class="flex">
           <div class="border-r border-r-gray-700 pr-4 mr-4">TPS</div>

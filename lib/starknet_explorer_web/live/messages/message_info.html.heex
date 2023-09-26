@@ -22,8 +22,10 @@
   </div>
   <div class="grid-4 custom-list-item">
     <div class="block-label !mt-0">
-      <CoreComponents.tooltip id="type-tooltip" text="The type of message sent between L1 and L2." />
-      Type
+      <CoreComponents.tooltip
+        id="type-tooltip"
+        text="The type of message sent between L1 and L2."
+      /> Type
     </div>
     <div class={"col-span-3 type #{@message.type}"}>
       <%= Message.friendly_message_type(@message.type) %>
@@ -31,8 +33,10 @@
   </div>
   <div class="grid-4 custom-list-item">
     <div class="block-label !mt-0">
-      <CoreComponents.tooltip id="direction-tooltip" text="The direction of message between L1 and L2." />
-      Message Direction
+      <CoreComponents.tooltip
+        id="direction-tooltip"
+        text="The direction of message between L1 and L2."
+      /> Message Direction
     </div>
     <div class="col-span-3">
       <%= if Message.is_l2_to_l1(@message.type) do %>
@@ -50,8 +54,10 @@
   </div>
   <div class="grid-4 custom-list-item">
     <div class="block-label !mt-0">
-      <CoreComponents.tooltip id="transaction-tooltip" text="The hash that identifies the transaction." />
-      Transaction Hash
+      <CoreComponents.tooltip
+        id="transaction-tooltip"
+        text="The hash that identifies the transaction."
+      /> Transaction Hash
     </div>
     <div class="block-data">
       <div class="hash flex">
@@ -67,8 +73,10 @@
   </div>
   <div class="grid-4 custom-list-item">
     <div class="block-label !mt-0">
-      <CoreComponents.tooltip id="timestamp-tooltip" text="The date and time when the message log was validated." />
-      Timestamp
+      <CoreComponents.tooltip
+        id="timestamp-tooltip"
+        text="The date and time when the message log was validated."
+      /> Timestamp
     </div>
     <div><%= Utils.get_block_age_from_timestamp(@message.timestamp) %></div>
   </div>
@@ -98,7 +106,10 @@
     <div class="inner-block custom-list">
       <div class="custom-list-item">
         <div class="block-label">
-          <CoreComponents.tooltip id="contract-from-tooltip" text="The address that identifies the smart contract on the blockchain." />
+          <CoreComponents.tooltip
+            id="contract-from-tooltip"
+            text="The address that identifies the smart contract on the blockchain."
+          />
           <%= if Message.is_l2_to_l1(@message.type) do %>
             From L2 Contract Address
           <% else %>
@@ -114,7 +125,10 @@
       </div>
       <div class="custom-list-item">
         <div class="block-label">
-          <CoreComponents.tooltip id="contract-to-tooltip" text="The address that identifies the smart contract on the blockchain." />
+          <CoreComponents.tooltip
+            id="contract-to-tooltip"
+            text="The address that identifies the smart contract on the blockchain."
+          />
           <%= if Message.is_l2_to_l1(@message.type) do %>
             To L1 Contract Address
           <% else %>
