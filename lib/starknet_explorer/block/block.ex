@@ -167,16 +167,16 @@ defmodule StarknetExplorer.Block do
             Message.insert_from_transaction_receipt(receipt, network)
             Message.insert_from_transaction(inserted_tx, block.timestamp, network)
           end)
-
-        traces
-        |> Enum.map(fn internal_call ->
-          %StarknetExplorer.InternalCall{}
-          |> InternalCall.changeset(internal_call)
-          |> Repo.insert!()
-        end)
-
-        Enum.each(events, fn event -> {:ok, _event} = Events.insert(event) end)
       end)
+
+    traces
+    |> Enum.map(fn internal_call ->
+      %StarknetExplorer.InternalCall{}
+      |> InternalCall.changeset(internal_call)
+      |> Repo.insert!()
+
+      Enum.each(events, fn event -> {:ok, _event} = Events.insert(event) end)
+    end)
 
     case transaction_result do
       {:ok, _} ->
