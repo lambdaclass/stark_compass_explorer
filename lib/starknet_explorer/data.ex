@@ -45,6 +45,10 @@ defmodule StarknetExplorer.Data do
   provider.
   """
   def many_blocks(network, block_amount \\ 15) do
+    Block.latest_blocks_with_txs(block_amount, network)
+  end
+
+  def first_n_blocks(network, block_amount \\ 15) do
     case Block.latest_blocks_with_txs(block_amount, network) do
       no_blocks when no_blocks == nil or no_blocks == [] ->
         with {:ok, latest_block} <- Rpc.get_latest_block(network),
@@ -91,7 +95,7 @@ defmodule StarknetExplorer.Data do
   def block_by_partial_hash(hash, network) do
     case Block.get_by_partial_hash(hash, network) do
       no_blocks when no_blocks == nil or no_blocks == [] ->
-        with {:ok, blocks} <- many_blocks(network, 50) do
+        with {:ok, blocks} <- first_n_blocks(network, 50) do
           {:ok, (for nth_block <- blocks, 
             String.contains?(nth_block.hash, hash), 
             do: nth_block) }
@@ -127,7 +131,7 @@ defmodule StarknetExplorer.Data do
   def block_by_partial_number(number, network) do
     case Block.get_by_partial_num(number, network) do
       no_blocks when no_blocks == nil or no_blocks == [] ->
-        with {:ok, blocks} <- many_blocks(network, 50) do
+        with {:ok, blocks} <- first_n_blocks(network, 50) do
           {:ok,
            for(
              nth_block <- blocks,
