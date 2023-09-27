@@ -20,7 +20,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       session: %{"network" => @network}
     ) %>
     <div class="flex flex-col gap-1 justify-center items-center my-16">
-      <h1>Madara Starknet Explorer</h1>
+      <h1>Stark Compass Explorer</h1>
+      <h1 class="info-label blue-label text-xl font-medium mt-2">
+        The only open source explorer for Starknet
+      </h1>
     </div>
     <div class="mx-auto max-w-7xl mt-4 mb-5">
       <div class="relative w-full md:w-52 flex items-start gap-3 bg-container p-3 text-sm mb-3">
@@ -99,7 +102,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </a>
       </div>
     </div>
-    <div class="mx-auto max-w-7xl grid lg:grid-cols-2 gap-10 lg:gap-5 xl:gap-16 mt-16">
+    <div class="mx-auto max-w-7xl grid lg:grid-cols-2 gap-10 lg:gap-5 mt-16">
       <div>
         <div class="table-header">
           <div class="table-title">Latest Blocks</div>

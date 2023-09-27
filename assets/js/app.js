@@ -29,7 +29,7 @@ import topbar from "../vendor/topbar";
 // };
 // setYear();
 
-let Hooks = { };
+let Hooks = {};
 
 // Hamburger menu
 Hooks.Nav = {
@@ -70,7 +70,14 @@ Hooks.Copy = {
     });
   },
 };
-
+Hooks.ShowTableData = {
+  mounted() {
+    this.el.addEventListener("click", () => {
+      this.el.querySelector(".arrow-button").classList.toggle("rotate-180");
+      this.el.nextElementSibling.classList.toggle("hidden");
+    });
+  },
+};
 Hooks.Stats = {
   mounted() {
     new ApexCharts(document.querySelector("#transactions-chart"), transactions).render();
@@ -308,20 +315,19 @@ let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfTo
 
 // Show progress bar on live navigation and form submits. Only displays if still
 // loading after 300 msec
-topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
+topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
 
 let topBarScheduled = undefined;
 window.addEventListener("phx:page-loading-start", () => {
-  if(!topBarScheduled) {
+  if (!topBarScheduled) {
     topBarScheduled = setTimeout(() => topbar.show(), 300);
-  };
+  }
 });
 window.addEventListener("phx:page-loading-stop", () => {
   clearTimeout(topBarScheduled);
   topBarScheduled = undefined;
   topbar.hide();
 });
-
 
 // connect if there are any LiveViews on the page
 liveSocket.connect();

@@ -27,7 +27,7 @@ html {
 
 /* Titles */
 h1 {
-  @apply font-ibm-plex text-center lg:text-left text-3xl lg:text-4xl uppercase font-semibold;
+  @apply font-ibm-plex text-center lg:text-left text-3xl uppercase font-semibold;
 }
 h2 {
   @apply font-ibm-plex text-2xl lg:mb-6;
@@ -209,7 +209,7 @@ main .option {
 }
 
 .type {
-  @apply bg-[#202037] text-white border border-[#5D5D75] text-sm uppercase px-3 py-0.5 rounded-md -translate-x-0.5;
+  @apply bg-[#202037] text-white  text-sm uppercase px-3 py-0.5 rounded-md -translate-x-0.5;
 }
 
 .type.l1_to_l2_executed_on_l2,

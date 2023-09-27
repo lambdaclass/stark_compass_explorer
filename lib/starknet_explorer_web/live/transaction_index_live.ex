@@ -37,7 +37,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
                             "transactions/#{transaction.hash}"
                           )
                         }
-                        class="text-hover-pink"
+                        class="text-hover-link"
                       >
                         <span><%= Utils.shorten_block_hash(transaction.hash) %></span>
                       </a>

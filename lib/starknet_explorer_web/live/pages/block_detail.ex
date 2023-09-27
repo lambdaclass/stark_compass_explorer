@@ -353,7 +353,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div>
           <div class="list-h">Status</div>
-          <span class={"#{if transaction.receipt.finality_status == "ACCEPTED_ON_L2", do: "green-label"} #{if transaction.receipt.finality_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if transaction.receipt.finality_status == "PENDING", do: "pink-label"}"}>
+          <span class={"info-label #{String.downcase(transaction.receipt.finality_status)}"}>
             <%= transaction.receipt.finality_status %>
           </span>
         </div>
@@ -365,7 +365,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             phx-hook="Copy"
           >
             <div class="relative">
-              <div class="break-all text-hover-blue">
+              <div class="break-all">
                 <%= Utils.shorten_block_hash(sender_address) %>
               </div>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">

@@ -5,31 +5,13 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   defp transaction_header(assigns) do
     ~H"""
-    <div class="flex flex-col lg:flex-row gap-2 items-baseline mb-5 lg:mb-0">
+    <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
       <h2>Transaction</h2>
-      <div
-        class="copy-container break-all pr-10 lg:pr-0"
-        id={"tsx-header-#{@transaction.hash}"}
-        phx-hook="Copy"
-      >
-        <div class="relative">
-          <div class="font-semibold">
-            <%= @transaction.hash %>
-          </div>
-          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-            <div class="relative">
-              <img
-                class="copy-btn copy-text w-4 h-4"
-                src={~p"/images/copy.svg"}
-                data-text={@transaction.hash}
-              />
-              <img
-                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                src={~p"/images/check-square.svg"}
-              />
-            </div>
-          </div>
-        </div>
+      <div class="font-normal text-gray-400 mt-2 lg:mt-0">
+        <%= assigns.block_timestamp
+        |> DateTime.from_unix()
+        |> then(fn {:ok, time} -> time end)
+        |> Calendar.strftime("%c") %> UTC
       </div>
     </div>
     <div
@@ -124,7 +106,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
           >
             <div class="relative">
               <div class="break-all">
-                <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-pink">
+                <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-link">
                   <span><%= event.id |> Utils.shorten_block_hash() %></span>
                 </a>
               </div>
@@ -148,10 +130,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <div class="list-h">Block Number</div>
           <div>
             <span>
-              <a
-                href={Utils.network_path(@network, "blocks/#{event.block_number}")}
-                class="text-hover-pink"
-              >
+              <a href={Utils.network_path(@network, "blocks/#{event.block_number}")} class="type">
                 <span><%= to_string(event.block_number) %></span>
               </a>
             </span>
@@ -161,7 +140,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <div class="list-h">Name</div>
           <div>
             <%= if !String.starts_with?(event.name, "0x") do %>
-              <%= event.name %>
+              <div class={"info-label #{String.downcase(event.name)}"}><%= event.name %></div>
             <% else %>
               <div
                 class="flex gap-2 items-center copy-container"
@@ -245,10 +224,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
               phx-hook="Copy"
             >
               <div class="relative">
-                <div class="break-all text-hover-blue">
+                <div class="break-all">
                   <a
                     href={Utils.network_path(@network, "messages/#{message.message_hash}")}
-                    class="text-hover-blue"
+                    class="text-hover-link"
                   >
                     <span><%= message.message_hash |> Utils.shorten_block_hash() %></span>
                   </a>
@@ -348,7 +327,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
                 <div class="break-all">
                   <a
                     href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
-                    class="text-hover-pink"
+                    class="text-hover-link"
                   >
                     <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
                   </a>
@@ -415,7 +394,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
             <div><span class="blue-label"><%= call.selector_name %></span></div>
           </div>
           <div class="copy-container" id={"tsx-internal-calls-address-#{index}"} phx-hook="Copy">
-            <div class="relative break-all text-hover-pink">
+            <div class="relative break-all text-hover-link">
               <%= call.contract_address
               |> Utils.shorten_block_hash() %>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -450,7 +429,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="col-span-3 break-all">
         <div class="copy-container" id={"tsx-overview-hash-#{@transaction.hash}"} phx-hook="Copy">
           <div class="relative">
-            <%= @transaction.hash |> Utils.shorten_block_hash() %>
+            <%= @transaction.hash %>
             <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
               <div class="relative">
                 <img
@@ -505,7 +484,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Hash</div>
-      <div class="col-span-3 text-hover-pink break-all">
+      <div class="col-span-3 break-all">
         <div
           class="copy-container"
           id={"tsx-overview-block-#{@transaction_receipt.block_hash}"}
@@ -514,7 +493,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <div class="relative">
             <a
               href={Utils.network_path(@network, "blocks/#{@transaction_receipt.block_hash}")}
-              class="text-hover-pink"
+              class="text-hover-link"
             >
               <span><%= @transaction_receipt.block_hash |> Utils.shorten_block_hash() %></span>
             </a>
@@ -601,37 +580,42 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <%= for input <- @transaction.input_data do %>
             <%= unless is_nil(input.call) do %>
               <div class="inner-block custom-list !p-0">
-                <div class="w-full bg-black/20 p-5" phx-no-format>
+                <div
+                  id={"#{input.call.name}"}
+                  class="w-full bg-black/20 p-5 !flex justify-between"
+                  phx-hook="ShowTableData"
+                >
+                  <div phx-no-format>
                 call <span class="text-se-violet"><%= input.call.name %></span>(<.intersperse
                   :let={arg}
                   enum={input.call.args}
                 ><:separator>, </:separator>
                   <span class="text-blue-400"><%= arg.name %></span></.intersperse>)
                 <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
-              </div>
-                <div class="w-full bg-[#202037]/25 p-5 overflow-x-auto">
-                  <div class="grid-5 table-th">
-                    <div>Input</div>
-                    <div class="col-span-2">Type</div>
-                    <div class="col-span-2">Value</div>
-                  </div>
+                </div>
+                  <img
+                    class="arrow-button transform rotate-180 transition-all duration-500"
+                    src={~p"/images/arrow-up.svg"}
+                  />
+                </div>
+                <div class="hidden w-full bg-[#1e1e2b]/25 p-5">
                   <%= for arg <- input.call.args do %>
-                    <div class="grid-5 custom-list-item">
-                      <div>
+                    <div class="custom-list-item">
+                      <div class="pb-5">
                         <div class="list-h">Input</div>
                         <div>
                           <%= arg.name %>
                         </div>
                       </div>
-                      <div class="col-span-2">
+                      <div class="col-span-2 pb-5">
                         <div class="list-h">Type</div>
-                        <div>
+                        <div class="w-full overflow-x-auto">
                           <%= arg.type %>
                         </div>
                       </div>
-                      <div class="col-span-2">
+                      <div class="col-span-2 pb-5">
                         <div class="list-h">Value</div>
-                        <div class="break-all">
+                        <div class="break-all w-full overflow-x-auto">
                           <pre><%= Utils.format_arg_value(arg) %></pre>
                         </div>
                       </div>
@@ -650,10 +634,8 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <% end %>
     </div>
     <div class="custom-list-item">
-      <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
-        <span>Signature</span>
-      </div>
-      <div class="bg-black/10 p-5">
+      <div class="py-5 text-gray-500 !flex-row gap-5">Signature</div>
+      <div class="inner-block my-5">
         <div class="w-full grid-8 table-th">
           <div>Index</div>
           <div class="col-span-7">Value</div>
@@ -665,9 +647,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
                 <div class="list-h">Index</div>
                 <div class="break-all"><%= index %></div>
               </div>
-              <div>
+              <div class="col-span-7">
                 <div class="list-h">Value</div>
-                <div class="break-all col-span-7"><%= signature |> Utils.shorten_block_hash() %></div>
+                <div class="break-all"><%= signature |> Utils.shorten_block_hash() %></div>
               </div>
             </div>
           <% end %>
@@ -675,21 +657,21 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </div>
     </div>
     <div class="pt-3 mb-3">
-      <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
-        <span>Execution Resources</span><span class="gray-label text-sm">Mocked</span>
+      <div class="mb-5 text-gray-500 !flex-row gap-5">
+        <span>Execution Resources</span><span class="!ml-5 type text-sm border border-gray-700">Mocked</span>
       </div>
       <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
         <div class="flex flex-col justify-center items-center gap-2">
-          <span class="blue-label">STEPS</span> 5083
+          <span class="blue-label info-label">STEPS</span> 5083
         </div>
         <div class="flex flex-col justify-center items-center gap-2">
-          <span class="green-label">MEMORY</span> 224
+          <span class="green-label info-label">MEMORY</span> 224
         </div>
         <div class="flex flex-col justify-center items-center gap-2">
-          <span class="pink-label">PEDERSEN_BUILTIN</span> 21
+          <span class="pink-label info-label">PEDERSEN_BUILTIN</span> 21
         </div>
         <div class="flex flex-col justify-center items-center gap-2">
-          <span class="violet-label">RANGE_CHECK_BUILTIN</span> 224
+          <span class="violet-label info-label">RANGE_CHECK_BUILTIN</span> 224
         </div>
       </div>
     </div>
