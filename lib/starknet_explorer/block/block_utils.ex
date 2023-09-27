@@ -142,8 +142,8 @@ defmodule StarknetExplorer.BlockUtils do
   """
   def get_lowest_block_number(network) when is_atom(network) do
     case Block.get_lowest_block_number(Atom.to_string(network)) do
-      %Block{} = block ->
-        {:ok, block.number}
+      {:ok, %Postgrex.Result{rows: [[block_number]]}} ->
+        {:ok, block_number}
 
       _else ->
         Rpc.get_block_height_no_cache(network)
