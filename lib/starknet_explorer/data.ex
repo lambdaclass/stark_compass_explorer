@@ -238,9 +238,16 @@ defmodule StarknetExplorer.Data do
   def get_entity_count(network) do
     counts = StarknetExplorer.Counts.get(network)
 
-    Map.new()
-    |> Map.put(:message_count, counts.messages)
-    |> Map.put(:events_count, counts.events)
-    |> Map.put(:transaction_count, counts.transactions)
+    if counts do
+      Map.new()
+      |> Map.put(:message_count, counts.messages)
+      |> Map.put(:events_count, counts.events)
+      |> Map.put(:transaction_count, counts.transactions)
+    else
+      Map.new()
+      |> Map.put(:message_count, 0)
+      |> Map.put(:events_count, 0)
+      |> Map.put(:transaction_count, 0)
+    end
   end
 end
