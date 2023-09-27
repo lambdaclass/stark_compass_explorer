@@ -1,10 +1,6 @@
 defmodule StarknetExplorer.BlockUtils do
-<<<<<<< HEAD
-  alias StarknetExplorer.{Rpc, Block}
   alias StarknetExplorer.IndexCache
-=======
   alias StarknetExplorer.{Rpc, Block, InternalCall}
->>>>>>> a629b19 (add internal calls table)
 
   def fetch_and_store(block_height, network) do
     with false <- already_stored?(block_height, network),
