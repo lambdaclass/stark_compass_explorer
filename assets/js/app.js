@@ -321,7 +321,7 @@ Hooks.SearchHook = {
     const form = document.querySelector(".normal-form");
     const searchDropdown = document.querySelector("#dropdownInformation");
     const input = form.querySelector("input");
-    const hashLink = document.querySelector("#hash-redirect-link");
+    const hashLink = document.querySelector("#redirect-link");
     toggleFocus(input, form, searchDropdown);
     if (hashLink) {
       hashLink.addEventListener("click", () => {
