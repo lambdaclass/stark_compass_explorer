@@ -2,7 +2,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   @moduledoc """
   State Sync System.
   """
-  alias StarknetExplorer.{Block, BlockUtils, Rpc, Blockchain.StateSyncSystem}
+  alias StarknetExplorer.{Block, BlockUtils, Rpc, Blockchain.StateSyncSystem, Counts}
   defstruct [:current_block_number, :network, :next_to_fetch, :updater_block_number]
   use GenServer
   require Logger
@@ -87,6 +87,8 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     {:ok, _} = BlockUtils.fetch_and_store(next_to_fetch, network)
     state = %{state | next_to_fetch: next_to_fetch - 1}
 
+    Counts.insert_or_update(network)
+
     maybe_fetch_another(state)
 
     {:noreply, state}
@@ -96,6 +98,8 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     next_to_fetch = state.current_block_number + 1
 
     {:ok, _} = BlockUtils.fetch_and_store(next_to_fetch, network)
+
+    Counts.insert_or_update(network)
 
     %{state | current_block_number: next_to_fetch}
   end
