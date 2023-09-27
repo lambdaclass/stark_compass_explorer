@@ -709,6 +709,17 @@ defmodule StarknetExplorerWeb.TransactionLive do
       (Message.from_transaction_receipt(receipt) ++ [Message.from_transaction(transaction)])
       |> Enum.reject(&is_nil/1)
 
+    # constructor_calldata: Vec<String>, deployer_address: String) -> NifResult<String> {
+    address =
+      StarknetExplorer.Pedersen.calculate_contract_address(
+        transaction.contract_address_salt,
+        transaction.class_hash,
+        transaction.constructor_calldata,
+        "0x0"
+      )
+
+    IO.inspect(address)
+
     # change fee formatting
     actual_fee = Utils.hex_wei_to_eth(transaction.receipt.actual_fee)
 
