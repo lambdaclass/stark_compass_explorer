@@ -27,9 +27,12 @@ defmodule StarknetExplorer.Counts do
 
   def insert_or_update(network) do
     {:ok, blocks} = BlockUtils.block_height(network)
-    transactions = Transaction.get_total_count(network)
-    messages = Message.get_total_count(network)
-    events = Events.get_total_count(network)
+    # transactions = Transaction.get_total_count(network)
+    transactions = 0
+    # messages = Message.get_total_count(network)
+    messages = 0
+    # events = Events.get_total_count(network)
+    events = 0
 
     case Repo.get_by(Counts, network: Atom.to_string(network)) do
       # Count exists, let's use it
