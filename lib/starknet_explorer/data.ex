@@ -6,6 +6,7 @@ defmodule StarknetExplorer.Data do
     Transaction,
     Block,
     TransactionReceipt,
+    InternalCall,
     Calldata,
     Gateway
   }
@@ -165,13 +166,13 @@ defmodule StarknetExplorer.Data do
     class_hash
   end
 
-  def internal_calls(tx, network) do
+  def internal_calls_with_function_name_rpc(tx, network) do
     {:ok, trace} = Gateway.trace_transaction(tx.hash, network)
 
     function_calls =
       trace["function_invocation"]
       |> StarknetExplorerWeb.Utils.atomize_keys()
-      |> flatten_internal_calls(0)
+      |> InternalCall.flatten_internal_calls(0)
 
     functions_data_cache =
       function_calls
@@ -185,10 +186,40 @@ defmodule StarknetExplorer.Data do
     function_calls
     |> Enum.with_index()
     |> Enum.map(fn {call_data, index} ->
-      # TODO: this can be optimized because we are going out to the Rpc/DB for every call, but contracts might be repeated
-      # (like in the case of CALL and DELEGATE call types) so those can be coalesced
       functions_data = Map.get(functions_data_cache, call_data.contract_address, nil)
       {input_data, _structs} = Calldata.get_input_data(functions_data, call_data.selector)
+
+      call_data =
+        Map.put(
+          call_data,
+          :selector_name,
+          input_data["name"] || default_internal_call_name(tx.type)
+        )
+
+      {index, call_data}
+    end)
+    |> Map.new()
+  end
+
+  def get_internal_calls_with_function_names(tx, network) do
+    function_calls = InternalCall.get_by_tx_hash(tx.hash, network)
+
+    functions_data_cache =
+      function_calls
+      |> Enum.map(fn x -> x.contract_address end)
+      |> Enum.uniq()
+      |> Enum.map(fn addr ->
+        {addr, Calldata.get_functions_data("latest", addr, network)}
+      end)
+      |> Map.new()
+
+    function_calls
+    |> Enum.with_index()
+    |> Enum.map(fn {call_data, index} ->
+      functions_data = Map.get(functions_data_cache, call_data.contract_address, nil)
+
+      {input_data, _structs} =
+        Calldata.get_input_data(functions_data, call_data.function_selector)
 
       call_data =
         Map.put(
@@ -208,31 +239,6 @@ defmodule StarknetExplorer.Data do
       "DEPLOY_ACCOUNT" -> "constructor"
       _ -> "__execute__"
     end
-  end
-
-  defp flatten_internal_calls(%{internal_calls: inner_list_of_calls} = outer_map, height)
-       when is_list(inner_list_of_calls) do
-    outer_details = [
-      %{
-        call_type: outer_map.call_type,
-        contract_address: outer_map.contract_address,
-        caller_address: outer_map.caller_address,
-        selector: Map.get(outer_map, :selector),
-        scope: height
-      }
-    ]
-
-    inner_details = Enum.flat_map(inner_list_of_calls, &flatten_internal_calls(&1, height + 1))
-
-    outer_details ++ inner_details
-  end
-
-  defp flatten_internal_calls(%{internal_calls: []} = _outer_map, _height) do
-    []
-  end
-
-  defp flatten_internal_calls(_list, _height) do
-    []
   end
 
   def get_entity_count(network) do

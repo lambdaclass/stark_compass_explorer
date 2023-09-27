@@ -746,7 +746,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     internal_calls =
       case receipt.execution_status != "REVERTED" &&
              Application.get_env(:starknet_explorer, :enable_gateway_data) do
-        true -> Data.internal_calls(transaction, socket.assigns.network)
+        true -> Data.get_internal_calls_with_function_names(transaction, socket.assigns.network)
         _ -> nil
       end
 

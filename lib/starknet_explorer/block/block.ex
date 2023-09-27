@@ -3,7 +3,7 @@ defmodule StarknetExplorer.Block do
   import Ecto.Query
   import Ecto.Changeset
   alias StarknetExplorer.Events
-  alias StarknetExplorer.{Repo, Transaction, Block, Message}
+  alias StarknetExplorer.{Repo, Transaction, Block, Message, InternalCall}
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.TransactionReceipt, as: Receipt
   require Logger
@@ -113,7 +113,7 @@ defmodule StarknetExplorer.Block do
   Given a block from the RPC response, and transactions receipts
   insert them into the DB.
   """
-  def insert_from_rpc_response(block = %{"transactions" => txs}, receipts, network)
+  def insert_from_rpc_response(block = %{"transactions" => txs}, receipts, traces, network)
       when is_map(block) do
     # This is a bit awful, and I'm sure Ecto/Elixir
     # has a better way of doing this.
@@ -167,6 +167,13 @@ defmodule StarknetExplorer.Block do
             Message.insert_from_transaction_receipt(receipt, network)
             Message.insert_from_transaction(inserted_tx, block.timestamp, network)
           end)
+
+        traces
+        |> Enum.map(fn internal_call ->
+          %StarknetExplorer.InternalCall{}
+          |> InternalCall.changeset(internal_call)
+          |> Repo.insert!()
+        end)
 
         Enum.each(events, fn event -> {:ok, _event} = Events.insert(event) end)
       end)

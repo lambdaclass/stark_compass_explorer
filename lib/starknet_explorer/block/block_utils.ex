@@ -1,6 +1,10 @@
 defmodule StarknetExplorer.BlockUtils do
+<<<<<<< HEAD
   alias StarknetExplorer.{Rpc, Block}
   alias StarknetExplorer.IndexCache
+=======
+  alias StarknetExplorer.{Rpc, Block, InternalCall}
+>>>>>>> a629b19 (add internal calls table)
 
   def fetch_and_store(block_height, network) do
     with false <- already_stored?(block_height, network),
@@ -88,7 +92,13 @@ defmodule StarknetExplorer.BlockUtils do
             |> Map.put("execution_resources", 0)
         end
 
-      Block.insert_from_rpc_response(block, receipts, network)
+      traces =
+        block["transactions"]
+        |> Enum.flat_map(fn tx ->
+          InternalCall.fetch_by_transaction_hash(tx["transaction_hash"], network)
+        end)
+
+      Block.insert_from_rpc_response(block, receipts, traces, network)
     end
   end
 
