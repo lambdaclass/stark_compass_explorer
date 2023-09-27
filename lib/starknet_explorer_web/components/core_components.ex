@@ -678,4 +678,16 @@ defmodule StarknetExplorerWeb.CoreComponents do
     </div>
     """
   end
+
+  def tooltip(assigns) do
+    ~H"""
+    <img
+      id={@id}
+      phx-hook="Tooltip"
+      data-tip={@text}
+      src="/images/help-circle.svg"
+      class={"tooltip w-4 h-4 #{assigns[:class] || ""}"}
+    />
+    """
+  end
 end
