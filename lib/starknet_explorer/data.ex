@@ -89,7 +89,7 @@ defmodule StarknetExplorer.Data do
       no_blocks when no_blocks == nil or no_blocks == [] -> 
         with {:ok, blocks} <- many_blocks(network, 50) do
           {:ok, (for nth_block <- blocks, 
-            String.contains?(Integer.to_string(nth_block.hash), Integer.to_string(hash)), 
+            String.contains?(nth_block.hash, hash), 
             do: nth_block) }
         else
           err -> {:error, err}
