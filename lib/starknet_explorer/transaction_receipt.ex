@@ -87,7 +87,8 @@ defmodule StarknetExplorer.TransactionReceipt do
   @networks [:mainnet, :testnet, :testnet2]
 
   @fields @invoke_tx_receipt_fields ++
-            @l1_receipt_handler ++ @declare_tx_receipt ++ @deploy_account_tx_receipt ++ [:network]
+            @l1_receipt_handler ++
+            @declare_tx_receipt ++ @deploy_account_tx_receipt ++ [:network, :execution_resources]
   @primary_key {:transaction_hash, :string, []}
   schema "transaction_receipts" do
     belongs_to :transaction, Transaction, references: :hash
@@ -101,6 +102,7 @@ defmodule StarknetExplorer.TransactionReceipt do
     field :events, {:array, :map}
     field :contract_address
     field :network, Ecto.Enum, values: @networks
+    field :execution_resources, :map
     timestamps()
   end
 
