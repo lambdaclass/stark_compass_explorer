@@ -247,7 +247,7 @@ defmodule StarknetExplorer.Block do
     Repo.all(query)
   end
 
-  def paginate_block(params, network) do
+  def paginate_blocks(params, network) do
     Block
     |> where([b], b.network == ^network)
     |> order_by(desc: :number)

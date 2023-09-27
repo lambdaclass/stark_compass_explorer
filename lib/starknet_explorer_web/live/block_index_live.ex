@@ -89,4 +89,25 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
        blocks: Data.many_blocks(socket.assigns.network)
      )}
   end
+
+  def handle_event("inc_events", _value, socket) do
+    new_page_number = socket.assigns.page.page_number + 1
+    pagination(socket, new_page_number)
+  end
+
+  def handle_event("dec_events", _value, socket) do
+    new_page_number = socket.assigns.page.page_number - 1
+    pagination(socket, new_page_number)
+  end
+
+  def pagination(socket, new_page_number) do
+    page =
+      Block.paginate_blocks(
+        %{page: new_page_number},
+        socket.assigns.network
+      )
+
+    {:noreply, assign(socket, page: page)}
+  end
+
 end
