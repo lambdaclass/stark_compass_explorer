@@ -67,7 +67,7 @@ defmodule StarknetExplorer.Application do
         StarknetExplorerWeb.Endpoint,
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
-        {DynamicSupervisor, strategy: :one_for_one, name: StarknetExplorer.BlockFetcher}
+        StarknetExplorer.IndexCache
       ] ++ testnet2_state_sync ++ testnet_state_sync ++ mainnet_state_sync
 
     # See https://hexdocs.pm/elixir/Supervisor.html
