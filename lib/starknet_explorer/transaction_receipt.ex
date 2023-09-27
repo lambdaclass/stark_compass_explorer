@@ -89,9 +89,9 @@ defmodule StarknetExplorer.TransactionReceipt do
   @fields @invoke_tx_receipt_fields ++
             @l1_receipt_handler ++
             @declare_tx_receipt ++ @deploy_account_tx_receipt ++ [:network, :execution_resources]
-  @primary_key {:transaction_hash, :string, []}
   schema "transaction_receipts" do
-    belongs_to :transaction, Transaction, references: :hash
+    belongs_to :transaction, Transaction
+    field :transaction_hash
     field :type, :string
     field :actual_fee, :string
     field :finality_status, :string
@@ -143,12 +143,12 @@ defmodule StarknetExplorer.TransactionReceipt do
     Repo.all(query)
   end
 
-  def get_status_not_finalized(block_number, network) do
+  def get_status_not_finalized(limit \\ 10, network) do
     query =
       from t in TransactionReceipt,
         where: t.finality_status != "ACCEPTED_ON_L1" and t.execution_status == "SUCCEEDED",
-        # TODO add index in block_number.
-        where: t.network == ^network and t.block_number == ^block_number
+        where: t.network == ^network,
+        limit: ^limit
 
     Repo.all(query)
   end

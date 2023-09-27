@@ -77,8 +77,8 @@ defmodule StarknetExplorer.Transaction do
 
   @networks [:mainnet, :testnet, :testnet2]
 
-  @primary_key {:hash, :string, []}
   schema "transactions" do
+    field :hash, :string
     field :constructor_calldata, {:array, :string}
     field :class_hash, :string
     field :type, :string
