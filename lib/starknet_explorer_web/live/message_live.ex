@@ -23,7 +23,6 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
 
   def mount(_params = %{"identifier" => hash}, _session, socket) do
     message = Message.get_by_hash(hash, socket.assigns.network)
-    IO.inspect(message)
 
     message =
       case Message.is_l2_to_l1(message) do
