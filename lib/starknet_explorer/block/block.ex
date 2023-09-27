@@ -247,6 +247,13 @@ defmodule StarknetExplorer.Block do
     Repo.all(query)
   end
 
+  def paginate_block(params, network) do
+    Block
+    |> where([b], b.network == ^network)
+    |> order_by(desc: :number)
+    |> Repo.paginate(params)
+  end
+
   def update_block_gas_and_resources(block_number, gas_fee, execution_resources, network)
       when is_number(block_number) do
     query =
@@ -268,3 +275,4 @@ defmodule StarknetExplorer.Block do
     )
   end
 end
+
