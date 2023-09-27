@@ -2,6 +2,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.Data
+  alias StarknetExplorer.Block
   @impl true
   def render(assigns) do
     ~H"""
@@ -71,6 +72,16 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
         <% end %>
       </div>
     </div>
+    <div>
+      <%= if @page.page_number != 1 do %>
+        <button phx-click="dec_events">Previous</button>
+      <% end %>
+      Showing from <%= (@page.page_number - 1) * @page.page_size %> to <%= (@page.page_number - 1) *
+        @page.page_size + @page.page_size %>
+      <%= if @page.page_number != @page.total_pages do %>
+        <button phx-click="inc_events">Next</button>
+      <% end %>
+    </div>
     """
   end
 
@@ -78,7 +89,8 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
   def mount(_params, _session, socket) do
     {:ok,
      assign(socket,
-       blocks: Data.many_blocks(socket.assigns.network)
+       blocks: Data.many_blocks(socket.assigns.network, 30),
+       page: Block.paginate_blocks(%{}, socket.assigns.network)
      )}
   end
 
@@ -90,6 +102,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
      )}
   end
 
+  @impl true
   def handle_event("inc_events", _value, socket) do
     new_page_number = socket.assigns.page.page_number + 1
     pagination(socket, new_page_number)
@@ -107,7 +120,8 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
         socket.assigns.network
       )
 
-    {:noreply, assign(socket, page: page)}
+    assigns = [ page: page, blocks: page.entries ]
+    {:noreply, assign(socket, assigns)}
   end
-
 end
+
