@@ -23,7 +23,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
 
     state = %StateSyncSystem{
       current_block_number: block_height,
-      next_to_fetch: lowest_block_number,
+      next_to_fetch: lowest_block_number - 1,
       updater_block_number: lowest_not_finished_block_number,
       network: network
     }

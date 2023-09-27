@@ -266,10 +266,14 @@ let tvl = {
   },
 };
 
-// Tippy.js for Tooltip
-tippy("#tps", {
-  content: "The average transactions per second calculated from the last block",
-});
+Hooks.Tooltip = {
+  mounted() {
+    tippy(this.el, {
+      content: this.el.dataset.tip,
+      theme: 'starknet-explorer'
+    });
+  },
+};
 
 //
 Hooks.Network = {

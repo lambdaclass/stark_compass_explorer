@@ -128,6 +128,24 @@ defmodule StarknetExplorerWeb.Utils do
     end
   end
 
+  @doc """
+  iex> builtin_name("range_check_builtin")
+  RANGE CHECK BUILTIN
+  """
+  def builtin_name(builtin_name) do
+    builtin_name
+    |> String.replace("_", " ")
+    |> String.upcase()
+  end
+
+  def builtin_color(builtin_name) do
+    case builtin_name do
+      "pedersen_builtin" -> "pink-label"
+      "range_check_builtin" -> "violet-label"
+      _ -> "green-label"
+    end
+  end
+
   # This case is for mainnet
   def network_path(:mainnet), do: "/"
   def network_path(:testnet), do: "/testnet/"

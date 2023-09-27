@@ -189,17 +189,28 @@ defmodule StarknetExplorer.Block do
   end
 
   @doc """
-  Returns the lowest block number stored in the DB.
+  This function will return the lowest continuous block starting from the highest one
+  stored so far. Note this is not the same as the lowest block. Example:
+
+  If we have stored the blocks [5, 6, 20, 21, 22], this returns `20`, not `5`.
+  We are using this for the block fetcher logic, where we want to go downwards in order.
+  The problem is a block with a lower number could be added by someone visiting a details
+  page for a block, so we need to account for that.
   """
   def get_lowest_block_number(network) do
-    query =
-      from(b in Block,
-        where: b.network == ^network,
-        order_by: [asc: b.number],
-        limit: 1
-      )
-
-    Repo.one(query)
+    Repo.query(
+      "SELECT  number - 1
+    FROM    blocks block
+    WHERE   NOT EXISTS
+            (
+            SELECT  NULL
+            FROM    blocks mi
+            WHERE   mi.number = block.number - 1 AND mi.network = $1
+            ) AND block.network = $1
+    ORDER BY number DESC
+    LIMIT 1",
+      [network]
+    )
   end
 
   @doc """

@@ -18,6 +18,9 @@ defmodule StarknetExplorer.Gateway do
   def trace_transaction(transaction_hash, network),
     do: gateway_request("get_transaction_trace", %{transactionHash: transaction_hash}, network)
 
+  def get_transaction_receipt(transaction_hash, network),
+    do: gateway_request("get_transaction_receipt", %{transactionHash: transaction_hash}, network)
+
   defp get_block_request(query, network), do: gateway_request("get_block", query, network)
 
   defp gateway_request(method, query, network) do
