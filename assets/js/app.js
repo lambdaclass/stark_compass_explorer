@@ -308,13 +308,131 @@ Hooks.Dropdown = {
 };
 
 Hooks.SearchHook = {
+  mounted() {
+    const form = document.querySelector(".normal-form");
+    const input = form.querySelector("input");
+    const searchDropdown = document.querySelector("#dropdownInformation");
+
+    if (input.value === "") {
+      searchDropdown.classList.add("hidden");
+    }
+  },
   updated() {
     const form = document.querySelector(".normal-form");
     const searchDropdown = document.querySelector("#dropdownInformation");
-    toggleFocus(form, searchDropdown);
-    searchDropdown.classList.remove("hidden");
+    const input = form.querySelector("input");
+    const hashLink = document.querySelector("#hash-redirect-link");
+    toggleFocus(input, form, searchDropdown);
+    if (hashLink) {
+      hashLink.addEventListener("click", () => {
+        focused = false;
+        toggleFocus(input, form, searchDropdown);
+      })
+    }
   }
 };
+
+function KeyPress(e) {
+  const evntObj = e;
+  const form = document.querySelector(".normal-form");
+  const input = form.querySelector("input");
+  const searchDropdown = document.querySelector("#dropdownInformation");
+
+  if ((evntObj.ctrlKey || evntObj.metaKey) && evntObj.keyCode === K_KEY_CODE) {
+    evntObj.preventDefault();
+    focused = true;
+    toggleFocus(input, form, searchDropdown);
+  }
+  if (evntObj.keyCode === ESC_KEY_CODE) { 
+    evntObj.preventDefault();
+    focused = false;
+    toggleFocus(input, form, searchDropdown);
+    // searchDropdown.classList.add("hidden")
+  }
+}
+
+function toggleFocus(input, form, searchDropdown) {
+  if (focused) { 
+    input.focus();
+    form.classList.remove("un-focus");
+    form.classList.add("focus");
+    // searchDropdown.classList.add("focus");
+    // searchDropdown.classList.remove("un-focus");
+    if (input.value !== "") {
+      searchDropdown.classList.remove("hidden")
+    }
+    toggleBlur();
+  } else {
+    input.blur();
+    form.classList.remove("focus");
+    form.classList.add("un-focus");
+    // searchDropdown.classList.remove("focus");
+    // searchDropdown.classList.add("un-focus");
+    searchDropdown.classList.add("hidden");
+    // input.value = "";
+    toggleBlur();
+  }
+}
+
+function toggleBlur() {
+  const logo = document.querySelector("#logo");
+  const footer = document.querySelector("footer");
+  const main = document.querySelector("#main");
+  const options = document.querySelector("#menu-options").children;
+
+  if (focused) {
+    footer.classList.add("blur-sm");
+    main.classList.add("blur-sm");
+    main.classList.add("pointer-events-none");
+    main.classList.remove("pointer-events-auto");
+    logo.classList.add("blur-sm");
+    logo.classList.add("pointer-events-none");
+
+    for (let i = 0; i < options.length; i++) { 
+      if (options[i].id !== "nav-search-bar") {
+        options[i].classList.add("blur-sm");
+        options[i].classList.add("pointer-events-none");
+      }
+    }
+  } else {
+    main.classList.remove("blur-sm");
+    logo.classList.remove("blur-sm");
+    logo.classList.remove("pointer-events-none");
+    footer.classList.remove("blur-sm");
+    main.classList.add("pointer-events-auto");
+    main.classList.remove("pointer-events-none");
+
+    for (let i = 0; i < options.length; i++) { 
+      if (options[i].id !== "nav-search-bar") {
+        options[i].classList.remove("blur-sm");
+        options[i].classList.remove("pointer-events-none");
+      }
+    }
+
+  }
+}
+
+function activateFocus() {
+  const form = document.querySelector(".normal-form");
+  const input = form.querySelector("input");
+  const searchDropdown = document.querySelector("#dropdownInformation");
+
+  input.addEventListener("focus", (event) => {
+    focused = true;
+    toggleFocus(input, form,searchDropdown);
+    toggleBlur();
+  })
+
+  document.addEventListener("click", (event) => {
+    const outsideDropdown = !searchDropdown.contains(event.target);
+    const outsideInput = !input.contains(event.target);
+    if (outsideDropdown && outsideInput) {
+      focused = false;
+      toggleFocus(input, form, searchDropdown);
+      toggleBlur();
+    }
+  })
+}
 
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
@@ -335,109 +453,7 @@ window.addEventListener("phx:page-loading-stop", () => {
   topbar.hide();
 });
 
-function KeyPress(e) {
-  const evntObj = e;
-  const form = document.querySelector(".normal-form");
-  const input = form.querySelector("input");
-  const searchDropdown = document.querySelector("#dropdownInformation");
-  if ((evntObj.ctrlKey || evntObj.metaKey) && evntObj.keyCode === K_KEY_CODE) {
-    evntObj.preventDefault();
-    focused = true;
-    toggleFocus(form, searchDropdown);
-    input.focus();
-  }
-  if (evntObj.keyCode === ESC_KEY_CODE) { 
-    evntObj.preventDefault();
-    focused = false;
-    toggleFocus(form, searchDropdown);
-    input.blur();
-  }
-}
 
-function toggleFocus(form, searchDropdown) {
-  if (focused) { 
-    form.classList.remove("un-focus");
-    form.classList.add("focus");
-    searchDropdown.classList.add("focus");
-    searchDropdown.classList.remove("un-focus");
-    toggleBlur();
-  } else {
-    form.classList.remove("focus");
-    form.classList.add("un-focus");
-    searchDropdown.classList.remove("focus");
-    searchDropdown.classList.add("un-focus");
-    toggleBlur();
-  }
-}
-
-function toggleBlur() {
-  const logo = document.querySelector("#logo");
-  const footer = document.querySelector("footer");
-  const main = document.querySelector("#main");
-  const options = document.querySelector("#menu-options").children;
-
-  if (focused) {
-    footer.classList.add("blur-sm");
-    main.classList.add("blur-sm");
-    main.classList.add("pointer-events-none");
-    logo.classList.add("blur-sm");
-    for (let i = 0; i < options.length; i++) { 
-      if (options[i].id !== "nav-search-bar") {
-        options[i].classList.add("blur-sm");
-      }
-    }
-  } else {
-    main.classList.remove("blur-sm");
-    logo.classList.remove("blur-sm");
-    footer.classList.remove("blur-sm");
-    main.classList.add("pointer-events-auto");
-    for (let i = 0; i < options.length; i++) { 
-      if (options[i].id !== "nav-search-bar") {
-        options[i].classList.remove("blur-sm");
-      }
-    }
-
-  }
-}
-
-
-function activateFocus() {
-  const form = document.querySelector(".normal-form");
-  const input = form.querySelector("input");
-  const searchDropdown = document.querySelector("#dropdownInformation");
-
-  input.addEventListener("focus", () => {
-    focused = true;
-    toggleFocus(form,searchDropdown);
-    toggleBlur();
-  })
-
-  document.addEventListener("click", (event) => {
-    const outsideDropdown = !searchDropdown.contains(event.target);
-    const outsideInput = !input.contains(event.target);
-    if (outsideDropdown && outsideInput) {
-      focused = false;
-      toggleFocus(form, searchDropdown);
-      toggleBlur();
-      searchDropdown.classList.add("hidden")
-      event.stopPropagation();
-      input.value = "";
-    }
-  })
-
-  // window.onclick = function (event) {
-  //   if (event.target.contains(searchDropdown || input) && event.target !== (searchDropdown || input)) {
-  //     focused = false;
-  //     toggleFocus(form, searchDropdown);
-  //     toggleBlur();
-  //     searchDropdown.classList.add("hidden")
-  //     event.stopPropagation();
-  //   } else {
-  //     console.log('You clicked inside the box!'); 
-  //   }
-  // }
-
-}
 
 activateFocus();
 document.onkeydown = KeyPress;

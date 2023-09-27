@@ -120,6 +120,10 @@ input {
   @apply transition ease-in-out delay-150 -translate-y-0 scale-100 duration-300;
 }
 
+#dropdownInformation {
+  @apply transition ease-in-out delay-150 lg:translate-y-28  lg:translate-x-36  lg:scale-125 scale-110 duration-300;
+}
+
 /* Detail pages */
 .block-label {
   @apply col-span-full md:col-span-1 text-gray-500 md:text-white;

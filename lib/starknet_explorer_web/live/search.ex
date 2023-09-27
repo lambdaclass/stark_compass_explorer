@@ -6,7 +6,7 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def render(assigns) do
     ~H"""
-    <div class="w-full">
+    <div class="xl:w-full">
       <form class="normal-form" phx-change="update-input" phx-submit="search">
         <.input
           phx-change="update-input"
@@ -22,9 +22,13 @@ defmodule StarknetExplorerWeb.SearchLive do
           <img src={~p"/images/search.svg"} />
         </button>
       </form>
-      <div id="dropdownInformation" class="absolute hidden mt-6 z-10 bg-container rounded-lg shadow w-full lg:max-w-md mx-auto dark:bg-container dark:divide-gray-600">
+      <div id="dropdownInformation" class="absolute hidden mt-6 z-10 bg-container rounded-lg shadow w-full xl:max-w-md lg:max-w-sm max-w-xs mx-auto dark:bg-container dark:divide-gray-600">
         <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
-          Blocks
+          <%= if assigns[:block] do %>
+            Blocks
+          <% else %>
+            <div>Not found!</div>
+          <% end %>
           <div>
             <ul
               class="py-2 text-sm text-gray-700 dark:text-gray-200"
@@ -36,12 +40,16 @@ defmodule StarknetExplorerWeb.SearchLive do
                     <img class="inline-block" src={~p"/images/box.svg"} />
                     <div class="py-1 inline-block">
                       <%= if assigns[:block] do %>
-                        <%= get_number(@block) %> - <%= live_redirect(
+                        <%= get_number(@block) %> -
+                        <%= live_redirect(
                           Utils.shorten_block_hash(get_hash(@block)),
                           to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
                           class: "text-hover-blue",
+                          id: "hash-redirect-link",
                           title: get_hash(@block)
                         ) %>
+                      <% else %>
+                          <div>Not found!</div>
                       <% end %>
                     </div>
                   </div>
