@@ -9,6 +9,7 @@ defmodule StarknetExplorer.Repo.Migrations.ReplaceBlockPk do
     alter table(:blocks) do
       modify :number, :integer, primary_key: false
     end
+
     # Add a new composite primary key using a tuple with two columns
     execute("ALTER TABLE blocks ADD PRIMARY KEY (number, network)")
   end

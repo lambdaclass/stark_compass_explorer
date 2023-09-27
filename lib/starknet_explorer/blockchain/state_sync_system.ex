@@ -29,8 +29,8 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     }
 
     Process.send_after(self(), :listener, @fetch_timer)
-    # Process.send_after(self(), :fetcher, @fetch_timer)
-    # Process.send_after(self(), :updater, @fetch_timer)
+    Process.send_after(self(), :fetcher, @fetch_timer)
+    Process.send_after(self(), :updater, @fetch_timer)
     Logger.info("State Sync System enabled for network #{network}.")
     {:ok, state}
   end
