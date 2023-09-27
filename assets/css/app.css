@@ -74,7 +74,7 @@ a,
   @apply md:grid grid-cols-3 items-center gap-1 md:gap-5;
 }
 .grid-4 {
-  @apply grid grid-cols-4 items-center gap-0 md:gap-5;
+  @apply grid grid-cols-1 md:grid-cols-4 items-center gap-0 md:gap-5;
 }
 .grid-5 {
   @apply md:grid grid-cols-5 items-center gap-1 md:gap-5;
@@ -137,7 +137,7 @@ input {
 
 /* Detail pages */
 .block-label {
-  @apply col-span-full md:col-span-1 text-gray-500 self-start;
+  @apply flex !flex-row !gap-1.5 md:col-span-1 text-gray-500 self-start !items-center w-full;
 }
 .custom-list-item > .block-label + * {
   @apply col-span-full md:col-span-3;
@@ -233,4 +233,25 @@ main .option {
 
 .hash {
   @apply font-mono flex items-center break-all;
+}
+
+.tooltip {
+  @apply cursor-help;
+}
+
+.tippy-box[data-theme~="starknet-explorer"] {
+  @apply bg-brand text-white;
+}
+
+.tippy-box[data-theme~="starknet-explorer"][data-placement^="top"] > .tippy-arrow::before {
+  @apply border-t-brand;
+}
+.tippy-box[data-theme~="starknet-explorer"][data-placement^="bottom"] > .tippy-arrow::before {
+  @apply border-b-brand;
+}
+.tippy-box[data-theme~="starknet-explorer"][data-placement^="left"] > .tippy-arrow::before {
+  @apply border-l-brand;
+}
+.tippy-box[data-theme~="starknet-explorer"][data-placement^="right"] > .tippy-arrow::before {
+  @apply border-r-brand;
 }

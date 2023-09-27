@@ -1,0 +1,167 @@
+<div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
+  <h2>Message</h2>
+  <div class="font-normal text-gray-400 mt-2 lg:mt-0">
+    <%= @message.timestamp
+    |> DateTime.from_unix()
+    |> then(fn {:ok, time} -> time end)
+    |> Calendar.strftime("%c") %> UTC
+  </div>
+</div>
+<div class="custom-list">
+  <div class="grid-4 custom-list-item">
+    <div class="block-label !mt-0">
+      <CoreComponents.tooltip id="message-tooltip" text="The identifier for the message." />
+      Message Hash
+    </div>
+    <div class="block-data">
+      <div class="hash flex">
+        <%= @message.message_hash %>
+        <CoreComponents.copy_button text={@message.message_hash} />
+      </div>
+    </div>
+  </div>
+  <div class="grid-4 custom-list-item">
+    <div class="block-label !mt-0">
+      <CoreComponents.tooltip
+        id="type-tooltip"
+        text="The type of message sent between L1 and L2."
+      /> Type
+    </div>
+    <div class={"col-span-3 type #{@message.type}"}>
+      <%= Message.friendly_message_type(@message.type) %>
+    </div>
+  </div>
+  <div class="grid-4 custom-list-item">
+    <div class="block-label !mt-0">
+      <CoreComponents.tooltip
+        id="direction-tooltip"
+        text="The direction of message between L1 and L2."
+      /> Message Direction
+    </div>
+    <div class="col-span-3">
+      <%= if Message.is_l2_to_l1(@message.type) do %>
+        <div>
+          <span class="info-label green-label">L2</span>
+          → <span class="info-label blue-label">L1</span>
+        </div>
+      <% else %>
+        <div>
+          <span class="info-label blue-label">L1</span>
+          → <span class="info-label green-label">L2</span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="grid-4 custom-list-item">
+    <div class="block-label !mt-0">
+      <CoreComponents.tooltip
+        id="transaction-tooltip"
+        text="The hash that identifies the transaction."
+      /> Transaction Hash
+    </div>
+    <div class="block-data">
+      <div class="hash flex">
+        <a
+          href={Utils.network_path(@network, "transactions/#{@message.transaction_hash}")}
+          class="text-se-link"
+        >
+          <%= @message.transaction_hash %>
+        </a>
+        <CoreComponents.copy_button text={@message.transaction_hash} />
+      </div>
+    </div>
+  </div>
+  <div class="grid-4 custom-list-item">
+    <div class="block-label !mt-0">
+      <CoreComponents.tooltip
+        id="timestamp-tooltip"
+        text="The date and time when the message log was validated."
+      /> Timestamp
+    </div>
+    <div><%= Utils.get_block_age_from_timestamp(@message.timestamp) %></div>
+  </div>
+  <%= if !Message.is_l2_to_l1(@message.type) do %>
+    <div class="custom-list-item grid-4 w-full">
+      <div class="block-label !mt-0">L2 Selector</div>
+      <div class="block-data">
+        <div class="hash flex">
+          <%= @message.selector %>
+          <CoreComponents.copy_button text={@message.selector} />
+        </div>
+      </div>
+    </div>
+    <%= if @message.nonce != nil do %>
+      <div class="grid-4 custom-list-item">
+        <div class="block-label !mt-0">Nonce</div>
+        <div class="block-data">
+          <div class="info-label pink-label">
+            <%= @message.nonce %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+  <div class="grid-4 custom-list-item">
+    <div class="block-label !mt-0">Message Details</div>
+    <div class="inner-block custom-list">
+      <div class="custom-list-item">
+        <div class="block-label">
+          <CoreComponents.tooltip
+            id="contract-from-tooltip"
+            text="The address that identifies the smart contract on the blockchain."
+          />
+          <%= if Message.is_l2_to_l1(@message.type) do %>
+            From L2 Contract Address
+          <% else %>
+            From L1 Contract Address
+          <% end %>
+        </div>
+        <div class="block-data">
+          <div class="hash flex">
+            <%= @message.from_address %>
+            <CoreComponents.copy_button text={@message.from_address} />
+          </div>
+        </div>
+      </div>
+      <div class="custom-list-item">
+        <div class="block-label">
+          <CoreComponents.tooltip
+            id="contract-to-tooltip"
+            text="The address that identifies the smart contract on the blockchain."
+          />
+          <%= if Message.is_l2_to_l1(@message.type) do %>
+            To L1 Contract Address
+          <% else %>
+            To L2 Contract Address
+          <% end %>
+        </div>
+        <div class="block-data">
+          <div class="hash flex">
+            <%= @message.to_address %>
+            <CoreComponents.copy_button text={@message.to_address} />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="custom-list-item grid-4">
+    <div class="block-label !mt-0">Payload</div>
+    <div class="inner-block custom-list">
+      <div class="w-full index-value-grid custom-list-item">
+        <div class="list-h">Index</div>
+        <div class="list-h">Value</div>
+        <%= for {payload_item, id} <- Enum.with_index(@message.payload) do %>
+          <div class="self-start">
+            <%= id %>
+          </div>
+          <div>
+            <div class="hash flex">
+              <%= payload_item %>
+              <CoreComponents.copy_button text={payload_item} />
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
