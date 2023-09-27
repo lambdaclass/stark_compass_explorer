@@ -2,6 +2,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   alias StarknetExplorerWeb.Component.TransactionsPerSecond, as: TPSComponent
   alias StarknetExplorerWeb.CoreComponents
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.IndexCache
   use Phoenix.Component
   use StarknetExplorerWeb, :live_view
 
@@ -257,7 +258,12 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   end
 
   def load_blocks(socket) do
-    blocks = StarknetExplorer.Data.many_blocks(socket.assigns.network)
+    blocks =
+      if length(IndexCache.latest_blocks(socket.assigns.network)) < 15 do
+        StarknetExplorer.Data.many_blocks(socket.assigns.network)
+      else
+        IndexCache.latest_blocks(socket.assigns.network)
+      end
 
     case List.first(blocks) do
       nil ->
@@ -290,19 +296,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           end)
           |> Map.new()
 
-        max_block_height =
-          case StarknetExplorer.Blockchain.ListenerWorker.get_height(
-                 StarknetExplorer.Utils.listener_atom(socket.assigns.network)
-               ) do
-            {:ok, max_block_height} ->
-              max_block_height
-
-            {:err, _} ->
-              {:ok, max_block_height} =
-                StarknetExplorer.Rpc.get_block_height(socket.assigns.network)
-
-              max_block_height
-          end
+        {:ok, max_block_height} = StarknetExplorer.BlockUtils.block_height(socket.assigns.network)
 
         assign(socket,
           blocks: blocks,

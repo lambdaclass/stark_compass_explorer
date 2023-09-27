@@ -53,9 +53,60 @@ defmodule StarknetExplorer.Block do
   def changeset(block = %__MODULE__{}, attrs) do
     block
     |> cast(attrs, @cast_fields)
+  end
+
+  def changeset_with_validations(block = %__MODULE__{}, attrs) do
+    block
+    |> cast(attrs, @cast_fields)
     |> validate_required(@required_fields)
     |> unique_constraint(:number)
     |> unique_constraint(:hash)
+  end
+
+  @doc """
+  Given a block from the RPC response, our block from SQL, and transactions receipts
+  update them into the DB.
+  """
+  def update_from_rpc_response(
+        block_from_sql,
+        _block_from_rpc = %{
+          "status" => status,
+          "gas_fee_in_wei" => gas_fee_in_wei,
+          "execution_resources" => execution_resources
+        },
+        receipts
+      ) do
+    tx_receipts =
+      Enum.map(receipts, fn {tx_hash, rpc_receipt} ->
+        sql_receipt =
+          Enum.find(block_from_sql.transactions, fn tx ->
+            tx.receipt.transaction_hash == tx_hash
+          end).receipt
+
+        {sql_receipt, rpc_receipt}
+      end)
+
+    StarknetExplorer.Repo.transaction(fn ->
+      block_changeset =
+        Ecto.Changeset.change(block_from_sql,
+          status: status,
+          gas_fee_in_wei: gas_fee_in_wei,
+          execution_resources: execution_resources
+        )
+
+      Repo.update!(block_changeset)
+
+      Enum.each(tx_receipts, fn {tx_receipt, rpc_tx_receipt} ->
+        tx_receipt_changeset =
+          Ecto.Changeset.change(tx_receipt,
+            actual_fee: rpc_tx_receipt["actual_fee"],
+            finality_status: rpc_tx_receipt["finality_status"],
+            execution_status: rpc_tx_receipt["execution_status"]
+          )
+
+        Repo.update!(tx_receipt_changeset)
+      end)
+    end)
   end
 
   @doc """
@@ -88,7 +139,7 @@ defmodule StarknetExplorer.Block do
 
     transaction_result =
       StarknetExplorer.Repo.transaction(fn ->
-        block_changeset = Block.changeset(%Block{}, block)
+        block_changeset = Block.changeset_with_validations(%Block{}, block)
 
         {:ok, block} = Repo.insert(block_changeset)
 
@@ -135,6 +186,45 @@ defmodule StarknetExplorer.Block do
       rpc_block |> rename_rpc_fields |> Map.put("network", network) |> Utils.atomize_keys()
 
     struct(__MODULE__, rpc_block)
+  end
+
+  @doc """
+  This function will return the lowest continuous block starting from the highest one
+  stored so far. Note this is not the same as the lowest block. Example:
+
+  If we have stored the blocks [5, 6, 20, 21, 22], this returns `20`, not `5`.
+  We are using this for the block fetcher logic, where we want to go downwards in order.
+  The problem is a block with a lower number could be added by someone visiting a details
+  page for a block, so we need to account for that.
+  """
+  def get_lowest_block_number(network) do
+    Repo.query(
+      "SELECT  number - 1
+    FROM    blocks block
+    WHERE   NOT EXISTS
+            (
+            SELECT  NULL
+            FROM    blocks mi
+            WHERE   mi.number = block.number - 1 AND mi.network = $1
+            ) AND block.network = $1
+    ORDER BY number DESC
+    LIMIT 1",
+      [network]
+    )
+  end
+
+  @doc """
+  Returns the highest block number stored in the DB.
+  """
+  def block_height(network) do
+    query =
+      from(b in Block,
+        where: b.network == ^network,
+        order_by: [desc: b.number],
+        limit: 1
+      )
+
+    Repo.one(query)
   end
 
   @doc """
@@ -217,10 +307,33 @@ defmodule StarknetExplorer.Block do
     |> Repo.preload(:transactions)
   end
 
+  def get_by_number_with_receipts_preload(num, network) do
+    query =
+      from b in Block,
+        where: b.number == ^num and b.network == ^network,
+        preload: [transactions: :receipt]
+
+    Repo.one(query)
+    |> Repo.preload(:transactions)
+  end
+
   def get_by_height(height, network) when is_integer(height) do
     query =
       from b in Block,
         where: b.number == ^height and b.network == ^network
+
+    Repo.one(query)
+  end
+
+  def get_lowest_not_completed_block(network) do
+    query =
+      from b in Block,
+        where:
+          b.status != "ACCEPTED_ON_L1" or is_nil(b.gas_fee_in_wei) or b.gas_fee_in_wei == "" or
+            is_nil(b.execution_resources),
+        where: b.network == ^network,
+        limit: 1,
+        order_by: [asc: b.number]
 
     Repo.one(query)
   end
