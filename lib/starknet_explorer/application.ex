@@ -15,8 +15,11 @@ defmodule StarknetExplorer.Application do
       if System.get_env("ENABLE_MAINNET_SYNC") == "true" do
         # Start the State Sync System server for mainnet.
         [
-          {StarknetExplorer.Blockchain.StateSyncSystem,
-           [network: :mainnet, name: :mainnet_state_sync]}
+          Supervisor.child_spec(
+            {StarknetExplorer.Blockchain.StateSyncSystem,
+             [network: :mainnet, name: :mainnet_state_sync]},
+            id: :mainnet_state_sync
+          )
         ]
       else
         []
@@ -26,8 +29,11 @@ defmodule StarknetExplorer.Application do
       if System.get_env("ENABLE_TESTNET_SYNC") == "true" do
         # Start the State Sync System server for testnet.
         [
-          {StarknetExplorer.Blockchain.StateSyncSystem,
-           [network: :testnet, name: :testnet_state_sync]}
+          Supervisor.child_spec(
+            {StarknetExplorer.Blockchain.StateSyncSystem,
+             [network: :testnet, name: :testnet_state_sync]},
+            id: :testnet_state_sync
+          )
         ]
       else
         []
@@ -37,8 +43,11 @@ defmodule StarknetExplorer.Application do
       if System.get_env("ENABLE_TESTNET2_SYNC") == "true" do
         # Start the State Sync System server for testnet2.
         [
-          {StarknetExplorer.Blockchain.StateSyncSystem,
-           [network: :testnet2, name: :testnet2_state_sync]}
+          Supervisor.child_spec(
+            {StarknetExplorer.Blockchain.StateSyncSystem,
+             [network: :testnet2, name: :testnet2_state_sync]},
+            id: :testnet2_state_sync
+          )
         ]
       else
         []

@@ -284,7 +284,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           end)
           |> Map.new()
 
-        max_block_height = StarknetExplorer.BlockUtils.block_height(socket.assigns.network)
+        {:ok, max_block_height} = StarknetExplorer.BlockUtils.block_height(socket.assigns.network)
 
         assign(socket,
           blocks: blocks,
