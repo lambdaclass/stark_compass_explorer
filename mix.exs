@@ -31,13 +31,6 @@ defmodule StarknetExplorer.MixProject do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    db_adapter =
-      if System.get_env("DB_TYPE") == "postgresql" do
-        [{:postgrex, ">= 0.0.0"}]
-      else
-        [{:ecto_sqlite3, ">= 0.0.0"}]
-      end
-
     [
       {:phoenix, "~> 1.7.6"},
       {:phoenix_ecto, "~> 4.4"},
@@ -69,8 +62,10 @@ defmodule StarknetExplorer.MixProject do
       {:sentry, "~> 8.0"},
       {:etop, "~> 0.7"},
       {:rexbug, ">= 1.0.0"},
-      {:eep, github: "virtan/eep"}
-    ] ++ db_adapter
+      {:eep, github: "virtan/eep"},
+      {:postgrex, ">= 0.0.0"},
+      {:ecto_sqlite3, ">= 0.0.0"}
+    ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

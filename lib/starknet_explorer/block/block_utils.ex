@@ -145,6 +145,9 @@ defmodule StarknetExplorer.BlockUtils do
       {:ok, %Postgrex.Result{rows: [[block_number]]}} ->
         {:ok, block_number}
 
+        {:ok, %Exqlite.Result{rows: [[block_number]]}} ->
+          {:ok, block_number}
+
       _else ->
         Rpc.get_block_height_no_cache(network)
     end
