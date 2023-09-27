@@ -1,9 +1,9 @@
 defmodule StarknetExplorer.Counts do
   use Ecto.Schema
   import Ecto.Query
-  alias StarknetExplorer.Events
-  alias StarknetExplorer.Message
-  alias StarknetExplorer.Transaction
+  # alias StarknetExplorer.Events
+  # alias StarknetExplorer.Message
+  # alias StarknetExplorer.Transaction
   alias StarknetExplorer.{Counts, BlockUtils}
   alias StarknetExplorer.Repo
 
