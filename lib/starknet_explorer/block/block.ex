@@ -212,7 +212,7 @@ defmodule StarknetExplorer.Block do
     query =
       from b in Block,
         order_by: [desc: b.hash],
-        where: like(^("#{hash}"), b.hash) and b.network == ^network,
+        where: like(^"#{hash}", b.hash) and b.network == ^network,
         limit: 25
 
     Repo.all(query)
@@ -232,8 +232,9 @@ defmodule StarknetExplorer.Block do
     query =
       from b in Block,
         order_by: [desc: b.number],
-        where: like(^("#{num}"), b.number) and b.network == ^network,
+        where: like(^"#{num}", b.number) and b.network == ^network,
         limit: 25
+
     Repo.all(query)
     |> Repo.preload(:transactions)
   end

@@ -4,7 +4,6 @@ defmodule StarknetExplorerWeb.SearchLive do
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.Message
 
-
   def render(assigns) do
     ~H"""
     <div class="w-full">
@@ -26,28 +25,31 @@ defmodule StarknetExplorerWeb.SearchLive do
       <div id="dropdownInformation" class="absolute hidden mt-6 z-10 bg-container rounded-lg shadow w-full lg:max-w-md mx-auto dark:bg-container dark:divide-gray-600">
         <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
           Blocks
-        <div>
-        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownInformationButton">
-          <li>
-            <div class="cursor-pointer flex flex-row justify-start items-start block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-              <div class="text-hover-blue">
-              <img class="inline-block" src={~p"/images/box.svg"} />
-              <div class="py-1 inline-block">
-              <%= if assigns[:block] do %>
-                <%= get_number(@block)%> -
-                  <%= live_redirect(Utils.shorten_block_hash(get_hash(@block)),
-                  to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
-                  class: "text-hover-blue",
-                  title:  get_hash(@block)
-                ) %>
-              <% end %>
-              </div>
-              </div>
-            </div>
-          </li>
-        </ul>
+          <div>
+            <ul
+              class="py-2 text-sm text-gray-700 dark:text-gray-200"
+              aria-labelledby="dropdownInformationButton"
+            >
+              <li>
+                <div class="cursor-pointer flex flex-row justify-start items-start block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                  <div class="text-hover-blue">
+                    <img class="inline-block" src={~p"/images/box.svg"} />
+                    <div class="py-1 inline-block">
+                      <%= if assigns[:block] do %>
+                        <%= get_number(@block) %> - <%= live_redirect(
+                          Utils.shorten_block_hash(get_hash(@block)),
+                          to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
+                          class: "text-hover-blue",
+                          title: get_hash(@block)
+                        ) %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
       </div>
     </div>
     """
@@ -60,7 +62,8 @@ defmodule StarknetExplorerWeb.SearchLive do
       socket
       |> assign(new_assigns)
       |> assign_new(:network, fn -> session["network"] end)
-    {:ok, socket}
+
+    {:ok, socket, layout: false}
   end
 
   def handle_event("update-input", %{"search-input" => query}, socket) do
@@ -75,15 +78,19 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def handle_info({:search, query}, socket) do
     query = String.trim(query)
+
     navigate_fun =
       if String.length(query) > 0 do
         case try_search(query, socket.assigns.network) do
           {:tx, _tx} ->
             fn -> assign(socket, tx: query) end
+
           {:block, block} ->
             fn -> assign(socket, block: block) end
+
           {:message, _message} ->
             fn -> assign(socket, message: query) end
+
           :noquery ->
             fn ->
               socket
@@ -94,6 +101,7 @@ defmodule StarknetExplorerWeb.SearchLive do
       else
         fn -> socket end
       end
+
     {:noreply, navigate_fun.()}
   end
 
@@ -116,9 +124,12 @@ defmodule StarknetExplorerWeb.SearchLive do
     case Data.transaction(hash, network) do
       {:ok, _transaction} ->
         {:tx, hash}
+
       {:error, _} ->
         case Data.block_by_partial_hash(hash, network) do
-          {:ok, blocks} -> {:block, List.first(blocks)}
+          {:ok, blocks} ->
+            {:block, List.first(blocks)}
+
           {:error, _} ->
             case Message.get_by_hash(hash, network) do
               {:ok, _message} -> {:message, hash}
@@ -143,5 +154,5 @@ defmodule StarknetExplorerWeb.SearchLive do
   defp get_hash(%StarknetExplorer.Block{hash: hash}), do: "#{hash}"
   defp get_hash(%StarknetExplorer.Transaction{hash: hash}), do: "#{hash}"
   defp get_hash(%StarknetExplorer.Message{message_hash: hash}), do: "#{hash}"
-  defp  get_hash(_), do: ""
+  defp get_hash(_), do: ""
 end
