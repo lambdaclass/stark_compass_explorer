@@ -1,7 +1,7 @@
-# StarknetExplorer
+# StarkCompass
 ![image](./priv/static/images/explorer_preview.png)
 
-- [StarknetExplorer](#starknetexplorer)
+- [StarkCompass](#starkcompass)
   - [Requirements](#requirements)
   - [Local development](#local-development)
     - [Setup](#setup)
