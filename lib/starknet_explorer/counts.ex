@@ -25,6 +25,42 @@ defmodule StarknetExplorer.Counts do
     |> Repo.one()
   end
 
+  def insert_or_update(
+        network,
+        amount_blocks,
+        amount_transactions,
+        amount_events,
+        amount_messages
+      ) do
+    %Counts{blocks: blocks, transactions: transactions, messages: messages, events: events} =
+      count =
+      case Repo.get_by(Counts, network: Atom.to_string(network)) do
+        # Count exists, let's use it
+        %Counts{} = count ->
+          count
+
+        # Count not found, we build one
+        nil ->
+          %Counts{
+            network: Atom.to_string(network),
+            blocks: 0,
+            transactions: 0,
+            messages: 0,
+            events: 0
+          }
+      end
+
+    count
+    |> Ecto.Changeset.change(
+      blocks: blocks + amount_blocks,
+      transactions: transactions + amount_transactions,
+      messages: messages + amount_messages,
+      events: events + amount_events
+    )
+    |> Repo.insert_or_update()
+    |> IO.inspect()
+  end
+
   def insert_or_update(network) do
     {:ok, blocks} = BlockUtils.block_height(network)
     # transactions = Transaction.get_total_count(network)

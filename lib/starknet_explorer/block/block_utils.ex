@@ -5,9 +5,29 @@ defmodule StarknetExplorer.BlockUtils do
   def fetch_store_and_cache(block_height, network) do
     with false <- already_stored?(block_height, network),
          {:ok, block = %{"block_number" => block_number}} <- fetch_block(block_height, network),
-         :ok <- store_block(block, network),
+         {
+           :ok,
+           # The amount of blocks inserted.
+           amount_blocks,
+           # The amount of transactions inserted.
+           amount_transaction,
+           # The amount of events inserted.
+           amount_events,
+           # The amount of messages inserted.
+           amount_messages
+         } <- store_block(block, network),
          :ok <- IndexCache.add_block(block["block_number"], network) do
-      {:ok, block_number}
+      {
+        :ok,
+        # The amount of blocks inserted.
+        amount_blocks,
+        # The amount of transactions inserted.
+        amount_transaction,
+        # The amount of events inserted.
+        amount_events,
+        # The amount of messages inserted.
+        amount_messages
+      }
     else
       true ->
         {:ok, block_height}

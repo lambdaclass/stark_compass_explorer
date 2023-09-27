@@ -112,6 +112,19 @@ defmodule StarknetExplorer.Block do
   @doc """
   Given a block from the RPC response, and transactions receipts
   insert them into the DB.
+  If the insertion was made, return a tuple of the form:
+  {
+    :ok,
+    amount_blocks, # The amount of blocks inserted.
+    amount_transaction, # The amount of transactions inserted.
+    amount_events, # The amount of events inserted.
+    amount_messages, # The amount of messages inserted.
+  }
+  If an error occurs, returns:
+  {
+    :err,
+    err # The error.
+  }
   """
   def insert_from_rpc_response(block = %{"transactions" => txs}, receipts, network)
       when is_map(block) do
@@ -171,9 +184,19 @@ defmodule StarknetExplorer.Block do
         Enum.each(events, fn event -> {:ok, _event} = Events.insert(event) end)
       end)
 
+    # Each receipt has a list of messages.
+    # We want the sum of each len() of those partial messages
+    # And then, the sum of the partial sums.
+    # amount_messages =
+    #   receipts["messages_sent"]
+    #   |> Enum.map(&length/1)
+    #   |> Enum.reduce(0, &(&1 + &2))
+
+    # amount_messages = Enum.reduce(amount_messages, 0, &(&1 + &2))
+
     case transaction_result do
       {:ok, _} ->
-        :ok
+        {:ok, 1, length(txs), length(events), 0}
 
       {:error, err} ->
         Logger.error("Error inserting block: #{inspect(err)}")
