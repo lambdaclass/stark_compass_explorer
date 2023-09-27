@@ -58,7 +58,6 @@ defmodule StarknetExplorer.Counts do
       events: events + amount_events
     )
     |> Repo.insert_or_update()
-    |> IO.inspect()
   end
 
   def insert_or_update(network) do
