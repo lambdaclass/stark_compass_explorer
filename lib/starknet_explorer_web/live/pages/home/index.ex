@@ -296,14 +296,12 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           end)
           |> Map.new()
 
-        {:ok, max_block_height} = StarknetExplorer.BlockUtils.block_height(socket.assigns.network)
-
         assign(socket,
           blocks: blocks,
           transactions: transactions,
           entities_count: entities_count,
           latest_block: latest_block,
-          block_height: StarknetExplorer.Utils.format_number_for_display(max_block_height)
+          block_height: entities_count.block_count
         )
     end
   end

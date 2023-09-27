@@ -97,7 +97,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   defp try_fetch(true, state = %StateSyncSystem{network: network}) do
     next_to_fetch = state.current_block_number + 1
 
-    {:ok, _} = BlockUtils.fetch_and_store(next_to_fetch, network)
+    {:ok, _} = BlockUtils.fetch_store_and_cache(next_to_fetch, network)
 
     Counts.insert_or_update(network)
 
