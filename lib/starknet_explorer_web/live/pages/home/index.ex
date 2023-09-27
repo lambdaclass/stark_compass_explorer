@@ -22,7 +22,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       session: %{"network" => @network}
     ) %>
     <div class="flex flex-col gap-1 justify-center items-center my-16">
-      <h1>Madara Starknet Explorer</h1>
+      <h1>Stark Compass</h1>
+      <div class="uppercase px-3 py-1 rounded-lg violet-label !font-medium mt-2 text-center text-xl lg:text-xl">
+        The only open source explorer of Starknet
+      </div>
     </div>
     <div class="mx-auto max-w-7xl mt-4 mb-5">
       <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
