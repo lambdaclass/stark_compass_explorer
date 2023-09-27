@@ -2,11 +2,25 @@ defmodule StarknetExplorer.BlockUtils do
   alias StarknetExplorer.{Rpc, Block}
   alias StarknetExplorer.IndexCache
 
-  def fetch_and_store(block_height, network) do
+  def fetch_store_and_cache(block_height, network) do
     with false <- already_stored?(block_height, network),
          {:ok, block = %{"block_number" => block_number}} <- fetch_block(block_height, network),
          :ok <- store_block(block, network),
          :ok <- IndexCache.add_block(block["block_number"], network) do
+      {:ok, block_number}
+    else
+      true ->
+        {:ok, block_height}
+
+      error ->
+        {:error, error}
+    end
+  end
+
+  def fetch_and_store(block_height, network) do
+    with false <- already_stored?(block_height, network),
+         {:ok, block = %{"block_number" => block_number}} <- fetch_block(block_height, network),
+         :ok <- store_block(block, network) do
       {:ok, block_number}
     else
       true ->

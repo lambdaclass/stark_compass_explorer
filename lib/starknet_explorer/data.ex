@@ -243,11 +243,13 @@ defmodule StarknetExplorer.Data do
       |> Map.put(:message_count, counts.messages)
       |> Map.put(:events_count, counts.events)
       |> Map.put(:transaction_count, counts.transactions)
+      |> Map.put(:block_count, counts.blocks)
     else
       Map.new()
       |> Map.put(:message_count, 0)
       |> Map.put(:events_count, 0)
       |> Map.put(:transaction_count, 0)
+      |> Map.put(:block_count, 0)
     end
   end
 end
