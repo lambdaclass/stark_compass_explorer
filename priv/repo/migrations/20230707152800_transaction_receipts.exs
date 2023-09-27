@@ -2,10 +2,11 @@ defmodule StarknetExplorer.Repo.Migrations.TransactionReceipts do
   use Ecto.Migration
 
   def change do
-    create table("transaction_receipts") do
+    create table("transaction_receipts", primary_key: false) do
       add :transaction_id,
-          references(:transactions)
+          references(:transactions, column: :hash, type: :string)
 
+      add :transaction_hash, :string, primary_key: true
       add :type, :string
       add :actual_fee, :string
       add :finality_status, :string
