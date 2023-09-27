@@ -124,8 +124,8 @@ defmodule StarknetExplorer.BlockUtils do
   Get block height from DB.
   If any block is present in the DB, use RPC.
   """
-  def block_height(network) do
-    case Block.block_height(network) do
+  def block_height(network) when is_atom(network) do
+    case Block.block_height(Atom.to_string(network)) do
       %Block{} = block ->
         {:ok, block.number}
 
@@ -138,8 +138,8 @@ defmodule StarknetExplorer.BlockUtils do
   Get the lowest block number from DB.
   If any block is present in the DB, use RPC.
   """
-  def get_lowest_block_number(network) do
-    case Block.get_lowest_block_number(network) do
+  def get_lowest_block_number(network) when is_atom(network) do
+    case Block.get_lowest_block_number(Atom.to_string(network)) do
       %Block{} = block ->
         {:ok, block.number}
 
@@ -155,8 +155,8 @@ defmodule StarknetExplorer.BlockUtils do
   - gateway data is missing (execution resources & fee)
   - block status != "ACCEPTED_ON_L1"
   """
-  def get_lowest_not_completed_block(network) do
-    case Block.get_lowest_not_completed_block(network) do
+  def get_lowest_not_completed_block(network) when is_atom(network) do
+    case Block.get_lowest_not_completed_block(Atom.to_string(network)) do
       %Block{} = block ->
         {:ok, block.number}
 

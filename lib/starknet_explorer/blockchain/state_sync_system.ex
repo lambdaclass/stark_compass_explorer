@@ -15,11 +15,11 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   ## Callbacks
   @impl true
   def init([network: network, name: _name] = _args) do
-    {:ok, block_height} = BlockUtils.block_height(Atom.to_string(network))
-    {:ok, lowest_block_number} = BlockUtils.get_lowest_block_number(Atom.to_string(network))
+    {:ok, block_height} = BlockUtils.block_height(network)
+    {:ok, lowest_block_number} = BlockUtils.get_lowest_block_number(network)
 
     {:ok, lowest_not_finished_block_number} =
-      BlockUtils.get_lowest_not_completed_block(Atom.to_string(network))
+      BlockUtils.get_lowest_not_completed_block(network)
 
     state = %StateSyncSystem{
       current_block_number: block_height,
@@ -29,8 +29,8 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     }
 
     Process.send_after(self(), :listener, @fetch_timer)
-    Process.send_after(self(), :fetcher, @fetch_timer)
-    Process.send_after(self(), :updater, @fetch_timer)
+    # Process.send_after(self(), :fetcher, @fetch_timer)
+    # Process.send_after(self(), :updater, @fetch_timer)
     Logger.info("State Sync System enabled for network #{network}.")
     {:ok, state}
   end
