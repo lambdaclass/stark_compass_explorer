@@ -139,6 +139,15 @@ defmodule StarknetExplorer.Transaction do
     end
   end
 
+  def get_by_partial_hash(hash) do
+    query =
+      from tx in Transaction,
+        where: like(^"#{hash}", tx.hash),
+        limit: 25
+
+    Repo.all(query)
+  end
+
   def rename_rpc_fields(rpc_tx = %{"transaction_hash" => th}) do
     rpc_tx
     |> Map.delete("transaction_hash")

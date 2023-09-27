@@ -216,6 +216,13 @@ defmodule StarknetExplorer.Data do
     end
   end
 
+  def transaction_by_partial_hash(tx_hash) do
+    case Transaction.get_by_partial_hash(tx_hash) do
+      nil -> {:error, "No match"}
+      tx -> {:ok, tx}
+    end
+  end
+  
   def get_block_events_paginated(block_hash, pagination, network) do
     {:ok, events} = Rpc.get_block_events_paginated(block_hash, pagination, network)
 
