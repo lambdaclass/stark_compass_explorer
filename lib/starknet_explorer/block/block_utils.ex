@@ -16,7 +16,7 @@ defmodule StarknetExplorer.BlockUtils do
   end
 
   def fetch_and_update(block_height, network) do
-    with block_from_sql <- Block.get_by_num(block_height, network),
+    with block_from_sql <- Block.get_by_number_with_receipts_preload(block_height, network),
          {:ok, block_from_rpc = %{"block_number" => block_number}} <-
            fetch_block(block_height, network),
          {:ok, _update} <- update_block_and_transactions(block_from_sql, block_from_rpc, network) do
@@ -60,7 +60,7 @@ defmodule StarknetExplorer.BlockUtils do
             |> Map.put("execution_resources", 0)
         end
 
-      Block.update_from_rpc_response(block_from_sql, block_from_rpc, receipts, network)
+      Block.update_from_rpc_response(block_from_sql, block_from_rpc, receipts)
     end
   end
 
@@ -126,12 +126,11 @@ defmodule StarknetExplorer.BlockUtils do
   """
   def block_height(network) do
     case Block.block_height(network) do
-      nil ->
-        {:ok, block_height} = Rpc.get_block_height_no_cache(network)
-        block_height
+      %Block{} = block ->
+        {:ok, block.number}
 
-      block_height ->
-        block_height.number
+      _else ->
+        Rpc.get_block_height_no_cache(network)
     end
   end
 
@@ -141,12 +140,11 @@ defmodule StarknetExplorer.BlockUtils do
   """
   def get_lowest_block_number(network) do
     case Block.get_lowest_block_number(network) do
-      nil ->
-        {:ok, block_number} = Rpc.get_block_height_no_cache(network)
-        block_number
+      %Block{} = block ->
+        {:ok, block.number}
 
-      block_number ->
-        block_number.number
+      _else ->
+        Rpc.get_block_height_no_cache(network)
     end
   end
 
@@ -159,12 +157,11 @@ defmodule StarknetExplorer.BlockUtils do
   """
   def get_lowest_not_completed_block(network) do
     case Block.get_lowest_not_completed_block(network) do
-      nil ->
-        {:ok, block_number} = Rpc.get_block_height_no_cache(network)
-        block_number
+      %Block{} = block ->
+        {:ok, block.number}
 
-      block_number ->
-        block_number.number
+      _else ->
+        Rpc.get_block_height_no_cache(network)
     end
   end
 

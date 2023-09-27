@@ -4,8 +4,6 @@ defmodule StarknetExplorer.Data do
   alias StarknetExplorer.{
     Rpc,
     Transaction,
-    Message,
-    Events,
     Block,
     TransactionReceipt,
     Calldata,

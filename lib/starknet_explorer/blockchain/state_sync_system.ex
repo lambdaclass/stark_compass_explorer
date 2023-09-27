@@ -15,10 +15,10 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   ## Callbacks
   @impl true
   def init([network: network, name: _name] = _args) do
-    block_height = BlockUtils.block_height(Atom.to_string(network))
-    lowest_block_number = BlockUtils.get_lowest_block_number(Atom.to_string(network))
+    {:ok, block_height} = BlockUtils.block_height(Atom.to_string(network))
+    {:ok, lowest_block_number} = BlockUtils.get_lowest_block_number(Atom.to_string(network))
 
-    lowest_not_finished_block_number =
+    {:ok, lowest_not_finished_block_number} =
       BlockUtils.get_lowest_not_completed_block(Atom.to_string(network))
 
     state = %StateSyncSystem{
@@ -40,7 +40,8 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
         :updater,
         state = %StateSyncSystem{network: network, updater_block_number: nil}
       ) do
-    state = %{state | updater_block_number: Block.get_lowest_not_completed_block(network).number}
+    {:ok, lowest_not_completed_block} = Block.get_lowest_not_completed_block(network)
+    state = %{state | updater_block_number: lowest_not_completed_block}
 
     Process.send_after(self(), :updater, @fetch_timer)
     {:noreply, state}
@@ -52,10 +53,11 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
         state = %StateSyncSystem{network: network, updater_block_number: updater_block_number}
       ) do
     {:ok, _} = BlockUtils.fetch_and_update(updater_block_number, network)
+    {:ok, lowest_not_completed_block} = BlockUtils.get_lowest_not_completed_block(network)
 
     state = %{
       state
-      | updater_block_number: BlockUtils.get_lowest_not_completed_block(network)
+      | updater_block_number: lowest_not_completed_block
     }
 
     Process.send_after(self(), :updater, @fetch_timer)
@@ -83,7 +85,6 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
         state = %StateSyncSystem{network: network, next_to_fetch: next_to_fetch}
       ) do
     {:ok, _} = BlockUtils.fetch_and_store(next_to_fetch, network)
-
     state = %{state | next_to_fetch: next_to_fetch - 1}
 
     maybe_fetch_another(state)

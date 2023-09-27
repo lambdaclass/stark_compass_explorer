@@ -70,25 +70,20 @@ defmodule StarknetExplorer.Block do
   def update_from_rpc_response(
         block_from_sql,
         _block_from_rpc = %{
-          "transactions" => txs,
           "status" => status,
           "gas_fee_in_wei" => gas_fee_in_wei,
           "execution_resources" => execution_resources
         },
-        receipts,
-        network
+        receipts
       ) do
     tx_receipts =
-      Enum.map(txs, fn transaction ->
-        tx_receipt =
-          StarknetExplorer.TransactionReceipt.get_by_transaction_hash(
-            transaction["transaction_hash"]
-          )
+      Enum.map(receipts, fn {tx_hash, rpc_receipt} ->
+        sql_receipt =
+          Enum.find(block_from_sql.transactions, fn tx ->
+            tx.receipt.transaction_hash == tx_hash
+          end).receipt
 
-        {:ok, rpc_tx_receipt} =
-          StarknetExplorer.Rpc.get_transaction_receipt(transaction["transaction_hash"], network)
-
-        {tx_receipt, rpc_tx_receipt}
+        {sql_receipt, rpc_receipt}
       end)
 
     StarknetExplorer.Repo.transaction(fn ->
@@ -296,6 +291,16 @@ defmodule StarknetExplorer.Block do
     query =
       from b in Block,
         where: b.number == ^num and b.network == ^network
+
+    Repo.one(query)
+    |> Repo.preload(:transactions)
+  end
+
+  def get_by_number_with_receipts_preload(num, network) do
+    query =
+      from b in Block,
+        where: b.number == ^num and b.network == ^network,
+        preload: [transactions: :receipt]
 
     Repo.one(query)
     |> Repo.preload(:transactions)
