@@ -122,6 +122,9 @@ if config_env() == :prod do
       "https://www.madaraexplorer.com",
       "https://madaraexplorer.lambdaclass.com",
       "https://testing.madaraexplorer.com",
+      "https://starkcompass.com",
+      "https://www.starkcompass.com",
+      "https://testing.starkcompass.com",
       "https://#{host}:#{port}",
       "http://#{host}:#{port}"
     ],
