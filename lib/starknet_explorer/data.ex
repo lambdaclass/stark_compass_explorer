@@ -235,11 +235,12 @@ defmodule StarknetExplorer.Data do
     []
   end
 
-  def get_entity_count(_network) do
+  def get_entity_count(network) do
+    counts = StarknetExplorer.Counts.get(network)
+
     Map.new()
-    # |> Map.put(:message_count, Message.get_total_count(network))
-    |> Map.put(:message_count, 21021)
-    |> Map.put(:events_count, 6_030_904)
-    |> Map.put(:transaction_count, 1_209_670)
+    |> Map.put(:message_count, counts.messages)
+    |> Map.put(:events_count, counts.events)
+    |> Map.put(:transaction_count, counts.transactions)
   end
 end

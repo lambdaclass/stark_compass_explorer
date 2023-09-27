@@ -1,5 +1,6 @@
 defmodule StarknetExplorer.Counts do
   use Ecto.Schema
+  import Ecto.Query
   alias StarknetExplorer.Events
   alias StarknetExplorer.Message
   alias StarknetExplorer.Transaction
@@ -12,6 +13,16 @@ defmodule StarknetExplorer.Counts do
     field :transactions, :integer
     field :messages, :integer
     field :events, :integer
+  end
+
+  def get(network) when is_atom(network) do
+    from(count in __MODULE__, where: count.network == ^Atom.to_string(network))
+    |> Repo.one()
+  end
+
+  def get(network) do
+    from(count in __MODULE__, where: count.network == ^network)
+    |> Repo.one()
   end
 
   def insert_or_update(network) do
