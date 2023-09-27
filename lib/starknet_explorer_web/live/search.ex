@@ -125,8 +125,8 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def try_by_hash(hash, network) do
     case Data.transaction_by_partial_hash(hash) do
-      {:ok, transactions} ->
-        {:tx, List.first(transactions)}
+      {:ok, transaction} ->
+        {:tx, transaction}
 
       {:error, _} ->
         case Data.block_by_partial_hash(hash, network) do
@@ -134,7 +134,7 @@ defmodule StarknetExplorerWeb.SearchLive do
             {:block, List.first(blocks)}
 
           {:error, _} ->
-            case Message.get_by_hash(hash, network) do
+            case Message.get_by_partial_hash(hash, network) do
               {:ok, _message} -> {:message, hash}
               {:error, err} -> {:noquery, err}
             end

@@ -145,7 +145,7 @@ defmodule StarknetExplorer.Transaction do
         where: like(^"#{hash}", tx.hash),
         limit: 25
 
-    Repo.all(query)
+    Repo.one(query)
   end
 
   def rename_rpc_fields(rpc_tx = %{"transaction_hash" => th}) do
