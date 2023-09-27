@@ -27,11 +27,6 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-      id: "search-bar",
-      flash: @flash,
-      session: %{"network" => @network}
-    ) %>
     <div class="flex flex-col gap-1 justify-center items-center mb-16">
       <h1>Madara Starknet Explorer</h1>
     </div>
@@ -271,6 +266,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
       {:ok, blocks} ->
         latest_block = List.first(blocks)
+
         transactions =
           latest_block.transactions
           |> Enum.map(fn tx ->

@@ -5,11 +5,6 @@ defmodule StarknetExplorerWeb.MessageDetailLive do
 
   def render(assigns) do
     ~H"""
-    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-      id: "search-bar",
-      flash: @flash,
-      session: %{"network" => @network}
-    ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <%= render_info(assigns) %>
     </div>

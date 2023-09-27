@@ -40,14 +40,22 @@
   <body class="bg-se-black text-white relative">
     <header class="z-50 absolute top-0 left-0">
       <nav class="w-screen flex items-center justify-between p-5 lg:px-16">
-        <a href={Utils.network_path(@conn.assigns.network)} } class="z-50 text-xl">
+        <a id="logo" href={Utils.network_path(@conn.assigns.network)} } class="z-50 text-xl">
           <img src={~p"/images/logo.svg"} class="h-9 xl:h-11" />
         </a>
         <img id="hamburger" class="z-50 lg:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
         <div
           id="menu-options"
-          class="pointer-events-none lg:pointer-events-auto absolute lg:relative top-0 left-0 w-screen lg:w-auto h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 flex flex-col lg:flex-row justify-start items-streach gap-7 lg:gap-10 bg-[#111118] my-16 lg:my-0 py-10 lg:py-0 border-t lg:border-t-0 px-5 lg:px-0"
+          class="pointer-events-none lg:pointer-events-auto absolute lg:relative top-0 left-0 w-screen lg:w-full h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 flex flex-col lg:flex-row justify-start lg:justify-end items-streach gap-7 lg:gap-10 bg-[#111118] my-16 lg:my-0 py-10 lg:py-0 border-t lg:border-t-0 px-5 lg:px-0"
         >
+          <div id="nav-search-bar" class="lg:w-full lg:pl-32 lg:my-auto">
+            <%= live_render(@conn, StarknetExplorerWeb.SearchLive,
+              id: "search-bar",
+              flash: @flash,
+              session: %{"network" => @network},
+              router: StarknetExplorerWeb.Router
+            ) %>
+          </div>
           <a
             href={Utils.network_path(@conn.assigns.network, "blocks")}
             class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
