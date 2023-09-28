@@ -171,12 +171,12 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
       </div>
       <div>
         <%= if @page.page_number != 1 do %>
-          <button phx-click="dec_events">Previous</button>
+          <button phx-click="dec_events">←</button>
         <% end %>
         Showing from <%= (@page.page_number - 1) * @page.page_size %> to <%= (@page.page_number - 1) *
           @page.page_size + @page.page_size %>
         <%= if @page.page_number != @page.total_pages do %>
-          <button phx-click="inc_events">Next</button>
+          <button phx-click="inc_events">→</button>
         <% end %>
       </div>
     </div>
