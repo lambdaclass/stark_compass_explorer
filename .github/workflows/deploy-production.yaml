@@ -51,6 +51,7 @@ jobs:
         ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_production"
         SSH_HOST: ${{ vars.SSH_HOST }}
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
+        ANSIBLE_STDOUT_CALLBACK: "yaml"
         NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
         NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
         SENTRY_ENV: "production"
