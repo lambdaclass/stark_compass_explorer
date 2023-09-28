@@ -6,6 +6,8 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   defstruct [:current_block_number, :network, :next_to_fetch, :updater_block_number]
   use GenServer
   require Logger
+  # A random timer used to separate the events trigger.
+  @random_interval :timer.seconds(:rand.uniform(5))
   @fetch_timer :timer.seconds(5)
 
   def start_link([network: _network, name: name] = arg) do
@@ -15,6 +17,23 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   ## Callbacks
   @impl true
   def init([network: network, name: _name] = _args) do
+    # Rpc.get_block_height.
+    {:ok, block_height} = Rpc.get_block_height_no_cache(network)
+    # Try Insert that block.
+    {:ok, _} = BlockUtils.fetch_store_and_cache(block_height, network)
+    # If insert, increase Count.
+    Counts.insert_or_update(network)
+    # Trigger the :do_start_sync process.
+
+    state = %StateSyncSystem{
+      network: network
+    }
+
+    Process.send_after(self(), :do_start_sync, @fetch_timer)
+    {:ok, state}
+  end
+
+  def handle_info(:do_start_sync, %StateSyncSystem{network: network} = state) do
     {:ok, block_height} = BlockUtils.block_height(network)
     {:ok, lowest_block_number} = BlockUtils.get_lowest_block_number(network)
 
@@ -28,11 +47,10 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
       network: network
     }
 
-    Process.send_after(self(), :listener, @fetch_timer)
-    Process.send_after(self(), :fetcher, @fetch_timer)
-    Process.send_after(self(), :updater, @fetch_timer)
-    Logger.info("State Sync System enabled for network #{network}.")
-    {:ok, state}
+    Process.send_after(self(), :listener, @random_interval)
+    Process.send_after(self(), :fetcher, @random_interval)
+    Process.send_after(self(), :updater, @random_interval)
+    {:noreply, state}
   end
 
   @impl true
