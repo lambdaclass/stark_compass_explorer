@@ -72,7 +72,7 @@ defmodule StarknetExplorer.Message do
 
     Repo.one(query)
   end
-
+   
   def latest_n_messages(network, n \\ 20) do
     query =
       from msg in StarknetExplorer.Message,
@@ -81,6 +81,15 @@ defmodule StarknetExplorer.Message do
         limit: ^n
 
     Repo.all(query)
+  end
+
+  def paginate_messages(params, network) do
+    query =
+      from msg in StarknetExplorer.Message,
+        order_by: [desc: msg.timestamp],
+        where: msg.network == ^network
+
+    Repo.paginate(query, params)
   end
 
   def get_total_count(network) do

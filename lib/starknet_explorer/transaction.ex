@@ -149,6 +149,14 @@ defmodule StarknetExplorer.Transaction do
     end
   end
 
+  def paginate_transactions(params, network) do
+    Transaction
+    |> where([tx], tx.network == ^network)
+    #|> order_by(desc: :timestamp)
+    |> preload(:block)
+    |> Repo.paginate(params)
+  end
+
   def rename_rpc_fields(rpc_tx = %{"transaction_hash" => th}) do
     rpc_tx
     |> Map.delete("transaction_hash")

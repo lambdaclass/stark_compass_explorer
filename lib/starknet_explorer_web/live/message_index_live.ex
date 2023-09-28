@@ -169,6 +169,16 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
           </div>
         <% end %>
       </div>
+      <div>
+        <%= if @page.page_number != 1 do %>
+          <button phx-click="dec_events">Previous</button>
+        <% end %>
+        Showing from <%= (@page.page_number - 1) * @page.page_size %> to <%= (@page.page_number - 1) *
+          @page.page_size + @page.page_size %>
+        <%= if @page.page_number != @page.total_pages do %>
+          <button phx-click="inc_events">Next</button>
+        <% end %>
+      </div>
     </div>
     """
   end
@@ -176,8 +186,9 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
   @impl true
   def mount(_params, _session, socket) do
     Process.send(self(), :load_messages, [])
-    messages = Message.latest_n_messages(socket.assigns.network, 20)
-    {:ok, assign(socket, messages: messages)}
+    page = Message.paginate_messages(%{}, socket.assigns.network)
+    messages = page.entries #Message.latest_n_messages(socket.assigns.network, 20)
+    {:ok, assign(socket, messages: messages, page: page)}
   end
 
   @impl true
@@ -185,5 +196,27 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
     # TODO: Fetch this from the db
     messages = Message.latest_n_messages(socket.assigns.network, 20)
     {:noreply, assign(socket, messages: messages)}
+  end
+
+  @impl true
+  def handle_event("inc_events", _value, socket) do
+    new_page_number = socket.assigns.page.page_number + 1
+    pagination(socket, new_page_number)
+  end
+
+  def handle_event("dec_events", _value, socket) do
+    new_page_number = socket.assigns.page.page_number - 1
+    pagination(socket, new_page_number)
+  end
+
+  def pagination(socket, new_page_number) do
+    page =
+      Message.paginate_messages(
+        %{page: new_page_number},
+        socket.assigns.network
+      )
+
+    assigns = [ page: page, messages: page.entries ]
+    {:noreply, assign(socket, assigns)}
   end
 end
