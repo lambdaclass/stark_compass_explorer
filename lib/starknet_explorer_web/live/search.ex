@@ -10,7 +10,7 @@ defmodule StarknetExplorerWeb.SearchLive do
         type="text"
         name="search-input"
         value={@query}
-        placeholder="Search Blocks, Transactions, Classes, Messages, Contracts or Events"
+        placeholder="Search Blocks and Transactions  (Classes, Messages, and Events coming soon!)"
       />
       <button class="absolute top-1/2 right-2 transform -translate-y-1/2" type="submit">
         <img src={~p"/images/search.svg"} />
