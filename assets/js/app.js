@@ -308,27 +308,19 @@ Hooks.Dropdown = {
 };
 
 Hooks.SearchHook = {
-  mounted() {
-    const form = document.querySelector(".normal-form");
-    const input = form.querySelector("input");
-    const searchDropdown = document.querySelector("#dropdownInformation");
-
-    // if (input.value === "") {
-    //   searchDropdown.classList.add("hidden");
-    // }
-  },
   updated() {
     const overlay = document.querySelector("#search-overlay");
     const form = overlay.querySelector(".normal-form");
     const searchDropdown = form.querySelector("#dropdownInformation");
     const input = form.querySelector("input");
     const hashLink = searchDropdown.querySelector("#redirect-link");
-    toggleFocus(overlay, input, form, searchDropdown);
-    
+
+    toggleFocus(input, searchDropdown);
+    //If something is found add clickEventListener
     if (hashLink) {
       hashLink.addEventListener("click", () => {
         focused = false;
-        toggleFocus(overlay, input, form, searchDropdown);
+        toggleFocus( input, searchDropdown);
       })
     }
   }
@@ -336,75 +328,37 @@ Hooks.SearchHook = {
 
 function KeyPress(e) {
   const evntObj = e;
-  const form = document.querySelector(".normal-form");
+  const overlay = document.querySelector("#search-overlay");
+  const form = overlay.querySelector(".normal-form");
   const input = form.querySelector("input");
-  const searchDropdown = document.querySelector("#dropdownInformation");
+  const searchDropdown = form.querySelector("#dropdownInformation");
 
   if ((evntObj.ctrlKey || evntObj.metaKey) && evntObj.keyCode === K_KEY_CODE) {
     evntObj.preventDefault();
     focused = true;
-    toggleFocus(input, form, searchDropdown);
+    overlay.classList.remove("hidden");
+    toggleFocus(input, searchDropdown);
   }
-  if (evntObj.keyCode === ESC_KEY_CODE) { 
-    evntObj.preventDefault();
-    focused = false;
-    toggleFocus(input, form, searchDropdown);
-    // searchDropdown.classList.add("hidden")
+  if (evntObj.keyCode === ESC_KEY_CODE && !overlay.classList.contains("hidden")) { 
+      evntObj.preventDefault();
+      focused = false;
+      overlay.classList.add("hidden");
+      toggleFocus(input, searchDropdown);
   }
 }
 
-function toggleFocus(overlay, input, form, searchDropdown) {
+function toggleFocus(input, searchDropdown) {
   if (focused) { 
     input.focus();
-    // overlay.classList.toggle("hidden");
     if (input.value !== "") {
       searchDropdown.classList.toggle("hidden")
     }
   } else {
     input.blur();
-    // overlay.classList.toggle("hidden");
     searchDropdown.classList.toggle("hidden");
-    // input.value = "";
   }
 }
 
-function toggleBlur() {
-  const logo = document.querySelector("#logo");
-  const footer = document.querySelector("footer");
-  const main = document.querySelector("#main");
-  const options = document.querySelector("#menu-options").children;
-
-  if (focused) {
-    footer.classList.add("blur-sm");
-    main.classList.add("blur-sm");
-    main.classList.add("pointer-events-none");
-    main.classList.remove("pointer-events-auto");
-    logo.classList.add("blur-sm");
-    logo.classList.add("pointer-events-none");
-
-    for (let i = 0; i < options.length; i++) { 
-      if (options[i].id !== "nav-search-bar") {
-        options[i].classList.add("blur-sm");
-        options[i].classList.add("pointer-events-none");
-      }
-    }
-  } else {
-    main.classList.remove("blur-sm");
-    logo.classList.remove("blur-sm");
-    logo.classList.remove("pointer-events-none");
-    footer.classList.remove("blur-sm");
-    main.classList.add("pointer-events-auto");
-    main.classList.remove("pointer-events-none");
-
-    for (let i = 0; i < options.length; i++) { 
-      if (options[i].id !== "nav-search-bar") {
-        options[i].classList.remove("blur-sm");
-        options[i].classList.remove("pointer-events-none");
-      }
-    }
-
-  }
-}
 
 function activateFocus() {
   const form = document.querySelector("#placeholder-form");
@@ -427,7 +381,6 @@ function activateFocus() {
       if (outsideDropdown && outsideInput) {
         focused = false;
         overlay.classList.toggle("hidden");
-        // toggleFocus(overlay, overlayInput, form, searchDropdown);
       }
     }
   })
@@ -455,7 +408,7 @@ window.addEventListener("phx:page-loading-stop", () => {
 
 
 activateFocus();
-// document.onkeydown = KeyPress;
+document.onkeydown = KeyPress;
 
 
 // connect if there are any LiveViews on the page
