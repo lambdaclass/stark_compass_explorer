@@ -389,7 +389,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
               <%= if call.call_type=="CALL" do %>
                 <span class="green-label"><%= call.call_type %></span>
               <% else %>
-                <span class="lilac-label"><%= call.call_type %></span>
+                <span class="red-label"><%= call.call_type %></span>
               <% end %>
             </div>
           </div>
@@ -463,7 +463,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="block-label">Status</div>
       <div class="col-span-3">
         <%= if @transaction_receipt.execution_status == "REVERTED" do %>
-          <span class="pink-label">
+          <span class="orange-label">
             REVERTED
           </span>
         <% else %>
@@ -590,7 +590,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
                   phx-hook="ShowTableData"
                 >
                   <div phx-no-format>
-                call <span class="text-se-violet"><%= input.call.name %></span>(<.intersperse
+                call <span class="text-se-pink"><%= input.call.name %></span>(<.intersperse
                   :let={arg}
                   enum={input.call.args}
                 ><:separator>, </:separator>
@@ -629,7 +629,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
               </div>
             <% else %>
               <div class="w-full bg-black/20 p-5 mt-5">
-                Not Supported <span class="text-se-violet">...</span>(...)
+                Not Supported <span class="text-se-pink">...</span>(...)
                 <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
               </div>
             <% end %>

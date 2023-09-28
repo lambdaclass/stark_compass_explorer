@@ -6,14 +6,14 @@
 /*
 Styles criteria:
 
-Lilac is used for icons and features like copy buttons
+red is used for icons and features like copy buttons
 
 Blue is used for links
 
-Pink and Violet for details and highlights
+orange and pink for details and highlights
 (they should be avoided from being used for texts due to their low contrast)
 
-with that being said, Blue, Green, Violet and Pink can be used for labels if needed
+with that being said, Blue, Green, pink and orange can be used for labels if needed
 
 */
 
@@ -39,7 +39,7 @@ a,
 }
 
 .network-option {
-  @apply text-white bg-container hover:bg-se-violet/80 relative select-none py-2 pl-3 pr-9 w-full cursor-pointer flex items-center;
+  @apply text-white bg-container hover:bg-se-pink/80 relative select-none py-2 pl-3 pr-9 w-full cursor-pointer flex items-center;
 }
 
 /* Tables */
@@ -152,11 +152,11 @@ input {
 .info-label {
   @apply px-3 py-0.5 ml-0.5 border-l rounded-l-none rounded-md;
 }
-.pink-label,
+.orange-label,
 .approval,
 .mint,
 .sync {
-  @apply text-se-pink bg-se-pink/5 border-se-pink;
+  @apply text-se-orange bg-se-orange/5 border-se-orange;
 }
 .blue-label,
 .accepted_on_l2 {
@@ -166,15 +166,15 @@ input {
 .accepted_on_l1 {
   @apply text-se-green bg-se-green/5 border-se-green;
 }
-.violet-label,
+.pink-label,
 .swap,
 .burn {
-  @apply text-se-violet bg-se-violet/5 border-se-violet;
+  @apply text-se-pink bg-se-pink/5 border-se-pink;
 }
-.lilac-label,
+.red-label,
 .transfer,
 .transaction_executed {
-  @apply text-se-lilac bg-se-lilac/5 border-se-lilac;
+  @apply text-se-red bg-se-red/5 border-se-red;
 }
 .gray-label {
   @apply text-gray-400 bg-gray-400/5 border-gray-400;
@@ -208,14 +208,14 @@ main .option {
   @apply text-se-blue;
 }
 .type.deploy_account {
-  @apply text-se-violet;
+  @apply text-se-pink;
 }
 .type.declare,
 .l1_handler {
-  @apply text-se-lilac;
+  @apply text-se-red;
 }
 .type.invoke {
-  @apply text-se-pink;
+  @apply text-se-orange;
 }
 
 .hash {

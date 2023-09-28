@@ -572,7 +572,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
             <span
               id="block_verifier"
-              class={"#{if @verification == "Pending", do: "pink-label"} #{if @verification == "Verified", do: "green-label"} #{if @verification == "Failed", do: "violet-label"}"}
+              class={"#{if @verification == "Pending", do: "orange-label"} #{if @verification == "Verified", do: "green-label"} #{if @verification == "Failed", do: "pink-label"}"}
               data-hash={@block.hash}
               phx-hook="BlockVerifier"
             >

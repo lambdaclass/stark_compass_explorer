@@ -46,7 +46,7 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
             </div>
             <div>
               <div class="list-h">Type</div>
-              <span class="violet-label">ERC721</span>
+              <span class="pink-label">ERC721</span>
             </div>
             <div>
               <div class="list-h">Declared At</div>
