@@ -1,5 +1,6 @@
 defmodule StarknetExplorerWeb.EventDetailLive do
   use StarknetExplorerWeb, :live_view
+  alias StarknetExplorerWeb.CoreComponents
   alias StarknetExplorer.{Events, Block}
   alias StarknetExplorerWeb.Utils
   @impl true
@@ -22,24 +23,30 @@ defmodule StarknetExplorerWeb.EventDetailLive do
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Event ID</div>
-        <div>
-          <%= @event.id %>
+        <div class="block-data">
+          <div class="hash flex">
+            <%= @event.id %>
+            <CoreComponents.copy_button text={@event.id} />
+          </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Block Hash</div>
-        <div>
-          <a
-            href={
-              Utils.network_path(
-                @network,
-                "blocks/#{@block.hash}"
-              )
-            }
-            class="text-hover-link break-all"
-          >
-            <span><%= @block.hash %></span>
-          </a>
+        <div class="block-data">
+          <div class="hash flex">
+            <a
+              href={
+                Utils.network_path(
+                  @network,
+                  "blocks/#{@block.hash}"
+                )
+              }
+              class="text-hover-link break-all"
+            >
+              <span><%= @block.hash %></span>
+            </a>
+            <CoreComponents.copy_button text={@block.hash} />
+          </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
@@ -58,24 +65,30 @@ defmodule StarknetExplorerWeb.EventDetailLive do
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Transaction Hash</div>
-        <div>
-          <a
-            href={
-              Utils.network_path(
-                @network,
-                "blocks/#{@event.transaction_hash}"
-              )
-            }
-            class="text-hover-link break-all"
-          >
-            <%= @event.transaction_hash %>
-          </a>
+        <div class="block-data">
+          <div class="hash flex">
+            <a
+              href={
+                Utils.network_path(
+                  @network,
+                  "blocks/#{@event.transaction_hash}"
+                )
+              }
+              class="text-hover-link break-all"
+            >
+              <%= @event.transaction_hash %>
+            </a>
+            <CoreComponents.copy_button text={@event.transaction_hash} />
+          </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Contract Address</div>
-        <div class="break-all">
-          <%= @event.from_address %>
+        <div class="block-data">
+          <div class="hash flex">
+            <%= @event.from_address %>
+            <CoreComponents.copy_button text={@event.from_address} />
+          </div>
         </div>
       </div>
       <div class="custom-list-item">
@@ -93,7 +106,12 @@ defmodule StarknetExplorerWeb.EventDetailLive do
               </div>
               <div>
                 <div class="list-h">Value</div>
-                <div class="break-all"><%= payload %></div>
+                <div class="block-data">
+                  <div class="hash flex">
+                    <%= payload %>
+                    <CoreComponents.copy_button text={payload} />
+                  </div>
+                </div>
               </div>
             </div>
           <% end %>
