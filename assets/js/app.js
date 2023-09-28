@@ -308,21 +308,27 @@ Hooks.Dropdown = {
 };
 
 Hooks.SearchHook = {
+  beforeUpdate() {
+    const overlay = document.querySelector("#search-overlay");
+    const form = overlay.querySelector(".normal-form");
+    const searchDropdown = form.querySelector("#dropdownInformation");
+    const hashLink = document.querySelector("#redirect-link");
+    const input = form.querySelector("input");
+    //If clicked on link hide overlay
+    if (hashLink) {
+      hashLink.addEventListener("click", () => {
+        focused = false;
+        toggleFocus(input, searchDropdown);
+        overlay.classList.add("hidden")
+      })
+    }
+  },
   updated() {
     const overlay = document.querySelector("#search-overlay");
     const form = overlay.querySelector(".normal-form");
     const searchDropdown = form.querySelector("#dropdownInformation");
     const input = form.querySelector("input");
-    const hashLink = searchDropdown.querySelector("#redirect-link");
-
     toggleFocus(input, searchDropdown);
-    //If something is found add clickEventListener
-    if (hashLink) {
-      hashLink.addEventListener("click", () => {
-        focused = false;
-        toggleFocus( input, searchDropdown);
-      })
-    }
   }
 };
 
