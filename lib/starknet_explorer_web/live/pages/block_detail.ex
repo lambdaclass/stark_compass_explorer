@@ -7,6 +7,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorer.BlockUtils
   alias StarknetExplorer.S3
   alias StarknetExplorer.Message
+  alias StarknetExplorer.Transaction
   alias StarknetExplorer.Gateway
   alias StarknetExplorer.Events
 
@@ -35,6 +36,19 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     rescue
       _ ->
         :not_found
+    end
+  end
+
+  defp block_transactions_receipt(socket) do
+    if Map.get(socket.assigns, :receipts) == nil do
+      {:ok, receipts} = Data.receipts_by_block(socket.assigns.block, socket.assigns.network)
+
+      receipts
+      |> Map.new(fn receipt ->
+        {receipt.transaction_hash, receipt}
+      end)
+    else
+      socket.assigns.receipts
     end
   end
 
@@ -181,38 +195,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   @impl true
   def handle_event(
         "select-view",
-        %{"view" => "transactions"},
-        socket
-      ) do
-    transactions =
-      if Map.get(socket.assigns, :transactions) == nil do
-        {:ok, receipts} = Data.receipts_by_block(socket.assigns.block, socket.assigns.network)
-
-        receipts =
-          receipts
-          |> Map.new(fn receipt ->
-            {receipt.transaction_hash, receipt}
-          end)
-
-        Data.transactions_by_block_number(socket.assigns.block.number, socket.assigns.network)
-        |> Enum.map(fn tx ->
-          %{tx | receipt: receipts[tx.hash]}
-        end)
-      else
-        socket.assigns.transactions
-      end
-
-    assigns = [
-      view: "transactions",
-      transactions: transactions
-    ]
-
-    {:noreply, assign(socket, assigns)}
-  end
-
-  @impl true
-  def handle_event(
-        "select-view",
         %{"view" => "messages"},
         socket
       ) do
@@ -230,6 +212,66 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     assigns = [
       view: "messages",
       messages: messages
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event(
+        "select-view",
+        %{"view" => "transactions"},
+        socket
+      ) do
+    page =
+      Transaction.paginate_txs_by_block_number(
+        %{page: 0},
+        socket.assigns.block.number,
+        socket.assigns.network
+      )
+
+    assigns = [
+      view: "transactions",
+      page: page,
+      receipts: block_transactions_receipt(socket)
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  def handle_event("dec_txs", _value, socket) do
+    new_page_number = socket.assigns.page.page_number - 1
+
+    page =
+      Transaction.paginate_txs_by_block_number(
+        %{page: new_page_number},
+        socket.assigns.block.number,
+        socket.assigns.network
+      )
+
+    assigns = [
+      page: page,
+      view: "transactions",
+      receipts: block_transactions_receipt(socket)
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  def handle_event("inc_txs", _value, socket) do
+    new_page_number = socket.assigns.page.page_number + 1
+
+    page =
+      Transaction.paginate_txs_by_block_number(
+        %{page: new_page_number},
+        socket.assigns.block.number,
+        socket.assigns.network
+      )
+
+    assigns = [
+      page: page,
+      view: "transactions",
+      receipts: block_transactions_receipt(socket)
     ]
 
     {:noreply, assign(socket, assigns)}
@@ -347,7 +389,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>Address</div>
       <div>Age</div>
     </div>
-    <%= for transaction = %{hash: hash, type: type, version: version, sender_address: sender_address} <- @transactions do %>
+    <%= for %{hash: hash, type: type, version: version, sender_address: sender_address} <- @page.entries do %>
       <div class="grid-6 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
@@ -375,16 +417,31 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div>
           <div class="list-h">Status</div>
-          <span class={"info-label #{String.downcase(transaction.receipt.finality_status)}"}>
-            <%= transaction.receipt.finality_status %>
+          <% finality_status = @receipts[hash].finality_status %>
+          <span class={"#{if finality_status == "ACCEPTED_ON_L2", do: "green-label"} #{if finality_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if finality_status == "PENDING", do: "pink-label"}"}>
+            <%= finality_status %>
           </span>
         </div>
         <div>
           <div class="list-h">Address</div>
-          <div class="block-data">
-            <div class="hash flex">
-              <%= Utils.shorten_block_hash(sender_address || "-") %>
-              <CoreComponents.copy_button text={sender_address || "-"} />
+          <div class="flex gap-2 items-center copy-container" id={"copy-addr-#{hash}"} phx-hook="Copy">
+            <div class="relative">
+              <div class="break-all text-hover-blue">
+                <%= Utils.shorten_block_hash(sender_address || "-") %>
+              </div>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={sender_address || "-"}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -393,6 +450,15 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div><%= Utils.get_block_age_from_timestamp(@block.timestamp) %></div>
         </div>
       </div>
+    <% end %>
+
+    <%= if @page.page_number != 1 do %>
+      <button phx-click="dec_txs">←</button>
+    <% end %>
+    Showing from <%= (@page.page_number - 1) * @page.page_size %> to <%= (@page.page_number - 1) *
+      @page.page_size + @page.page_size %>
+    <%= if @page.page_number != @page.total_pages do %>
+      <button phx-click="inc_txs">→</button>
     <% end %>
     """
   end
@@ -464,15 +530,33 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           </div>
           <div>
             <div class="list-h">Transaction Hash</div>
-            <div class="block-data">
-              <div class="hash flex">
-                <a
-                  href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
-                  class="text-hover-link"
-                >
-                  <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
-                </a>
-                <CoreComponents.copy_button text={message.transaction_hash} />
+            <div
+              class="flex gap-2 items-center copy-container"
+              id={"copy-tx-hash-#{index}"}
+              phx-hook="Copy"
+            >
+              <div class="relative">
+                <div class="break-all text-hover-blue">
+                  <a
+                    href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
+                    class="text-hover-blue"
+                  >
+                    <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
+                  </a>
+                </div>
+                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                  <div class="relative">
+                    <img
+                      class="copy-btn copy-text w-4 h-4"
+                      src={~p"/images/copy.svg"}
+                      data-text={message.transaction_hash}
+                    />
+                    <img
+                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                      src={~p"/images/check-square.svg"}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -663,12 +747,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     <% end %>
     <div>
       <%= if @page.page_number != 1 do %>
-        <button phx-click="dec_events">Previous</button>
+        <button phx-click="dec_events">←</button>
       <% end %>
       Showing from <%= (@page.page_number - 1) * @page.page_size %> to <%= (@page.page_number - 1) *
         @page.page_size + @page.page_size %>
       <%= if @page.page_number != @page.total_pages do %>
-        <button phx-click="inc_events">Next</button>
+        <button phx-click="inc_events">→</button>
       <% end %>
     </div>
     """
