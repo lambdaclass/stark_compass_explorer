@@ -26,7 +26,7 @@ defmodule StarknetExplorerWeb.SearchLive do
           class="hidden absolute mt-3 z-10 bg-container rounded-lg shadow w-full  mx-auto dark:bg-container dark:divide-gray-600"
         >
           <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
-            <%= if assigns[:block] do %>
+            <%= if assigns[:result] == "Found" do %>
               Blocks
             <% else %>
               <%= assigns[:result] %>
