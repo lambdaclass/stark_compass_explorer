@@ -517,7 +517,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="block-label">Block Hash</div>
       <div class="block-data col-span-3">
         <div class="hash flex">
-          <%= @block.hash %>
+          <a href={Utils.network_path(@network, "blocks/#{@block.hash}")} class="text-hover-link">
+            <%= @block.hash %>
+          </a>
           <CoreComponents.copy_button text={@block.hash} />
         </div>
       </div>
@@ -543,7 +545,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="block-label">Parent Hash</div>
       <div class="block-data col-span-3">
         <div class="hash flex">
-          <%= @block.parent_hash %>
+          <a
+            href={Utils.network_path(@network, "blocks/#{@block.parent_hash}")}
+            class="text-hover-link"
+          >
+            <%= @block.parent_hash %>
+          </a>
           <CoreComponents.copy_button text={@block.parent_hash} />
         </div>
       </div>
@@ -614,13 +621,16 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div>
           <div class="list-h">Transaction Hash</div>
-          <div>
-            <a
-              href={Utils.network_path(@network, "transactions/#{event.transaction_hash}")}
-              class="text-hover-link"
-            >
-              <%= event.transaction_hash |> Utils.shorten_block_hash() %>
-            </a>
+          <div class="block-data">
+            <div class="hash flex">
+              <a
+                href={Utils.network_path(@network, "transactions/#{event.transaction_hash}")}
+                class="text-hover-link"
+              >
+                <%= event.transaction_hash |> Utils.shorten_block_hash() %>
+              </a>
+              <CoreComponents.copy_button text={event.transaction_hash} />
+            </div>
           </div>
         </div>
         <div>
