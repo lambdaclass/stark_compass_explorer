@@ -26,7 +26,7 @@ defmodule StarknetExplorerWeb.SearchLive do
           <%= if assigns[:block] do %>
             Blocks
           <% else %>
-            <div>Not found!</div>
+            <%= assigns[:result] %>
           <% end %>
           <div>
             <ul
@@ -38,26 +38,26 @@ defmodule StarknetExplorerWeb.SearchLive do
                   <div class="text-hover-blue">
                     <img class="inline-block" src={~p"/images/box.svg"} />
                     <div id="redirect-link" class="py-1 inline-block">
-                      <%= if assigns[:block] do %>
+                      <%= if assigns[:result] == "Found" do %>
                         <%= live_redirect(
-                          get_number(@block),
-                          to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
+                          get_number(assigns[:block]),
+                          to: ~p"/#{@network}/blocks/#{get_hash(assigns[:block])}",
                           class: "text-hover-blue",
                           id: "number-redirect-link",
-                          title: get_hash(@block)
+                          title: get_hash(assigns[:block])
                         )
                         %>
                         -
                         <%= live_redirect(
-                          Utils.shorten_block_hash(get_hash(@block)),
-                          to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
+                          Utils.shorten_block_hash(get_hash(assigns[:block])),
+                          to: ~p"/#{@network}/blocks/#{get_hash(assigns[:block])}",
                           class: "text-hover-blue",
                           id: "hash-redirect-link",
-                          title: get_hash(@block)
+                          title: get_hash(assigns[:block])
                         )
                         %>
                       <% else %>
-                          <div>Not found!</div>
+                       <%= assigns[:result] %>
                       <% end %>
                     </div>
                   </div>
@@ -103,7 +103,14 @@ defmodule StarknetExplorerWeb.SearchLive do
             fn -> assign(socket, tx: query) end
 
           {:block, block} ->
-            fn -> assign(socket, block: block) end
+            fn ->
+              assign(socket, block: block)
+              if block do
+                assign(socket, result: "Found")
+              else
+                assign(socket, result: "No results found")
+              end
+           end
 
           {:message, _message} ->
             fn -> assign(socket, message: query) end
