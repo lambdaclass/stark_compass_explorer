@@ -115,21 +115,26 @@ defmodule StarknetExplorer.Data do
   end
 
   def transaction(tx_hash, network) do
-    tx =
-      case Transaction.get_by_hash_with_receipt(tx_hash) do
-        nil ->
-          {:ok, tx} = Rpc.get_transaction(tx_hash, network)
-          {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
+    case Transaction.get_by_hash_with_receipt(tx_hash) do
+      nil ->
+        case Rpc.get_transaction(tx_hash, network) do
+          {:ok, tx} ->
+            {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
 
-          tx
-          |> Transaction.from_rpc_tx()
-          |> Map.put(:receipt, receipt |> StarknetExplorerWeb.Utils.atomize_keys())
+            tx =
+              tx
+              |> Transaction.from_rpc_tx()
+              |> Map.put(:receipt, receipt |> StarknetExplorerWeb.Utils.atomize_keys())
 
-        tx ->
-          tx
-      end
+            {:ok, tx}
 
-    {:ok, tx}
+          {:error, error} ->
+            {:error, error}
+        end
+
+      tx ->
+        {:ok, tx}
+    end
   end
 
   def get_block_events_paginated(block_hash, pagination, network) do
