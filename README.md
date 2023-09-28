@@ -1,15 +1,19 @@
-# StarknetExplorer
+# StarkCompass
 ![image](./priv/static/images/explorer_preview.png)
 
-- [StarknetExplorer](#starknetexplorer)
+- [StarkCompass](#starkcompass)
   - [Requirements](#requirements)
   - [Local development](#local-development)
     - [Setup](#setup)
     - [RPC Provider](#rpc-provider)
     - [RPC with Juno](#rpc-with-juno)
-    - [Database](#database)
     - [Up and running](#up-and-running)
-  - [Using Madara Explorer with PostgreSQL](#using-madara-explorer-with-postgresql)
+  - [State Synchronization System](#state-synchronization-system)
+    - [BlockchainListener](#blockchainlistener)
+    - [BlockchainFetcher](#blockchainfetcher)
+    - [BlockchainUpdater](#blockchainupdater)
+    - [WARNING ⚠️](#warning-️)
+  - [Using Stark Compass with PostgreSQL](#using-stark-compass-with-postgresql)
 
 ## Requirements
 - SQLite
@@ -66,38 +70,6 @@ You'll need a Mainnet Ethereum RPC provider for this to
 work, set with the env variable `$ETH_NODE_URL`, mind you
 it must be a websocket url.
 
-### Database
-You can fill an sqlite database with RPC provided data with 2 tools we provide:
-
-1. BlockListener, which will store any new blocks.
-To enable this process, before starting the explorer, set this env var:
-
-```bash
-export ENABLE_LISTENER="true"
-```
-
-2. BlockFetcher, which will store blocks from a given range.
-To use it, you simply have to call the `StarknetExplorer.BlockFetcher.fetch_in_range`
-function, you can do this interactively after starting with `make run`:
-
-```elixir
-StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10, network: :mainnet})
- ```
-
-Or, if you're on a "prod" environment, simply send it through elixir's RPC:
-```bash 
-./_build/prod/rel/starknet_explorer/bin rpc "StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10, network: :mainnet})"
-```
-
-There are 2 things to keep in mind here:
-1. Amount of requests:
-   If you have any constraint on how many requests you can make: keep an eye on that,
-   because the fetcher can do a lot of requests per second.
-2. Disk Usage: We're still measuring it, but we expect it to be considerable 
-   after running it for a couple of days.
-
-The db file will be stored under `/priv/repo`.
-
 ### Up and running
 If you're on MacOS, you already have SQLite.
 On Linux, your distro's repo will most certainly have a package for it.
@@ -115,11 +87,70 @@ From now on, if you want to restart the app, you can just do:
 make run
 ```
 
-## Using Madara Explorer with PostgreSQL
+## State Synchronization System
+
+You can fill the database with RPC provided data with 3 tools we provide:
+
+### BlockchainListener
+
+Which will store any new blocks, transactions, transaction receipts, events and
+messages. When starting the application, the Listener will hit the RPC to get the current block height,
+and will start fetching from that block.
+To enable this process, before starting the explorer, set this env var:
+
+```bash
+export ENABLE_LISTENER="true"
+```
+
+When using the `dev` and `test` environments, it will only listen for `mainnet` blocks.
+In `prod` it will use all three networks (`mainnet`, `testnet`, `tesnet2`).
+
+### BlockchainFetcher
+Which will store any new blocks, transactions, transaction receipts, events and
+messages. When starting the application, the Fetcher will hit the RPC to get the current block height and
+will fetch from that block backwards, until the block 0 is reached.
+
+To enable this process, before starting the explorer, set this env var:
+
+```bash
+export ENABLE_FETCHER="true"
+```
+When using the `dev` and `test` environments, it will only fetch for `mainnet` blocks.
+In `prod` it will use all three networks (`mainnet`, `testnet`, `tesnet2`).
+
+
+### BlockchainUpdater
+
+The updater will look in the DB for any entity whose status is not finalized, and will try to update the status for those entries by hitting the RPC and check if the status needs an update.
+It looks for update for:
+- Block with status different than `"ACCEPTED_ON_L1"`.
+- Transaction with status different than `"ACCEPTED_ON_L1"` or `"REVERTED"`.
+
+To enable this process, before starting the explorer, set this env var:
+
+```bash
+export ENABLE_UPDATER="true"
+```
+When using the `dev` and `test` environments, it will only update `mainnet` blocks.
+In `prod` it will use all three networks (`mainnet`, `testnet`, `tesnet2`).
+
+### WARNING ⚠️
+
+There are 3 things to keep in mind here:
+1. Amount of requests:
+   If you have any constraint on how many requests you can make: keep an eye on that,
+   because the State Synchronization System can do a lot of requests per second.
+2. Disk Usage: We're still measuring it, but we expect it to be considerable 
+   after running it for a couple of days.
+3. If you are going to sync a large amount of blocks, we *strongly* suggest to use PostgreSQL instead of SQLite. You can check how to swap the DB in [this section](#using-stark-compass-with-postgresql).
+
+The db file will be stored under `/priv/repo`.
+
+## Using Stark Compass with PostgreSQL
 
 If you want to handle multiple concurrent connections and a more scalable application, you may consider using PostgreSQL.
 
-Madara Explorer provides support for that, you can set the credentials to the PostgreSQL DB in the `runtime.exs` and set the environment variable `DB_TYPE` to `postgresql`.
+Stark Compass provides support for that, you can set the credentials to the PostgreSQL DB in the `runtime.exs` and set the environment variable `DB_TYPE` to `postgresql`.
 
 ```bash
 export DB_TYPE=postgresql

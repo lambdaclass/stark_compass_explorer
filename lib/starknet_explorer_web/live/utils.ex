@@ -105,9 +105,9 @@ defmodule StarknetExplorerWeb.Utils do
   end
 
   def format_arg_value(%{
-        :type => "core::array::Array::<" <> _rest,
         :value => value
-      }) do
+      })
+      when is_map(value) or is_list(value) do
     value
     |> Jason.encode!()
     |> Jason.Formatter.pretty_print()
@@ -124,15 +124,25 @@ defmodule StarknetExplorerWeb.Utils do
         |> Jason.Formatter.pretty_print()
 
       _ ->
-        case value do
-          value when is_map(value) or is_list(value) ->
-            value
-            |> Jason.encode!()
-            |> Jason.Formatter.pretty_print()
+        value
+    end
+  end
 
-          _ ->
-            value
-        end
+  @doc """
+  iex> builtin_name("range_check_builtin")
+  RANGE CHECK BUILTIN
+  """
+  def builtin_name(builtin_name) do
+    builtin_name
+    |> String.replace("_", " ")
+    |> String.upcase()
+  end
+
+  def builtin_color(builtin_name) do
+    case builtin_name do
+      "pedersen_builtin" -> "pink-label"
+      "range_check_builtin" -> "violet-label"
+      _ -> "green-label"
     end
   end
 

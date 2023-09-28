@@ -7,17 +7,20 @@ defmodule StarknetExplorer.Events do
   alias StarknetExplorer.Rpc
   @primary_key {:id, :binary_id, autogenerate: true}
 
-  @fields [
-    :name,
+  @required [
     :from_address,
     :age,
-    :name_hashed,
     :data,
     :index_in_block,
     :block_number,
     :transaction_hash,
     :network
   ]
+
+  @allowed [
+             :name,
+             :name_hashed
+           ] ++ @required
 
   @common_event_hash_to_name %{
     "0x99cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9" => "Transfer",
@@ -70,10 +73,10 @@ defmodule StarknetExplorer.Events do
 
   def changeset(schema, params) do
     schema
-    |> cast(params, @fields)
+    |> cast(params, @allowed)
     |> foreign_key_constraint(:block_number)
     |> foreign_key_constraint(:transaction_hash)
-    |> validate_required(@fields)
+    |> validate_required(@required)
   end
 
   def insert(event) do
@@ -153,8 +156,21 @@ defmodule StarknetExplorer.Events do
     )
   end
 
-  def get_total_count() do
-    StarknetExplorer.Events |> Repo.aggregate(:count, :id)
+  def get_by_id(id, network) do
+    Events
+    |> where([p], p.id == ^id and p.network == ^network)
+    |> Repo.one()
+  end
+
+  def get_by_tx_hash(tx_hash, network) do
+    Events
+    |> where([p], p.transaction_hash == ^tx_hash and p.network == ^network)
+    |> Repo.all()
+  end
+
+  def get_total_count(network) do
+    from(event in __MODULE__, where: event.network == ^network, select: count())
+    |> Repo.one()
   end
 
   def fetch_from_rpc(block_hash, network) do

@@ -19,7 +19,7 @@ defmodule StarknetExplorer.MixProject do
   def application do
     [
       mod: {StarknetExplorer.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :observer]
     ]
   end
 
@@ -31,13 +31,6 @@ defmodule StarknetExplorer.MixProject do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    db_adapter =
-      if System.get_env("DB_TYPE") == "postgresql" do
-        [{:postgrex, ">= 0.0.0"}]
-      else
-        [{:ecto_sqlite3, ">= 0.0.0"}]
-      end
-
     [
       {:phoenix, "~> 1.7.6"},
       {:phoenix_ecto, "~> 4.4"},
@@ -65,8 +58,14 @@ defmodule StarknetExplorer.MixProject do
       {:sweet_xml, "~> 0.7.0"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
       {:scrivener_ecto, "~> 2.7"},
-      {:new_relic_agent, "~> 1.0", only: :prod}
-    ] ++ db_adapter
+      {:new_relic_agent, "~> 1.0", only: :prod},
+      {:sentry, "~> 8.0"},
+      {:etop, "~> 0.7"},
+      {:rexbug, ">= 1.0.0"},
+      {:eep, github: "virtan/eep"},
+      {:postgrex, ">= 0.0.0"},
+      {:ecto_sqlite3, ">= 0.0.0"}
+    ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

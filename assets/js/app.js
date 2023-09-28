@@ -270,10 +270,14 @@ let tvl = {
   },
 };
 
-// Tippy.js for Tooltip
-tippy("#tps", {
-  content: "The average transactions per second calculated from the last block",
-});
+Hooks.Tooltip = {
+  mounted() {
+    tippy(this.el, {
+      content: this.el.dataset.tip,
+      theme: 'starknet-explorer'
+    });
+  },
+};
 
 //
 Hooks.Network = {
@@ -396,13 +400,13 @@ function activateFocus() {
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks });
 // Show progress bar on live navigation and form submits. Only displays if still
-// loading after 300 msec
+// loading after 2000 msec
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
 
 let topBarScheduled = undefined;
 window.addEventListener("phx:page-loading-start", () => {
   if(!topBarScheduled) {
-    topBarScheduled = setTimeout(() => topbar.show(), 300);
+    topBarScheduled = setTimeout(() => topbar.show(), 2000);
   };
 });
 window.addEventListener("phx:page-loading-stop", () => {

@@ -11,14 +11,15 @@ module.exports = {
     extend: {
       fontFamily: {
         "ibm-plex": "'IBM Plex Sans', sans-serif",
+        mono: "'IBM Plex Mono', monospace",
       },
       colors: {
-        brand: "#FD4F00",
+        brand: "#ff346d",
         container: "#1A1A24",
         "se-black": "#111118",
         "se-green": "#88ff00",
         "se-hover-green": "#BAFF6A",
-        "se-violet": "#b43cff",
+        "se-violet": "#AE2EFF",
         "se-hover-violet": "#D38EFF",
         "se-blue": "#00eeff",
         "se-hover-blue": "#7BF6FF",
@@ -27,6 +28,10 @@ module.exports = {
         "se-pink": "#FF3C98",
         "se-hover-pink": "#FF88C0",
         "se-cash-green": "#00E11F",
+        "se-link": "#ff346d",
+        "se-inner-border": "#3f3f75",
+        "se-inner-bg": "#1e1e2b",
+        "se-list-border": "#30304a",
       },
     },
   },

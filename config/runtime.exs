@@ -20,8 +20,6 @@ if System.get_env("PHX_SERVER") do
   config :starknet_explorer, StarknetExplorerWeb.Endpoint, server: true
 end
 
-enable_listener? = System.get_env("ENABLE_LISTENER") == "true"
-
 rpc_host =
   System.get_env("RPC_API_HOST") ||
     raise """
@@ -40,15 +38,10 @@ testnet_2_rpc_host =
     environment variable for testnet 2 is missing.
     """
 
-continuation_token_format =
-  System.get_env("CONTINUATION_TOKEN_FORMAT", "short")
-
 config :starknet_explorer,
   rpc_host: rpc_host,
   testnet_host: testnet_rpc_host,
   testnet_2_host: testnet_2_rpc_host,
-  enable_listener: enable_listener?,
-  continuation_token_format: continuation_token_format,
   enable_gateway_data: System.get_env("ENABLE_GATEWAY_DATA") == "true"
 
 config :starknet_explorer, rpc_host: rpc_host
@@ -129,6 +122,9 @@ if config_env() == :prod do
       "https://www.madaraexplorer.com",
       "https://madaraexplorer.lambdaclass.com",
       "https://testing.madaraexplorer.com",
+      "https://starkcompass.com",
+      "https://www.starkcompass.com",
+      "https://testing.starkcompass.com",
       "https://#{host}:#{port}",
       "http://#{host}:#{port}"
     ],
@@ -144,12 +140,10 @@ if config_env() == :prod do
 
   # Newrelic agent
   newrelic_license_key =
-    System.get_env("NEWRELIC_KEY") ||
-      raise "environment variable NEWRELIC_KEY is missing."
+    System.get_env("NEWRELIC_KEY")
 
   newrelic_app_name =
-    System.get_env("NEWRELIC_APP_NAME") ||
-      raise "environment variable NEWRELIC_APP_NAME is missing."
+    System.get_env("NEWRELIC_APP_NAME")
 
   config :new_relic_agent,
     app_name: newrelic_app_name,

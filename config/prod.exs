@@ -12,9 +12,20 @@ config :starknet_explorer, StarknetExplorerWeb.Endpoint,
 config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: StarknetExplorer.Finch
 
 # Do not print debug messages in production
-# config :logger, level: :info
-# We are print debug messages temporary
-config :logger, :console, format: "[$level] $message\n"
+config :logger, format: "[$level] $message\n"
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
+config :sentry,
+  dsn: System.get_env("SENTRY_DSN"),
+  environment_name:
+    if(System.get_env("SENTRY_ENV") == "production", do: :production, else: :testing),
+  enable_source_code_context: true,
+  root_source_code_path: File.cwd!(),
+  tags: %{
+    env: System.get_env("SENTRY_ENV"),
+    runtime: "elixir"
+  },
+  included_environments: [
+    if(System.get_env("SENTRY_ENV") == "production", do: :production, else: :testing)
+  ]

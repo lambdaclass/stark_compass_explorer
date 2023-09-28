@@ -75,7 +75,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     </div>
     <div
       id="dropdown"
-      class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
+      class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
       phx-hook="Dropdown"
     >
       <span class="networkSelected capitalize"><%= assigns.view %></span>
@@ -85,7 +85,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     </div>
     <div class="options hidden">
       <div
-        class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
         phx-click="select-view"
         ,
         phx-value-view="overview"
@@ -93,7 +93,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         Overview
       </div>
       <div
-        class={"option #{if assigns.view == "transactions", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "transactions", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
         phx-click="select-view"
         ,
         phx-value-view="transactions"
@@ -101,7 +101,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         Transactions
       </div>
       <div
-        class={"option #{if assigns.view == "messages", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "messages", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
         phx-click="select-view"
         ,
         phx-value-view="messages"
@@ -109,7 +109,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         Message Logs
       </div>
       <div
-        class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
         phx-click="select-view"
         ,
         phx-value-view="events"
@@ -126,27 +126,17 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     {:ok, block} =
       case num_or_hash(param) do
         :hash ->
-          Data.block_by_hash(param, socket.assigns.network)
+          Data.block_by_hash(param, socket.assigns.network, false)
 
         :num ->
           {num, ""} = Integer.parse(param)
-          Data.block_by_number(num, socket.assigns.network)
+          Data.block_by_number(num, socket.assigns.network, false)
       end
-
-    {:ok, receipts} = Data.receipts_by_block(block, socket.assigns.network)
-
-    # note: most transactions receipt do not contain messages
-    l1_to_l2_messages =
-      block.transactions |> Enum.map(&Message.from_transaction/1) |> Enum.reject(&is_nil/1)
-
-    messages =
-      (receipts |> Enum.flat_map(&Message.from_transaction_receipt/1)) ++ l1_to_l2_messages
 
     assigns = [
       gas_price: Utils.hex_wei_to_eth(block.gas_fee_in_wei),
       execution_resources: block.execution_resources,
       block: block,
-      messages: messages,
       view: "overview",
       verification: "Pending",
       enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification),
@@ -154,9 +144,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     ]
 
     case Application.get_env(:starknet_explorer, :enable_gateway_data) do
-      #      true ->
-      #       Process.send_after(self(), :get_gateway_information, 200)
-
       _ ->
         :skip
     end
@@ -188,6 +175,63 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       |> assign(:execution_resources, resources_assign)
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event(
+        "select-view",
+        %{"view" => "transactions"},
+        socket
+      ) do
+    transactions =
+      if Map.get(socket.assigns, :transactions) == nil do
+        {:ok, receipts} = Data.receipts_by_block(socket.assigns.block, socket.assigns.network)
+
+        receipts =
+          receipts
+          |> Map.new(fn receipt ->
+            {receipt.transaction_hash, receipt}
+          end)
+
+        Data.transactions_by_block_number(socket.assigns.block.number, socket.assigns.network)
+        |> Enum.map(fn tx ->
+          %{tx | receipt: receipts[tx.hash]}
+        end)
+      else
+        socket.assigns.transactions
+      end
+
+    assigns = [
+      view: "transactions",
+      transactions: transactions
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event(
+        "select-view",
+        %{"view" => "messages"},
+        socket
+      ) do
+    transactions = block_transactions(socket)
+
+    # note: most transactions receipt do not contain messages
+    l1_to_l2_messages =
+      transactions |> Enum.map(&Message.from_transaction/1) |> Enum.reject(&is_nil/1)
+
+    messages =
+      (transactions
+       |> Enum.map(fn tx -> tx.receipt end)
+       |> Enum.flat_map(&Message.from_transaction_receipt/1)) ++ l1_to_l2_messages
+
+    assigns = [
+      view: "messages",
+      messages: messages
+    ]
+
+    {:noreply, assign(socket, assigns)}
   end
 
   def handle_event("inc_events", _value, socket) do
@@ -289,13 +333,16 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   def render_info(assigns = %{block: _, view: "transactions"}) do
     ~H"""
-    <div class="grid-3 table-th !pt-7 border-t border-gray-700">
+    <div class="grid-6 table-th !pt-7">
       <div>Hash</div>
       <div>Type</div>
       <div>Version</div>
+      <div>Status</div>
+      <div>Address</div>
+      <div>Age</div>
     </div>
-    <%= for _transaction = %{hash: hash, type: type, version: version} <- @block.transactions do %>
-      <div class="grid-3 custom-list-item">
+    <%= for transaction = %{hash: hash, type: type, version: version, sender_address: sender_address} <- @transactions do %>
+      <div class="grid-6 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
           <div
@@ -325,6 +372,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="list-h">Type</div>
           <div>
             <span class={"#{if type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+              <!-- TODO: add more statuses -->
               <%= type %>
             </span>
           </div>
@@ -332,6 +380,43 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Version</div>
           <div><%= version %></div>
+        </div>
+        <div>
+          <div class="list-h">Status</div>
+          <span class={"#{if transaction.receipt.finality_status == "ACCEPTED_ON_L2", do: "green-label"} #{if transaction.receipt.finality_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if transaction.receipt.finality_status == "PENDING", do: "pink-label"}"}>
+            <%= transaction.receipt.finality_status %>
+          </span>
+        </div>
+        <div>
+          <div class="list-h">Address</div>
+          <div
+            class="flex gap-2 items-center copy-container"
+            id={"copy-transaction-hash-#{sender_address}"}
+            phx-hook="Copy"
+          >
+            <div class="relative">
+              <div class="break-all text-hover-blue">
+                <%= Utils.shorten_block_hash(sender_address || "-") %>
+              </div>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={sender_address || "-"}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="list-h">Age</div>
+          <div><%= Utils.get_block_age_from_timestamp(@block.timestamp) %></div>
         </div>
       </div>
     <% end %>
@@ -349,13 +434,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>To Address</div>
         <div>Transaction Hash</div>
       </div>
-      <%= for message <- @messages do %>
+      <%= for {message, index} <- Enum.with_index(@messages) do %>
         <div class="grid-6 custom-list-item">
           <div>
             <div class="list-h">Message Hash</div>
             <div
               class="flex gap-2 items-center copy-container"
-              id={"copy-transaction-hash-#{message.message_hash}"}
+              id={"copy-message-hash-#{index}"}
               phx-hook="Copy"
             >
               <div class="relative">
@@ -401,7 +486,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             <div class="list-h">From Address</div>
             <div
               class="flex gap-2 items-center copy-container"
-              id={"copy-transaction-hash-#{message.from_address}"}
+              id={"copy-from-addr-#{index}"}
               phx-hook="Copy"
             >
               <div class="relative">
@@ -432,7 +517,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             <div class="list-h">To Address</div>
             <div
               class="flex gap-2 items-center copy-container"
-              id={"copy-transaction-hash-#{message.to_address}"}
+              id={"copy-to-addr-#{index}"}
               phx-hook="Copy"
             >
               <div class="relative">
@@ -463,7 +548,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             <div class="list-h">Transaction Hash</div>
             <div
               class="flex gap-2 items-center copy-container"
-              id={"copy-transaction-hash-#{message.transaction_hash}"}
+              id={"copy-transaction-hash-#{index}"}
               phx-hook="Copy"
             >
               <div class="relative">
@@ -522,7 +607,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
-    <div class="grid-4 custom-list-item">
+    <div class="grid-4 custom-list-item lg:border-transparent">
       <div class="block-label">Block Hash</div>
       <div
         class="copy-container col-span-3 text-hover-blue"
@@ -657,7 +742,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   def render_info(assigns = %{block: _block, view: "events"}) do
     ~H"""
-    <div class="table-th !pt-7 border-t border-gray-700 grid-6">
+    <div class="table-th !pt-7 grid-6">
       <div>Identifier</div>
       <div>Block Number</div>
       <div>Transaction Hash</div>
@@ -671,13 +756,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="list-h">Identifier</div>
           <div
             class="flex gap-2 items-center copy-container"
-            id={"copy-transaction-hash-#{event.id}"}
+            id={"copy-event-id-#{event.id}"}
             phx-hook="Copy"
           >
             <div class="relative">
               <div class="break-all text-hover-blue">
                 <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-blue">
-                  <span><%= event.id %></span>
+                  <span><%= event.id |> Utils.shorten_block_hash() %></span>
                 </a>
               </div>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -700,7 +785,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="list-h">Block Number</div>
           <div>
             <span class="blue-label">
-              <a href={Utils.network_path(@network, "/blocks/#{@block.hash}")} class="text-hover-blue">
+              <a href={Utils.network_path(@network, "blocks/#{@block.hash}")} class="text-hover-blue">
                 <span><%= to_string(@block.number) %></span>
               </a>
             </span>
@@ -710,7 +795,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="list-h">Transaction Hash</div>
           <div>
             <a
-              href={Utils.network_path(@network, "/transactions/#{event.transaction_hash}")}
+              href={Utils.network_path(@network, "transactions/#{event.transaction_hash}")}
               class="text-hover-blue"
             >
               <span><%= event.transaction_hash |> Utils.shorten_block_hash() %></span>
@@ -725,7 +810,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             <% else %>
               <div
                 class="flex gap-2 items-center copy-container"
-                id={"copy-transaction-hash-#{event.name}"}
+                id={"copy-name-#{event.id}"}
                 phx-hook="Copy"
               >
                 <div class="relative">
@@ -758,12 +843,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             phx-hook="Copy"
           >
             <div class="relative">
-              <a
-                href={Utils.network_path(@network, "/contracts/#{event.from_address}")}
-                class="text-hover-blue"
-              >
-                <span><%= event.from_address |> Utils.shorten_block_hash() %></span>
-              </a>
+              <span><%= event.from_address |> Utils.shorten_block_hash() %></span>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
                   <img
@@ -797,5 +877,18 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <% end %>
     </div>
     """
+  end
+
+  defp block_transactions(socket) do
+    if Map.get(socket.assigns, :transactions) == nil do
+      {:ok, receipts} = Data.receipts_by_block(socket.assigns.block, socket.assigns.network)
+
+      Data.transactions_by_block_number(socket.assigns.block.number, socket.assigns.network)
+      |> Enum.map(fn tx ->
+        %{tx | receipt: Enum.find(receipts, nil, fn r -> r.transaction_hash == tx.hash end)}
+      end)
+    else
+      socket.assigns.transactions
+    end
   end
 end

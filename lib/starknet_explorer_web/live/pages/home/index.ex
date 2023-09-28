@@ -1,47 +1,69 @@
 defmodule StarknetExplorerWeb.HomeLive.Index do
   alias StarknetExplorerWeb.Component.TransactionsPerSecond, as: TPSComponent
+  alias StarknetExplorerWeb.CoreComponents
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.IndexCache
   use Phoenix.Component
   use StarknetExplorerWeb, :live_view
 
   @impl true
   def mount(_params, _session, socket) do
-    Process.send_after(self(), :load_blocks, 100, [])
+    socket = load_blocks(socket)
 
-    entities_count = %{
-      message_count: "Loading...",
-      events_count: "Loading...",
-      transaction_count: "Loading..."
-    }
-
-    {:ok,
-     assign(socket,
-       blocks: [],
-       latest_block: [],
-       block_height: "Loading...",
-       entities_count: entities_count,
-       transactions: []
-     )}
+    {:ok, socket}
   end
 
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col gap-1 justify-center items-center mb-16">
-      <h1>Madara Starknet Explorer</h1>
+    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
+      id: "search-bar",
+      flash: @flash,
+      session: %{"network" => @network}
+    ) %>
+    <div class="flex flex-col gap-1 justify-center items-center my-16">
+      <h1>Stark Compass</h1>
+      <div class="uppercase px-3 py-1 rounded-lg violet-label !font-medium mt-2 text-center text-xl lg:text-xl">
+        The only open source explorer of Starknet
+      </div>
     </div>
     <div class="mx-auto max-w-7xl mt-4 mb-5">
-      <div class="relative w-full md:w-52 flex items-start gap-3 bg-container p-3 text-sm mb-3">
-        <img id="tps" class="absolute top-2 right-2 w-5 h-5" src={~p"/images/help-circle.svg"} />
-        <img src={~p"/images/zap.svg"} class="my-auto" />
-        <div class="flex">
-          <div class="border-r border-r-gray-700 pr-4 mr-4">TPS</div>
-          <div>
-            <%= live_render(@socket, TPSComponent,
-              id: "tps-number",
-              session: %{"network" => Map.get(assigns, :network)}
-            ) %>
+      <div class="flex justify-between">
+        <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
+          <img src={~p"/images/zap.svg"} class="my-auto" />
+          <div class="flex">
+            <div class="flex items-center gap-2 border-r border-r-gray-700 pr-2 mr-2">
+              TPS
+              <CoreComponents.tooltip
+                id="tps-tooltip"
+                text="The average transactions per second calculated from the last block"
+                class="translate-y-px"
+              />
+            </div>
+            <div>
+              <%= live_render(@socket, TPSComponent,
+                id: "tps-number",
+                session: %{"network" => Map.get(assigns, :network)}
+              ) %>
+            </div>
           </div>
+        </div>
+        <div>
+          <a href="https://github.com/lambdaclass/stark_compass_explorer">
+            <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
+              <img src={~p"/images/github.svg"} class="my-auto" />
+            </div>
+          </a>
+          <a href="https://twitter.com/LambdaStarknet">
+            <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
+              <img src={~p"/images/twitter.svg"} class="my-auto" />
+            </div>
+          </a>
+          <a href="https://t.me/LambdaStarkNet">
+            <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
+              <img src={~p"/images/telegram.svg"} class="my-auto" />
+            </div>
+          </a>
         </div>
       </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -66,7 +88,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <img src={~p"/images/message-square.svg"} class="my-auto w-6 h-auto" />
               <div>
                 <div class="text-sm text-gray-400">Messages</div>
-                <div class="text-2xl mt-1"><%= @entities_count.message_count %></div>
+                <div class="text-2xl mt-1"><%= @entities_count.messages_count %></div>
               </div>
             </div>
             <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
@@ -258,13 +280,27 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
     """
   end
 
-  @impl true
-  def handle_info(:load_blocks, socket) do
-    blocks = StarknetExplorer.Data.many_blocks(socket.assigns.network)
+  def load_blocks(socket) do
+    blocks =
+      if length(IndexCache.latest_blocks(socket.assigns.network)) < 15 do
+        StarknetExplorer.Data.many_blocks_with_txs(socket.assigns.network)
+      else
+        IndexCache.latest_blocks(socket.assigns.network)
+      end
 
     case List.first(blocks) do
       nil ->
-        {:noreply, socket}
+        assign(socket,
+          blocks: [],
+          transactions: [],
+          entities_count: %{
+            messages_count: 0,
+            events_count: 0,
+            transaction_count: 0
+          },
+          latest_block: 0,
+          block_height: 0
+        )
 
       latest_block ->
         transactions =
@@ -277,34 +313,22 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
         # get entities count and format for display
         entities_count =
-          StarknetExplorer.Data.get_entity_count()
+          StarknetExplorer.Data.get_entity_count(socket.assigns.network)
           |> Enum.map(fn {entity, count} ->
             {entity, StarknetExplorer.Utils.format_number_for_display(count)}
           end)
           |> Map.new()
 
-        max_block_height =
-          case StarknetExplorer.Blockchain.ListenerWorker.get_height(
-                 StarknetExplorer.Utils.listener_atom(socket.assigns.network)
-               ) do
-            {:ok, max_block_height} ->
-              max_block_height
+        {:ok, block_height} = StarknetExplorer.Rpc.get_block_height(socket.assigns.network)
+        block_height = StarknetExplorer.Utils.format_number_for_display(block_height)
 
-            {:err, _} ->
-              {:ok, max_block_height} =
-                StarknetExplorer.Rpc.get_block_height(socket.assigns.network)
-
-              max_block_height
-          end
-
-        {:noreply,
-         assign(socket,
-           blocks: blocks,
-           transactions: transactions,
-           entities_count: entities_count,
-           latest_block: latest_block,
-           block_height: StarknetExplorer.Utils.format_number_for_display(max_block_height)
-         )}
+        assign(socket,
+          blocks: blocks,
+          transactions: transactions,
+          entities_count: entities_count,
+          latest_block: latest_block,
+          block_height: block_height
+        )
     end
   end
 end

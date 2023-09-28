@@ -50,6 +50,11 @@
       NEWRELIC_APP_NAME:
       SECRET_KEY_BASE: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
       PORT: "4100"
+      SENTRY_ENV: "{{ lookup('ansible.builtin.env', 'SENTRY_ENV') }}"
+      SENTRY_DSN: "{{ lookup('ansible.builtin.env', 'SENTRY_DSN') }}"
+      ENABLE_MAINNET_SYNC: "true"
+      ENABLE_TESTNET_SYNC: "true"
+      ENABLE_TESTNET2_SYNC: "true"
     args:
       chdir: /home/starknet_explorer/tmp/madara_explorer
     register: build_output
@@ -83,10 +88,14 @@
       aws_secret_access_key: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY') }}"
       aws_region: "{{ lookup('ansible.builtin.env', 'AWS_REGION') }}"
       prover_storage: "{{ lookup('ansible.builtin.env', 'PROVER_STORAGE') }}"
-      enable_listener: "{{ lookup('ansible.builtin.env', 'ENABLE_LISTENER') }}"
       enable_gateway_data: "{{ lookup('ansible.builtin.env', 'ENABLE_GATEWAY_DATA') }}"
       newrelic_key: "{{ lookup('ansible.builtin.env', 'NEWRELIC_KEY') }}"
       newrelic_app_name: "{{ lookup('ansible.builtin.env', 'NEWRELIC_APP_NAME') }}"
+      sentry_env: "{{ lookup('ansible.builtin.env', 'SENTRY_ENV') }}"
+      sentry_dsn: "{{ lookup('ansible.builtin.env', 'SENTRY_DSN') }}"
+      enable_mainnet_sync: "true"
+      enable_testnet_sync: "true"
+      enable_testnet2_sync: "true"
 
   - name: Create user systemd directory
     ansible.builtin.file:
