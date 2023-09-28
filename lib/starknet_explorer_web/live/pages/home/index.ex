@@ -155,7 +155,79 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             <div class="col-span-2">Status</div>
             <div>Age</div>
           </div>
-          <%= for block <- Enum.take(@blocks, 15) do %>
+          <%= for n <- 1..15 do %>
+          <div id={"block-#{Enum.at(@blocks,n-1).number}"} class="grid-6 custom-list-item">
+              <div>
+                <div class="list-h">Number</div>
+                <a
+                href={Utils.network_path(assigns.network, "blocks/#{Enum.at(@blocks,n-1).number}")}
+                  class="text-hover-blue"
+                >
+                  <span>
+                  <CoreComponents.loading_state
+                    content={Enum.at(@blocks,n-1).number}
+                    mock="00000"
+                    id="loading_state"
+                  />
+                  </span>
+                </a>
+              </div>
+              <div class="col-span-2">
+                <div class="list-h">Block Hash</div>
+                <div class="copy-container" id={"copy-block-#{(Enum.at(@blocks,n-1).number)}"} phx-hook="Copy">
+                  <div class="relative">
+                    <a
+                      href={Utils.network_path(assigns.network, "blocks/#{(Enum.at(@blocks,n-1).hash)}")}
+                      class="text-hover-blue"
+                    >
+                      <span>
+                      <CoreComponents.loading_state
+                    content={Utils.shorten_block_hash(Enum.at(@blocks,n-1).hash)}
+                    mock="00000"
+                    id="loading_state"
+                  />
+                      </span>
+                    </a>
+                    <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                      <div class="relative">
+                        <img
+                          class="copy-btn copy-text w-4 h-4"
+                          src={~p"/images/copy.svg"}
+                          data-text={Enum.at(@blocks,n-1).hash}
+                        />
+                        <img
+                          class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                          src={~p"/images/check-square.svg"}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-span-2">
+                <div class="list-h">Status</div>
+                <div>
+                  <span class={"#{if Enum.at(@blocks,n-1).status == "ACCEPTED_ON_L2", do: "green-label"} #{if Enum.at(@blocks,n-1).status == "ACCEPTED_ON_L1", do: "blue-label"} #{if Enum.at(@blocks,n-1).status == "PENDING", do: "pink-label"}"}>
+                  <CoreComponents.loading_state
+                    content={Enum.at(@blocks,n-1).status}
+                    mock="00000"
+                    id="loading_state"
+                  />
+                  </span>
+                </div>
+              </div>
+              <div>
+                <div class="list-h">Age</div>
+                <CoreComponents.loading_state
+                    content={Utils.get_block_age(Enum.at(@blocks,n-1))}
+                    mock="0000"
+                    id="loading_state"
+                  />
+              </div>
+            </div>
+          <% end %>
+
+          <%!-- <%= for block <- Enum.take(@blocks, 15) do %>
             <div id={"block-#{block.number}"} class="grid-6 custom-list-item">
               <div>
                 <div class="list-h">Number</div>
@@ -205,7 +277,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <%= Utils.get_block_age(block) %>
               </div>
             </div>
-          <% end %>
+          <% end %> --%>
         </div>
       </div>
       <div>
@@ -228,7 +300,57 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             <div class="col-span-2">Status</div>
             <div>Age</div>
           </div>
-          <%= for {transaction, idx} <- Enum.take(Enum.with_index(@transactions), 15) do %>
+          <%!-- <%= for n <- 1..15 do %>
+          <div id={"transaction-#{Enum.at(Enum.with_index(@transactions), n-1).idx}"} class="grid-7 custom-list-item">
+              <div class="col-span-2">
+                <div class="list-h">Transaction Hash</div>
+                <div class="copy-container" id={"copy-transaction-#{Enum.at(Enum.with_index(@transactions), n-1).idx}"} phx-hook="Copy">
+                  <div class="relative">
+                    <a
+                      href={Utils.network_path(assigns.network, "transactions/#{Enum.at(Enum.with_index(@transactions), n-1).hash}")}
+                      class="text-hover-blue"
+                    >
+                      <span><%= Utils.shorten_block_hash(Enum.at(Enum.with_index(@transactions), n-1).hash) %></span>
+                    </a>
+                    <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                      <div class="relative">
+                        <img
+                          class="copy-btn copy-text w-4 h-4"
+                          src={~p"/images/copy.svg"}
+                          data-text={Enum.at(Enum.with_index(@transactions), n-1).hash}
+                        />
+                        <img
+                          class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                          src={~p"/images/check-square.svg"}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-span-2">
+                <div class="list-h">Type</div>
+                <div>
+                  <span class={"#{if transaction.type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+                    <%= transaction.type %>
+                  </span>
+                </div>
+              </div>
+              <div class="col-span-2">
+                <div class="list-h">Status</div>
+                <div>
+                  <span class={"#{if transaction.block_status == "ACCEPTED_ON_L2", do: "green-label"} #{if transaction.block_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if transaction.block_status == "PENDING", do: "pink-label"}"}>
+                    <%= transaction.block_status %>
+                  </span>
+                </div>
+              </div>
+              <div>
+                <div class="list-h">Age</div>
+                <%= Utils.get_block_age_from_timestamp(transaction.block_timestamp) %>
+              </div>
+            </div>
+          <% end %> --%>
+          <%!-- <%= for {transaction, idx} <- Enum.take(Enum.with_index(@transactions), 15) do %>
             <div id={"transaction-#{idx}"} class="grid-7 custom-list-item">
               <div class="col-span-2">
                 <div class="list-h">Transaction Hash</div>
@@ -277,7 +399,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <%= Utils.get_block_age_from_timestamp(transaction.block_timestamp) %>
               </div>
             </div>
-          <% end %>
+          <% end %> --%>
         </div>
       </div>
     </div>
