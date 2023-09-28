@@ -168,7 +168,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
                 "transactions/0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
               )
             }
-            class="text-hover-blue"
+            class="text-se-blue"
           >
             <span>
               <%= "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
@@ -218,7 +218,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
                   "blocks/98133"
                 )
               }
-              class="text-hover-blue"
+              class="text-se-blue"
             >
               <span> 98133 </span>
             </a>
@@ -281,7 +281,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
                   "blocks/98133"
                 )
               }
-              class="text-hover-blue"
+              class="text-se-blue"
             >
               <span> 98133 </span>
             </a>
@@ -296,7 +296,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
                 "transactions/0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
               )
             }
-            class="text-hover-blue"
+            class="text-se-blue"
           >
             <span>
               <%= Utils.shorten_block_hash(

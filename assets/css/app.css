@@ -6,14 +6,14 @@
 /*
 Styles criteria:
 
-Lilac is used for icons and features like copy buttons
+red is used for icons and features like copy buttons
 
 Blue is used for links
 
-Pink and Violet for details and highlights
+orange and pink for details and highlights
 (they should be avoided from being used for texts due to their low contrast)
 
-with that being said, Blue, Green, Violet and Pink can be used for labels if needed
+with that being said, Blue, Green, pink and orange can be used for labels if needed
 
 */
 
@@ -27,7 +27,7 @@ html {
 
 /* Titles */
 h1 {
-  @apply font-ibm-plex text-center lg:text-left text-3xl lg:text-4xl uppercase font-semibold;
+  @apply font-ibm-plex text-center lg:text-left text-4xl uppercase font-semibold;
 }
 h2 {
   @apply font-ibm-plex text-2xl lg:mb-6;
@@ -39,7 +39,7 @@ a,
 }
 
 .network-option {
-  @apply text-white bg-container hover:bg-se-violet/80 relative select-none py-2 pl-3 pr-9 w-full cursor-pointer flex items-center;
+  @apply text-white bg-container hover:bg-se-pink/80 relative select-none py-2 pl-3 pr-9 w-full cursor-pointer flex items-center;
 }
 
 /* Tables */
@@ -80,10 +80,10 @@ a,
   @apply md:grid grid-cols-5 items-center gap-1 md:gap-5;
 }
 .grid-6 {
-  @apply md:grid grid-cols-6 items-center gap-1 md:gap-5;
+  @apply lg:grid grid-cols-6 items-center gap-1 lg:gap-5;
 }
 .grid-7 {
-  @apply md:grid grid-cols-7 items-center gap-1 md:gap-5;
+  @apply lg:grid grid-cols-7 items-center gap-1 lg:gap-5;
 }
 .grid-8 {
   @apply lg:grid grid-cols-8 items-center gap-1 lg:gap-5;
@@ -100,11 +100,12 @@ a,
 }
 .grid-3 .list-h,
 .grid-4 .list-h,
-.grid-5 .list-h,
-.grid-6 .list-h,
-.grid-7 .list-h {
+.grid-5 .list-h {
   @apply font-ibm-plex text-sm pt-2 md:hidden;
 }
+
+.grid-6 .list-h,
+.grid-7 .list-h,
 .grid-8 .list-h,
 .grid-9 .list-h {
   @apply font-ibm-plex text-sm pt-2 lg:hidden;
@@ -115,11 +116,12 @@ a,
 
 .grid-3.table-th,
 .grid-4.table-th,
-.grid-5.table-th,
-.grid-6.table-th,
-.grid-7.table-th {
+.grid-5.table-th {
   @apply hidden md:grid font-ibm-plex text-sm pt-2 text-gray-400;
 }
+
+.grid-6.table-th,
+.grid-7.table-th,
 .grid-8.table-th,
 .grid-9.table-th {
   @apply hidden lg:grid font-ibm-plex text-sm pt-2 text-gray-400;
@@ -142,46 +144,43 @@ input {
 }
 
 /* Text Styles */
-.text-hover-blue {
-  @apply text-se-blue hover:text-se-hover-blue transition-all duration-300;
-}
-.text-hover-green {
-  @apply text-se-green hover:text-se-hover-green transition-all duration-300;
-}
-.text-hover-pink {
-  @apply text-se-pink hover:text-se-hover-pink transition-all duration-300;
-}
-.text-hover-violet {
-  @apply text-se-violet hover:text-se-hover-violet transition-all duration-300;
-}
-.text-hover-lilac {
-  @apply text-se-lilac hover:text-se-hover-lilac transition-all duration-300;
-}
-.text-hover-gray {
-  @apply text-gray-400 hover:text-gray-300 transition-all duration-300;
+.text-hover-link {
+  @apply text-se-link hover:text-se-hover-link transition-all duration-300;
 }
 
 /* Rounded Labels */
 .info-label {
   @apply px-3 py-0.5 ml-0.5 border-l rounded-l-none rounded-md;
 }
-.pink-label {
-  @apply text-hover-pink bg-se-pink/5 border-se-pink;
+.orange-label,
+.approval,
+.mint,
+.sync {
+  @apply text-se-orange bg-se-orange/5 border-se-orange;
 }
-.blue-label {
-  @apply text-hover-blue bg-se-blue/5 border-se-blue;
+.blue-label,
+.accepted_on_l2 {
+  @apply text-se-blue bg-se-blue/5 border-se-blue;
 }
-.green-label {
-  @apply text-hover-green bg-se-green/5 border-se-green;
+.green-label,
+.accepted_on_l1 {
+  @apply text-se-green bg-se-green/5 border-se-green;
 }
-.violet-label {
-  @apply text-se-violet bg-se-violet/5 border-se-violet;
+.pink-label,
+.swap,
+.burn {
+  @apply text-se-pink bg-se-pink/5 border-se-pink;
 }
-.lilac-label {
-  @apply text-hover-lilac bg-se-lilac/5 border-se-lilac;
+.red-label,
+.transfer,
+.transaction_executed {
+  @apply text-se-red bg-se-red/5 border-se-red;
 }
 .gray-label {
-  @apply text-hover-gray bg-gray-400/5 border-gray-400;
+  @apply text-gray-400 bg-gray-400/5 border-gray-400;
+}
+.cash-label {
+  @apply text-se-cash-green bg-se-cash-green/5 border-se-cash-green;
 }
 
 /* Dropdown */
@@ -189,21 +188,34 @@ main .options {
   @apply bg-black/20 lg:bg-transparent lg:flex lg:flex-row mt-2 lg:mt-0 mb-10 lg:mb-0 lg:border-b border-b-gray-700;
 }
 main .option {
-  @apply border-b border-b-transparent py-3 px-3 transition-all duration-300 -mb-px;
+  @apply border-b-2 border-b-transparent py-3 px-5 transition-all duration-300 -mb-px;
 }
 .option:hover {
   cursor: pointer;
 }
 
 .type {
-  @apply bg-[#292946] text-white border border-[#5D5D75] text-sm uppercase px-3 py-0.5 rounded-md -translate-x-0.5;
+  @apply bg-[#202037] text-white  text-sm uppercase px-3 py-0.5 rounded-md -translate-x-0.5;
 }
 
-.type.l1_to_l2_executed_on_l2 {
+.type.l1_to_l2_executed_on_l2,
+.sent-on-l2 {
   @apply text-se-green;
 }
-.type.l2_to_l1_executed_on_l2 {
+.type.l2_to_l1_executed_on_l2,
+.type-blue,
+.consumed-on-l2 {
   @apply text-se-blue;
+}
+.type.deploy_account {
+  @apply text-se-pink;
+}
+.type.declare,
+.l1_handler {
+  @apply text-se-red;
+}
+.type.invoke {
+  @apply text-se-orange;
 }
 
 .hash {

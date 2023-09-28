@@ -1,5 +1,6 @@
 defmodule StarknetExplorerWeb.BlockIndexLive do
   use StarknetExplorerWeb, :live_view
+  alias StarknetExplorerWeb.CoreComponents
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.Block
 
@@ -26,40 +27,28 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
           <div id={"block-#{block.number}"} class="grid-6 custom-list-item">
             <div>
               <div class="list-h">Number</div>
-              <a href={Utils.network_path(@network, "blocks/#{block.number}")} class="text-hover-blue">
+              <a href={Utils.network_path(@network, "blocks/#{block.number}")} class="type">
                 <span><%= to_string(block.number) %></span>
               </a>
             </div>
             <div class="col-span-2">
               <div class="list-h">Block Hash</div>
-              <div class="copy-container" id={"copy-bk-#{block.number}"} phx-hook="Copy">
-                <div class="relative">
+              <div class="block-data">
+                <div class="hash flex">
                   <a
                     href={Utils.network_path(@network, "blocks/#{block.hash}")}
-                    class="text-hover-blue"
+                    class="text-hover-link"
                   >
                     <span><%= Utils.shorten_block_hash(block.hash) %></span>
                   </a>
-                  <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                    <div class="relative">
-                      <img
-                        class="copy-btn copy-text w-4 h-4"
-                        src={~p"/images/copy.svg"}
-                        data-text={block.hash}
-                      />
-                      <img
-                        class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                        src={~p"/images/check-square.svg"}
-                      />
-                    </div>
-                  </div>
+                  <CoreComponents.copy_button text={block.hash} />
                 </div>
               </div>
             </div>
             <div class="col-span-2">
               <div class="list-h">Status</div>
               <div>
-                <span class={"#{if block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if block.status == "PENDING", do: "pink-label"}"}>
+                <span class={"info-label #{String.downcase(block.status)}"}>
                   <%= block.status %>
                 </span>
               </div>
