@@ -187,9 +187,15 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       if Map.get(socket.assigns, :transactions) == nil do
         {:ok, receipts} = Data.receipts_by_block(socket.assigns.block, socket.assigns.network)
 
+        receipts =
+          receipts
+          |> Map.new(fn receipt ->
+            {receipt.transaction_hash, receipt}
+          end)
+
         Data.transactions_by_block_number(socket.assigns.block.number, socket.assigns.network)
         |> Enum.map(fn tx ->
-          %{tx | receipt: Enum.find(receipts, nil, fn r -> r.transaction_hash == tx.hash end)}
+          %{tx | receipt: receipts[tx.hash]}
         end)
       else
         socket.assigns.transactions
@@ -397,21 +403,19 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
               <div class="break-all text-hover-blue">
                 <%= Utils.shorten_block_hash(sender_address || "-") %>
               </div>
-              <%= if sender_address != nil do %>
-                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                  <div class="relative">
-                    <img
-                      class="copy-btn copy-text w-4 h-4"
-                      src={~p"/images/copy.svg"}
-                      data-text={sender_address}
-                    />
-                    <img
-                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                      src={~p"/images/check-square.svg"}
-                    />
-                  </div>
+              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                <div class="relative">
+                  <img
+                    class="copy-btn copy-text w-4 h-4"
+                    src={~p"/images/copy.svg"}
+                    data-text={sender_address || "-"}
+                  />
+                  <img
+                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                    src={~p"/images/check-square.svg"}
+                  />
                 </div>
-              <% end %>
+              </div>
             </div>
           </div>
         </div>
