@@ -99,13 +99,13 @@ defmodule StarknetExplorerWeb.SearchLive do
       if String.length(query) > 0 do
         case try_search(query, socket.assigns.network) do
           {:tx, _tx} ->
-            fn -> assign(socket, tx: query) end
+            fn -> assign(socket, tx: query, result: "Found") end
 
           {:block, block} ->
             fn -> assign(socket, block: block, result: "Found") end
 
           {:message, _message} ->
-            fn -> assign(socket, message: query) end
+            fn -> assign(socket, message: query, result: "Found") end
 
           :noquery ->
             fn ->
