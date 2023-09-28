@@ -240,9 +240,9 @@ defmodule StarknetExplorer.Data do
 
     if counts do
       Map.new()
-      |> Map.put(:message_count, 37458)
-      |> Map.put(:events_count, 11_450_689)
-      |> Map.put(:transaction_count, 2_134_955)
+      |> Map.put(:messages_count, counts.messages)
+      |> Map.put(:events_count, counts.events)
+      |> Map.put(:transaction_count, counts.transactions)
       |> Map.put(:block_count, counts.blocks)
     else
       Map.new()

@@ -69,7 +69,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <img src={~p"/images/message-square.svg"} class="my-auto w-6 h-auto" />
               <div>
                 <div class="text-sm text-gray-400">Messages</div>
-                <div class="text-2xl mt-1"><%= @entities_count.message_count %></div>
+                <div class="text-2xl mt-1"><%= @entities_count.messages_count %></div>
               </div>
             </div>
             <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
