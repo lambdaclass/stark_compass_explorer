@@ -1,6 +1,7 @@
 defmodule StarknetExplorerWeb.ClassDetailLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.Class
   # defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
   # defp num_or_hash(_num), do: :num
 
@@ -9,13 +10,31 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     <div class="flex flex-row justify-between lg:justify-start gap-5 items-baseline pb-5 lg:pb-0">
       <div class="flex flex-col lg:flex-row gap-2 items-baseline">
         <h2>Class</h2>
-        <div class="font-semibold">
-          <%= Utils.shorten_block_hash(
-            "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
-          ) %>
+        <div
+          class="copy-container break-all pr-10 lg:pr-0"
+          id={"class-header-#{@class.class_hash}"}
+          phx-hook="Copy"
+        >
+          <div class="relative">
+            <div class="font-semibold">
+              <%= @class.class_hash %>
+            </div>
+            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+              <div class="relative">
+                <img
+                  class="copy-btn copy-text w-4 h-4"
+                  src={~p"/images/copy.svg"}
+                  data-text={@class.class_hash}
+                />
+                <img
+                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                  src={~p"/images/check-square.svg"}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <span class="gray-label text-sm">Mocked</span>
     </div>
     <div
       id="dropdown"
@@ -65,28 +84,14 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
   end
 
   @impl true
-  def mount(_params = %{"hash" => _hash}, _session, socket) do
-    # {:ok, block} =
-    #   case num_or_hash(param) do
-    #     :hash ->
-    #       Rpc.get_block_by_hash(param)
-
-    #     :num ->
-    #       {num, ""} = Integer.parse(param)
-    #       Rpc.get_block_by_number(num)
-    #   end
-
-    # assigns = [
-    #   block: block,
-    #   view: "overview"
-    # ]
+  def mount(_params = %{"hash" => hash}, _session, socket) do
+    class = Class.get_by_hash(hash, socket.assigns.network)
 
     assigns = [
-      class: nil,
+      class: class,
       view: "overview"
     ]
 
-    # {:ok, assign(socket, assigns)}
     {:ok, assign(socket, assigns)}
   end
 
@@ -165,20 +170,18 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     """
   end
 
-  def render_info(assigns = %{class: _block, view: "overview"}) do
+  def render_info(assigns = %{view: "overview"}) do
     ~H"""
     <div class="grid-4 custom-list-item">
       <div>Class Hash</div>
       <div class="cols-span-3">
-        <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
-        |> Utils.shorten_block_hash() %>
+        <%= Utils.shorten_block_hash(@class.class_hash) %>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
       <div>Declared By Contract Address</div>
       <div class="cols-span-3">
-        <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
-        |> Utils.shorten_block_hash() %>
+        <%= Utils.shorten_block_hash(@class.declared_by_contract_address) %>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
@@ -188,25 +191,28 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
           href={
             Utils.network_path(
               @network,
-              "transactions/0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
+              "transactions/#{@class.declared_at_transaction_hash}"
             )
           }
           class="text-hover-blue"
         >
           <span>
-            <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
-            |> Utils.shorten_block_hash() %>
+            <%= Utils.shorten_block_hash(@class.declared_at_transaction_hash) %>
           </span>
         </a>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
       <div>Declared At</div>
-      <div class="cols-span-3">July 4, 2023 at 7:10:11 PM GMT-3</div>
+      <div class="cols-span-3">
+        <%= Utils.format_timestamp(@class.timestamp) %>
+      </div>
     </div>
     <div class="grid-4 custom-list-item">
       <div>Class Version</div>
-      <div class="cols-span-3">Cairo 1.0</div>
+      <div class="cols-span-3">
+        <%= Utils.format_version(@class.version) %>
+      </div>
     </div>
     """
   end

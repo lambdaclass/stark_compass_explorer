@@ -3,7 +3,7 @@ defmodule StarknetExplorerWeb.Utils do
   alias StarknetExplorer.DateUtils
   use StarknetExplorerWeb, :verified_routes
 
-  def shorten_block_hash(nil), do: ""
+  def shorten_block_hash(nil), do: "-"
 
   def shorten_block_hash(block_hash) do
     case String.length(block_hash) do
@@ -35,6 +35,25 @@ defmodule StarknetExplorerWeb.Utils do
       _ ->
         "#{days} d"
     end
+  end
+
+  def format_timestamp(nil) do
+    "-"
+  end
+
+  def format_timestamp(timestamp) do
+    timestamp
+    |> DateTime.from_unix()
+    |> then(fn {:ok, time} -> time end)
+    |> Calendar.strftime("%c")
+  end
+
+  def format_version("0.1.0") do
+    "Cairo 1.0"
+  end
+
+  def format_version(_) do
+    "Cairo 0"
   end
 
   # 1 eth = 10^18 wei

@@ -2,8 +2,7 @@ defmodule StarknetExplorer.Block do
   use Ecto.Schema
   import Ecto.Query
   import Ecto.Changeset
-  alias StarknetExplorer.Events
-  alias StarknetExplorer.{Repo, Transaction, Block, Message}
+  alias StarknetExplorer.{Repo, Transaction, Block, Message, Events, Class}
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.TransactionReceipt, as: Receipt
   require Logger
@@ -150,6 +149,8 @@ defmodule StarknetExplorer.Block do
         |> Map.put("name_hashed", List.first(keys))
       end)
 
+    classes = Class.fetch_from_rpc(block, network)
+
     transaction_result =
       StarknetExplorer.Repo.transaction(fn ->
         block_changeset = Block.changeset_with_validations(%Block{}, block)
@@ -182,6 +183,7 @@ defmodule StarknetExplorer.Block do
           end)
 
         Enum.each(events, fn event -> {:ok, _event} = Events.insert(event) end)
+        Enum.each(classes, fn class -> {:ok, _class} = Class.insert(class) end)
       end)
 
     amount_messages =

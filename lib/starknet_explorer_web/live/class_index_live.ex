@@ -1,22 +1,7 @@
 defmodule StarknetExplorerWeb.ClassIndexLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-
-  # <%= for {class, idx} <- Enum.with_index(@classes) do %>
-  # <ul id={"class-#{idx}"} class="transactions-grid border-t border-gray-600">
-  #             <li class="col-span-2">
-  #               <%= live_redirect(Utils.shorten_block_hash(class.hash),
-  #                 to: "/classes/#{class.hash}",
-  #                 class: "text-hover-blue"
-  #               ) %>
-  #             </li>
-  #             <li class="col-span-2">
-  #               <%= transaction["type"] %>
-  #             </li>
-  #             <li class="col-span-2"><%= block["status"] %></li>
-  #             <li><%= Utils.get_block_age(block) %></li>
-  #           </ul>
-  # <% end %>
+  alias StarknetExplorer.Class
 
   @impl true
   def render(assigns) do
@@ -28,7 +13,6 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
     <div class="max-w-7xl mx-auto">
       <div class="table-header !justify-start gap-5">
         <h2>Classes</h2>
-        <span class="gray-label text-sm">Mocked</span>
       </div>
       <div class="table-block">
         <div class="grid-3 table-th">
@@ -36,21 +20,50 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
           <div>Type</div>
           <div>Declared At</div>
         </div>
-        <%= for idx <- 0..30 do %>
-          <div id={"class-#{idx}"} class="grid-3 custom-list-item">
+        <%= for {class, idx} <- Enum.with_index(Enum.take(@classes, 30))  do %>
+          <div d={"class-#{idx}"} class="grid-3 custom-list-item">
             <div>
               <div class="list-h">Class Hash</div>
-              <%= Utils.shorten_block_hash(
-                "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-              ) %>
+              <div class="copy-container" id={"copy-class-#{idx}"} phx-hook="Copy">
+                <div class="relative">
+                  <a
+                    href={
+                      Utils.network_path(
+                        @network,
+                        "classes/#{class.class_hash}"
+                      )
+                    }
+                    class="text-hover-blue"
+                  >
+                    <span><%= Utils.shorten_block_hash(class.class_hash) %></span>
+                  </a>
+                  <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                    <div class="relative">
+                      <img
+                        class="copy-btn copy-text w-4 h-4"
+                        src={~p"/images/copy.svg"}
+                        data-text={class.class_hash}
+                      />
+                      <img
+                        class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                        src={~p"/images/check-square.svg"}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div>
               <div class="list-h">Type</div>
-              <span class="violet-label">ERC721</span>
+              <span class="violet-label">
+                <%= class.type %>
+              </span>
             </div>
             <div>
               <div class="list-h">Declared At</div>
-              <div>17h</div>
+              <div>
+                <%= class.timestamp %>
+              </div>
             </div>
           </div>
         <% end %>
@@ -61,15 +74,13 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    Process.send(self(), :load_classes, [])
-
-    {:ok, assign(socket, classes: [])}
+    classes = Class.latest_n_messages(socket.assigns.network, 20)
+    {:ok, assign(socket, classes: classes)}
   end
 
   @impl true
-  def handle_info(:load_classes, socket) do
-    # TODO: Fetch this from the db
-    {:noreply, assign(socket, classes: [])}
-    # {:noreply, assign(socket, classes: Utils.list_classes())}
+  def handle_info(:load_messages, socket) do
+    classes = Class.latest_n_messages(socket.assigns.network, 20)
+    {:noreply, assign(socket, classes: classes)}
   end
 end
