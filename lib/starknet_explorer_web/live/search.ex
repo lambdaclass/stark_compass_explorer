@@ -97,6 +97,8 @@ defmodule StarknetExplorerWeb.SearchLive do
 
     navigate_fun =
       if String.length(query) > 0 do
+        IO.inspect(try_search(query, socket.assigns.network))
+
         case try_search(query, socket.assigns.network) do
           {:tx, _tx} ->
             fn -> assign(socket, tx: query, result: "Found") end
@@ -109,6 +111,7 @@ defmodule StarknetExplorerWeb.SearchLive do
 
           :noquery ->
             fn ->
+              IO.puts("No query")
               assign(socket, result: "No results found")
             end
         end
@@ -129,8 +132,8 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def try_by_number(number, network) do
     case Data.block_by_partial_number(number, network) do
-      {:ok, blocks} -> {:block, List.first(blocks)}
-      {:error, _} -> :noquery
+      {:ok, blocks = [_ | _]} -> {:block, List.first(blocks)}
+      _ -> :noquery
     end
   end
 
@@ -141,10 +144,10 @@ defmodule StarknetExplorerWeb.SearchLive do
 
       {:error, _} ->
         case Data.block_by_partial_hash(hash, network) do
-          {:ok, blocks} ->
+          {:ok, blocks = [_ | _]} ->
             {:block, List.first(blocks)}
 
-          {:error, _} ->
+          _ ->
             case Message.get_by_partial_hash(hash, network) do
               {:ok, _message} -> {:message, hash}
               {:error, err} -> {:noquery, err}
