@@ -663,6 +663,27 @@ defmodule StarknetExplorerWeb.CoreComponents do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
   end
 
+  def pagination_links(assigns) do
+    ~H"""
+    <div class="flex justify-end items-center my-5 text-base">
+      <button
+        class={if @page.page_number == 1, do: "opacity-0 pointer-events-none", else: ""}
+        phx-click="dec_events"
+      >
+        <img class="transform rotate-180" src="/images/chevron.svg" />
+      </button>
+      <div class="text-brand px-3 py-1 rounded-lg">
+        <%= @page.page_number %> / <%= @page.total_pages %>
+      </div>
+      <%= if @page.page_number != @page.total_pages do %>
+        <button phx-click="inc_events">
+          <img src="/images/chevron.svg" />
+        </button>
+      <% end %>
+    </div>
+    """
+  end
+
   def copy_button(assigns) do
     ~H"""
     <div class="copy-container shrink-0" id={Ecto.UUID.generate()} phx-hook="Copy">

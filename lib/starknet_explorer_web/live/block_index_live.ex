@@ -15,6 +15,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
     <div class="max-w-7xl mx-auto">
       <div class="table-header">
         <h2>Blocks</h2>
+        <CoreComponents.pagination_links page={@page} />
       </div>
       <div class="table-block">
         <div class="grid-6 table-th">
@@ -60,16 +61,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
           </div>
         <% end %>
       </div>
-    </div>
-    <div>
-      <%= if @page.page_number != 1 do %>
-        <button phx-click="dec_events">←</button>
-      <% end %>
-      Showing from <%= (@page.page_number - 1) * @page.page_size %> to <%= (@page.page_number - 1) *
-        @page.page_size + @page.page_size %>
-      <%= if @page.page_number != @page.total_pages do %>
-        <button phx-click="inc_events">→</button>
-      <% end %>
+      <CoreComponents.pagination_links page={@page} />
     </div>
     """
   end
