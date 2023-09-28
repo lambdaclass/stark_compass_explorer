@@ -25,7 +25,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     {:ok, state}
   end
 
-  def handle_info(:setup, %StateSyncSystem{network: network} = state) do
+  def handle_info(:setup, %StateSyncSystem{network: network}) do
     # Rpc.get_block_height.
     {:ok, block_height} = Rpc.get_block_height_no_cache(network)
     # Try Insert that block.
@@ -42,7 +42,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     {:noreply, state}
   end
 
-  def handle_info(:do_start_sync, %StateSyncSystem{network: network} = state) do
+  def handle_info(:do_start_sync, %StateSyncSystem{network: network}) do
     {:ok, block_height} = BlockUtils.block_height(network)
     {:ok, lowest_block_number} = BlockUtils.get_lowest_block_number(network)
 

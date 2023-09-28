@@ -1,6 +1,5 @@
 defmodule StarknetExplorerWeb.Component.TransactionsPerSecond do
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Block
 
   @impl true
   def render(assigns = %{tx_per_second: _}) do
