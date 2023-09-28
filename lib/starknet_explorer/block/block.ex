@@ -184,19 +184,21 @@ defmodule StarknetExplorer.Block do
         Enum.each(events, fn event -> {:ok, _event} = Events.insert(event) end)
       end)
 
-    # Each receipt has a list of messages.
-    # We want the sum of each len() of those partial messages
-    # And then, the sum of the partial sums.
-    # amount_messages =
-    #   receipts["messages_sent"]
-    #   |> Enum.map(&length/1)
-    #   |> Enum.reduce(0, &(&1 + &2))
-
-    # amount_messages = Enum.reduce(amount_messages, 0, &(&1 + &2))
+    amount_messages =
+      Enum.reduce(receipts, 0, fn {_tx_hash, receipt}, acc ->
+        acc + length(receipt["messages_sent"])
+      end) +
+        Enum.reduce(txs, 0, fn tx, acc ->
+          if tx["type"] == "L1_HANDLER" do
+            acc + 1
+          else
+            acc
+          end
+        end)
 
     case transaction_result do
       {:ok, _} ->
-        {:ok, 1, length(txs), length(events), 0}
+        {:ok, 1, length(txs), length(events), amount_messages}
 
       {:error, err} ->
         Logger.error("Error inserting block: #{inspect(err)}")

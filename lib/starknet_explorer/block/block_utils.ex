@@ -4,30 +4,10 @@ defmodule StarknetExplorer.BlockUtils do
 
   def fetch_store_and_cache(block_height, network) do
     with false <- already_stored?(block_height, network),
-         {:ok, block = %{"block_number" => block_number}} <- fetch_block(block_height, network),
-         {
-           :ok,
-           # The amount of blocks inserted.
-           amount_blocks,
-           # The amount of transactions inserted.
-           amount_transaction,
-           # The amount of events inserted.
-           amount_events,
-           # The amount of messages inserted.
-           amount_messages
-         } <- store_block(block, network),
-         :ok <- IndexCache.add_block(block["block_number"], network) do
-      {
-        :ok,
-        # The amount of blocks inserted.
-        amount_blocks,
-        # The amount of transactions inserted.
-        amount_transaction,
-        # The amount of events inserted.
-        amount_events,
-        # The amount of messages inserted.
-        amount_messages
-      }
+         {:ok, block} <- fetch_block(block_height, network),
+         {:ok, block_number} <- store_block(block, network),
+         :ok <- IndexCache.add_block(block_number, network) do
+      {:ok, block_number}
     else
       true ->
         {:ok, block_height}
@@ -122,7 +102,19 @@ defmodule StarknetExplorer.BlockUtils do
             |> Map.put("execution_resources", 0)
         end
 
-      Block.insert_from_rpc_response(block, receipts, network)
+      {:ok, amount_blocks, amount_txs, amount_events, amount_messages} =
+        Block.insert_from_rpc_response(block, receipts, network)
+
+      {:ok, _} =
+        StarknetExplorer.Counts.insert_or_update(
+          network,
+          amount_blocks,
+          amount_txs,
+          amount_events,
+          amount_messages
+        )
+
+      {:ok, block_number}
     end
   end
 
