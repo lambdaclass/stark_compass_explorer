@@ -2,7 +2,7 @@ defmodule StarknetExplorer.Transaction do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query
-  alias StarknetExplorer.{Transaction, Repo, TransactionReceipt}
+  alias StarknetExplorer.{Transaction, Repo, TransactionReceipt, Pedersen}
 
   @l1_handler_tx_fields [
     :hash,

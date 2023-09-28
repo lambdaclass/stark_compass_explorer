@@ -53,6 +53,7 @@ defmodule StarknetExplorer.MixProject do
       {:ex_aws, "~> 2.0"},
       {:ex_keccak, "~> 0.7.1"},
       {:ex_aws_s3, "~> 2.0"},
+      {:rustler, "~> 0.29.0"},
       {:poison, "~> 3.1"},
       {:hackney, "~> 1.6"},
       {:sweet_xml, "~> 0.7.0"},
