@@ -1,8 +1,8 @@
 defmodule StarknetExplorerWeb.BlockIndexLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.Data
   alias StarknetExplorer.Block
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -22,7 +22,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
           <div class="col-span-2">Status</div>
           <div>Age</div>
         </div>
-        <%= for block <- @blocks do %>
+        <%= for block <- @page.entries do %>
           <div id={"block-#{block.number}"} class="grid-6 custom-list-item">
             <div>
               <div class="list-h">Number</div>
@@ -89,7 +89,6 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
   def mount(_params, _session, socket) do
     {:ok,
      assign(socket,
-       blocks: Data.many_blocks(socket.assigns.network, 30),
        page: Block.paginate_blocks(%{}, socket.assigns.network)
      )}
   end
@@ -98,7 +97,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
   def handle_info(:load_blocks, socket) do
     {:noreply,
      assign(socket,
-       blocks: Data.many_blocks(socket.assigns.network)
+       page: Block.paginate_blocks(%{}, socket.assigns.network)
      )}
   end
 
@@ -120,7 +119,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
         socket.assigns.network
       )
 
-    assigns = [page: page, blocks: page.entries]
+    assigns = [page: page]
     {:noreply, assign(socket, assigns)}
   end
 end
