@@ -301,27 +301,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   end
 
   @impl true
-  def handle_event(
-        "select-view",
-        %{"view" => "events"},
-        socket
-      ) do
-    page =
-      Events.paginate_events(
-        %{page: 0},
-        socket.assigns.block.number,
-        socket.assigns.network
-      )
-
-    assigns = [
-      view: "events",
-      page: page
-    ]
-
-    {:noreply, assign(socket, assigns)}
-  end
-
-  @impl true
   def handle_event("select-view", %{"view" => view}, socket) do
     socket = assign(socket, :view, view)
     {:noreply, socket}
