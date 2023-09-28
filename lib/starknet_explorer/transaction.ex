@@ -128,7 +128,7 @@ defmodule StarknetExplorer.Transaction do
   def paginate_txs_by_block_number(params, block_number, network) do
     Transaction
     |> where([p], p.block_number == ^block_number and p.network == ^network)
-    |> Repo.preload(:receipt)
+    # |> Repo.preload(:receipt)
     |> Repo.paginate(params)
   end
 
