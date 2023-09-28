@@ -78,8 +78,8 @@ defmodule StarknetExplorer.Transaction do
 
   @networks [:mainnet, :testnet, :testnet2]
 
+  @primary_key {:hash, :string, []}
   schema "transactions" do
-    field :hash, :string
     field :constructor_calldata, {:array, :string}
     field :class_hash, :string
     field :type, :string
@@ -124,6 +124,14 @@ defmodule StarknetExplorer.Transaction do
         where: tx.hash == ^hash
 
     Repo.one(query)
+  end
+
+  def get_by_block_number(block_number, network) do
+    query =
+      from tx in Transaction,
+        where: tx.block_number == ^block_number and tx.network == ^network
+
+    Repo.all(query)
   end
 
   def get_missing_tx_receipt(limit \\ 10, network) do

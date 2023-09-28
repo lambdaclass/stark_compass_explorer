@@ -2,6 +2,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   alias StarknetExplorerWeb.Component.TransactionsPerSecond, as: TPSComponent
   alias StarknetExplorerWeb.CoreComponents
   alias StarknetExplorerWeb.Utils
+  alias StarknetExplorer.IndexCache
   use Phoenix.Component
   use StarknetExplorerWeb, :live_view
 
@@ -21,7 +22,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       session: %{"network" => @network}
     ) %>
     <div class="flex flex-col gap-1 justify-center items-center my-16">
-      <h1>Madara Starknet Explorer</h1>
+      <h1>Stark Compass</h1>
+      <div class="uppercase px-3 py-1 rounded-lg violet-label !font-medium mt-2 text-center text-xl lg:text-xl">
+        The only open source explorer of Starknet
+      </div>
     </div>
     <div class="mx-auto max-w-7xl mt-4 mb-5">
       <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
@@ -65,7 +69,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <img src={~p"/images/message-square.svg"} class="my-auto w-6 h-auto" />
               <div>
                 <div class="text-sm text-gray-400">Messages</div>
-                <div class="text-2xl mt-1"><%= @entities_count.message_count %></div>
+                <div class="text-2xl mt-1"><%= @entities_count.messages_count %></div>
               </div>
             </div>
             <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
@@ -258,7 +262,12 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   end
 
   def load_blocks(socket) do
-    blocks = StarknetExplorer.Data.many_blocks(socket.assigns.network)
+    blocks =
+      if length(IndexCache.latest_blocks(socket.assigns.network)) < 15 do
+        StarknetExplorer.Data.many_blocks_with_txs(socket.assigns.network)
+      else
+        IndexCache.latest_blocks(socket.assigns.network)
+      end
 
     case List.first(blocks) do
       nil ->
@@ -266,7 +275,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           blocks: [],
           transactions: [],
           entities_count: %{
-            message_count: 0,
+            messages_count: 0,
             events_count: 0,
             transaction_count: 0
           },
@@ -291,26 +300,15 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           end)
           |> Map.new()
 
-        max_block_height =
-          case StarknetExplorer.Blockchain.ListenerWorker.get_height(
-                 StarknetExplorer.Utils.listener_atom(socket.assigns.network)
-               ) do
-            {:ok, max_block_height} ->
-              max_block_height
-
-            {:err, _} ->
-              {:ok, max_block_height} =
-                StarknetExplorer.Rpc.get_block_height(socket.assigns.network)
-
-              max_block_height
-          end
+        {:ok, block_height} = StarknetExplorer.Rpc.get_block_height(socket.assigns.network)
+        block_height = StarknetExplorer.Utils.format_number_for_display(block_height)
 
         assign(socket,
           blocks: blocks,
           transactions: transactions,
           entities_count: entities_count,
           latest_block: latest_block,
-          block_height: StarknetExplorer.Utils.format_number_for_display(max_block_height)
+          block_height: block_height
         )
     end
   end
