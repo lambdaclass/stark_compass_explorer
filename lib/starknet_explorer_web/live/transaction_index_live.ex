@@ -24,7 +24,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
           <div>Age</div>
         </div>
         <div id="transactions">
-          <%= for {transaction, idx} <- Enum.with_index(@transactions) do %>
+          <%= for {transaction, idx} <- Enum.with_index(@page.entries) do %>
             <div id={"transaction-#{idx}"} class="grid-7 custom-list-item">
               <div class="col-span-2">
                 <div class="list-h">Transaction Hash</div>
@@ -98,12 +98,10 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
   @impl true
   def mount(_params, _session, socket) do
     page = Transaction.paginate_transactions(%{}, socket.assigns.network)
-    transactions = page.entries
 
     {:ok,
      assign(socket,
-       page: page,
-       transactions: transactions
+       page: page
      )}
   end
 
@@ -133,7 +131,6 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
         socket.assigns.network
       )
 
-    assigns = [page: page, transactions: page.entries]
-    {:noreply, assign(socket, assigns)}
+    {:noreply, assign(socket, page: page)}
   end
 end

@@ -24,7 +24,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
           <div>To Address</div>
           <div>Transaction Hash</div>
         </div>
-        <%= for message <- @messages do %>
+        <%= for message <- @page.entries do %>
           <div class="grid-6 custom-list-item">
             <div>
               <div class="list-h">Message Hash</div>
@@ -186,8 +186,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
   @impl true
   def mount(_params, _session, socket) do
     page = Message.paginate_messages(%{}, socket.assigns.network)
-    messages = page.entries
-    {:ok, assign(socket, messages: messages, page: page)}
+    {:ok, assign(socket, page: page)}
   end
 
   @impl true
@@ -208,7 +207,6 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
         socket.assigns.network
       )
 
-    assigns = [page: page, messages: page.entries]
-    {:noreply, assign(socket, assigns)}
+    {:noreply, assign(socket, page: page)}
   end
 end
