@@ -25,7 +25,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
           <div>To Address</div>
           <div>Transaction Hash</div>
         </div>
-        <%= for message <- @messages do %>
+        <%= for message <- @page.entries do %>
           <div class="grid-6 custom-list-item">
             <div>
               <div class="list-h">Message Hash</div>
@@ -94,21 +94,44 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
           </div>
         <% end %>
       </div>
+      <div>
+        <%= if @page.page_number != 1 do %>
+          <button phx-click="dec_events">←</button>
+        <% end %>
+        Showing from <%= (@page.page_number - 1) * @page.page_size %> to <%= (@page.page_number - 1) *
+          @page.page_size + @page.page_size %>
+        <%= if @page.page_number != @page.total_pages do %>
+          <button phx-click="inc_events">→</button>
+        <% end %>
+      </div>
     </div>
     """
   end
 
   @impl true
   def mount(_params, _session, socket) do
-    Process.send(self(), :load_messages, [])
-    messages = Message.latest_n_messages(socket.assigns.network, 20)
-    {:ok, assign(socket, messages: messages)}
+    page = Message.paginate_messages(%{}, socket.assigns.network)
+    {:ok, assign(socket, page: page)}
   end
 
   @impl true
-  def handle_info(:load_messages, socket) do
-    # TODO: Fetch this from the db
-    messages = Message.latest_n_messages(socket.assigns.network, 20)
-    {:noreply, assign(socket, messages: messages)}
+  def handle_event("inc_events", _value, socket) do
+    new_page_number = socket.assigns.page.page_number + 1
+    pagination(socket, new_page_number)
+  end
+
+  def handle_event("dec_events", _value, socket) do
+    new_page_number = socket.assigns.page.page_number - 1
+    pagination(socket, new_page_number)
+  end
+
+  def pagination(socket, new_page_number) do
+    page =
+      Message.paginate_messages(
+        %{page: new_page_number},
+        socket.assigns.network
+      )
+
+    {:noreply, assign(socket, page: page)}
   end
 end
