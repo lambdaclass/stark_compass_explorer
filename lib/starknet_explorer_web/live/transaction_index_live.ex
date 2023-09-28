@@ -97,12 +97,13 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
 
   @impl true
   def mount(_params, _session, socket) do
-  page = Transaction.paginate_transactions(%{}, socket.assigns.network)
-  transactions = page.entries
+    page = Transaction.paginate_transactions(%{}, socket.assigns.network)
+    transactions = page.entries
+
     {:ok,
      assign(socket,
-        page: page,
-        transactions: transactions
+       page: page,
+       transactions: transactions
      )}
   end
 
@@ -132,8 +133,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
         socket.assigns.network
       )
 
-    assigns = [ page: page, transactions: page.entries ]
+    assigns = [page: page, transactions: page.entries]
     {:noreply, assign(socket, assigns)}
   end
 end
-

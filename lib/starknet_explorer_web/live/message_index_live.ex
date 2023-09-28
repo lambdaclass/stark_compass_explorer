@@ -187,7 +187,8 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
   def mount(_params, _session, socket) do
     Process.send(self(), :load_messages, [])
     page = Message.paginate_messages(%{}, socket.assigns.network)
-    messages = page.entries #Message.latest_n_messages(socket.assigns.network, 20)
+    # Message.latest_n_messages(socket.assigns.network, 20)
+    messages = page.entries
     {:ok, assign(socket, messages: messages, page: page)}
   end
 
@@ -216,7 +217,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
         socket.assigns.network
       )
 
-    assigns = [ page: page, messages: page.entries ]
+    assigns = [page: page, messages: page.entries]
     {:noreply, assign(socket, assigns)}
   end
 end

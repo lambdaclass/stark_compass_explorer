@@ -72,7 +72,7 @@ defmodule StarknetExplorer.Message do
 
     Repo.one(query)
   end
-   
+
   def latest_n_messages(network, n \\ 20) do
     query =
       from msg in StarknetExplorer.Message,

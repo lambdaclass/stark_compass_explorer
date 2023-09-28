@@ -275,4 +275,3 @@ defmodule StarknetExplorer.Block do
     )
   end
 end
-

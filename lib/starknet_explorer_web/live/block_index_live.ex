@@ -120,8 +120,7 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
         socket.assigns.network
       )
 
-    assigns = [ page: page, blocks: page.entries ]
+    assigns = [page: page, blocks: page.entries]
     {:noreply, assign(socket, assigns)}
   end
 end
-
