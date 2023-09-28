@@ -109,7 +109,7 @@ form {
 }
 
 input {
-  @apply !bg-container border !border-gray-700 !text-white !pr-10 !w-full text-ellipsis;
+  @apply !bg-container border !border-gray-700 !text-white !pr-10 !w-full text-ellipsis !rounded-lg;
 }
 
 .focus {
@@ -120,9 +120,6 @@ input {
   @apply transition ease-in-out delay-150 -translate-y-0 scale-100 duration-300;
 }
 
-#dropdownInformation {
-  @apply transition ease-in-out delay-150 lg:translate-y-28  lg:translate-x-36  lg:scale-125 scale-110 duration-300;
-}
 
 /* Detail pages */
 .block-label {

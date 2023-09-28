@@ -313,20 +313,22 @@ Hooks.SearchHook = {
     const input = form.querySelector("input");
     const searchDropdown = document.querySelector("#dropdownInformation");
 
-    if (input.value === "") {
-      searchDropdown.classList.add("hidden");
-    }
+    // if (input.value === "") {
+    //   searchDropdown.classList.add("hidden");
+    // }
   },
   updated() {
-    const form = document.querySelector(".normal-form");
-    const searchDropdown = document.querySelector("#dropdownInformation");
+    const overlay = document.querySelector("#search-overlay");
+    const form = overlay.querySelector(".normal-form");
+    const searchDropdown = form.querySelector("#dropdownInformation");
     const input = form.querySelector("input");
-    const hashLink = document.querySelector("#redirect-link");
-    toggleFocus(input, form, searchDropdown);
+    const hashLink = searchDropdown.querySelector("#redirect-link");
+    toggleFocus(overlay, input, form, searchDropdown);
+    
     if (hashLink) {
       hashLink.addEventListener("click", () => {
         focused = false;
-        toggleFocus(input, form, searchDropdown);
+        toggleFocus(overlay, input, form, searchDropdown);
       })
     }
   }
@@ -351,26 +353,18 @@ function KeyPress(e) {
   }
 }
 
-function toggleFocus(input, form, searchDropdown) {
+function toggleFocus(overlay, input, form, searchDropdown) {
   if (focused) { 
     input.focus();
-    form.classList.remove("un-focus");
-    form.classList.add("focus");
-    // searchDropdown.classList.add("focus");
-    // searchDropdown.classList.remove("un-focus");
+    // overlay.classList.toggle("hidden");
     if (input.value !== "") {
-      searchDropdown.classList.remove("hidden")
+      searchDropdown.classList.toggle("hidden")
     }
-    toggleBlur();
   } else {
     input.blur();
-    form.classList.remove("focus");
-    form.classList.add("un-focus");
-    // searchDropdown.classList.remove("focus");
-    // searchDropdown.classList.add("un-focus");
-    searchDropdown.classList.add("hidden");
+    // overlay.classList.toggle("hidden");
+    searchDropdown.classList.toggle("hidden");
     // input.value = "";
-    toggleBlur();
   }
 }
 
@@ -413,23 +407,28 @@ function toggleBlur() {
 }
 
 function activateFocus() {
-  const form = document.querySelector(".normal-form");
-  const input = form.querySelector("input");
-  const searchDropdown = document.querySelector("#dropdownInformation");
+  const form = document.querySelector("#placeholder-form");
+  const placeHolderInput = form.querySelector("input");
+  const overlay = document.querySelector("#search-overlay")
+  const searchDropdown = overlay.querySelector("#dropdownInformation");
+  const overlayInput = overlay.querySelector("input")
 
-  input.addEventListener("focus", (event) => {
-    focused = true;
-    toggleFocus(input, form,searchDropdown);
-    toggleBlur();
+  placeHolderInput.addEventListener("click", () => {
+    console.log("clicked");
+    overlay.classList.toggle("hidden");
+    placeHolderInput.blur();
+    overlayInput.focus();
   })
 
-  document.addEventListener("click", (event) => {
-    const outsideDropdown = !searchDropdown.contains(event.target);
-    const outsideInput = !input.contains(event.target);
-    if (outsideDropdown && outsideInput) {
-      focused = false;
-      toggleFocus(input, form, searchDropdown);
-      toggleBlur();
+  overlay.addEventListener("click", (event) => {
+    if(!overlay.classList.contains("hidden")){
+      const outsideDropdown = !searchDropdown.contains(event.target);
+      const outsideInput = !overlayInput.contains(event.target);
+      if (outsideDropdown && outsideInput) {
+        focused = false;
+        overlay.classList.toggle("hidden");
+        // toggleFocus(overlay, overlayInput, form, searchDropdown);
+      }
     }
   })
 }
@@ -456,7 +455,7 @@ window.addEventListener("phx:page-loading-stop", () => {
 
 
 activateFocus();
-document.onkeydown = KeyPress;
+// document.onkeydown = KeyPress;
 
 
 // connect if there are any LiveViews on the page

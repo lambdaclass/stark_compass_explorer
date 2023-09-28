@@ -21,8 +21,7 @@ defmodule StarknetExplorerWeb.SearchLive do
         <button class="absolute top-1/2 right-2 transform -translate-y-1/2" type="submit">
           <img src={~p"/images/search.svg"} />
         </button>
-      </form>
-      <div id="dropdownInformation" class="absolute hidden mt-6 z-10 bg-container rounded-lg shadow w-full xl:max-w-md lg:max-w-sm max-w-xs mx-auto dark:bg-container dark:divide-gray-600">
+        <div id="dropdownInformation" class="hidden absolute mt-3 z-10 bg-container rounded-lg shadow w-full  mx-auto dark:bg-container dark:divide-gray-600">
         <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
           <%= if assigns[:block] do %>
             Blocks
@@ -67,7 +66,8 @@ defmodule StarknetExplorerWeb.SearchLive do
             </ul>
           </div>
         </div>
-      </div>
+        </div>
+      </form>
     </div>
     """
   end
