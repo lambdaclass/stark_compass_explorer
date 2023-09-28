@@ -2,7 +2,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   @moduledoc """
   State Sync System.
   """
-  alias StarknetExplorer.{Block, BlockUtils, Rpc, Blockchain.StateSyncSystem, Counts}
+  alias StarknetExplorer.{Block, BlockUtils, Rpc, Blockchain.StateSyncSystem}
   defstruct [:current_block_number, :network, :next_to_fetch, :updater_block_number]
   use GenServer
   require Logger
@@ -84,35 +84,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
         :fetcher,
         state = %StateSyncSystem{network: network, next_to_fetch: next_to_fetch}
       ) do
-    {:ok, _} =
-      case BlockUtils.fetch_store_and_cache(next_to_fetch, network) do
-        {
-          :ok,
-          # The amount of blocks inserted.
-          amount_blocks,
-          # The amount of transactions inserted.
-          amount_transaction,
-          # The amount of events inserted.
-          amount_events,
-          # The amount of messages inserted.
-          amount_messages
-        } ->
-          Counts.insert_or_update(
-            network,
-            amount_blocks,
-            amount_transaction,
-            amount_events,
-            amount_messages
-          )
-
-          {:ok, "inserted"}
-
-        {:ok, _} ->
-          {:ok, "already inserted"}
-
-        err ->
-          err
-      end
+    {:ok, _} = BlockUtils.fetch_store_and_cache(next_to_fetch, network)
 
     state = %{state | next_to_fetch: next_to_fetch - 1}
 
@@ -124,35 +96,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   defp try_fetch(true, state = %StateSyncSystem{network: network}) do
     next_to_fetch = state.current_block_number + 1
 
-    {:ok, _} =
-      case BlockUtils.fetch_store_and_cache(next_to_fetch, network) do
-        {
-          :ok,
-          # The amount of blocks inserted.
-          amount_blocks,
-          # The amount of transactions inserted.
-          amount_transaction,
-          # The amount of events inserted.
-          amount_events,
-          # The amount of messages inserted.
-          amount_messages
-        } ->
-          Counts.insert_or_update(
-            network,
-            amount_blocks,
-            amount_transaction,
-            amount_events,
-            amount_messages
-          )
-
-          {:ok, "inserted"}
-
-        {:ok, _} ->
-          {:ok, "already inserted"}
-
-        err ->
-          err
-      end
+    {:ok, _} = BlockUtils.fetch_store_and_cache(next_to_fetch, network)
 
     %{state | current_block_number: next_to_fetch}
   end
