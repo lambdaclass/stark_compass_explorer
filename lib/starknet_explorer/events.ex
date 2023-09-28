@@ -7,17 +7,20 @@ defmodule StarknetExplorer.Events do
   alias StarknetExplorer.Rpc
   @primary_key {:id, :binary_id, autogenerate: true}
 
-  @fields [
-    :name,
+  @required [
     :from_address,
     :age,
-    :name_hashed,
     :data,
     :index_in_block,
     :block_number,
     :transaction_hash,
     :network
   ]
+
+  @allowed [
+             :name,
+             :name_hashed
+           ] ++ @required
 
   @common_event_hash_to_name %{
     "0x99cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9" => "Transfer",
@@ -70,10 +73,10 @@ defmodule StarknetExplorer.Events do
 
   def changeset(schema, params) do
     schema
-    |> cast(params, @fields)
+    |> cast(params, @allowed)
     |> foreign_key_constraint(:block_number)
     |> foreign_key_constraint(:transaction_hash)
-    |> validate_required(@fields)
+    |> validate_required(@@required)
   end
 
   def insert(event) do
