@@ -23,8 +23,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
     ) %>
     <div class="flex flex-col gap-1 justify-center items-center my-16">
       <h1>Stark Compass</h1>
-      <div class="uppercase px-3 py-1 rounded-lg violet-label !font-medium mt-2 text-center text-xl lg:text-xl">
-        The only open source explorer of Starknet
+      <div class="uppercase rounded-lg px-2 py-1 text-center blue-label text-xl font-medium mt-2">
+        The only open source explorer for Starknet
       </div>
     </div>
     <div class="mx-auto max-w-7xl mt-4 mb-5">
@@ -115,7 +115,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <a href={Utils.network_path(@network, "transactions")} class="bg-container text-gray-100">
           <div class="reative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
-              <img src={~p"/images/check-square.svg"} class="my-auto w-6 h-auto" />
+              <img src={~p"/images/corner-up-right.svg"} class="my-auto w-6 h-auto" />
               <div>
                 <div class="text-sm text-gray-400">Transactions</div>
                 <div class="text-2xl mt-1"><%= @entities_count.transaction_count %></div>
@@ -129,8 +129,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </a>
       </div>
     </div>
-
-    <div class="mx-auto max-w-7xl grid lg:grid-cols-2 lg:gap-5 xl:gap-16 mt-16">
+    <div class="mx-auto max-w-7xl grid lg:grid-cols-2 gap-10 lg:gap-5 mt-16">
       <div>
         <div class="table-header">
           <div class="table-title">Latest Blocks</div>
@@ -155,43 +154,28 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             <div id={"block-#{block.number}"} class="grid-6 custom-list-item">
               <div>
                 <div class="list-h">Number</div>
-                <a
-                  href={Utils.network_path(assigns.network, "blocks/#{block.number}")}
-                  class="text-hover-blue"
-                >
+                <a href={Utils.network_path(assigns.network, "blocks/#{block.number}")} class="type">
                   <span><%= to_string(block.number) %></span>
                 </a>
               </div>
               <div class="col-span-2">
                 <div class="list-h">Block Hash</div>
-                <div class="copy-container" id={"copy-block-#{block.number}"} phx-hook="Copy">
-                  <div class="relative">
+                <div class="block-data">
+                  <div class="hash flex">
                     <a
                       href={Utils.network_path(assigns.network, "blocks/#{block.hash}")}
-                      class="text-hover-blue"
+                      class="text-hover-link"
                     >
                       <span><%= Utils.shorten_block_hash(block.hash) %></span>
                     </a>
-                    <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                      <div class="relative">
-                        <img
-                          class="copy-btn copy-text w-4 h-4"
-                          src={~p"/images/copy.svg"}
-                          data-text={block.hash}
-                        />
-                        <img
-                          class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                          src={~p"/images/check-square.svg"}
-                        />
-                      </div>
-                    </div>
+                    <CoreComponents.copy_button text={block.hash} />
                   </div>
                 </div>
               </div>
               <div class="col-span-2">
                 <div class="list-h">Status</div>
                 <div>
-                  <span class={"#{if block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if block.status == "PENDING", do: "pink-label"}"}>
+                  <span class={"info-label #{String.downcase(block.status)}"}>
                     <%= block.status %>
                   </span>
                 </div>
@@ -228,34 +212,22 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             <div id={"transaction-#{idx}"} class="grid-7 custom-list-item">
               <div class="col-span-2">
                 <div class="list-h">Transaction Hash</div>
-                <div class="copy-container" id={"copy-transaction-#{idx}"} phx-hook="Copy">
-                  <div class="relative">
+                <div class="block-data">
+                  <div class="hash flex">
                     <a
                       href={Utils.network_path(assigns.network, "transactions/#{transaction.hash}")}
-                      class="text-hover-blue"
+                      class="text-hover-link"
                     >
                       <span><%= Utils.shorten_block_hash(transaction.hash) %></span>
                     </a>
-                    <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                      <div class="relative">
-                        <img
-                          class="copy-btn copy-text w-4 h-4"
-                          src={~p"/images/copy.svg"}
-                          data-text={transaction.hash}
-                        />
-                        <img
-                          class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                          src={~p"/images/check-square.svg"}
-                        />
-                      </div>
-                    </div>
+                    <CoreComponents.copy_button text={transaction.hash} />
                   </div>
                 </div>
               </div>
               <div class="col-span-2">
                 <div class="list-h">Type</div>
-                <div>
-                  <span class={"#{if transaction.type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+                <div class={"type #{String.downcase(transaction.type)}"}>
+                  <span>
                     <%= transaction.type %>
                   </span>
                 </div>
@@ -263,7 +235,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <div class="col-span-2">
                 <div class="list-h">Status</div>
                 <div>
-                  <span class={"#{if transaction.block_status == "ACCEPTED_ON_L2", do: "green-label"} #{if transaction.block_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if transaction.block_status == "PENDING", do: "pink-label"}"}>
+                  <span class={"info-label #{String.downcase(transaction.block_status)}"}>
                     <%= transaction.block_status %>
                   </span>
                 </div>

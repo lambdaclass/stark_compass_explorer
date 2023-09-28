@@ -1,5 +1,6 @@
 defmodule StarknetExplorerWeb.EventDetailLive do
   use StarknetExplorerWeb, :live_view
+  alias StarknetExplorerWeb.CoreComponents
   alias StarknetExplorer.{Events, Block}
   alias StarknetExplorerWeb.Utils
   @impl true
@@ -11,32 +12,41 @@ defmodule StarknetExplorerWeb.EventDetailLive do
       session: %{"network" => @network}
     ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
-      <div class="flex flex-col lg:flex-row gap-2 items-baseline pb-5">
+      <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
         <h2>Event</h2>
-        <div class="font-semibold">
-          <%= @event.id %>
+        <div class="font-normal text-gray-400 mt-2 lg:mt-0">
+          <%= @block.timestamp
+          |> DateTime.from_unix()
+          |> then(fn {:ok, time} -> time end)
+          |> Calendar.strftime("%c") %> UTC
         </div>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Event ID</div>
-        <div>
-          <%= @event.id %>
+        <div class="block-data">
+          <div class="hash flex">
+            <%= @event.id %>
+            <CoreComponents.copy_button text={@event.id} />
+          </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Block Hash</div>
-        <div>
-          <a
-            href={
-              Utils.network_path(
-                @network,
-                "blocks/#{@block.hash}"
-              )
-            }
-            class="text-hover-blue"
-          >
-            <span><%= @block.hash %></span>
-          </a>
+        <div class="block-data">
+          <div class="hash flex">
+            <a
+              href={
+                Utils.network_path(
+                  @network,
+                  "blocks/#{@block.hash}"
+                )
+              }
+              class="text-hover-link break-all"
+            >
+              <span><%= @block.hash %></span>
+            </a>
+            <CoreComponents.copy_button text={@block.hash} />
+          </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
@@ -48,31 +58,37 @@ defmodule StarknetExplorerWeb.EventDetailLive do
               "blocks/#{@event.block_number}"
             )
           }
-          class="text-hover-blue"
+          class="w-fit type"
         >
           <div><%= @event.block_number %></div>
         </a>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Transaction Hash</div>
-        <div>
-          <a
-            href={
-              Utils.network_path(
-                @network,
-                "blocks/#{@event.transaction_hash}"
-              )
-            }
-            class="text-hover-blue"
-          >
-            <%= @event.transaction_hash %>
-          </a>
+        <div class="block-data">
+          <div class="hash flex">
+            <a
+              href={
+                Utils.network_path(
+                  @network,
+                  "blocks/#{@event.transaction_hash}"
+                )
+              }
+              class="text-hover-link break-all"
+            >
+              <%= @event.transaction_hash %>
+            </a>
+            <CoreComponents.copy_button text={@event.transaction_hash} />
+          </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Contract Address</div>
-        <div>
-          <%= @event.from_address %>
+        <div class="block-data">
+          <div class="hash flex">
+            <%= @event.from_address %>
+            <CoreComponents.copy_button text={@event.from_address} />
+          </div>
         </div>
       </div>
       <div class="custom-list-item">
@@ -90,7 +106,12 @@ defmodule StarknetExplorerWeb.EventDetailLive do
               </div>
               <div>
                 <div class="list-h">Value</div>
-                <div><%= payload %></div>
+                <div class="block-data">
+                  <div class="hash flex">
+                    <%= payload %>
+                    <CoreComponents.copy_button text={payload} />
+                  </div>
+                </div>
               </div>
             </div>
           <% end %>
