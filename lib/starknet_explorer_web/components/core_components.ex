@@ -695,9 +695,15 @@ defmodule StarknetExplorerWeb.CoreComponents do
   @spec loading_state(any) :: Phoenix.LiveView.Rendered.t()
   def loading_state(assigns) do
     ~H"""
-      <div id={@id} phx class="text-lg font-semibold rounded-lg bg-gray-100 text-gray-100 dark:bg-gray-700 dark:text-gray-700 w-fit mt-1">
-      ASASASASASASASAS
+    <%= if @content do  %>
+     <%= @content %>
+    <% else  %>
+      <div id={@id} class="text-lg font-semibold rounded-lg bg-gray-100 text-gray-100 dark:bg-gray-700 dark:text-gray-700 h-fit inline-block w-full">
+        <%= @mock %>
       </div>
+    <% end  %>
+
+
     """
   end
 end

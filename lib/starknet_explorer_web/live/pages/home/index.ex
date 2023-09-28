@@ -51,11 +51,13 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <img src={~p"/images/box.svg"} class="my-auto w-6 h-auto" />
               <div>
               <div class="text-sm text-gray-400">Blocks Height</div>
-                <%= if assigns.block_height do %>
-                  <div class="text-2xl mt-1"><%= assigns.block_height %></div>
-                <% else %>
-                  <CoreComponents.loading_state id="loading_state"/>
-                <% end %>
+              <div class="text-2xl mt-1">
+                  <CoreComponents.loading_state
+                    content={assigns.block_height}
+                    mock="300000"
+                    id="loading_state"
+                  />
+                </div>
               </div>
             </div>
             <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
@@ -70,7 +72,13 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <img src={~p"/images/message-square.svg"} class="my-auto w-6 h-auto" />
               <div>
                 <div class="text-sm text-gray-400">Messages</div>
-                <div class="text-2xl mt-1"><%= @entities_count.message_count %></div>
+                <div class="text-2xl mt-1">
+                  <CoreComponents.loading_state
+                      content={@entities_count.message_count}
+                      mock="300000"
+                      id="loading_state"
+                    />
+                </div>
               </div>
             </div>
             <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
@@ -85,7 +93,13 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <img src={~p"/images/calendar.svg"} class="my-auto w-6 h-auto" />
               <div>
                 <div class="text-sm text-gray-400">Events</div>
-                <div class="text-2xl mt-1"><%= @entities_count.events_count %></div>
+                  <div class="text-2xl mt-1">
+                      <CoreComponents.loading_state
+                        content={@entities_count.events_count}
+                        mock="300000"
+                        id="loading_state"
+                      />
+                    </div>
               </div>
             </div>
             <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
@@ -100,7 +114,15 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <img src={~p"/images/check-square.svg"} class="my-auto w-6 h-auto" />
               <div>
                 <div class="text-sm text-gray-400">Transactions</div>
-                <div class="text-2xl mt-1"><%= @entities_count.transaction_count %></div>
+                <div class="text-2xl mt-1">
+                <div class="text-2xl mt-1">
+                      <CoreComponents.loading_state
+                        content={@entities_count.transaction_count}
+                        mock="10"
+                        id="loading_state"
+                      />
+                    </div>
+                </div>
               </div>
             </div>
             <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
