@@ -112,6 +112,19 @@ defmodule StarknetExplorer.Block do
   @doc """
   Given a block from the RPC response, and transactions receipts
   insert them into the DB.
+  If the insertion was made, return a tuple of the form:
+  {
+    :ok,
+    amount_blocks, # The amount of blocks inserted.
+    amount_transaction, # The amount of transactions inserted.
+    amount_events, # The amount of events inserted.
+    amount_messages, # The amount of messages inserted.
+  }
+  If an error occurs, returns:
+  {
+    :err,
+    err # The error.
+  }
   """
   def insert_from_rpc_response(block = %{"transactions" => txs}, receipts, network)
       when is_map(block) do
@@ -171,9 +184,21 @@ defmodule StarknetExplorer.Block do
         Enum.each(events, fn event -> {:ok, _event} = Events.insert(event) end)
       end)
 
+    amount_messages =
+      Enum.reduce(receipts, 0, fn {_tx_hash, receipt}, acc ->
+        acc + length(receipt["messages_sent"])
+      end) +
+        Enum.reduce(txs, 0, fn tx, acc ->
+          if tx["type"] == "L1_HANDLER" do
+            acc + 1
+          else
+            acc
+          end
+        end)
+
     case transaction_result do
       {:ok, _} ->
-        :ok
+        {:ok, 1, length(txs), length(events), amount_messages}
 
       {:error, err} ->
         Logger.error("Error inserting block: #{inspect(err)}")

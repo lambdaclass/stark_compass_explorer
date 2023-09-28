@@ -2,7 +2,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   @moduledoc """
   State Sync System.
   """
-  alias StarknetExplorer.{Block, BlockUtils, Rpc, Blockchain.StateSyncSystem, Counts}
+  alias StarknetExplorer.{Block, BlockUtils, Rpc, Blockchain.StateSyncSystem}
   defstruct [:current_block_number, :network, :next_to_fetch, :updater_block_number]
   use GenServer
   require Logger
@@ -30,8 +30,6 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     {:ok, block_height} = Rpc.get_block_height_no_cache(network)
     # Try Insert that block.
     {:ok, _} = BlockUtils.fetch_store_and_cache(block_height, network)
-    # If insert, increase Count.
-    Counts.insert_or_update(network)
     # Trigger the :do_start_sync process.
 
     state = %StateSyncSystem{
@@ -111,10 +109,9 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
         :fetcher,
         state = %StateSyncSystem{network: network, next_to_fetch: next_to_fetch}
       ) do
-    {:ok, _} = BlockUtils.fetch_and_store(next_to_fetch, network)
-    state = %{state | next_to_fetch: next_to_fetch - 1}
+    {:ok, _} = BlockUtils.fetch_store_and_cache(next_to_fetch, network)
 
-    Counts.insert_or_update(network)
+    state = %{state | next_to_fetch: next_to_fetch - 1}
 
     maybe_fetch_another(state)
 
@@ -125,8 +122,6 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     next_to_fetch = state.current_block_number + 1
 
     {:ok, _} = BlockUtils.fetch_store_and_cache(next_to_fetch, network)
-
-    Counts.insert_or_update(network)
 
     %{state | current_block_number: next_to_fetch}
   end

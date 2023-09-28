@@ -69,7 +69,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <img src={~p"/images/message-square.svg"} class="my-auto w-6 h-auto" />
               <div>
                 <div class="text-sm text-gray-400">Messages</div>
-                <div class="text-2xl mt-1"><%= @entities_count.message_count %></div>
+                <div class="text-2xl mt-1"><%= @entities_count.messages_count %></div>
               </div>
             </div>
             <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">
@@ -275,7 +275,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           blocks: [],
           transactions: [],
           entities_count: %{
-            message_count: 0,
+            messages_count: 0,
             events_count: 0,
             transaction_count: 0
           },
@@ -300,12 +300,15 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           end)
           |> Map.new()
 
+        {:ok, block_height} = StarknetExplorer.Rpc.get_block_height(socket.assigns.network)
+        block_height = StarknetExplorer.Utils.format_number_for_display(block_height)
+
         assign(socket,
           blocks: blocks,
           transactions: transactions,
           entities_count: entities_count,
           latest_block: latest_block,
-          block_height: entities_count.block_count
+          block_height: block_height
         )
     end
   end
