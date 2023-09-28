@@ -6,6 +6,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorer.BlockUtils
   alias StarknetExplorer.S3
   alias StarknetExplorer.Message
+  alias StarknetExplorer.Transaction
   alias StarknetExplorer.Gateway
   alias StarknetExplorer.Events
 
@@ -180,38 +181,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   @impl true
   def handle_event(
         "select-view",
-        %{"view" => "transactions"},
-        socket
-      ) do
-    transactions =
-      if Map.get(socket.assigns, :transactions) == nil do
-        {:ok, receipts} = Data.receipts_by_block(socket.assigns.block, socket.assigns.network)
-
-        receipts =
-          receipts
-          |> Map.new(fn receipt ->
-            {receipt.transaction_hash, receipt}
-          end)
-
-        Data.transactions_by_block_number(socket.assigns.block.number, socket.assigns.network)
-        |> Enum.map(fn tx ->
-          %{tx | receipt: receipts[tx.hash]}
-        end)
-      else
-        socket.assigns.transactions
-      end
-
-    assigns = [
-      view: "transactions",
-      transactions: transactions
-    ]
-
-    {:noreply, assign(socket, assigns)}
-  end
-
-  @impl true
-  def handle_event(
-        "select-view",
         %{"view" => "messages"},
         socket
       ) do
@@ -234,11 +203,32 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     {:noreply, assign(socket, assigns)}
   end
 
-  def handle_event("inc_events", _value, socket) do
+  @impl true
+  def handle_event(
+        "select-view",
+        %{"view" => "transactions"},
+        socket
+      ) do
+    page =
+      Transaction.paginate_txs_by_block_number(
+        %{page: 0},
+        socket.assigns.block.number,
+        socket.assigns.network
+      )
+
+    assigns = [
+      view: "transactions",
+      page: page
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  def handle_event("dec_txs", _value, socket) do
     new_page_number = socket.assigns.page.page_number + 1
 
     page =
-      Events.paginate_events(
+      Transaction.paginate_txs_by_block_number(
         %{page: new_page_number},
         socket.assigns.block.number,
         socket.assigns.network
@@ -246,7 +236,25 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
     assigns = [
       page: page,
-      view: "events"
+      view: "transactions"
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  def handle_event("inc_txs", _value, socket) do
+    new_page_number = socket.assigns.page.page_number + 1
+
+    page =
+      Transaction.paginate_txs_by_block_number(
+        %{page: new_page_number},
+        socket.assigns.block.number,
+        socket.assigns.network
+      )
+
+    assigns = [
+      page: page,
+      view: "transactions"
     ]
 
     {:noreply, assign(socket, assigns)}
@@ -346,7 +354,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>Address</div>
       <div>Age</div>
     </div>
-    <%= for transaction = %{hash: hash, type: type, version: version, sender_address: sender_address} <- @transactions do %>
+    <%= for transaction = %{hash: hash, type: type, version: version, sender_address: sender_address} <- @page.entries do %>
       <div class="grid-6 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
@@ -424,6 +432,14 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div><%= Utils.get_block_age_from_timestamp(@block.timestamp) %></div>
         </div>
       </div>
+      <%= if @page.page_number != 1 do %>
+        <button phx-click="dec_events">Previous</button>
+      <% end %>
+      Showing from <%= (@page.page_number - 1) * @page.page_size %> to <%= (@page.page_number - 1) *
+        @page.page_size + @page.page_size %>
+      <%= if @page.page_number != @page.total_pages do %>
+        <button phx-click="inc_events">Next</button>
+      <% end %>
     <% end %>
     """
   end
