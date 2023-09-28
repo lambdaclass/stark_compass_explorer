@@ -30,7 +30,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
               <div class="list-h">Message Hash</div>
               <div
                 class="flex gap-2 items-center copy-container"
-                id={"copy-transaction-hash-#{message.message_hash}"}
+                id={"copy-message-hash-#{message.message_hash}"}
                 phx-hook="Copy"
               >
                 <div class="relative">
@@ -76,7 +76,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
               <div class="list-h">From Address</div>
               <div
                 class="flex gap-2 items-center copy-container"
-                id={"copy-transaction-hash-#{message.from_address}"}
+                id={"copy-from-address-#{message.id}"}
                 phx-hook="Copy"
               >
                 <div class="relative">
@@ -107,7 +107,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
               <div class="list-h">To Address</div>
               <div
                 class="flex gap-2 items-center copy-container"
-                id={"copy-transaction-hash-#{message.to_address}"}
+                id={"copy-to-address-#{message.id}"}
                 phx-hook="Copy"
               >
                 <div class="relative">
