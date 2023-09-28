@@ -11,10 +11,13 @@ defmodule StarknetExplorerWeb.EventDetailLive do
       session: %{"network" => @network}
     ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
-      <div class="flex flex-col lg:flex-row gap-2 items-baseline pb-5">
+      <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
         <h2>Event</h2>
-        <div class="font-semibold">
-          <%= @event.id %>
+        <div class="font-normal text-gray-400 mt-2 lg:mt-0">
+          <%= @block.timestamp
+          |> DateTime.from_unix()
+          |> then(fn {:ok, time} -> time end)
+          |> Calendar.strftime("%c") %> UTC
         </div>
       </div>
       <div class="grid-4 custom-list-item">
@@ -33,7 +36,7 @@ defmodule StarknetExplorerWeb.EventDetailLive do
                 "blocks/#{@block.hash}"
               )
             }
-            class="text-hover-blue"
+            class="text-hover-link break-all"
           >
             <span><%= @block.hash %></span>
           </a>
@@ -48,7 +51,7 @@ defmodule StarknetExplorerWeb.EventDetailLive do
               "blocks/#{@event.block_number}"
             )
           }
-          class="text-hover-blue"
+          class="w-fit type"
         >
           <div><%= @event.block_number %></div>
         </a>
@@ -63,7 +66,7 @@ defmodule StarknetExplorerWeb.EventDetailLive do
                 "blocks/#{@event.transaction_hash}"
               )
             }
-            class="text-hover-blue"
+            class="text-hover-link break-all"
           >
             <%= @event.transaction_hash %>
           </a>
@@ -71,7 +74,7 @@ defmodule StarknetExplorerWeb.EventDetailLive do
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Contract Address</div>
-        <div>
+        <div class="break-all">
           <%= @event.from_address %>
         </div>
       </div>
@@ -90,7 +93,7 @@ defmodule StarknetExplorerWeb.EventDetailLive do
               </div>
               <div>
                 <div class="list-h">Value</div>
-                <div><%= payload %></div>
+                <div class="break-all"><%= payload %></div>
               </div>
             </div>
           <% end %>

@@ -27,7 +27,7 @@ html {
 
 /* Titles */
 h1 {
-  @apply font-ibm-plex text-center lg:text-left text-3xl uppercase font-semibold;
+  @apply font-ibm-plex text-center lg:text-left text-4xl uppercase font-semibold;
 }
 h2 {
   @apply font-ibm-plex text-2xl lg:mb-6;
@@ -144,26 +144,8 @@ input {
 }
 
 /* Text Styles */
-.text-hover-blue {
-  @apply text-se-blue hover:text-se-hover-blue transition-all duration-300;
-}
-.text-hover-green {
-  @apply text-se-green hover:text-se-hover-green transition-all duration-300;
-}
-.text-hover-pink {
-  @apply text-se-pink hover:text-se-hover-pink transition-all duration-300;
-}
 .text-hover-link {
   @apply text-se-link hover:text-se-hover-link transition-all duration-300;
-}
-.text-hover-violet {
-  @apply text-se-violet hover:text-se-hover-violet transition-all duration-300;
-}
-.text-hover-lilac {
-  @apply text-se-lilac hover:text-se-hover-lilac transition-all duration-300;
-}
-.text-hover-gray {
-  @apply text-gray-400 hover:text-gray-300 transition-all duration-300;
 }
 
 /* Rounded Labels */
@@ -171,7 +153,9 @@ input {
   @apply px-3 py-0.5 ml-0.5 border-l rounded-l-none rounded-md;
 }
 .pink-label,
-.approval {
+.approval,
+.mint,
+.sync {
   @apply text-se-pink bg-se-pink/5 border-se-pink;
 }
 .blue-label,
@@ -183,11 +167,13 @@ input {
   @apply text-se-green bg-se-green/5 border-se-green;
 }
 .violet-label,
-.swap {
+.swap,
+.burn {
   @apply text-se-violet bg-se-violet/5 border-se-violet;
 }
 .lilac-label,
-.transfer {
+.transfer,
+.transaction_executed {
   @apply text-se-lilac bg-se-lilac/5 border-se-lilac;
 }
 .gray-label {
@@ -224,7 +210,8 @@ main .option {
 .type.deploy_account {
   @apply text-se-violet;
 }
-.type.declare {
+.type.declare,
+.l1_handler {
   @apply text-se-lilac;
 }
 .type.invoke {

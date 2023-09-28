@@ -33,10 +33,10 @@ defmodule StarknetExplorerWeb.EventIndexLive do
                 phx-hook="Copy"
               >
                 <div class="relative">
-                  <div class="break-all text-hover-blue">
+                  <div class="break-all">
                     <a
                       href={Utils.network_path(@network, "events/#{event.id}")}
-                      class="text-hover-blue"
+                      class="text-hover-link"
                     >
                       <span><%= event.id |> Utils.shorten_block_hash() %></span>
                     </a>
@@ -60,14 +60,9 @@ defmodule StarknetExplorerWeb.EventIndexLive do
             <div>
               <div class="list-h">Block Number</div>
               <div>
-                <span class="blue-label">
-                  <a
-                    href={Utils.network_path(@network, "blocks/#{event.block_number}")}
-                    class="text-hover-blue"
-                  >
-                    <span><%= to_string(event.block_number) %></span>
-                  </a>
-                </span>
+                <a href={Utils.network_path(@network, "blocks/#{event.block_number}")} class="type">
+                  <span><%= to_string(event.block_number) %></span>
+                </a>
               </div>
             </div>
             <div>
@@ -75,7 +70,7 @@ defmodule StarknetExplorerWeb.EventIndexLive do
               <div>
                 <a
                   href={Utils.network_path(@network, "transactions/#{event.transaction_hash}")}
-                  class="text-hover-blue"
+                  class="text-hover-link"
                 >
                   <span><%= event.transaction_hash |> Utils.shorten_block_hash() %></span>
                 </a>
@@ -85,7 +80,7 @@ defmodule StarknetExplorerWeb.EventIndexLive do
               <div class="list-h">Name</div>
               <div>
                 <%= if !String.starts_with?(event.name, "0x") do %>
-                  <%= event.name %>
+                  <div class={"info-label #{String.downcase(event.name)}"}><%= event.name %></div>
                 <% else %>
                   <div
                     class="flex gap-2 items-center copy-container"

@@ -191,7 +191,7 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
               "transactions/0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
             )
           }
-          class="text-hover-blue"
+          class="text-se-blue"
         >
           <span>
             <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"

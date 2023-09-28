@@ -34,10 +34,10 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
                 phx-hook="Copy"
               >
                 <div class="relative">
-                  <div class="break-all text-hover-blue">
+                  <div class="break-all">
                     <a
                       href={Utils.network_path(@network, "messages/#{message.message_hash}")}
-                      class="text-hover-blue"
+                      class="text-hover-link"
                     >
                       <span><%= message.message_hash |> Utils.shorten_block_hash() %></span>
                     </a>
@@ -61,14 +61,18 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
             <div>
               <div class="list-h">Direction</div>
               <%= if Message.is_l2_to_l1(message.type) do %>
-                <div><span class="green-label">L2</span>→<span class="blue-label">L1</span></div>
+                <div>
+                  <span class="info-label green-label">L2</span>→<span class="info-label blue-label">L1</span>
+                </div>
               <% else %>
-                <div><span class="blue-label">L1</span>→<span class="green-label">L2</span></div>
+                <div>
+                  <span class="info-label blue-label">L1</span>→<span class="info-label green-label">L2</span>
+                </div>
               <% end %>
             </div>
             <div>
               <div class="list-h">Type</div>
-              <div>
+              <div class={"type #{String.downcase(String.replace(Message.friendly_message_type(message.type), " ", "-"))}"}>
                 <%= Message.friendly_message_type(message.type) %>
               </div>
             </div>
@@ -142,10 +146,10 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
                 phx-hook="Copy"
               >
                 <div class="relative">
-                  <div class="break-all text-hover-blue">
+                  <div class="break-all">
                     <a
                       href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
-                      class="text-hover-blue"
+                      class="text-hover-link"
                     >
                       <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
                     </a>

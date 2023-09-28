@@ -22,10 +22,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       session: %{"network" => @network}
     ) %>
     <div class="flex flex-col gap-1 justify-center items-center my-16">
-      <h1>Stark Compass Explorer</h1>
-      <h1 class="info-label blue-label text-xl font-medium mt-2">
+      <h1>Stark Compass</h1>
+      <div class="uppercase rounded-lg px-2 py-1 text-center blue-label text-xl font-medium mt-2">
         The only open source explorer for Starknet
-      </h1>
+      </div>
     </div>
     <div class="mx-auto max-w-7xl mt-4 mb-5">
       <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
@@ -96,7 +96,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <a href={Utils.network_path(@network, "transactions")} class="bg-container text-gray-100">
           <div class="reative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
-              <img src={~p"/images/check-square.svg"} class="my-auto w-6 h-auto" />
+              <img src={~p"/images/corner-up-right.svg"} class="my-auto w-6 h-auto" />
               <div>
                 <div class="text-sm text-gray-400">Transactions</div>
                 <div class="text-2xl mt-1"><%= @entities_count.transaction_count %></div>

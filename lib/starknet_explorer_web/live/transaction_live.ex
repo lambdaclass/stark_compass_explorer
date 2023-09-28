@@ -251,14 +251,18 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <div>
             <div class="list-h">Direction</div>
             <%= if Message.is_l2_to_l1(message.type) do %>
-              <div><span class="green-label">L2</span>→<span class="blue-label">L1</span></div>
+              <div>
+                <span class="info-label blue-label">L2</span>→<span class="info-label green-label">L1</span>
+              </div>
             <% else %>
-              <div><span class="blue-label">L1</span>→<span class="green-label">L2</span></div>
+              <div>
+                <span class="info-label green-label">L1</span>→<span class="info-label blue-label">L2</span>
+              </div>
             <% end %>
           </div>
           <div>
             <div class="list-h">Type</div>
-            <div>
+            <div class={"type #{String.downcase(String.replace(Message.friendly_message_type(message.type), " ", "-"))}"}>
               <%= Message.friendly_message_type(message.type) %>
             </div>
           </div>
@@ -450,7 +454,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Transaction Type</div>
       <div class="col-span-3">
-        <span class={"type #{String.downcase(@transaction.type)}"}>
+        <span class={"type #{String.downcase(String.replace(@transaction.type, " ", "-"))}"}>
           <%= @transaction.type %>
         </span>
       </div>
@@ -463,7 +467,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
             REVERTED
           </span>
         <% else %>
-          <span class={"info-label #{String.downcase(@transaction_receipt.finality_status)}"}>
+          <span class={"info-label #{String.downcase(String.replace(@transaction_receipt.finality_status, " ", "-"))}"}>
             <%= @transaction_receipt.finality_status %>
           </span>
         <% end %>
@@ -495,7 +499,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
               href={Utils.network_path(@network, "blocks/#{@transaction_receipt.block_hash}")}
               class="text-hover-link"
             >
-              <span><%= @transaction_receipt.block_hash |> Utils.shorten_block_hash() %></span>
+              <span><%= @transaction_receipt.block_hash %></span>
             </a>
 
             <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
@@ -662,10 +666,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </div>
       <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
         <div class="flex flex-col justify-center items-center gap-2">
-          <span class="blue-label">STEPS</span> <%= "#{@transaction_receipt.execution_resources["n_steps"]}" %>
+          <span class="blue-label py-1 px-2 rounded-lg">STEPS</span> <%= "#{@transaction_receipt.execution_resources["n_steps"]}" %>
         </div>
         <div class="flex flex-col justify-center items-center gap-2">
-          <span class="green-label">MEMORY HOLES</span> <%= "#{@transaction_receipt.execution_resources["n_memory_holes"]}" %>
+          <span class="green-label py-1 px-2 rounded-lg">MEMORY HOLES</span> <%= "#{@transaction_receipt.execution_resources["n_memory_holes"]}" %>
         </div>
         <%= for {builtin_name , instance_counter} <- @transaction_receipt.execution_resources["builtin_instance_counter"] do %>
           <div class="flex flex-col justify-center items-center gap-2">

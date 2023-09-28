@@ -586,7 +586,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="block-label">Block Hash</div>
       <div class="copy-container col-span-3" id={"copy-block-hash-#{@block.number}"} phx-hook="Copy">
         <div class="relative">
-          <%= Utils.shorten_block_hash(@block.hash) %>
+          <%= @block.hash %>
           <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
             <div class="relative">
               <img
@@ -615,7 +615,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="block-label">State Root</div>
       <div class="copy-container col-span-3" id={"copy-block-root-#{@block.number}"} phx-hook="Copy">
         <div class="relative">
-          <%= Utils.shorten_block_hash(@block.new_root) %>
+          <%= @block.new_root %>
           <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
             <div class="relative">
               <img
@@ -636,7 +636,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="block-label">Parent Hash</div>
       <div class="copy-container col-span-3" id={"copy-block-parent-#{@block.number}"} phx-hook="Copy">
         <div class="relative">
-          <%= Utils.shorten_block_hash(@block.parent_hash) %>
+          <%= @block.parent_hash %>
           <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
             <div class="relative">
               <img
@@ -663,7 +663,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         phx-hook="Copy"
       >
         <div class="relative">
-          <%= Utils.shorten_block_hash(@block.sequencer_address) %>
+          <%= @block.sequencer_address %>
           <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
             <div class="relative">
               <img
