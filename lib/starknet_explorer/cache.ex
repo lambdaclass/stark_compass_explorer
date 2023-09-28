@@ -28,7 +28,14 @@ defmodule StarknetExplorer.IndexCache do
       ## Yes, really.
       network_string = Atom.to_string(network)
       block = block_number |> StarknetExplorer.Block.get_by_num(network_string)
-      new_blocks = state[network_string] |> List.insert_at(0, block) |> maybe_delete_last_block()
+
+      new_blocks =
+        state[network_string]
+        |> List.insert_at(0, block)
+        |> maybe_delete_last_block()
+        |> Enum.sort(fn block_1, block_2 ->
+          block_1.number < block_2.number
+        end)
 
       Map.put(state, network_string, new_blocks)
     end)
