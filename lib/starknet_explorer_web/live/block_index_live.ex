@@ -72,16 +72,16 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
-      assign(socket,
-      blocks: Data.many_blocks(socket.assigns.network)
-    )}
+     assign(socket,
+       blocks: Data.many_blocks(socket.assigns.network)
+     )}
   end
 
   @impl true
   def handle_info(:load_blocks, socket) do
-   {:noreply,
+    {:noreply,
      assign(socket,
        blocks: Data.many_blocks(socket.assigns.network)
-   )}
+     )}
   end
 end

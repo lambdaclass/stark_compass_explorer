@@ -21,51 +21,50 @@ defmodule StarknetExplorerWeb.SearchLive do
         <button class="absolute top-1/2 right-2 transform -translate-y-1/2" type="submit">
           <img src={~p"/images/search.svg"} />
         </button>
-        <div id="dropdownInformation" class="hidden absolute mt-3 z-10 bg-container rounded-lg shadow w-full  mx-auto dark:bg-container dark:divide-gray-600">
-        <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
-          <%= if assigns[:block] do %>
-            Blocks
-          <% else %>
-            <%= assigns[:result] %>
-          <% end %>
-          <div>
-            <ul
-              class="py-2 text-sm text-gray-700 dark:text-gray-200"
-              aria-labelledby="dropdownInformationButton"
-            >
-              <li>
-                <div class="cursor-pointer flex flex-row justify-start items-start block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                  <div class="text-hover-blue">
-                    <img class="inline-block" src={~p"/images/box.svg"} />
-                    <div id="redirect-link" class="py-1 inline-block">
-                      <%= if assigns[:result] == "Found" do %>
-                        <%= live_redirect(
-                          get_number(assigns[:block]),
-                          to: ~p"/#{@network}/blocks/#{get_hash(assigns[:block])}",
-                          class: "text-hover-blue",
-                          id: "number-redirect-link",
-                          title: get_hash(assigns[:block])
-                        )
-                        %>
-                        -
-                        <%= live_redirect(
-                          Utils.shorten_block_hash(get_hash(assigns[:block])),
-                          to: ~p"/#{@network}/blocks/#{get_hash(assigns[:block])}",
-                          class: "text-hover-blue",
-                          id: "hash-redirect-link",
-                          title: get_hash(assigns[:block])
-                        )
-                        %>
-                      <% else %>
-                       <%= assigns[:result] %>
-                      <% end %>
+        <div
+          id="dropdownInformation"
+          class="hidden absolute mt-3 z-10 bg-container rounded-lg shadow w-full  mx-auto dark:bg-container dark:divide-gray-600"
+        >
+          <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+            <%= if assigns[:block] do %>
+              Blocks
+            <% else %>
+              <%= assigns[:result] %>
+            <% end %>
+            <div>
+              <ul
+                class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                aria-labelledby="dropdownInformationButton"
+              >
+                <li>
+                  <div class="cursor-pointer flex flex-row justify-start items-start block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                    <div class="text-hover-blue">
+                      <img class="inline-block" src={~p"/images/box.svg"} />
+                      <div id="redirect-link" class="py-1 inline-block">
+                        <%= if assigns[:result] == "Found" do %>
+                          <%= live_redirect(
+                            get_number(assigns[:block]),
+                            to: ~p"/#{@network}/blocks/#{get_hash(assigns[:block])}",
+                            class: "text-hover-blue",
+                            id: "number-redirect-link",
+                            title: get_hash(assigns[:block])
+                          ) %> - <%= live_redirect(
+                            Utils.shorten_block_hash(get_hash(assigns[:block])),
+                            to: ~p"/#{@network}/blocks/#{get_hash(assigns[:block])}",
+                            class: "text-hover-blue",
+                            id: "hash-redirect-link",
+                            title: get_hash(assigns[:block])
+                          ) %>
+                        <% else %>
+                          <%= assigns[:result] %>
+                        <% end %>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </li>
-            </ul>
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
         </div>
       </form>
     </div>
@@ -103,23 +102,14 @@ defmodule StarknetExplorerWeb.SearchLive do
             fn -> assign(socket, tx: query) end
 
           {:block, block} ->
-            fn ->
-              assign(socket, block: block)
-              if block do
-                assign(socket, result: "Found")
-              else
-                assign(socket, result: "No results found")
-              end
-           end
+            fn -> assign(socket, block: block, result: "Found") end
 
           {:message, _message} ->
             fn -> assign(socket, message: query) end
 
           :noquery ->
             fn ->
-              socket
-              |> put_flash(:error, "No results found")
-              |> push_navigate(to: "/#{socket.assigns.network}")
+              assign(socket, result: "No results found")
             end
         end
       else

@@ -48,16 +48,16 @@
           id="menu-options"
           class="pointer-events-none lg:pointer-events-auto absolute lg:relative top-0 left-0 w-screen lg:w-full h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 flex flex-col lg:flex-row justify-start lg:justify-end items-streach gap-7 lg:gap-10 bg-[#111118] my-16 lg:my-0 py-10 lg:py-0 border-t lg:border-t-0 px-5 lg:px-0"
         >
-        <form id="placeholder-form" class="normal-form pl-32">
-          <input
-            type="text"
-            name="search-input"
-            placeholder="Search Blocks, Transactions, Classes, Messages, Contracts or Events"
-          />
-          <button class="absolute top-1/2 right-2 transform -translate-y-1/2" type="submit">
-            <img src={~p"/images/search.svg"} />
-          </button>
-        </form>
+          <form id="placeholder-form" class="normal-form pl-32">
+            <input
+              type="text"
+              name="search-input"
+              placeholder="Search Blocks, Transactions, Classes, Messages, Contracts or Events"
+            />
+            <button class="absolute top-1/2 right-2 transform -translate-y-1/2" type="submit">
+              <img src={~p"/images/search.svg"} />
+            </button>
+          </form>
           <%!-- <div id="nav-search-bar" class="lg:w-full xl:pl-32 lg:pl-12">
             <%= live_render(@conn, StarknetExplorerWeb.SearchLive,
               id: "search-bar",
@@ -154,14 +154,15 @@
     </header>
     <div id="search-overlay" class="fixed hidden inset-0 z-40 overflow-y-hidden">
       <div class="fixed inset-0 transition-opacity bg-zinc-400/25 backdrop-blur-sm 
-        dark:bg-black/40 opacity-100 z-20 overflow-hidden"></div>
-        <div id="nav-search-bar" class="max-w-3xl lg:w-full w-3/4 mx-auto relative z-40 top-32">
-          <%= live_render(@conn, StarknetExplorerWeb.SearchLive,
-            id: "search-bar",
-            flash: @flash,
-            session: %{"network" => @network},
-            router: StarknetExplorerWeb.Router
-          ) %>
+        dark:bg-black/40 opacity-100 z-20 overflow-hidden">
+      </div>
+      <div id="nav-search-bar" class="max-w-3xl lg:w-full w-3/4 mx-auto relative z-40 top-32">
+        <%= live_render(@conn, StarknetExplorerWeb.SearchLive,
+          id: "search-bar",
+          flash: @flash,
+          session: %{"network" => @network},
+          router: StarknetExplorerWeb.Router
+        ) %>
       </div>
     </div>
     <%= @inner_content %>
