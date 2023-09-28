@@ -72,9 +72,12 @@ defmodule StarknetExplorer.Data do
     case Block.get_by_partial_hash(hash, network) do
       no_blocks when no_blocks == nil or no_blocks == [] ->
         with {:ok, blocks} <- first_n_blocks(network, 50) do
-          {:ok, (for nth_block <- blocks,
-            String.contains?(nth_block.hash, hash),
-            do: nth_block) }
+          {:ok,
+           for(
+             nth_block <- blocks,
+             String.contains?(nth_block.hash, hash),
+             do: nth_block
+           )}
         else
           err -> {:error, err}
         end

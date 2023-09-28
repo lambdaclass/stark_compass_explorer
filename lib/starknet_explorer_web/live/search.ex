@@ -21,51 +21,50 @@ defmodule StarknetExplorerWeb.SearchLive do
         <button class="absolute top-1/2 right-2 transform -translate-y-1/2" type="submit">
           <img src={~p"/images/search.svg"} />
         </button>
-        <div id="dropdownInformation" class="hidden absolute mt-3 z-10 bg-container rounded-lg shadow w-full  mx-auto dark:bg-container dark:divide-gray-600">
-        <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
-          <%= if assigns[:block] do %>
-            Blocks
-          <% else %>
-            <div>Not found!</div>
-          <% end %>
-          <div>
-            <ul
-              class="py-2 text-sm text-gray-700 dark:text-gray-200"
-              aria-labelledby="dropdownInformationButton"
-            >
-              <li>
-                <div class="cursor-pointer flex flex-row justify-start items-start block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                  <div class="text-hover-blue">
-                    <img class="inline-block" src={~p"/images/box.svg"} />
-                    <div id="redirect-link" class="py-1 inline-block">
-                      <%= if assigns[:block] do %>
-                        <%= live_redirect(
-                          get_number(@block),
-                          to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
-                          class: "text-hover-blue",
-                          id: "number-redirect-link",
-                          title: get_hash(@block)
-                        )
-                        %>
-                        -
-                        <%= live_redirect(
-                          Utils.shorten_block_hash(get_hash(@block)),
-                          to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
-                          class: "text-hover-blue",
-                          id: "hash-redirect-link",
-                          title: get_hash(@block)
-                        )
-                        %>
-                      <% else %>
+        <div
+          id="dropdownInformation"
+          class="hidden absolute mt-3 z-10 bg-container rounded-lg shadow w-full  mx-auto dark:bg-container dark:divide-gray-600"
+        >
+          <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+            <%= if assigns[:block] do %>
+              Blocks
+            <% else %>
+              <div>Not found!</div>
+            <% end %>
+            <div>
+              <ul
+                class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                aria-labelledby="dropdownInformationButton"
+              >
+                <li>
+                  <div class="cursor-pointer flex flex-row justify-start items-start block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                    <div class="text-hover-blue">
+                      <img class="inline-block" src={~p"/images/box.svg"} />
+                      <div id="redirect-link" class="py-1 inline-block">
+                        <%= if assigns[:block] do %>
+                          <%= live_redirect(
+                            get_number(@block),
+                            to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
+                            class: "text-hover-blue",
+                            id: "number-redirect-link",
+                            title: get_hash(@block)
+                          ) %> - <%= live_redirect(
+                            Utils.shorten_block_hash(get_hash(@block)),
+                            to: ~p"/#{@network}/blocks/#{get_hash(@block)}",
+                            class: "text-hover-blue",
+                            id: "hash-redirect-link",
+                            title: get_hash(@block)
+                          ) %>
+                        <% else %>
                           <div>Not found!</div>
-                      <% end %>
+                        <% end %>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </li>
-            </ul>
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
         </div>
       </form>
     </div>
