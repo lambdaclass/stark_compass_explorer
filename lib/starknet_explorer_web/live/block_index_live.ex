@@ -1,5 +1,6 @@
 defmodule StarknetExplorerWeb.BlockIndexLive do
   use StarknetExplorerWeb, :live_view
+  alias StarknetExplorerWeb.CoreComponents
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.Data
   @impl true
@@ -31,27 +32,15 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
             </div>
             <div class="col-span-2">
               <div class="list-h">Block Hash</div>
-              <div class="copy-container" id={"copy-bk-#{block.number}"} phx-hook="Copy">
-                <div class="relative">
+              <div class="block-data">
+                <div class="hash flex">
                   <a
                     href={Utils.network_path(@network, "blocks/#{block.hash}")}
                     class="text-hover-link"
                   >
                     <span><%= Utils.shorten_block_hash(block.hash) %></span>
                   </a>
-                  <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                    <div class="relative">
-                      <img
-                        class="copy-btn copy-text w-4 h-4"
-                        src={~p"/images/copy.svg"}
-                        data-text={block.hash}
-                      />
-                      <img
-                        class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                        src={~p"/images/check-square.svg"}
-                      />
-                    </div>
-                  </div>
+                  <CoreComponents.copy_button text={block.hash} />
                 </div>
               </div>
             </div>

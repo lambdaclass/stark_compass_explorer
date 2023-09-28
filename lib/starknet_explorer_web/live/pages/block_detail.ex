@@ -1,6 +1,7 @@
 defmodule StarknetExplorerWeb.BlockDetailLive do
   require Logger
   use StarknetExplorerWeb, :live_view
+  alias StarknetExplorerWeb.CoreComponents
   alias StarknetExplorer.Data
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.BlockUtils
@@ -65,7 +66,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   defp block_detail_header(assigns) do
     ~H"""
     <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
-      <h2>Block <span class="font-semibold">#<%= @block.number %></span></h2>
+      <h2>Block</h2>
       <div class="text-gray-400">
         <%= @block.timestamp
         |> DateTime.from_unix()
@@ -315,26 +316,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="grid-6 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
-          <div
-            class="flex gap-2 items-center copy-container"
-            id={"copy-transaction-hash-#{hash}"}
-            phx-hook="Copy"
-          >
-            <div class="relative">
-              <div class="break-all">
-                <a href={Utils.network_path(@network, "transactions/#{hash}")} class="text-hover-link">
-                  <span><%= Utils.shorten_block_hash(hash) %></span>
-                </a>
-              </div>
-              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                <div class="relative">
-                  <img class="copy-btn copy-text w-4 h-4" src={~p"/images/copy.svg"} data-text={hash} />
-                  <img
-                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                    src={~p"/images/check-square.svg"}
-                  />
-                </div>
-              </div>
+          <div class="block-data">
+            <div class="hash flex">
+              <a href={Utils.network_path(@network, "transactions/#{hash}")} class="text-hover-link">
+                <span><%= Utils.shorten_block_hash(hash) %></span>
+              </a>
+              <CoreComponents.copy_button text={hash} />
             </div>
           </div>
         </div>
@@ -359,28 +346,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div>
           <div class="list-h">Address</div>
-          <div
-            class="flex gap-2 items-center copy-container"
-            id={"copy-transaction-hash-#{sender_address}"}
-            phx-hook="Copy"
-          >
-            <div class="relative">
-              <div class="break-all">
-                <%= Utils.shorten_block_hash(sender_address) %>
-              </div>
-              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                <div class="relative">
-                  <img
-                    class="copy-btn copy-text w-4 h-4"
-                    src={~p"/images/copy.svg"}
-                    data-text={sender_address}
-                  />
-                  <img
-                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                    src={~p"/images/check-square.svg"}
-                  />
-                </div>
-              </div>
+          <div class="block-data">
+            <div class="hash flex">
+              <%= Utils.shorten_block_hash(sender_address) %>
+              <CoreComponents.copy_button text={sender_address} />
             </div>
           </div>
         </div>
@@ -408,33 +377,15 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div class="grid-6 custom-list-item">
           <div>
             <div class="list-h">Message Hash</div>
-            <div
-              class="flex gap-2 items-center copy-container"
-              id={"copy-message-hash-#{index}"}
-              phx-hook="Copy"
-            >
-              <div class="relative">
-                <div class="break-all">
-                  <a
-                    href={Utils.network_path(@network, "messages/#{message.message_hash}")}
-                    class="text-hover-link"
-                  >
-                    <span><%= message.message_hash |> Utils.shorten_block_hash() %></span>
-                  </a>
-                </div>
-                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                  <div class="relative">
-                    <img
-                      class="copy-btn copy-text w-4 h-4"
-                      src={~p"/images/copy.svg"}
-                      data-text={message.message_hash}
-                    />
-                    <img
-                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                      src={~p"/images/check-square.svg"}
-                    />
-                  </div>
-                </div>
+            <div class="block-data">
+              <div class="hash flex">
+                <a
+                  href={Utils.network_path(@network, "messages/#{message.message_hash}")}
+                  class="text-hover-link"
+                >
+                  <%= message.message_hash |> Utils.shorten_block_hash() %>
+                </a>
+                <CoreComponents.copy_button text={message.message_hash} />
               </div>
             </div>
           </div>
@@ -459,95 +410,34 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           </div>
           <div>
             <div class="list-h">From Address</div>
-            <div
-              class="flex gap-2 items-center copy-container"
-              id={"copy-from-addr-#{index}"}
-              phx-hook="Copy"
-            >
-              <div class="relative">
-                <div class="break-all">
-                  <%= if Message.is_l2_to_l1(message.type) do %>
-                    <%= Utils.shorten_block_hash(message.from_address) %>
-                  <% else %>
-                    <%= Utils.shorten_block_hash(message.from_address) %>
-                  <% end %>
-                </div>
-                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                  <div class="relative">
-                    <img
-                      class="copy-btn copy-text w-4 h-4"
-                      src={~p"/images/copy.svg"}
-                      data-text={message.from_address}
-                    />
-                    <img
-                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                      src={~p"/images/check-square.svg"}
-                    />
-                  </div>
-                </div>
+
+            <div class="block-data">
+              <div class="hash flex">
+                <%= Utils.shorten_block_hash(message.from_address) %>
+                <CoreComponents.copy_button text={message.from_address} />
               </div>
             </div>
           </div>
           <div>
             <div class="list-h">To Address</div>
-            <div
-              class="flex gap-2 items-center copy-container"
-              id={"copy-to-addr-#{index}"}
-              phx-hook="Copy"
-            >
-              <div class="relative">
-                <div class="break-all">
-                  <%= if Message.is_l2_to_l1(message.type) do %>
-                    <%= Utils.shorten_block_hash(message.to_address) %>
-                  <% else %>
-                    <%= Utils.shorten_block_hash(message.to_address) %>
-                  <% end %>
-                </div>
-                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                  <div class="relative">
-                    <img
-                      class="copy-btn copy-text w-4 h-4"
-                      src={~p"/images/copy.svg"}
-                      data-text={message.to_address}
-                    />
-                    <img
-                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                      src={~p"/images/check-square.svg"}
-                    />
-                  </div>
-                </div>
+            <div class="block-data">
+              <div class="hash flex">
+                <%= Utils.shorten_block_hash(message.to_address) %>
+                <CoreComponents.copy_button text={message.to_address} />
               </div>
             </div>
           </div>
           <div>
             <div class="list-h">Transaction Hash</div>
-            <div
-              class="flex gap-2 items-center copy-container"
-              id={"copy-transaction-hash-#{index}"}
-              phx-hook="Copy"
-            >
-              <div class="relative">
-                <div class="break-all">
-                  <a
-                    href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
-                    class="text-hover-link"
-                  >
-                    <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
-                  </a>
-                </div>
-                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                  <div class="relative">
-                    <img
-                      class="copy-btn copy-text w-4 h-4"
-                      src={~p"/images/copy.svg"}
-                      data-text={message.transaction_hash}
-                    />
-                    <img
-                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                      src={~p"/images/check-square.svg"}
-                    />
-                  </div>
-                </div>
+            <div class="block-data">
+              <div class="hash flex">
+                <a
+                  href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
+                  class="text-hover-link"
+                >
+                  <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
+                </a>
+                <CoreComponents.copy_button text={message.transaction_hash} />
               </div>
             </div>
           </div>
@@ -583,23 +473,17 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       </div>
     <% end %>
     <div class="grid-4 custom-list-item">
+      <div class="block-label">Block Number</div>
+      <div class="type">
+        <%= @block.number %>
+      </div>
+    </div>
+    <div class="grid-4 custom-list-item">
       <div class="block-label">Block Hash</div>
-      <div class="copy-container col-span-3" id={"copy-block-hash-#{@block.number}"} phx-hook="Copy">
-        <div class="relative">
+      <div class="block-data col-span-3">
+        <div class="hash flex">
           <%= @block.hash %>
-          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-            <div class="relative">
-              <img
-                class="copy-btn copy-text w-4 h-4"
-                src={~p"/images/copy.svg"}
-                data-text={@block.hash}
-              />
-              <img
-                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                src={~p"/images/check-square.svg"}
-              />
-            </div>
-          </div>
+          <CoreComponents.copy_button text={@block.hash} />
         </div>
       </div>
     </div>
@@ -613,43 +497,19 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">State Root</div>
-      <div class="copy-container col-span-3" id={"copy-block-root-#{@block.number}"} phx-hook="Copy">
-        <div class="relative">
+      <div class="block-data col-span-3">
+        <div class="hash flex">
           <%= @block.new_root %>
-          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-            <div class="relative">
-              <img
-                class="copy-btn copy-text w-4 h-4"
-                src={~p"/images/copy.svg"}
-                data-text={@block.new_root}
-              />
-              <img
-                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                src={~p"/images/check-square.svg"}
-              />
-            </div>
-          </div>
+          <CoreComponents.copy_button text={@block.new_root} />
         </div>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Parent Hash</div>
-      <div class="copy-container col-span-3" id={"copy-block-parent-#{@block.number}"} phx-hook="Copy">
-        <div class="relative">
+      <div class="block-data col-span-3">
+        <div class="hash flex">
           <%= @block.parent_hash %>
-          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-            <div class="relative">
-              <img
-                class="copy-btn copy-text w-4 h-4"
-                src={~p"/images/copy.svg"}
-                data-text={@block.parent_hash}
-              />
-              <img
-                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                src={~p"/images/check-square.svg"}
-              />
-            </div>
-          </div>
+          <CoreComponents.copy_button text={@block.parent_hash} />
         </div>
       </div>
     </div>
@@ -657,26 +517,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="block-label">
         Sequencer Address
       </div>
-      <div
-        class="copy-container col-span-3"
-        id={"copy-block-sequencer-#{@block.number}"}
-        phx-hook="Copy"
-      >
-        <div class="relative">
+      <div class="block-data col-span-3">
+        <div class="hash flex">
           <%= @block.sequencer_address %>
-          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-            <div class="relative">
-              <img
-                class="copy-btn copy-text w-4 h-4"
-                src={~p"/images/copy.svg"}
-                data-text={@block.sequencer_address}
-              />
-              <img
-                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                src={~p"/images/check-square.svg"}
-              />
-            </div>
-          </div>
+          <CoreComponents.copy_button text={@block.sequencer_address} />
         </div>
       </div>
     </div>
@@ -724,30 +568,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="custom-list-item grid-5">
         <div>
           <div class="list-h">Identifier</div>
-          <div
-            class="flex gap-2 items-center copy-container"
-            id={"copy-event-id-#{event.id}"}
-            phx-hook="Copy"
-          >
-            <div class="relative">
-              <div class="break-all">
-                <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-link">
-                  <span><%= event.id |> Utils.shorten_block_hash() %></span>
-                </a>
-              </div>
-              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                <div class="relative">
-                  <img
-                    class="copy-btn copy-text w-4 h-4"
-                    src={~p"/images/copy.svg"}
-                    data-text={event.id}
-                  />
-                  <img
-                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                    src={~p"/images/check-square.svg"}
-                  />
-                </div>
-              </div>
+          <div class="block-data">
+            <div class="hash flex">
+              <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-link">
+                <%= event.id |> Utils.shorten_block_hash() %>
+              </a>
+              <CoreComponents.copy_button text={event.id} />
             </div>
           </div>
         </div>
@@ -758,7 +584,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
               href={Utils.network_path(@network, "transactions/#{event.transaction_hash}")}
               class="text-hover-link"
             >
-              <span><%= event.transaction_hash |> Utils.shorten_block_hash() %></span>
+              <%= event.transaction_hash |> Utils.shorten_block_hash() %>
             </a>
           </div>
         </div>
@@ -768,28 +594,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             <%= if !String.starts_with?(event.name, "0x") do %>
               <div class={"info-label #{String.downcase(event.name)}"}><%= event.name %></div>
             <% else %>
-              <div
-                class="flex gap-2 items-center copy-container"
-                id={"copy-name-#{event.id}"}
-                phx-hook="Copy"
-              >
-                <div class="relative">
-                  <div class="break-all">
-                    <span><%= event.name |> Utils.shorten_block_hash() %></span>
-                  </div>
-                  <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                    <div class="relative">
-                      <img
-                        class="copy-btn copy-text w-4 h-4"
-                        src={~p"/images/copy.svg"}
-                        data-text={event.name}
-                      />
-                      <img
-                        class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                        src={~p"/images/check-square.svg"}
-                      />
-                    </div>
-                  </div>
+              <div class="block-data">
+                <div class="hash flex">
+                  <%= event.name |> Utils.shorten_block_hash() %>
+                  <CoreComponents.copy_button text={event.name} />
                 </div>
               </div>
             <% end %>
@@ -797,26 +605,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div class="list-h">From Address</div>
         <div>
-          <div
-            class="flex gap-2 items-center copy-container"
-            id={"copy-from-addr-#{event.id}"}
-            phx-hook="Copy"
-          >
-            <div class="relative">
-              <span><%= event.from_address |> Utils.shorten_block_hash() %></span>
-              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                <div class="relative">
-                  <img
-                    class="copy-btn copy-text w-4 h-4"
-                    src={~p"/images/copy.svg"}
-                    data-text={event.from_address}
-                  />
-                  <img
-                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                    src={~p"/images/check-square.svg"}
-                  />
-                </div>
-              </div>
+          <div class="block-data">
+            <div class="hash flex">
+              <%= event.from_address |> Utils.shorten_block_hash() %>
+              <CoreComponents.copy_button text={event.from_address} />
             </div>
           </div>
         </div>
