@@ -126,36 +126,17 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     {:ok, block} =
       case num_or_hash(param) do
         :hash ->
-          Data.block_by_hash(param, socket.assigns.network)
+          Data.block_by_hash(param, socket.assigns.network, false)
 
         :num ->
           {num, ""} = Integer.parse(param)
-          Data.block_by_number(num, socket.assigns.network)
+          Data.block_by_number(num, socket.assigns.network, false)
       end
-
-    {:ok, receipts} = Data.receipts_by_block(block, socket.assigns.network)
-
-    # add receipts to each transaction inside the block
-    block = %{
-      block
-      | transactions:
-          Enum.map(block.transactions, fn tx ->
-            %{tx | receipt: Enum.find(receipts, nil, fn r -> r.transaction_hash == tx.hash end)}
-          end)
-    }
-
-    # note: most transactions receipt do not contain messages
-    l1_to_l2_messages =
-      block.transactions |> Enum.map(&Message.from_transaction/1) |> Enum.reject(&is_nil/1)
-
-    messages =
-      (receipts |> Enum.flat_map(&Message.from_transaction_receipt/1)) ++ l1_to_l2_messages
 
     assigns = [
       gas_price: Utils.hex_wei_to_eth(block.gas_fee_in_wei),
       execution_resources: block.execution_resources,
       block: block,
-      messages: messages,
       view: "overview",
       verification: "Pending",
       enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification),
@@ -163,9 +144,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     ]
 
     case Application.get_env(:starknet_explorer, :enable_gateway_data) do
-      #      true ->
-      #       Process.send_after(self(), :get_gateway_information, 200)
-
       _ ->
         :skip
     end
@@ -197,6 +175,57 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       |> assign(:execution_resources, resources_assign)
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event(
+        "select-view",
+        %{"view" => "transactions"},
+        socket
+      ) do
+    transactions =
+      if Map.get(socket.assigns, :transactions) == nil do
+        {:ok, receipts} = Data.receipts_by_block(socket.assigns.block, socket.assigns.network)
+
+        Data.transactions_by_block_number(socket.assigns.block.number, socket.assigns.network)
+        |> Enum.map(fn tx ->
+          %{tx | receipt: Enum.find(receipts, nil, fn r -> r.transaction_hash == tx.hash end)}
+        end)
+      else
+        socket.assigns.transactions
+      end
+
+    assigns = [
+      view: "transactions",
+      transactions: transactions
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event(
+        "select-view",
+        %{"view" => "messages"},
+        socket
+      ) do
+    transactions = block_transactions(socket)
+
+    # note: most transactions receipt do not contain messages
+    l1_to_l2_messages =
+      transactions |> Enum.map(&Message.from_transaction/1) |> Enum.reject(&is_nil/1)
+
+    messages =
+      (transactions
+       |> Enum.map(fn tx -> tx.receipt end)
+       |> Enum.flat_map(&Message.from_transaction_receipt/1)) ++ l1_to_l2_messages
+
+    assigns = [
+      view: "messages",
+      messages: messages
+    ]
+
+    {:noreply, assign(socket, assigns)}
   end
 
   def handle_event("inc_events", _value, socket) do
@@ -311,7 +340,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>Address</div>
       <div>Age</div>
     </div>
-    <%= for transaction = %{hash: hash, type: type, version: version, sender_address: sender_address} <- @block.transactions do %>
+    <%= for transaction = %{hash: hash, type: type, version: version, sender_address: sender_address} <- @transactions do %>
       <div class="grid-6 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
@@ -366,27 +395,29 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           >
             <div class="relative">
               <div class="break-all text-hover-blue">
-                <%= Utils.shorten_block_hash(sender_address) %>
+                <%= Utils.shorten_block_hash(sender_address || "-") %>
               </div>
-              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                <div class="relative">
-                  <img
-                    class="copy-btn copy-text w-4 h-4"
-                    src={~p"/images/copy.svg"}
-                    data-text={sender_address}
-                  />
-                  <img
-                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                    src={~p"/images/check-square.svg"}
-                  />
+              <%= if sender_address != nil do %>
+                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
+                  <div class="relative">
+                    <img
+                      class="copy-btn copy-text w-4 h-4"
+                      src={~p"/images/copy.svg"}
+                      data-text={sender_address}
+                    />
+                    <img
+                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
+                      src={~p"/images/check-square.svg"}
+                    />
+                  </div>
                 </div>
-              </div>
+              <% end %>
             </div>
           </div>
         </div>
         <div>
           <div class="list-h">Age</div>
-          <div><%= Utils.get_block_age(@block) %></div>
+          <div><%= Utils.get_block_age_from_timestamp(@block.timestamp) %></div>
         </div>
       </div>
     <% end %>
@@ -847,5 +878,18 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <% end %>
     </div>
     """
+  end
+
+  defp block_transactions(socket) do
+    if Map.get(socket.assigns, :transactions) == nil do
+      {:ok, receipts} = Data.receipts_by_block(socket.assigns.block, socket.assigns.network)
+
+      Data.transactions_by_block_number(socket.assigns.block.number, socket.assigns.network)
+      |> Enum.map(fn tx ->
+        %{tx | receipt: Enum.find(receipts, nil, fn r -> r.transaction_hash == tx.hash end)}
+      end)
+    else
+      socket.assigns.transactions
+    end
   end
 end

@@ -272,6 +272,20 @@ defmodule StarknetExplorer.Block do
     |> Repo.preload(:transactions)
   end
 
+  @doc """
+  Returns amount blocks starting at block number up_to
+  """
+  def latest_blocks(amount, network) do
+    query =
+      from b in Block,
+        order_by: [desc: b.number],
+        where: b.network == ^network,
+        limit: ^amount
+
+    query
+    |> Repo.all()
+  end
+
   def rename_rpc_fields(rpc_block) do
     rpc_block
     |> Map.new(fn
@@ -289,22 +303,34 @@ defmodule StarknetExplorer.Block do
     end)
   end
 
-  def get_by_hash(hash, network) do
+  def get_by_hash(hash, network, preload_transactions \\ true) do
     query =
       from b in Block,
         where: b.hash == ^hash and b.network == ^network
 
-    Repo.one(query)
-    |> Repo.preload(:transactions)
+    case preload_transactions do
+      true ->
+        Repo.one(query)
+        |> Repo.preload(:transactions)
+
+      false ->
+        Repo.one(query)
+    end
   end
 
-  def get_by_num(num, network) do
+  def get_by_num(num, network, preload_transactions \\ true) do
     query =
       from b in Block,
         where: b.number == ^num and b.network == ^network
 
-    Repo.one(query)
-    |> Repo.preload(:transactions)
+    case preload_transactions do
+      true ->
+        Repo.one(query)
+        |> Repo.preload(:transactions)
+
+      false ->
+        Repo.one(query)
+    end
   end
 
   def get_by_number_with_receipts_preload(num, network) do
