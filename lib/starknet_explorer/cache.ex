@@ -2,9 +2,9 @@ defmodule StarknetExplorer.IndexCache do
   use Agent
 
   def start_link(_) do
-    blocks_mainnet = StarknetExplorer.Data.many_blocks("mainnet")
-    blocks_testnet = StarknetExplorer.Data.many_blocks("testnet")
-    blocks_testnet2 = StarknetExplorer.Data.many_blocks("testnet2")
+    blocks_mainnet = StarknetExplorer.Data.many_blocks_with_txs("mainnet")
+    blocks_testnet = StarknetExplorer.Data.many_blocks_with_txs("testnet")
+    blocks_testnet2 = StarknetExplorer.Data.many_blocks_with_txs("testnet2")
 
     Agent.start_link(
       fn ->
