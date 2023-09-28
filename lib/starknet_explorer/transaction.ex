@@ -53,8 +53,7 @@ defmodule StarknetExplorer.Transaction do
     :class_hash,
     :contract_address_salt,
     :constructor_calldata,
-    :version,
-    :timestamp
+    :version
   ]
 
   @deploy_account_tx_fields [
