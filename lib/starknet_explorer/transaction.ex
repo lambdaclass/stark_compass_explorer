@@ -53,7 +53,8 @@ defmodule StarknetExplorer.Transaction do
     :class_hash,
     :contract_address_salt,
     :constructor_calldata,
-    :version
+    :version,
+    :timestamp
   ]
 
   @deploy_account_tx_fields [
@@ -95,7 +96,7 @@ defmodule StarknetExplorer.Transaction do
     field :sender_address, :string
     field :calldata, {:array, :string}
     field :network, Ecto.Enum, values: @networks
-    belongs_to :block, StarknetExplorer.Block, foreign_key: :block_number, references: :hash
+    belongs_to :block, StarknetExplorer.Block, foreign_key: :block_number, references: :number
     has_one :receipt, TransactionReceipt
     timestamps()
   end
@@ -152,8 +153,8 @@ defmodule StarknetExplorer.Transaction do
   def paginate_transactions(params, network) do
     Transaction
     |> where([tx], tx.network == ^network)
-    #|> order_by(desc: :timestamp)
     |> preload(:block)
+    |> order_by(desc: :block_number)
     |> Repo.paginate(params)
   end
 
