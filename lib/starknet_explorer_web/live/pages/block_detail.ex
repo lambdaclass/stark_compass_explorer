@@ -604,12 +604,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           </div>
         </div>
         <div class="list-h">From Address</div>
-        <div>
-          <div class="block-data">
-            <div class="hash flex">
-              <%= event.from_address |> Utils.shorten_block_hash() %>
-              <CoreComponents.copy_button text={event.from_address} />
-            </div>
+        <div class="block-data">
+          <div class="hash flex">
+            <%= event.from_address |> Utils.shorten_block_hash() %>
+            <CoreComponents.copy_button text={event.from_address} />
           </div>
         </div>
         <div>
