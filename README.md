@@ -1,7 +1,7 @@
-# StarknetExplorer
+# StarkCompass
 ![image](./priv/static/images/explorer_preview.png)
 
-- [StarknetExplorer](#starknetexplorer)
+- [StarkCompass](#starkcompass)
   - [Requirements](#requirements)
   - [Local development](#local-development)
     - [Setup](#setup)
@@ -13,7 +13,7 @@
     - [BlockchainFetcher](#blockchainfetcher)
     - [BlockchainUpdater](#blockchainupdater)
     - [WARNING ⚠️](#warning-️)
-  - [Using Madara Explorer with PostgreSQL](#using-madara-explorer-with-postgresql)
+  - [Using Stark Compass with PostgreSQL](#using-stark-compass-with-postgresql)
 
 ## Requirements
 - SQLite
@@ -142,15 +142,15 @@ There are 3 things to keep in mind here:
    because the State Synchronization System can do a lot of requests per second.
 2. Disk Usage: We're still measuring it, but we expect it to be considerable 
    after running it for a couple of days.
-3. If you are going to sync a large amount of blocks, we *strongly* suggest to use PostgreSQL instead of SQLite. You can check how to swap the DB in [this section](#using-madara-explorer-with-postgresql).
+3. If you are going to sync a large amount of blocks, we *strongly* suggest to use PostgreSQL instead of SQLite. You can check how to swap the DB in [this section](#using-stark-compass-with-postgresql).
 
 The db file will be stored under `/priv/repo`.
 
-## Using Madara Explorer with PostgreSQL
+## Using Stark Compass with PostgreSQL
 
 If you want to handle multiple concurrent connections and a more scalable application, you may consider using PostgreSQL.
 
-Madara Explorer provides support for that, you can set the credentials to the PostgreSQL DB in the `runtime.exs` and set the environment variable `DB_TYPE` to `postgresql`.
+Stark Compass provides support for that, you can set the credentials to the PostgreSQL DB in the `runtime.exs` and set the environment variable `DB_TYPE` to `postgresql`.
 
 ```bash
 export DB_TYPE=postgresql

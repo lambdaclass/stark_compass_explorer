@@ -11,7 +11,7 @@ module.exports = {
     extend: {
       fontFamily: {
         "ibm-plex": "'IBM Plex Sans', sans-serif",
-        "mono": "'IBM Plex Mono', monospace",
+        mono: "'IBM Plex Mono', monospace",
       },
       colors: {
         brand: "#ff346d",
@@ -19,7 +19,7 @@ module.exports = {
         "se-black": "#111118",
         "se-green": "#88ff00",
         "se-hover-green": "#BAFF6A",
-        "se-violet": "#b43cff",
+        "se-violet": "#AE2EFF",
         "se-hover-violet": "#D38EFF",
         "se-blue": "#00eeff",
         "se-hover-blue": "#7BF6FF",
