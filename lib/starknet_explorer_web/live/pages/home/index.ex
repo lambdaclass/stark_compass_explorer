@@ -275,7 +275,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           blocks: [],
           transactions: [],
           entities_count: %{
-            message_count: 0,
+            messages_count: 0,
             events_count: 0,
             transaction_count: 0
           },

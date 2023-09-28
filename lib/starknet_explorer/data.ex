@@ -246,7 +246,7 @@ defmodule StarknetExplorer.Data do
       |> Map.put(:block_count, counts.blocks)
     else
       Map.new()
-      |> Map.put(:message_count, 0)
+      |> Map.put(:messages_count, 0)
       |> Map.put(:events_count, 0)
       |> Map.put(:transaction_count, 0)
       |> Map.put(:block_count, 0)
