@@ -30,8 +30,6 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     {:ok, block_height} = Rpc.get_block_height_no_cache(network)
     # Try Insert that block.
     {:ok, _} = BlockUtils.fetch_store_and_cache(block_height, network)
-    # If insert, increase Count.
-    Counts.insert_or_update(network)
     # Trigger the :do_start_sync process.
 
     state = %StateSyncSystem{
