@@ -185,18 +185,9 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    Process.send(self(), :load_messages, [])
     page = Message.paginate_messages(%{}, socket.assigns.network)
-    # Message.latest_n_messages(socket.assigns.network, 20)
     messages = page.entries
     {:ok, assign(socket, messages: messages, page: page)}
-  end
-
-  @impl true
-  def handle_info(:load_messages, socket) do
-    # TODO: Fetch this from the db
-    messages = Message.latest_n_messages(socket.assigns.network, 20)
-    {:noreply, assign(socket, messages: messages)}
   end
 
   @impl true
