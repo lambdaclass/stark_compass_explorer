@@ -141,27 +141,15 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               </div>
               <div class="col-span-2">
                 <div class="list-h">Block Hash</div>
-                <div class="copy-container" id={"copy-block-#{block.number}"} phx-hook="Copy">
-                  <div class="relative">
+                <div class="block-data">
+                  <div class="hash flex">
                     <a
                       href={Utils.network_path(assigns.network, "blocks/#{block.hash}")}
                       class="text-hover-link"
                     >
                       <span><%= Utils.shorten_block_hash(block.hash) %></span>
                     </a>
-                    <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                      <div class="relative">
-                        <img
-                          class="copy-btn copy-text w-4 h-4"
-                          src={~p"/images/copy.svg"}
-                          data-text={block.hash}
-                        />
-                        <img
-                          class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                          src={~p"/images/check-square.svg"}
-                        />
-                      </div>
-                    </div>
+                    <CoreComponents.copy_button text={block.hash} />
                   </div>
                 </div>
               </div>
@@ -205,27 +193,15 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             <div id={"transaction-#{idx}"} class="grid-7 custom-list-item">
               <div class="col-span-2">
                 <div class="list-h">Transaction Hash</div>
-                <div class="copy-container" id={"copy-transaction-#{idx}"} phx-hook="Copy">
-                  <div class="relative">
+                <div class="block-data">
+                  <div class="hash flex">
                     <a
                       href={Utils.network_path(assigns.network, "transactions/#{transaction.hash}")}
                       class="text-hover-link"
                     >
                       <span><%= Utils.shorten_block_hash(transaction.hash) %></span>
                     </a>
-                    <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                      <div class="relative">
-                        <img
-                          class="copy-btn copy-text w-4 h-4"
-                          src={~p"/images/copy.svg"}
-                          data-text={transaction.hash}
-                        />
-                        <img
-                          class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                          src={~p"/images/check-square.svg"}
-                        />
-                      </div>
-                    </div>
+                    <CoreComponents.copy_button text={transaction.hash} />
                   </div>
                 </div>
               </div>
