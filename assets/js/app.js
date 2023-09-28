@@ -320,6 +320,8 @@ Hooks.SearchHook = {
         focused = false;
         toggleFocus(input, searchDropdown);
         overlay.classList.add("hidden")
+        input.value = "";
+        searchDropdown.classList.add("hidden")
       })
     }
   },
