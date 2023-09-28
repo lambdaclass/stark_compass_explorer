@@ -1,6 +1,5 @@
 defmodule StarknetExplorerWeb.Component.TransactionsPerSecond do
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorer.Block
 
   @impl true
   def render(assigns = %{tx_per_second: _}) do
@@ -19,12 +18,12 @@ defmodule StarknetExplorerWeb.Component.TransactionsPerSecond do
   end
 
   defp calculate_tps(network) do
-    result = Block.latest_blocks_with_txs(2, network)
+    result = StarknetExplorer.IndexCache.latest_blocks(network)
 
     if length(result) < 2 do
       0
     else
-      [current_block, previous_block] = result
+      [current_block | [previous_block | _]] = result
       curr_block_time = current_block.timestamp - previous_block.timestamp
 
       tx_amount = Enum.count(current_block.transactions)
