@@ -187,11 +187,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       if Map.get(socket.assigns, :transactions) == nil do
         {:ok, receipts} = Data.receipts_by_block(socket.assigns.block, socket.assigns.network)
 
-        transactions =
-          Data.transactions_by_block_number(socket.assigns.block.number, socket.assigns.network)
-          |> Enum.map(fn tx ->
-            %{tx | receipt: Enum.find(receipts, nil, fn r -> r.transaction_hash == tx.hash end)}
-          end)
+        Data.transactions_by_block_number(socket.assigns.block.number, socket.assigns.network)
+        |> Enum.map(fn tx ->
+          %{tx | receipt: Enum.find(receipts, nil, fn r -> r.transaction_hash == tx.hash end)}
+        end)
       else
         socket.assigns.transactions
       end
@@ -202,20 +201,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     ]
 
     {:noreply, assign(socket, assigns)}
-  end
-
-  defp block_transactions(socket) do
-    if Map.get(socket.assigns, :transactions) == nil do
-      {:ok, receipts} = Data.receipts_by_block(socket.assigns.block, socket.assigns.network)
-
-      transactions =
-        Data.transactions_by_block_number(socket.assigns.block.number, socket.assigns.network)
-        |> Enum.map(fn tx ->
-          %{tx | receipt: Enum.find(receipts, nil, fn r -> r.transaction_hash == tx.hash end)}
-        end)
-    else
-      socket.assigns.transactions
-    end
   end
 
   @impl true
@@ -893,5 +878,18 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <% end %>
     </div>
     """
+  end
+
+  defp block_transactions(socket) do
+    if Map.get(socket.assigns, :transactions) == nil do
+      {:ok, receipts} = Data.receipts_by_block(socket.assigns.block, socket.assigns.network)
+
+      Data.transactions_by_block_number(socket.assigns.block.number, socket.assigns.network)
+      |> Enum.map(fn tx ->
+        %{tx | receipt: Enum.find(receipts, nil, fn r -> r.transaction_hash == tx.hash end)}
+      end)
+    else
+      socket.assigns.transactions
+    end
   end
 end
