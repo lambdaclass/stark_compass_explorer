@@ -42,11 +42,10 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     if Map.get(socket.assigns, :receipts) == nil do
       {:ok, receipts} = Data.receipts_by_block(socket.assigns.block, socket.assigns.network)
 
-      receipts =
-        receipts
-        |> Map.new(fn receipt ->
-          {receipt.transaction_hash, receipt}
-        end)
+      receipts
+      |> Map.new(fn receipt ->
+        {receipt.transaction_hash, receipt}
+      end)
     else
       socket.assigns.receipts
     end
@@ -389,7 +388,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div>Address</div>
       <div>Age</div>
     </div>
-    <%= for transaction = %{hash: hash, type: type, version: version, sender_address: sender_address} <- @page.entries do %>
+    <%= for %{hash: hash, type: type, version: version, sender_address: sender_address} <- @page.entries do %>
       <div class="grid-6 custom-list-item">
         <div>
           <div class="list-h">Hash</div>
