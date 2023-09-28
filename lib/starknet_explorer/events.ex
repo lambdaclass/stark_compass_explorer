@@ -76,7 +76,7 @@ defmodule StarknetExplorer.Events do
     |> cast(params, @allowed)
     |> foreign_key_constraint(:block_number)
     |> foreign_key_constraint(:transaction_hash)
-    |> validate_required(@@required)
+    |> validate_required(@required)
   end
 
   def insert(event) do
