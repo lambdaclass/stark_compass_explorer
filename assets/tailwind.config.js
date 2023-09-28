@@ -24,7 +24,7 @@ module.exports = {
         "se-orange": "#FF864E",
         "se-cash-green": "#00E11F",
         "se-link": "#BD56FF",
-        "se-hover-link": "#BC53FF",
+        "se-hover-link": "#D38EFF",
         "se-inner-border": "#3f3f75",
         "se-inner-bg": "#1e1e2b",
         "se-list-border": "#30304a",
