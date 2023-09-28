@@ -33,7 +33,7 @@ defmodule StarknetExplorerWeb.ContractIndexLive do
               </div>
               <div>
                 <div class="list-h">Type</div>
-                <div><span class="violet-label">PROXY ACCOUNT</span></div>
+                <div><span class="pink-label">PROXY ACCOUNT</span></div>
               </div>
               <div>
                 <div class="list-h">Class Hash</div>

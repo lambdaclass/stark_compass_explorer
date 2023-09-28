@@ -194,7 +194,7 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
               "transactions/#{@class.declared_at_transaction_hash}"
             )
           }
-          class="text-hover-blue"
+          class="text-se-blue"
         >
           <span>
             <%= Utils.shorten_block_hash(@class.declared_at_transaction_hash) %>

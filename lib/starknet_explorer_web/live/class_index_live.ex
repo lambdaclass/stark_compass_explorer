@@ -55,7 +55,7 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
             </div>
             <div>
               <div class="list-h">Type</div>
-              <span class="violet-label">
+              <span class="pink-label">
                 <%= class.type %>
               </span>
             </div>
