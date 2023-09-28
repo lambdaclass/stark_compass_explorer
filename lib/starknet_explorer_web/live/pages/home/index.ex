@@ -50,17 +50,17 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </div>
         <div>
           <a href="https://github.com/lambdaclass/stark_compass_explorer">
-            <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
+            <div class="inline-flex items-start gap-3 bg-container hover:bg-[#272737] transition-all duration-300 p-3 pr-4 text-sm mb-3">
               <img src={~p"/images/github.svg"} class="my-auto" />
             </div>
           </a>
           <a href="https://twitter.com/LambdaStarknet">
-            <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
+            <div class="inline-flex items-start gap-3 bg-container hover:bg-[#272737] transition-all duration-300 p-3 pr-4 text-sm mb-3">
               <img src={~p"/images/twitter.svg"} class="my-auto" />
             </div>
           </a>
           <a href="https://t.me/LambdaStarkNet">
-            <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
+            <div class="inline-flex items-start gap-3 bg-container hover:bg-[#272737] transition-all duration-300 p-3 pr-4 text-sm mb-3">
               <img src={~p"/images/telegram.svg"} class="my-auto" />
             </div>
           </a>
