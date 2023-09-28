@@ -264,7 +264,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   def load_blocks(socket) do
     blocks =
       if length(IndexCache.latest_blocks(socket.assigns.network)) < 15 do
-        StarknetExplorer.Data.many_blocks(socket.assigns.network)
+        StarknetExplorer.Data.many_blocks_with_txs(socket.assigns.network)
       else
         IndexCache.latest_blocks(socket.assigns.network)
       end

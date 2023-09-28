@@ -11,20 +11,25 @@ defmodule StarknetExplorer.Data do
   }
 
   @doc """
-  Fetch `block_amount` blocks (defaults to 15), first
-  look them up in the db, if not found check the RPC
-  provider.
+  Fetch `block_amount` blocks (defaults to 15) with txs
+  """
+  def many_blocks_with_txs(network, block_amount \\ 15) do
+    Block.latest_blocks_with_txs(block_amount, network)
+  end
+
+  @doc """
+  Fetch `block_amount` blocks (defaults to 15) without txs
   """
   def many_blocks(network, block_amount \\ 15) do
-    Block.latest_blocks_with_txs(block_amount, network)
+    Block.latest_blocks(block_amount, network)
   end
 
   @doc """
   Fetch a block by its hash, first look up in
   the db, if not found, fetch from the RPC provider
   """
-  def block_by_hash(hash, network) do
-    case Block.get_by_hash(hash, network) do
+  def block_by_hash(hash, network, preload_transactions \\ true) do
+    case Block.get_by_hash(hash, network, preload_transactions) do
       nil ->
         {:ok, block} = Rpc.get_block_by_hash(hash, network)
         StarknetExplorer.BlockUtils.store_block(block, network)
@@ -41,8 +46,8 @@ defmodule StarknetExplorer.Data do
   Fetch a block by number, first look up in
   the db, if not found, fetch from the RPC provider
   """
-  def block_by_number(number, network) do
-    case Block.get_by_num(number, network) do
+  def block_by_number(number, network, preload_transactions \\ true) do
+    case Block.get_by_num(number, network, preload_transactions) do
       nil ->
         {:ok, block} = Rpc.get_block_by_number(number, network)
         StarknetExplorer.BlockUtils.store_block(block, network)
@@ -53,6 +58,10 @@ defmodule StarknetExplorer.Data do
       block ->
         {:ok, block}
     end
+  end
+
+  def transactions_by_block_number(block_number, network) do
+    Transaction.get_by_block_number(block_number, network)
   end
 
   @doc """
