@@ -50,8 +50,12 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             <div class="flex items-start gap-6 my-4 mx-8">
               <img src={~p"/images/box.svg"} class="my-auto w-6 h-auto" />
               <div>
-                <div class="text-sm text-gray-400">Blocks Height</div>
-                <div class="text-2xl mt-1"><%= assigns.block_height %></div>
+              <div class="text-sm text-gray-400">Blocks Height</div>
+                <%= if assigns.block_height do %>
+                  <div class="text-2xl mt-1"><%= assigns.block_height %></div>
+                <% else %>
+                  <CoreComponents.loading_state id="loading_state"/>
+                <% end %>
               </div>
             </div>
             <div class="flex justify-between border-t border-t-gray-700 py-3 px-8">

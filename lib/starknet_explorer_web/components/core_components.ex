@@ -679,6 +679,7 @@ defmodule StarknetExplorerWeb.CoreComponents do
     """
   end
 
+  @spec tooltip(any) :: Phoenix.LiveView.Rendered.t()
   def tooltip(assigns) do
     ~H"""
     <img
@@ -688,6 +689,15 @@ defmodule StarknetExplorerWeb.CoreComponents do
       src="/images/help-circle.svg"
       class={"tooltip w-4 h-4 #{assigns[:class] || ""}"}
     />
+    """
+  end
+
+  @spec loading_state(any) :: Phoenix.LiveView.Rendered.t()
+  def loading_state(assigns) do
+    ~H"""
+      <div id={@id} phx class="text-lg font-semibold rounded-lg bg-gray-100 text-gray-100 dark:bg-gray-700 dark:text-gray-700 w-fit mt-1">
+      ASASASASASASASAS
+      </div>
     """
   end
 end
