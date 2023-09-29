@@ -451,7 +451,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
-    <CoreComponents.pagination_links id={"txs"} page={@page} prev={"dec_txs"} next={"inc_txs"} />
+    <CoreComponents.pagination_links id="txs" page={@page} prev="dec_txs" next="inc_txs" />
     """
   end
 
@@ -737,7 +737,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
-    <CoreComponents.pagination_links id={"events"} page={@page} prev={"dec_events"} next={"inc_events"} />
+    <CoreComponents.pagination_links id="events" page={@page} prev="dec_events" next="inc_events" />
     """
   end
 
