@@ -53,6 +53,10 @@ defmodule StarknetExplorerWeb.Utils do
     "0.0"
   end
 
+  def hex_wei_to_eth(_) do
+    "-"
+  end
+
   def atomize_keys(map) when is_map(map) do
     map
     |> Map.new(fn
