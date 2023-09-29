@@ -282,7 +282,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                       href={if @transactions && Enum.at(@transactions,n) do Utils.network_path(assigns.network, "transactions/#{Enum.at(@transactions,n).hash}") end}
                       class="text-hover-link"
                     >
-                      <span>
+                      <span class="xl:text-sm lg:text-xs">
                       <CoreComponents.loading_state
                           condition={@transactions && Enum.at(@transactions,n)}
                           content={if Enum.at(@transactions,n) do Utils.shorten_block_hash(Enum.at(@transactions,n).hash) end}
