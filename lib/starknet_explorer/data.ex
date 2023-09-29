@@ -31,11 +31,16 @@ defmodule StarknetExplorer.Data do
   def block_by_hash(hash, network, preload_transactions \\ true) do
     case Block.get_by_hash(hash, network, preload_transactions) do
       nil ->
-        {:ok, block} = Rpc.get_block_by_hash(hash, network)
-        StarknetExplorer.BlockUtils.store_block(block, network)
+        case Rpc.get_block_by_hash(hash, network) do
+          {:ok, block} ->
+            StarknetExplorer.BlockUtils.store_block(block, network)
 
-        block = Block.from_rpc_block(block, network)
-        {:ok, block}
+            block = Block.from_rpc_block(block, network)
+            {:ok, block}
+
+          {:error, error} ->
+            {:error, error}
+        end
 
       block ->
         {:ok, block}
@@ -49,11 +54,16 @@ defmodule StarknetExplorer.Data do
   def block_by_number(number, network, preload_transactions \\ true) do
     case Block.get_by_num(number, network, preload_transactions) do
       nil ->
-        {:ok, block} = Rpc.get_block_by_number(number, network)
-        StarknetExplorer.BlockUtils.store_block(block, network)
+        case Rpc.get_block_by_number(number, network) do
+          {:ok, block} ->
+            StarknetExplorer.BlockUtils.store_block(block, network)
 
-        block = Block.from_rpc_block(block, network)
-        {:ok, block}
+            block = Block.from_rpc_block(block, network)
+            {:ok, block}
+
+          {:error, error} ->
+            {:error, error}
+        end
 
       block ->
         {:ok, block}
