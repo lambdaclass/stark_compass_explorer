@@ -418,7 +418,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Status</div>
           <% finality_status = @receipts[hash].finality_status %>
-          <span class={"#{if finality_status == "ACCEPTED_ON_L2", do: "green-label"} #{if finality_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if finality_status == "PENDING", do: "pink-label"}"}>
+          <span class={"info-label #{String.downcase(finality_status)}"}>
             <%= finality_status %>
           </span>
         </div>

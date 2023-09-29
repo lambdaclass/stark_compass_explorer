@@ -90,6 +90,16 @@ defmodule StarknetExplorerWeb.EventIndexLive do
           </div>
         <% end %>
       </div>
+      <div>
+        <%= if @page.page_number != 1 do %>
+          <button phx-click="dec_events">←</button>
+        <% end %>
+        Showing from <%= (@page.page_number - 1) * @page.page_size %> to <%= (@page.page_number - 1) *
+          @page.page_size + @page.page_size %>
+        <%= if @page.page_number != @page.total_pages do %>
+          <button phx-click="inc_events">→</button>
+        <% end %>
+      </div>
     </div>
     """
   end
@@ -100,16 +110,39 @@ defmodule StarknetExplorerWeb.EventIndexLive do
 
     page =
       Events.paginate_events(
-        %{page: 1},
+        %{},
         block_height,
         socket.assigns.network
       )
 
     assigns = [
-      page: page,
-      page_number: 0
+      page: page
     ]
 
     {:ok, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event("inc_events", _value, socket) do
+    new_page_number = socket.assigns.page.page_number + 1
+    pagination(socket, new_page_number)
+  end
+
+  def handle_event("dec_events", _value, socket) do
+    new_page_number = socket.assigns.page.page_number - 1
+    pagination(socket, new_page_number)
+  end
+
+  def pagination(socket, new_page_number) do
+    {:ok, block_height} = BlockUtils.block_height(socket.assigns.network)
+
+    page =
+      Events.paginate_events(
+        %{page: new_page_number},
+        block_height,
+        socket.assigns.network
+      )
+
+    {:noreply, assign(socket, page: page)}
   end
 end
