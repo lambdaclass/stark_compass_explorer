@@ -59,8 +59,6 @@ defmodule StarknetExplorer.Block do
     block
     |> cast(attrs, @cast_fields)
     |> validate_required(@required_fields)
-    |> unique_constraint(:number)
-    |> unique_constraint(:hash)
   end
 
   @doc """
@@ -348,13 +346,25 @@ defmodule StarknetExplorer.Block do
       from b in Block,
         where: b.number == ^num and b.network == ^network
 
+    # These try catches are to guard against people sending big numbers that
+    # make postgres raise because the number doesn't fit.
     case preload_transactions do
       true ->
-        Repo.one(query)
-        |> Repo.preload(:transactions)
+        try do
+          Repo.one(query)
+          |> Repo.preload(:transactions)
+        rescue
+          _ ->
+            nil
+        end
 
       false ->
-        Repo.one(query)
+        try do
+          Repo.one(query)
+        rescue
+          _ ->
+            nil
+        end
     end
   end
 

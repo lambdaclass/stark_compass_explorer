@@ -12,8 +12,9 @@ defmodule StarknetExplorerWeb.EventIndexLive do
       flash: @flash
     ) %>
     <div class="max-w-7xl mx-auto">
-      <div class="table-header !justify-start gap-5">
+      <div class="table-header">
         <h2>Events</h2>
+        <CoreComponents.pagination_links id="events" page={@page} prev="dec_events" next="inc_events" />
       </div>
       <div class="table-block">
         <div class="grid-6 table-th">
@@ -90,16 +91,7 @@ defmodule StarknetExplorerWeb.EventIndexLive do
           </div>
         <% end %>
       </div>
-      <div>
-        <%= if @page.page_number != 1 do %>
-          <button phx-click="dec_events">←</button>
-        <% end %>
-        Showing from <%= (@page.page_number - 1) * @page.page_size %> to <%= (@page.page_number - 1) *
-          @page.page_size + @page.page_size %>
-        <%= if @page.page_number != @page.total_pages do %>
-          <button phx-click="inc_events">→</button>
-        <% end %>
-      </div>
+      <CoreComponents.pagination_links id="events" page={@page} prev="dec_events" next="inc_events" />
     </div>
     """
   end

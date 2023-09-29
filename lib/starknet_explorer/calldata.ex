@@ -49,7 +49,7 @@ defmodule StarknetExplorer.Calldata do
   end
 
   def from_plain_calldata([array_len | rest], "0x1") do
-    {calls, _} =
+      {calls, _} =
       List.foldl(
         Enum.to_list(1..felt_to_int(array_len)),
         {[], rest},
