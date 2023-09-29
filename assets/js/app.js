@@ -313,6 +313,14 @@ Hooks.Dropdown = {
     });
   },
 };
+Hooks.ScrollToTop = {
+  mounted() {
+    this.el.addEventListener("click", () => {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    });
+  },
+};
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks });

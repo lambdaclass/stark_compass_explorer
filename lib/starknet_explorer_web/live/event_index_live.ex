@@ -14,7 +14,7 @@ defmodule StarknetExplorerWeb.EventIndexLive do
     <div class="max-w-7xl mx-auto">
       <div class="table-header">
         <h2>Events</h2>
-        <CoreComponents.pagination_links page={@page} />
+        <CoreComponents.pagination_links id={"events"} page={@page} prev={"dec_events"} next={"inc_events"} />
       </div>
       <div class="table-block">
         <div class="grid-6 table-th">
@@ -91,7 +91,7 @@ defmodule StarknetExplorerWeb.EventIndexLive do
           </div>
         <% end %>
       </div>
-      <CoreComponents.pagination_links page={@page} />
+      <CoreComponents.pagination_links id={"events"} page={@page} prev={"dec_events"} next={"inc_events"} />
     </div>
     """
   end

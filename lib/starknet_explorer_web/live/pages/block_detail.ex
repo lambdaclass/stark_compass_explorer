@@ -451,15 +451,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
-
-    <%= if @page.page_number != 1 do %>
-      <button phx-click="dec_txs">←</button>
-    <% end %>
-    Showing from <%= (@page.page_number - 1) * @page.page_size %> to <%= (@page.page_number - 1) *
-      @page.page_size + @page.page_size %>
-    <%= if @page.page_number != @page.total_pages do %>
-      <button phx-click="inc_txs">→</button>
-    <% end %>
+    <CoreComponents.pagination_links id={"txs"} page={@page} prev={"dec_txs"} next={"inc_txs"} />
     """
   end
 
@@ -745,16 +737,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
-    <div>
-      <%= if @page.page_number != 1 do %>
-        <button phx-click="dec_events">←</button>
-      <% end %>
-      Showing from <%= (@page.page_number - 1) * @page.page_size %> to <%= (@page.page_number - 1) *
-        @page.page_size + @page.page_size %>
-      <%= if @page.page_number != @page.total_pages do %>
-        <button phx-click="inc_events">→</button>
-      <% end %>
-    </div>
+    <CoreComponents.pagination_links id={"events"} page={@page} prev={"dec_events"} next={"inc_events"} />
     """
   end
 

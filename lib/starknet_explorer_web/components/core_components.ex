@@ -668,7 +668,7 @@ defmodule StarknetExplorerWeb.CoreComponents do
     <div class="flex justify-end items-center my-5 text-base">
       <button
         class={if @page.page_number == 1, do: "opacity-0 pointer-events-none", else: ""}
-        phx-click="dec_events"
+        id={@id} phx-hook="ScrollToTop" phx-click={@prev}
       >
         <img class="transform rotate-180" src="/images/chevron.svg" />
       </button>
@@ -676,7 +676,7 @@ defmodule StarknetExplorerWeb.CoreComponents do
         <%= @page.page_number %> / <%= @page.total_pages %>
       </div>
       <%= if @page.page_number != @page.total_pages do %>
-        <button phx-click="inc_events">
+        <button id={@id} phx-hook="ScrollToTop" phx-click={@next}>
           <img src="/images/chevron.svg" />
         </button>
       <% end %>
