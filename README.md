@@ -14,6 +14,8 @@
   - [Remaining Tasks](#remaining-tasks)
     - [Short/Mid Term Goals:](#shortmid-term-goals)
     - [Long Term Goals:](#long-term-goals)
+  - [Contributing](#contributing)
+    - [Get in Touch](#get-in-touch)
 
 ## Requirements
 - SQLite
@@ -158,3 +160,14 @@ docker-compose up postgres
 
 - **Support for Classes and Contracts**: Implement support for Classes and Contracts within the system.
 - **Optimize Trace Data Handling**: Eliminate the need to access the feeder gateway for trace data by either storing trace data internally or recording internal calls.
+
+## Contributing
+
+We appreciate your interest in contributing to the Stark Compass Explorer! Your contributions can help make this project even better.
+
+### Get in Touch
+
+If you have any questions, suggestions, or if you'd like to contribute in any way, please feel free to reach out to us:
+
+- **Telegram**: [Lambda Starknet](https://t.me/LambdaStarkNet)
+- **GitHub Issues**: [Open an Issue](https://github.com/lambdaclass/stark_compass_explorer/issues)
