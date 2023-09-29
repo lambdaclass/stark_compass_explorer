@@ -21,7 +21,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
       network: network
     }
 
-    Process.send(self(), :setup, [])
+    Process.send_after(self(), :setup, @fetch_timer)
     {:ok, state}
   end
 
