@@ -59,7 +59,6 @@ defmodule StarknetExplorer.Block do
     block
     |> cast(attrs, @cast_fields)
     |> validate_required(@required_fields)
-    |> unique_constraint(:number)
     |> unique_constraint(:hash)
   end
 
