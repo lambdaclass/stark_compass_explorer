@@ -392,7 +392,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
        assign(socket,
           blocks: blocks,
-          transactions: [],
+          transactions: transactions,
           entities_count: entities_count,
           latest_block: latest_block,
           block_height: block_height
