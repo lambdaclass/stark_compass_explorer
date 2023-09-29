@@ -35,6 +35,7 @@ defmodule StarknetExplorer.Utils do
     |> Enum.join(",")
   end
 
+  @spec listener_atom(any) :: atom
   def listener_atom(network) do
     String.to_atom("listener_#{network}")
   end

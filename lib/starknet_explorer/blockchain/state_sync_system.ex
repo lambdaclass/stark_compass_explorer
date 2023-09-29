@@ -2,10 +2,12 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   @moduledoc """
   State Sync System.
   """
-  alias StarknetExplorer.{Block, BlockUtils, Rpc, Blockchain.StateSyncSystem, Counts}
+  alias StarknetExplorer.{Block, BlockUtils, Rpc, Blockchain.StateSyncSystem}
   defstruct [:current_block_number, :network, :next_to_fetch, :updater_block_number]
   use GenServer
   require Logger
+  # The highest possible value for the random values.
+  @n_for_random 5
   @fetch_timer :timer.seconds(5)
 
   def start_link([network: _network, name: name] = arg) do
@@ -15,6 +17,30 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   ## Callbacks
   @impl true
   def init([network: network, name: _name] = _args) do
+    state = %StateSyncSystem{
+      network: network
+    }
+
+    Process.send(self(), :setup, [])
+    {:ok, state}
+  end
+
+  def handle_info(:setup, %StateSyncSystem{network: network}) do
+    # Rpc.get_block_height.
+    {:ok, block_height} = Rpc.get_block_height_no_cache(network)
+    # Try Insert that block.
+    {:ok, _} = BlockUtils.fetch_store_and_cache(block_height, network)
+    # Trigger the :do_start_sync process.
+
+    state = %StateSyncSystem{
+      network: network
+    }
+
+    Process.send_after(self(), :do_start_sync, @fetch_timer)
+    {:noreply, state}
+  end
+
+  def handle_info(:do_start_sync, %StateSyncSystem{network: network}) do
     {:ok, block_height} = BlockUtils.block_height(network)
     {:ok, lowest_block_number} = BlockUtils.get_lowest_block_number(network)
 
@@ -28,11 +54,10 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
       network: network
     }
 
-    Process.send_after(self(), :listener, @fetch_timer)
-    Process.send_after(self(), :fetcher, @fetch_timer)
-    Process.send_after(self(), :updater, @fetch_timer)
-    Logger.info("State Sync System enabled for network #{network}.")
-    {:ok, state}
+    Process.send_after(self(), :listener, @fetch_timer + :rand.uniform(@n_for_random))
+    Process.send_after(self(), :fetcher, @fetch_timer + :rand.uniform(@n_for_random))
+    Process.send_after(self(), :updater, @fetch_timer + :rand.uniform(@n_for_random))
+    {:noreply, state}
   end
 
   @impl true
@@ -43,7 +68,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     {:ok, lowest_not_completed_block} = Block.get_lowest_not_completed_block(network)
     state = %{state | updater_block_number: lowest_not_completed_block}
 
-    Process.send_after(self(), :updater, @fetch_timer)
+    Process.send_after(self(), :updater, @fetch_timer + :rand.uniform(@n_for_random))
     {:noreply, state}
   end
 
@@ -60,7 +85,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
       | updater_block_number: lowest_not_completed_block
     }
 
-    Process.send_after(self(), :updater, @fetch_timer)
+    Process.send_after(self(), :updater, @fetch_timer + :rand.uniform(@n_for_random))
     {:noreply, state}
   end
 
@@ -75,7 +100,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     state =
       try_fetch(new_blocks?, state)
 
-    Process.send_after(self(), :listener, @fetch_timer)
+    Process.send_after(self(), :listener, @fetch_timer + :rand.uniform(@n_for_random))
     {:noreply, state}
   end
 
@@ -84,10 +109,9 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
         :fetcher,
         state = %StateSyncSystem{network: network, next_to_fetch: next_to_fetch}
       ) do
-    {:ok, _} = BlockUtils.fetch_and_store(next_to_fetch, network)
-    state = %{state | next_to_fetch: next_to_fetch - 1}
+    {:ok, _} = BlockUtils.fetch_store_and_cache(next_to_fetch, network)
 
-    Counts.insert_or_update(network)
+    state = %{state | next_to_fetch: next_to_fetch - 1}
 
     maybe_fetch_another(state)
 
@@ -97,9 +121,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   defp try_fetch(true, state = %StateSyncSystem{network: network}) do
     next_to_fetch = state.current_block_number + 1
 
-    {:ok, _} = BlockUtils.fetch_and_store(next_to_fetch, network)
-
-    Counts.insert_or_update(network)
+    {:ok, _} = BlockUtils.fetch_store_and_cache(next_to_fetch, network)
 
     %{state | current_block_number: next_to_fetch}
   end
@@ -110,5 +132,5 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   defp maybe_fetch_another(%StateSyncSystem{next_to_fetch: -1} = _args), do: :ok
 
   defp maybe_fetch_another(_),
-    do: Process.send_after(self(), :fetcher, @fetch_timer)
+    do: Process.send_after(self(), :fetcher, @fetch_timer + :rand.uniform(@n_for_random))
 end

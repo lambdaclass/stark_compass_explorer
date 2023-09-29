@@ -95,7 +95,7 @@ defmodule StarknetExplorer.Transaction do
     field :sender_address, :string
     field :calldata, {:array, :string}
     field :network, Ecto.Enum, values: @networks
-    belongs_to :block, StarknetExplorer.Block, foreign_key: :block_number, references: :hash
+    belongs_to :block, StarknetExplorer.Block, foreign_key: :block_number, references: :number
     has_one :receipt, TransactionReceipt
     timestamps()
   end
@@ -125,6 +125,21 @@ defmodule StarknetExplorer.Transaction do
     Repo.one(query)
   end
 
+  def paginate_txs_by_block_number(params, block_number, network) do
+    Transaction
+    |> where([p], p.block_number == ^block_number and p.network == ^network)
+    # |> Repo.preload(:receipt)
+    |> Repo.paginate(params)
+  end
+
+  def get_by_block_number(block_number, network) do
+    query =
+      from tx in Transaction,
+        where: tx.block_number == ^block_number and tx.network == ^network
+
+    Repo.all(query)
+  end
+
   def get_missing_tx_receipt(limit \\ 10, network) do
     query =
       from t in Transaction,
@@ -147,6 +162,14 @@ defmodule StarknetExplorer.Transaction do
       tx ->
         Repo.preload(tx, :receipt)
     end
+  end
+
+  def paginate_transactions(params, network) do
+    Transaction
+    |> where([tx], tx.network == ^network)
+    |> preload(:block)
+    |> order_by(desc: :block_number)
+    |> Repo.paginate(params)
   end
 
   def rename_rpc_fields(rpc_tx = %{"transaction_hash" => th}) do

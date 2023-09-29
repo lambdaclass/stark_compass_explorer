@@ -112,6 +112,19 @@ defmodule StarknetExplorer.Block do
   @doc """
   Given a block from the RPC response, and transactions receipts
   insert them into the DB.
+  If the insertion was made, return a tuple of the form:
+  {
+    :ok,
+    amount_blocks, # The amount of blocks inserted.
+    amount_transaction, # The amount of transactions inserted.
+    amount_events, # The amount of events inserted.
+    amount_messages, # The amount of messages inserted.
+  }
+  If an error occurs, returns:
+  {
+    :err,
+    err # The error.
+  }
   """
   def insert_from_rpc_response(block = %{"transactions" => txs}, receipts, network)
       when is_map(block) do
@@ -171,9 +184,21 @@ defmodule StarknetExplorer.Block do
         Enum.each(events, fn event -> {:ok, _event} = Events.insert(event) end)
       end)
 
+    amount_messages =
+      Enum.reduce(receipts, 0, fn {_tx_hash, receipt}, acc ->
+        acc + length(receipt["messages_sent"])
+      end) +
+        Enum.reduce(txs, 0, fn tx, acc ->
+          if tx["type"] == "L1_HANDLER" do
+            acc + 1
+          else
+            acc
+          end
+        end)
+
     case transaction_result do
       {:ok, _} ->
-        :ok
+        {:ok, 1, length(txs), length(events), amount_messages}
 
       {:error, err} ->
         Logger.error("Error inserting block: #{inspect(err)}")
@@ -272,6 +297,20 @@ defmodule StarknetExplorer.Block do
     |> Repo.preload(:transactions)
   end
 
+  @doc """
+  Returns amount blocks starting at block number up_to
+  """
+  def latest_blocks(amount, network) do
+    query =
+      from b in Block,
+        order_by: [desc: b.number],
+        where: b.network == ^network,
+        limit: ^amount
+
+    query
+    |> Repo.all()
+  end
+
   def rename_rpc_fields(rpc_block) do
     rpc_block
     |> Map.new(fn
@@ -289,22 +328,34 @@ defmodule StarknetExplorer.Block do
     end)
   end
 
-  def get_by_hash(hash, network) do
+  def get_by_hash(hash, network, preload_transactions \\ true) do
     query =
       from b in Block,
         where: b.hash == ^hash and b.network == ^network
 
-    Repo.one(query)
-    |> Repo.preload(:transactions)
+    case preload_transactions do
+      true ->
+        Repo.one(query)
+        |> Repo.preload(:transactions)
+
+      false ->
+        Repo.one(query)
+    end
   end
 
-  def get_by_num(num, network) do
+  def get_by_num(num, network, preload_transactions \\ true) do
     query =
       from b in Block,
         where: b.number == ^num and b.network == ^network
 
-    Repo.one(query)
-    |> Repo.preload(:transactions)
+    case preload_transactions do
+      true ->
+        Repo.one(query)
+        |> Repo.preload(:transactions)
+
+      false ->
+        Repo.one(query)
+    end
   end
 
   def get_by_number_with_receipts_preload(num, network) do
@@ -358,6 +409,13 @@ defmodule StarknetExplorer.Block do
         limit: ^limit
 
     Repo.all(query)
+  end
+
+  def paginate_blocks(params, network) do
+    Block
+    |> where([b], b.network == ^network)
+    |> order_by(desc: :number)
+    |> Repo.paginate(params)
   end
 
   def update_block_gas_and_resources(block_number, gas_fee, execution_resources, network)

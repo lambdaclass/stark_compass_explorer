@@ -22,26 +22,48 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       session: %{"network" => @network}
     ) %>
     <div class="flex flex-col gap-1 justify-center items-center my-16">
-      <h1>Madara Starknet Explorer</h1>
+      <h1>Stark Compass</h1>
+      <div class="uppercase rounded-lg px-2 py-1 text-center blue-label text-xl font-medium mt-2">
+        The only open source explorer for Starknet
+      </div>
     </div>
     <div class="mx-auto max-w-7xl mt-4 mb-5">
-      <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
-        <img src={~p"/images/zap.svg"} class="my-auto" />
-        <div class="flex">
-          <div class="flex items-center gap-2 border-r border-r-gray-700 pr-2 mr-2">
-            TPS
-            <CoreComponents.tooltip
-              id="tps-tooltip"
-              text="The average transactions per second calculated from the last block"
-              class="translate-y-px"
-            />
+      <div class="flex justify-between">
+        <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
+          <img src={~p"/images/zap.svg"} class="my-auto" />
+          <div class="flex">
+            <div class="flex items-center gap-2 border-r border-r-gray-700 pr-2 mr-2">
+              TPS
+              <CoreComponents.tooltip
+                id="tps-tooltip"
+                text="The average transactions per second calculated from the last block"
+                class="translate-y-px"
+              />
+            </div>
+            <div>
+              <%= live_render(@socket, TPSComponent,
+                id: "tps-number",
+                session: %{"network" => Map.get(assigns, :network)}
+              ) %>
+            </div>
           </div>
-          <div>
-            <%= live_render(@socket, TPSComponent,
-              id: "tps-number",
-              session: %{"network" => Map.get(assigns, :network)}
-            ) %>
-          </div>
+        </div>
+        <div>
+          <a href="https://github.com/lambdaclass/stark_compass_explorer">
+            <div class="inline-flex items-start gap-3 bg-container hover:bg-[#272737] transition-all duration-300 p-3 pr-4 text-sm mb-3">
+              <img src={~p"/images/github.svg"} class="my-auto" />
+            </div>
+          </a>
+          <a href="https://twitter.com/LambdaStarknet">
+            <div class="inline-flex items-start gap-3 bg-container hover:bg-[#272737] transition-all duration-300 p-3 pr-4 text-sm mb-3">
+              <img src={~p"/images/twitter.svg"} class="my-auto" />
+            </div>
+          </a>
+          <a href="https://t.me/LambdaStarkNet">
+            <div class="inline-flex items-start gap-3 bg-container hover:bg-[#272737] transition-all duration-300 p-3 pr-4 text-sm mb-3">
+              <img src={~p"/images/telegram.svg"} class="my-auto" />
+            </div>
+          </a>
         </div>
       </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -74,7 +96,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <div class="text-sm text-gray-400">Messages</div>
                 <div class="text-2xl mt-1">
                   <CoreComponents.loading_state
-                      content={@entities_count.message_count}
+                      content={@entities_count.messages_count}
                       mock="300000"
                       id="loading_state"
                     />
@@ -111,7 +133,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         <a href={Utils.network_path(@network, "transactions")} class="bg-container text-gray-100">
           <div class="reative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
-              <img src={~p"/images/check-square.svg"} class="my-auto w-6 h-auto" />
+              <img src={~p"/images/corner-up-right.svg"} class="my-auto w-6 h-auto" />
               <div>
                 <div class="text-sm text-gray-400">Transactions</div>
                 <div class="text-2xl mt-1">
@@ -133,8 +155,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </a>
       </div>
     </div>
-
-    <div class="mx-auto max-w-7xl grid lg:grid-cols-2 lg:gap-5 xl:gap-16 mt-16">
+    <div class="mx-auto max-w-7xl grid lg:grid-cols-2 gap-10 lg:gap-5 mt-16">
       <div>
         <div class="table-header">
           <div class="table-title">Latest Blocks</div>
@@ -161,7 +182,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <div class="list-h">Number</div>
                 <a
                 href={Utils.network_path(assigns.network, "blocks/#{Enum.at(@blocks,n-1).number}")}
-                  class="text-hover-blue"
+                  class="type"
                 >
                   <span>
                   <CoreComponents.loading_state
@@ -174,11 +195,11 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               </div>
               <div class="col-span-2">
                 <div class="list-h">Block Hash</div>
-                <div class="copy-container" id={"copy-block-#{(Enum.at(@blocks,n-1).number)}"} phx-hook="Copy">
-                  <div class="relative">
+                <div class="block-data" id={"copy-block-#{(Enum.at(@blocks,n-1).number)}"} phx-hook="Copy">
+                  <div class="hash flex">
                     <a
                       href={Utils.network_path(assigns.network, "blocks/#{(Enum.at(@blocks,n-1).hash)}")}
-                      class="text-hover-blue"
+                      class="text-hover-link"
                     >
                       <span>
                       <CoreComponents.loading_state
@@ -188,26 +209,14 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                   />
                       </span>
                     </a>
-                    <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                      <div class="relative">
-                        <img
-                          class="copy-btn copy-text w-4 h-4"
-                          src={~p"/images/copy.svg"}
-                          data-text={Enum.at(@blocks,n-1).hash}
-                        />
-                        <img
-                          class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                          src={~p"/images/check-square.svg"}
-                        />
-                      </div>
-                    </div>
+                    <CoreComponents.copy_button text={Enum.at(@blocks,n-1).hash} />
                   </div>
                 </div>
               </div>
               <div class="col-span-2">
                 <div class="list-h">Status</div>
                 <div>
-                  <span class={"#{if Enum.at(@blocks,n-1).status == "ACCEPTED_ON_L2", do: "green-label"} #{if Enum.at(@blocks,n-1).status == "ACCEPTED_ON_L1", do: "blue-label"} #{if Enum.at(@blocks,n-1).status == "PENDING", do: "pink-label"}"}>
+                  <span class={"info-label #{String.downcase(Enum.at(@blocks,n-1).status)}"}>
                   <CoreComponents.loading_state
                     content={Enum.at(@blocks,n-1).status}
                     mock="00000"
@@ -252,11 +261,11 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           <div id={"transaction-#{n}"} class="grid-7 custom-list-item">
               <div class="col-span-2">
                 <div class="list-h">Transaction Hash</div>
-                <div class="copy-container" id={"copy-transaction-#{n}"} phx-hook="Copy">
-                  <div class="relative">
+                <div class="block-data">
+                  <div class="hash flex">
                     <a
                       href={Utils.network_path(assigns.network, "transactions/#{Enum.at(@transactions,n).hash}")}
-                      class="text-hover-blue"
+                      class="text-hover-link"
                     >
                       <span>
                       <CoreComponents.loading_state
@@ -266,26 +275,14 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                       />
                       </span>
                     </a>
-                    <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                      <div class="relative">
-                        <img
-                          class="copy-btn copy-text w-4 h-4"
-                          src={~p"/images/copy.svg"}
-                          data-text={Enum.at(@transactions,n).hash}
-                        />
-                        <img
-                          class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                          src={~p"/images/check-square.svg"}
-                        />
-                      </div>
-                    </div>
+                    <CoreComponents.copy_button text={Enum.at(@transactions,n).hash} />
                   </div>
                 </div>
               </div>
               <div class="col-span-2">
                 <div class="list-h">Type</div>
-                <div>
-                  <span class={"#{if Enum.at(@transactions,n).type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+                <div class={"type #{String.downcase(transaction.type)}"}>
+                  <span >
                     <%= Enum.at(@transactions,n).type %>
                   </span>
                 </div>
@@ -293,8 +290,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <div class="col-span-2">
                 <div class="list-h">Status</div>
                 <div>
-                  <span class={"#{if Enum.at(@transactions,n).block_status == "ACCEPTED_ON_L2", do: "green-label"} #{if Enum.at(@transactions,n).block_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if Enum.at(@transactions,n).block_status == "PENDING", do: "pink-label"}"}>
-                    <%= Enum.at(@transactions,n).block_status %>
+                  <span class={"info-label #{String.downcase(Enum.at(@transactions,n).block_status)}"}>
+                  <%= Enum.at(@transactions,n).block_status %>
                   </span>
                 </div>
               </div>
@@ -314,7 +311,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   def load_blocks(socket) do
     blocks =
       if length(IndexCache.latest_blocks(socket.assigns.network)) < 15 do
-        StarknetExplorer.Data.many_blocks(socket.assigns.network)
+        StarknetExplorer.Data.many_blocks_with_txs(socket.assigns.network)
       else
         IndexCache.latest_blocks(socket.assigns.network)
       end
@@ -325,7 +322,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           blocks: [],
           transactions: [],
           entities_count: %{
-            message_count: 0,
+            messages_count: 0,
             events_count: 0,
             transaction_count: 0
           },
@@ -350,14 +347,15 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           end)
           |> Map.new()
 
-        {:ok, max_block_height} = StarknetExplorer.BlockUtils.block_height(socket.assigns.network)
+        {:ok, block_height} = StarknetExplorer.Rpc.get_block_height(socket.assigns.network)
+        block_height = StarknetExplorer.Utils.format_number_for_display(block_height)
 
         assign(socket,
           blocks: blocks,
           transactions: transactions,
           entities_count: entities_count,
           latest_block: latest_block,
-          block_height: StarknetExplorer.Utils.format_number_for_display(max_block_height)
+          block_height: block_height
         )
     end
   end
