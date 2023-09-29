@@ -211,7 +211,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                         href={Utils.network_path(assigns.network,
                         "blocks/#{if Enum.at(@blocks,n-1) do (Enum.at(@blocks,n-1).hash) end}")}
                         class="text-hover-link">
-                      <span>
+                      <span class="xl:text-sm lg:text-xs">
                         <CoreComponents.loading_state
                           condition={@blocks && Enum.at(@blocks,n-1)}
                           content={if Enum.at(@blocks,n-1) do
@@ -221,8 +221,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                         />
                       </span>
                     </a>
-                    <CoreComponents.copy_button text={
+                    <%= if Enum.at(@blocks,n-1) do %>
+                      <CoreComponents.copy_button text={
                       if Enum.at(@blocks,n-1) do  Enum.at(@blocks,n-1).hash end} />
+                    <% end %>
                   </div>
                 </div>
               </div>
@@ -293,8 +295,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                         />
                       </span>
                     </a>
-                    <CoreComponents.copy_button
-                    text={if Enum.at(@transactions,n) do Enum.at(@transactions,n).hash end} />
+                    <%= if Enum.at(@transactions,n) do%>
+                      <CoreComponents.copy_button
+                      text={if Enum.at(@transactions,n) do Enum.at(@transactions,n).hash end} />
+                    <% end %>
                   </div>
                 </div>
               </div>
@@ -392,7 +396,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
        assign(socket,
           blocks: blocks,
-          transactions: transactions,
+          transactions: [],
           entities_count: entities_count,
           latest_block: latest_block,
           block_height: block_height

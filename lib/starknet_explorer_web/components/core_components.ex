@@ -665,17 +665,17 @@ defmodule StarknetExplorerWeb.CoreComponents do
 
   def copy_button(assigns) do
     ~H"""
-    <div class="copy-container shrink-0" id={Ecto.UUID.generate()} phx-hook="Copy">
-      <div class="relative">
-        <div class="ml-2 relative shrink-0">
-          <img class="copy-btn copy-text w-5 h-5" src="/images/copy.svg" data-text={@text} />
-          <img
-            class="copy-check absolute top-0 left-0 w-5 h-5 opacity-0 pointer-events-none"
-            src="/images/check-square.svg"
-          />
+      <div class="copy-container shrink-0" id={Ecto.UUID.generate()} phx-hook="Copy">
+        <div class="relative">
+          <div class="ml-2 relative shrink-0">
+            <img class="copy-btn copy-text w-5 h-5" src="/images/copy.svg" data-text={@text} />
+            <img
+              class="copy-check absolute top-0 left-0 w-5 h-5 opacity-0 pointer-events-none"
+              src="/images/check-square.svg"
+            />
+          </div>
         </div>
       </div>
-    </div>
     """
   end
 
