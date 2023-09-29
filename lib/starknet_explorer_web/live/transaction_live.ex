@@ -402,7 +402,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
                   class="w-full bg-black/20 p-5 !flex justify-between"
                   phx-hook="ShowTableData"
                 >
-                <div phx-no-format><span class="flex">
+                  <div phx-no-format><span class="flex">
                   <span>
                     <span>call</span>
                     <span class="text-se-pink ml-1"><%= input.call.name %></span>
