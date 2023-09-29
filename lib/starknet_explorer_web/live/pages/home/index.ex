@@ -78,7 +78,6 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                     condition={assigns}
                     content={assigns.block_height}
                     mock="300000"
-                    id="loading_state"
                   />
                 </div>
               </div>
@@ -100,7 +99,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                       condition={@entities_count}
                       content={if @entities_count do @entities_count.messages_count end}
                       mock="300000"
-                      id="loading_state"
+
                     />
                 </div>
               </div>
@@ -122,7 +121,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                         condition={@entities_count}
                         content={if @entities_count do  @entities_count.events_count end}
                         mock="300000"
-                        id="loading_state"
+
                       />
                     </div>
               </div>
@@ -145,7 +144,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                         condition={@entities_count}
                         content={if @entities_count do @entities_count.transaction_count end}
                         mock="10"
-                        id="loading_state"
+
                       />
                     </div>
                 </div>
@@ -197,7 +196,6 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                     condition={@blocks && Enum.at(@blocks,n-1)}
                     content={if Enum.at(@blocks,n-1) do Enum.at(@blocks,n-1).number end}
                     mock="00000"
-                    id="loading_state"
                   />
                   </span>
                 </a>
@@ -217,7 +215,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                           content={if Enum.at(@blocks,n-1) do
                           Utils.shorten_block_hash(Enum.at(@blocks,n-1).hash) end}
                           mock="00000"
-                          id="loading_state"
+
                         />
                       </span>
                     </a>
@@ -237,7 +235,6 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                     condition={@blocks && Enum.at(@blocks,n-1)}
                     content={if Enum.at(@blocks,n-1) do  Enum.at(@blocks,n-1).status end}
                     mock="00000"
-                    id="loading_state"
                   />
                   </span>
                 </div>
@@ -249,7 +246,6 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                     content={if Enum.at(@blocks,n-1) do
                     Utils.get_block_age(Enum.at(@blocks,n-1)) end}
                     mock="0000"
-                    id="loading_state"
                   />
               </div>
             </div>
@@ -291,7 +287,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                           condition={@transactions && Enum.at(@transactions,n)}
                           content={if Enum.at(@transactions,n) do Utils.shorten_block_hash(Enum.at(@transactions,n).hash) end}
                           mock="00000"
-                          id="loading_state"
+
                         />
                       </span>
                     </a>
@@ -311,7 +307,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                         condition={@transactions && Enum.at(@transactions,n)}
                         content={if Enum.at(@transactions,n) do Enum.at(@transactions,n).type end}
                         mock="00000"
-                        id="loading_state"
+
                       />
                     <%=  %>
                   </span>
@@ -327,7 +323,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                         content={
                           if Enum.at(@transactions,n) do Enum.at(@transactions,n).block_status end}
                         mock="0000"
-                        id="loading_state"
+
                       />
                   </span>
                 </div>
@@ -340,7 +336,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                           if Enum.at(@transactions,n) do
                           Utils.get_block_age_from_timestamp(Enum.at(@transactions,n).block_timestamp) end}
                         mock="0000"
-                        id="loading_state"
+
                       />
               </div>
             </div>

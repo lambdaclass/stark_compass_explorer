@@ -698,7 +698,7 @@ defmodule StarknetExplorerWeb.CoreComponents do
     <%= if @condition do  %>
      <%= @content %>
     <% else  %>
-      <div id={@id} class="text-md pt-1 font-semibold rounded-lg bg-gray-100 text-gray-100 dark:bg-gray-700 dark:text-gray-700 inline-block w-full animate-pulseFill">
+      <div class="text-md pt-1 font-semibold rounded-lg bg-gray-100 text-gray-100 dark:bg-gray-700 dark:text-gray-700 inline-block w-full animate-pulseFill">
         <%= @mock %>
       </div>
     <% end  %>
