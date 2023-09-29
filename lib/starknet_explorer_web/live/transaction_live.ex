@@ -401,14 +401,17 @@ defmodule StarknetExplorerWeb.TransactionLive do
                   class="w-full bg-black/20 p-5 !flex justify-between"
                   phx-hook="ShowTableData"
                 >
-                  <div phx-no-format><span class="flex">
-                call <span class="text-se-pink"><%= input.call.name %></span>(<.intersperse
-                  :let={arg}
-                  enum={input.call.args}
-                ><:separator>, </:separator>
-                  <span class="text-blue-400"><%= arg.name %></span></.intersperse>)
-                <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
-                <CoreComponents.copy_button text={input.selector} /></span>
+                <div phx-no-format><span class="flex">
+                  <span>
+                    <span>call</span>
+                    <span class="text-se-pink ml-1"><%= input.call.name %></span>
+                    (<.intersperse
+                      :let={arg}
+                      enum={input.call.args}
+                    ><:separator><span class="mr-2">,</span></:separator><span class="text-blue-400"><%= arg.name %></span></.intersperse>)
+                    <span class="text-blue-400 mx-1">-></span> <%= Utils.shorten_block_hash(input.selector) %>
+                  </span>
+                  <CoreComponents.copy_button text={input.selector} /></span>
                 </div>
                   <img
                     class="arrow-button transform rotate-180 transition-all duration-500"
