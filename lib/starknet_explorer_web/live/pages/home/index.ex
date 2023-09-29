@@ -9,9 +9,16 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def mount(_params, _session, socket) do
     socket = load_blocks(socket)
+    # Process.send(self(), :load_blocks, [])
 
     {:ok, socket}
   end
+
+  # def handle_info(:load_blocks, socket) do
+  #   socket = load_blocks(socket)
+
+  #   {:noreply, socket}
+  # end
 
   @impl true
   def render(assigns) do
@@ -75,6 +82,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <div class="text-sm text-gray-400">Blocks Height</div>
               <div class="text-2xl mt-1">
                   <CoreComponents.loading_state
+                    condition={assigns}
                     content={assigns.block_height}
                     mock="300000"
                     id="loading_state"
@@ -96,7 +104,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <div class="text-sm text-gray-400">Messages</div>
                 <div class="text-2xl mt-1">
                   <CoreComponents.loading_state
-                      content={@entities_count.messages_count}
+                      condition={@entities_count}
+                      content={if @entities_count do @entities_count.messages_count end}
                       mock="300000"
                       id="loading_state"
                     />
@@ -117,7 +126,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <div class="text-sm text-gray-400">Events</div>
                   <div class="text-2xl mt-1">
                       <CoreComponents.loading_state
-                        content={@entities_count.events_count}
+                        condition={@entities_count}
+                        content={if @entities_count do  @entities_count.events_count end}
                         mock="300000"
                         id="loading_state"
                       />
@@ -139,7 +149,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <div class="text-2xl mt-1">
                 <div class="text-2xl mt-1">
                       <CoreComponents.loading_state
-                        content={@entities_count.transaction_count}
+                        condition={@entities_count}
+                        content={if @entities_count do @entities_count.transaction_count end}
                         mock="10"
                         id="loading_state"
                       />
@@ -177,16 +188,21 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             <div>Age</div>
           </div>
           <%= for n <- 1..15 do %>
-          <div id={"block-#{Enum.at(@blocks,n-1).number}"} class="grid-6 custom-list-item">
+          <div id={if Enum.at(@blocks,n-1) do
+              "block-#{Enum.at(@blocks,n-1).number}" end}
+              class="grid-6 custom-list-item">
               <div>
                 <div class="list-h">Number</div>
                 <a
-                href={Utils.network_path(assigns.network, "blocks/#{Enum.at(@blocks,n-1).number}")}
-                  class="type"
+                href={Utils.network_path(assigns.network, "blocks/#{
+                  if Enum.at(@blocks,n-1) do Enum.at(@blocks,n-1).number end
+                }")}
+                  class={if Enum.at(@blocks,n-1) do "type" end}
                 >
                   <span>
                   <CoreComponents.loading_state
-                    content={Enum.at(@blocks,n-1).number}
+                    condition={@blocks && Enum.at(@blocks,n-1)}
+                    content={if Enum.at(@blocks,n-1) do Enum.at(@blocks,n-1).number end}
                     mock="00000"
                     id="loading_state"
                   />
@@ -195,30 +211,36 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               </div>
               <div class="col-span-2">
                 <div class="list-h">Block Hash</div>
-                <div class="block-data" id={"copy-block-#{(Enum.at(@blocks,n-1).number)}"} phx-hook="Copy">
+                <div class="block-data" id={if Enum.at(@blocks,n-1) do
+                  "copy-block-#{(Enum.at(@blocks,n-1).number)}" end} phx-hook="Copy">
                   <div class="hash flex">
-                    <a
-                      href={Utils.network_path(assigns.network, "blocks/#{(Enum.at(@blocks,n-1).hash)}")}
-                      class="text-hover-link"
-                    >
+                      <a
+                        href={Utils.network_path(assigns.network,
+                        "blocks/#{if Enum.at(@blocks,n-1) do (Enum.at(@blocks,n-1).hash) end}")}
+                        class="text-hover-link">
                       <span>
-                      <CoreComponents.loading_state
-                    content={Utils.shorten_block_hash(Enum.at(@blocks,n-1).hash)}
-                    mock="00000"
-                    id="loading_state"
-                  />
+                        <CoreComponents.loading_state
+                          condition={@blocks && Enum.at(@blocks,n-1)}
+                          content={if Enum.at(@blocks,n-1) do
+                          Utils.shorten_block_hash(Enum.at(@blocks,n-1).hash) end}
+                          mock="00000"
+                          id="loading_state"
+                        />
                       </span>
                     </a>
-                    <CoreComponents.copy_button text={Enum.at(@blocks,n-1).hash} />
+                    <CoreComponents.copy_button text={
+                      if Enum.at(@blocks,n-1) do  Enum.at(@blocks,n-1).hash end} />
                   </div>
                 </div>
               </div>
               <div class="col-span-2">
                 <div class="list-h">Status</div>
                 <div>
-                  <span class={"info-label #{String.downcase(Enum.at(@blocks,n-1).status)}"}>
+                  <span class={"#{if Enum.at(@blocks,n-1) do
+                  String.downcase(Enum.at(@blocks,n-1).status) <> " info-label" end}"}>
                   <CoreComponents.loading_state
-                    content={Enum.at(@blocks,n-1).status}
+                    condition={@blocks && Enum.at(@blocks,n-1)}
+                    content={if Enum.at(@blocks,n-1) do  Enum.at(@blocks,n-1).status end}
                     mock="00000"
                     id="loading_state"
                   />
@@ -228,7 +250,9 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <div>
                 <div class="list-h">Age</div>
                 <CoreComponents.loading_state
-                    content={Utils.get_block_age(Enum.at(@blocks,n-1))}
+                  condition={@blocks && Enum.at(@blocks,n-1)}
+                    content={if Enum.at(@blocks,n-1) do
+                    Utils.get_block_age(Enum.at(@blocks,n-1)) end}
                     mock="0000"
                     id="loading_state"
                   />
@@ -264,40 +288,63 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                 <div class="block-data">
                   <div class="hash flex">
                     <a
-                      href={Utils.network_path(assigns.network, "transactions/#{Enum.at(@transactions,n).hash}")}
+                      href={if @transactions && Enum.at(@transactions,n) do Utils.network_path(assigns.network, "transactions/#{Enum.at(@transactions,n).hash}") end}
                       class="text-hover-link"
                     >
                       <span>
                       <CoreComponents.loading_state
-                        content={Utils.shorten_block_hash(Enum.at(@transactions,n).hash)}
-                        mock="00000"
-                        id="loading_state"
-                      />
+                          condition={@transactions && Enum.at(@transactions,n)}
+                          content={if Enum.at(@transactions,n) do Utils.shorten_block_hash(Enum.at(@transactions,n).hash) end}
+                          mock="00000"
+                          id="loading_state"
+                        />
                       </span>
                     </a>
-                    <CoreComponents.copy_button text={Enum.at(@transactions,n).hash} />
+                    <CoreComponents.copy_button
+                    text={if Enum.at(@transactions,n) do Enum.at(@transactions,n).hash end} />
                   </div>
                 </div>
               </div>
               <div class="col-span-2">
                 <div class="list-h">Type</div>
-                <div class={"type #{String.downcase(Enum.at(@transactions,n).type)}"}>
+                <div class={"#{if Enum.at(@transactions,n) do
+                String.downcase(Enum.at(@transactions,n).type) <> " type" end }"}>
                   <span >
-                    <%= Enum.at(@transactions,n).type %>
+                     <CoreComponents.loading_state
+                        condition={@transactions && Enum.at(@transactions,n)}
+                        content={if Enum.at(@transactions,n) do Enum.at(@transactions,n).type end}
+                        mock="00000"
+                        id="loading_state"
+                      />
+                    <%=  %>
                   </span>
                 </div>
               </div>
               <div class="col-span-2">
                 <div class="list-h">Status</div>
                 <div>
-                  <span class={"info-label #{String.downcase(Enum.at(@transactions,n).block_status)}"}>
-                  <%= Enum.at(@transactions,n).block_status %>
+                  <span class={"#{if Enum.at(@transactions,n) do
+                    String.downcase(Enum.at(@transactions,n).block_status) <> " info-label"  end}"}>
+                      <CoreComponents.loading_state
+                        condition={@transactions && Enum.at(@transactions,n)}
+                        content={
+                          if Enum.at(@transactions,n) do Enum.at(@transactions,n).block_status end}
+                        mock="0000"
+                        id="loading_state"
+                      />
                   </span>
                 </div>
               </div>
               <div>
                 <div class="list-h">Age</div>
-                <%= Utils.get_block_age_from_timestamp(Enum.at(@transactions,n).block_timestamp) %>
+                <CoreComponents.loading_state
+                        condition={@transactions && Enum.at(@transactions,n)}
+                        content={
+                          if Enum.at(@transactions,n) do
+                          Utils.get_block_age_from_timestamp(Enum.at(@transactions,n).block_timestamp) end}
+                        mock="0000"
+                        id="loading_state"
+                      />
               </div>
             </div>
           <% end %>
@@ -350,7 +397,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         {:ok, block_height} = StarknetExplorer.Rpc.get_block_height(socket.assigns.network)
         block_height = StarknetExplorer.Utils.format_number_for_display(block_height)
 
-        assign(socket,
+       assign(socket,
           blocks: blocks,
           transactions: transactions,
           entities_count: entities_count,
