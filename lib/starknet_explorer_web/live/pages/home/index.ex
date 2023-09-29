@@ -226,58 +226,6 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               </div>
             </div>
           <% end %>
-
-          <%!-- <%= for block <- Enum.take(@blocks, 15) do %>
-            <div id={"block-#{block.number}"} class="grid-6 custom-list-item">
-              <div>
-                <div class="list-h">Number</div>
-                <a
-                  href={Utils.network_path(assigns.network, "blocks/#{block.number}")}
-                  class="text-hover-blue"
-                >
-                  <span><%= to_string(block.number) %></span>
-                </a>
-              </div>
-              <div class="col-span-2">
-                <div class="list-h">Block Hash</div>
-                <div class="copy-container" id={"copy-block-#{block.number}"} phx-hook="Copy">
-                  <div class="relative">
-                    <a
-                      href={Utils.network_path(assigns.network, "blocks/#{block.hash}")}
-                      class="text-hover-blue"
-                    >
-                      <span><%= Utils.shorten_block_hash(block.hash) %></span>
-                    </a>
-                    <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                      <div class="relative">
-                        <img
-                          class="copy-btn copy-text w-4 h-4"
-                          src={~p"/images/copy.svg"}
-                          data-text={block.hash}
-                        />
-                        <img
-                          class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                          src={~p"/images/check-square.svg"}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-span-2">
-                <div class="list-h">Status</div>
-                <div>
-                  <span class={"#{if block.status == "ACCEPTED_ON_L2", do: "green-label"} #{if block.status == "ACCEPTED_ON_L1", do: "blue-label"} #{if block.status == "PENDING", do: "pink-label"}"}>
-                    <%= block.status %>
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div class="list-h">Age</div>
-                <%= Utils.get_block_age(block) %>
-              </div>
-            </div>
-          <% end %> --%>
         </div>
       </div>
       <div>
@@ -301,18 +249,18 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             <div>Age</div>
           </div>
           <%= for n <- 1..15 do %>
-          <div id={} class="grid-7 custom-list-item">
+          <div id={"transaction-#{n}"} class="grid-7 custom-list-item">
               <div class="col-span-2">
                 <div class="list-h">Transaction Hash</div>
-                <div class="copy-container" id={""} phx-hook="Copy">
+                <div class="copy-container" id={"copy-transaction-#{n}"} phx-hook="Copy">
                   <div class="relative">
                     <a
-                      href={Utils.network_path(assigns.network, "transactions/#{}")}
+                      href={Utils.network_path(assigns.network, "transactions/#{Enum.at(@transactions,n).hash}")}
                       class="text-hover-blue"
                     >
                       <span>
                       <CoreComponents.loading_state
-                        content={}
+                        content={Utils.shorten_block_hash(Enum.at(@transactions,n).hash)}
                         mock="00000"
                         id="loading_state"
                       />
@@ -323,7 +271,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
                         <img
                           class="copy-btn copy-text w-4 h-4"
                           src={~p"/images/copy.svg"}
-                          data-text={}
+                          data-text={Enum.at(@transactions,n).hash}
                         />
                         <img
                           class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
@@ -337,75 +285,26 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <div class="col-span-2">
                 <div class="list-h">Type</div>
                 <div>
-                  <%!-- <span class={"#{if transaction.type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
-                    <%= transaction.type %>
-                  </span>--%>
+                  <span class={"#{if Enum.at(@transactions,n).type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+                    <%= Enum.at(@transactions,n).type %>
+                  </span>
                 </div>
               </div>
               <div class="col-span-2">
                 <div class="list-h">Status</div>
                 <div>
-                  <%!-- <span class={"#{if transaction.block_status == "ACCEPTED_ON_L2", do: "green-label"} #{if transaction.block_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if transaction.block_status == "PENDING", do: "pink-label"}"}>
-                    <%= transaction.block_status %>
-                  </span>--%>
+                  <span class={"#{if Enum.at(@transactions,n).block_status == "ACCEPTED_ON_L2", do: "green-label"} #{if Enum.at(@transactions,n).block_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if Enum.at(@transactions,n).block_status == "PENDING", do: "pink-label"}"}>
+                    <%= Enum.at(@transactions,n).block_status %>
+                  </span>
                 </div>
               </div>
               <div>
                 <div class="list-h">Age</div>
-                <%!-- <%= Utils.get_block_age_from_timestamp(transaction.block_timestamp) %> --%>
+                <%= Utils.get_block_age_from_timestamp(Enum.at(@transactions,n).block_timestamp) %>
               </div>
             </div>
           <% end %>
-          <%!-- <%= for {transaction, idx} <- Enum.take(Enum.with_index(@transactions), 15) do %>
-            <div id={"transaction-#{idx}"} class="grid-7 custom-list-item">
-              <div class="col-span-2">
-                <div class="list-h">Transaction Hash</div>
-                <div class="copy-container" id={"copy-transaction-#{idx}"} phx-hook="Copy">
-                  <div class="relative">
-                    <a
-                      href={Utils.network_path(assigns.network, "transactions/#{transaction.hash}")}
-                      class="text-hover-blue"
-                    >
-                      <span><%= Utils.shorten_block_hash(transaction.hash) %></span>
-                    </a>
-                    <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                      <div class="relative">
-                        <img
-                          class="copy-btn copy-text w-4 h-4"
-                          src={~p"/images/copy.svg"}
-                          data-text={transaction.hash}
-                        />
-                        <img
-                          class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                          src={~p"/images/check-square.svg"}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-span-2">
-                <div class="list-h">Type</div>
-                <div>
-                  <span class={"#{if transaction.type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
-                    <%= transaction.type %>
-                  </span>
-                </div>
-              </div>
-              <div class="col-span-2">
-                <div class="list-h">Status</div>
-                <div>
-                  <span class={"#{if transaction.block_status == "ACCEPTED_ON_L2", do: "green-label"} #{if transaction.block_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if transaction.block_status == "PENDING", do: "pink-label"}"}>
-                    <%= transaction.block_status %>
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div class="list-h">Age</div>
-                <%= Utils.get_block_age_from_timestamp(transaction.block_timestamp) %>
-              </div>
-            </div>
-          <% end %> --%>
+
         </div>
       </div>
     </div>
