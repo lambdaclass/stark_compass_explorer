@@ -56,13 +56,13 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
             <div>
               <div class="list-h">Type</div>
               <span class="pink-label">
-                <%= class.type %>
+                <%= Utils.sanitize(class.type) %>
               </span>
             </div>
             <div>
               <div class="list-h">Declared At</div>
               <div>
-                <%= class.timestamp %>
+                <%= Utils.format_timestamp(class.timestamp) %>
               </div>
             </div>
           </div>

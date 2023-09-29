@@ -56,6 +56,14 @@ defmodule StarknetExplorerWeb.Utils do
     "Cairo 0"
   end
 
+  def sanitize(nil) do
+    "-"
+  end
+
+  def sanitize(value) do
+    value
+  end
+
   # 1 eth = 10^18 wei
   @wei_to_eth_constant Decimal.new("1.0E+18")
   def hex_wei_to_eth(<<"0x", wei_base_16::binary>>) do
