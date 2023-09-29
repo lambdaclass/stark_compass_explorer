@@ -29,7 +29,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
     </div>
     <div class="mx-auto max-w-7xl mt-4 mb-5">
       <div class="flex justify-between">
-        <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-3">
+        <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-6">
           <img src={~p"/images/zap.svg"} class="my-auto" />
           <div class="flex">
             <div class="flex items-center gap-2 border-r border-r-gray-700 pr-2 mr-2">
@@ -50,23 +50,23 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </div>
         <div>
           <a href="https://github.com/lambdaclass/stark_compass_explorer">
-            <div class="inline-flex items-start gap-3 bg-container hover:bg-[#272737] transition-all duration-300 p-3 pr-4 text-sm mb-3">
+            <div class="inline-flex items-start gap-3 bg-container hover:bg-[#272737] transition-all duration-300 p-3 pr-4 text-sm mb-6">
               <img src={~p"/images/github.svg"} class="my-auto" />
             </div>
           </a>
           <a href="https://twitter.com/LambdaStarknet">
-            <div class="inline-flex items-start gap-3 bg-container hover:bg-[#272737] transition-all duration-300 p-3 pr-4 text-sm mb-3">
+            <div class="inline-flex items-start gap-3 bg-container hover:bg-[#272737] transition-all duration-300 p-3 pr-4 text-sm mb-6">
               <img src={~p"/images/twitter.svg"} class="my-auto" />
             </div>
           </a>
           <a href="https://t.me/LambdaStarkNet">
-            <div class="inline-flex items-start gap-3 bg-container hover:bg-[#272737] transition-all duration-300 p-3 pr-4 text-sm mb-3">
+            <div class="inline-flex items-start gap-3 bg-container hover:bg-[#272737] transition-all duration-300 p-3 pr-4 text-sm mb-6">
               <img src={~p"/images/telegram.svg"} class="my-auto" />
             </div>
           </a>
         </div>
       </div>
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         <a href={Utils.network_path(@network, "blocks")} class="bg-container text-gray-100">
           <div class="relative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
@@ -128,8 +128,8 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           </div>
         </a>
       </div>
-      <div class="flex border-t border-t-gray-700 py-3 px-8 text-center blue-label text-sm mt-2">
-        *We are still syncing historical data so the above numbers might not reflect the current status
+      <div class="text-gray-600 bg-gray-800/10 border-t border-t-gray-700 flex justify-center items-center py-4 text-sm mt-6">
+        <div>*We are still syncing historical data so the above numbers might not reflect the current status</div>
       </div>
       </div>
 
