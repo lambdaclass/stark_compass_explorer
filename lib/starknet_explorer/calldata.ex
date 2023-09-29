@@ -10,7 +10,7 @@ defmodule StarknetExplorer.Calldata do
 
   def parse_calldata(%{type: "INVOKE"} = tx, block_id, network) do
     calldata =
-      from_plain_calldata(tx.calldata, tx.version |> IO.inspect())
+      from_plain_calldata(tx.calldata, tx.version)
 
     Enum.map(
       calldata,
