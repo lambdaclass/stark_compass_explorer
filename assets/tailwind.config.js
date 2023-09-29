@@ -14,7 +14,7 @@ module.exports = {
         mono: "'IBM Plex Mono', monospace",
       },
       animation: {
-        'pulseFill' : 'pulse 2s ease-out infinite'
+        'pulseFill' : 'pulse 2s ease-in-out infinite'
       },
       colors: {
         brand: "#AE2EFF",
