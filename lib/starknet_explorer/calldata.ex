@@ -28,9 +28,12 @@ defmodule StarknetExplorer.Calldata do
   end
 
   def from_plain_calldata([array_len | rest], "0x0") do
+    # Cutting down array_len because some old transactions may have weird calldata
+    size = min(felt_to_int(array_len), length(rest))
+
     {calls, [_calldata_length | calldata]} =
       List.foldl(
-        Enum.to_list(1..felt_to_int(array_len)),
+        Enum.to_list(1..size),
         {[], rest},
         fn _, {acc_current, acc_rest} ->
           {new, new_rest} = get_call_header_v0(acc_rest)
