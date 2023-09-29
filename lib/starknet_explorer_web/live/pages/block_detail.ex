@@ -418,7 +418,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div>
           <div class="list-h">Status</div>
           <% finality_status = @receipts[hash].finality_status %>
-          <span class={"info-label #{finality_status}"}>
+          <span class={"info-label #{String.downcase(finality_status)}"}>
             <%= finality_status %>
           </span>
         </div>
