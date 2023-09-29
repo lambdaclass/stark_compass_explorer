@@ -160,10 +160,13 @@ docker-compose up postgres
 
 - **Support for Classes and Contracts**: Implement support for Classes and Contracts within the system.
 - **Optimize Trace Data Handling**: Eliminate the need to access the feeder gateway for trace data by either storing trace data internally or recording internal calls.
+- **Analytics**: Show statistics like TVL, historical data, plots, etc.
 
 ## Contributing
 
-We appreciate your interest in contributing to the Stark Compass Explorer! Your contributions can help make this project even better.
+We appreciate your interest in contributing to the Stark Compass Explorer! Your contributions can help make this project even better. 
+
+PRs are more than welcome if you want to collaborate to the project. If you don't know how to implement a feature, you are still welcome to create an issue!
 
 ### Get in Touch
 
