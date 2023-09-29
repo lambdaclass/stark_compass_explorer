@@ -131,7 +131,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       <div class="flex border-t border-t-gray-700 py-3 px-8 text-center blue-label text-sm mt-2">
         *We are still syncing historical data so the above numbers might not reflect the current status
       </div>
-      </div>
+    </div>
 
     <div class="mx-auto max-w-7xl grid lg:grid-cols-2 gap-10 lg:gap-5 mt-16">
       <div>
