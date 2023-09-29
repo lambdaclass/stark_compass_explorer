@@ -9,16 +9,9 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def mount(_params, _session, socket) do
     socket = load_blocks(socket)
-    # Process.send(self(), :load_blocks, [])
 
     {:ok, socket}
   end
-
-  # def handle_info(:load_blocks, socket) do
-  #   socket = load_blocks(socket)
-
-  #   {:noreply, socket}
-  # end
 
   @impl true
   def render(assigns) do
