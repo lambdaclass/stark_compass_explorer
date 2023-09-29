@@ -177,7 +177,12 @@ defmodule StarknetExplorer.Data do
 
     tx = tx |> Map.put(:contract, contract)
 
-    input_data = Calldata.parse_calldata(tx, block_id, network)
+    input_data =
+      try do
+        Calldata.parse_calldata(tx, block_id, network)
+      rescue
+        _ -> nil
+      end
 
     {:ok, tx |> Map.put(:input_data, input_data)}
   end
