@@ -281,7 +281,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               </div>
               <div class="col-span-2">
                 <div class="list-h">Type</div>
-                <div class={"type #{String.downcase(transaction.type)}"}>
+                <div class={"type #{String.downcase(Enum.at(@transactions,n).type)}"}>
                   <span >
                     <%= Enum.at(@transactions,n).type %>
                   </span>
