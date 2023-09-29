@@ -1,5 +1,5 @@
 # StarkCompass
-![image](./priv/static/images/explorer_preview.png)
+![image](https://github.com/lambdaclass/stark_compass_explorer/assets/6981132/635da3a1-54c1-46a9-87b6-4f08fd479890)
 
 - [StarkCompass](#starkcompass)
   - [Requirements](#requirements)
