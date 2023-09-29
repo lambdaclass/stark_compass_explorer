@@ -9,17 +9,18 @@
     - [RPC with Juno](#rpc-with-juno)
     - [Up and running](#up-and-running)
   - [State Synchronization System](#state-synchronization-system)
-    - [BlockchainListener](#blockchainlistener)
-    - [BlockchainFetcher](#blockchainfetcher)
-    - [BlockchainUpdater](#blockchainupdater)
     - [WARNING ⚠️](#warning-️)
   - [Using Stark Compass with PostgreSQL](#using-stark-compass-with-postgresql)
+  - [Remaining Tasks](#remaining-tasks)
+    - [Short/Mid Term Goals:](#shortmid-term-goals)
+    - [Long Term Goals:](#long-term-goals)
 
 ## Requirements
 - SQLite
 - Erlang 25
 - Elixir 1.15, compiled with OTP 25
 - Docker (optional)
+- PostgreSQL (optional)
 
 ## Local development
 
@@ -86,53 +87,25 @@ From now on, if you want to restart the app, you can just do:
 ```bash
 make run
 ```
-
 ## State Synchronization System
 
-You can fill the database with RPC provided data with 3 tools we provide:
+The State Synchronization System facilitates the population of the database with data obtained through RPC. This system is accompanied by a utility tool known as the StateSyncSystem, which serves three fundamental tasks:
 
-### BlockchainListener
+1. **Listening for New Blocks**: Upon application initialization, the StateSyncSystem constantly monitors the RPC for the latest block. At regular intervals, it attempts to retrieve any newly available blocks from the RPC. If a block is not already stored in the database, the system will insert it.
 
-Which will store any new blocks, transactions, transaction receipts, events and
-messages. When starting the application, the Listener will hit the RPC to get the current block height,
-and will start fetching from that block.
-To enable this process, before starting the explorer, set this env var:
+2. **Fetching Previous Blocks**: Upon application startup, the system identifies the lowest block number currently stored in the database (if any) or, alternatively, uses the latest block from the RPC as a starting point. It then initiates a process that, at regular intervals, retrieves earlier blocks in a reverse chronological order, continuing until it reaches block 0.
 
-```bash
-export ENABLE_LISTENER="true"
-```
+3. **Updating Unfinished Blocks and Transactions**: If the finality status of a block or a transaction remains unattained, the system periodically attempts to update the database by checking for any available updates.
 
-When using the `dev` and `test` environments, it will only listen for `mainnet` blocks.
-In `prod` it will use all three networks (`mainnet`, `testnet`, `tesnet2`).
-
-### BlockchainFetcher
-Which will store any new blocks, transactions, transaction receipts, events and
-messages. When starting the application, the Fetcher will hit the RPC to get the current block height and
-will fetch from that block backwards, until the block 0 is reached.
-
-To enable this process, before starting the explorer, set this env var:
+To activate this synchronization process, you can configure the following environment variables before launching the explorer:
 
 ```bash
-export ENABLE_FETCHER="true"
+export ENABLE_MAINNET_SYNC=true
+export ENABLE_TESTNET_SYNC=true
+export ENABLE_TESTNET2_SYNC=true
 ```
-When using the `dev` and `test` environments, it will only fetch for `mainnet` blocks.
-In `prod` it will use all three networks (`mainnet`, `testnet`, `tesnet2`).
 
-
-### BlockchainUpdater
-
-The updater will look in the DB for any entity whose status is not finalized, and will try to update the status for those entries by hitting the RPC and check if the status needs an update.
-It looks for update for:
-- Block with status different than `"ACCEPTED_ON_L1"`.
-- Transaction with status different than `"ACCEPTED_ON_L1"` or `"REVERTED"`.
-
-To enable this process, before starting the explorer, set this env var:
-
-```bash
-export ENABLE_UPDATER="true"
-```
-When using the `dev` and `test` environments, it will only update `mainnet` blocks.
-In `prod` it will use all three networks (`mainnet`, `testnet`, `tesnet2`).
+It's worth noting that you have the flexibility to select which networks you want to synchronize by adjusting these environment variables.
 
 ### WARNING ⚠️
 
@@ -168,3 +141,20 @@ A Docker image of PostgreSQL is provided in the `docker-compose.yml` file, you c
 ```bash
 docker-compose up postgres
 ```
+
+## Remaining Tasks
+
+### Short/Mid Term Goals:
+
+- **Enhance SQL Query Performance**: Continuously improve the performance of SQL queries.
+- **Refine Internal Server Error Screens**: Improve the user experience by enhancing error screens.
+- **Implement Preview in the Search Bar**: Enable a preview feature in the Search Bar.
+- **Expand Search Bar Functionality**: Incorporate Events, Messages, Classes, and Contracts into the Search Bar.
+- **Preserve Leading Zeros in Hash Storage**: Ensure that leading zeros are not removed when storing hashes in the database, or adapt the Search Bar to accommodate missing leading zeros.
+- **Customizable Branding**: Allow for the customization of logos, favicons, and navbar text.
+- **Enhance Integration**: Ensure easy integration with other projects and data sources without reliance on the feeder gateway.
+
+### Long Term Goals:
+
+- **Support for Classes and Contracts**: Implement support for Classes and Contracts within the system.
+- **Optimize Trace Data Handling**: Eliminate the need to access the feeder gateway for trace data by either storing trace data internally or recording internal calls.
