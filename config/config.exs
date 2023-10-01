@@ -7,8 +7,6 @@
 # General application configuration
 import Config
 
-config :tesla, adapter: Tesla.Adapter.Hackney
-
 config :starknet_explorer,
   ecto_repos: [StarknetExplorer.Repo],
   env: Mix.env()
