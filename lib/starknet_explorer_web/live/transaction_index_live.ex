@@ -16,7 +16,7 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
     <div class="max-w-7xl mx-auto">
       <div class="table-header">
         <h2>Transactions</h2>
-        <CoreComponents.pagination_links id="events" page={@page} prev="dec_events" next="inc_events" />
+        <CoreComponents.pagination_links id="transactions" page={@page} prev="dec_txs" next="inc_txs" />
       </div>
       <div class="table-block">
         <div class="grid-7 table-th">
