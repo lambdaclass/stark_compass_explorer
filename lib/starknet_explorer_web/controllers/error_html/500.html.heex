@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href={~p"/images/favicon-32x32.png"} />
+    <link rel="icon" type="image/png" sizes="16x16" href={~p"/images/favicon-16x16.png"} />
+    <!-- Primary Meta Tags -->
+    <title>Stark Compass Explorer</title>
+    <meta name="title" content="Stark Compass Explorer" />
+    <meta
+      name="description"
+      content="Scout the Starknet chain through the Stark Compass, the only open source Starknet Explorer. Keep track of every transaction, block and any other relevant information of Starknet."
+    />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://starkcompass.com/" />
+    <meta property="og:title" content="Stark Compass Explorer" />
+    <meta
+      property="og:description"
+      content="Scout the Starknet chain through the Stark Compass, the only open source Starknet Explorer. Keep track of every transaction, block and any other relevant information of Starknet."
+    />
+    <meta property="og:image" content={~p"/images/preview.webp"} />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://starkcompass.com/" />
+    <meta property="twitter:title" content="Stark Compass Explorer" />
+    <meta
+      property="twitter:description"
+      content="Scout the Starknet chain through the Stark Compass, the only open source Starknet Explorer. Keep track of every transaction, block and any other relevant information of Starknet."
+    />
+    <meta property="twitter:image" content={~p"/images/preview.webp"} />
+
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script defer phx-track-static type="module" src={~p"/assets/app.js"}>
+    </script>
+  </head>
+  <body class="bg-se-black text-white relative">
+    <header class="z-50 absolute top-0 left-0">
+      <nav class="w-screen flex items-center justify-between p-5 lg:px-16">
+        <img src={~p"/images/logo.svg"} class="h-9 xl:h-11" />
+      </nav>
+    </header>
+    <main class="m-auto max-w-7xl h-screen relative pt-40">
+      <div class="z-10 flex flex-col gap-2 justify-start items-center">
+        <div class="text-se-blue bg-se-blue/10 px-3 py-1 rounded-lg mb-2">500</div>
+        <h1>Internal Server Error</h1>
+        <h2>Something went wrong. Sorry for the inconvenience!</h2>
+        <a
+          href="/"
+          class="flex gap-2 items-center mt-2 border-b border-b-transparent hover:border-b-se-link text-se-link text-lg transition-all duration-200"
+        >
+          Go home <img src={~p"/images/arrow-right.svg"} />
+        </a>
+      </div>
+      <img
+        src={~p"/images/error.svg"}
+        class="-z-10 absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 w-2/3 max-w-xl h-auto opacity-30"
+      />
+    </main>
+    <footer class="absolute bottom-0 left-0 right-0 flex justify-center items-center mt-10 py-4 text-gray-500">
+      <p>Made by LambdaClass</p>
+    </footer>
+  </body>
+</html>

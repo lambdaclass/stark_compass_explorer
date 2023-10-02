@@ -1,92 +1,112 @@
 defmodule StarknetExplorerWeb.EventDetailLive do
   use StarknetExplorerWeb, :live_view
+  alias StarknetExplorerWeb.CoreComponents
+  alias StarknetExplorer.{Events, Block}
   alias StarknetExplorerWeb.Utils
   @impl true
   def render(assigns) do
     ~H"""
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
-      <div class="flex flex-col lg:flex-row gap-2 items-baseline pb-5">
+      <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
         <h2>Event</h2>
-        <div class="font-semibold">
-          <%= "0x01b4d24a461851e8eb9924369b5d9e23e79e8bbea6abc93eae4323462a25ddac_1"
-          |> Utils.shorten_block_hash() %>
+        <div class="font-normal text-gray-400 mt-2 lg:mt-0">
+          <%= @block.timestamp
+          |> DateTime.from_unix()
+          |> then(fn {:ok, time} -> time end)
+          |> Calendar.strftime("%c") %> UTC
         </div>
-        <span class="gray-label text-sm">Mocked</span>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Event ID</div>
-        <div>
-          <%= "0x01b4d24a461851e8eb9924369b5d9e23e79e8bbea6abc93eae4323462a25ddac_1"
-          |> Utils.shorten_block_hash() %>
+        <div class="block-data">
+          <div class="hash flex">
+            <%= @event.id %>
+            <CoreComponents.copy_button text={@event.id} />
+          </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Block Hash</div>
-        <div>
-          <a
-            href={
-              Utils.network_path(
-                @network,
-                "blocks/0x014570bdb1ed38e71bb11709b2fff208101d74231c1b973bd5d1e3ab717c659a"
-              )
-            }
-            class="text-hover-blue"
-          >
-            <span> 0x014570bdb1ed38e71bb11709b2fff208101d74231c1b973bd5d1e3ab717c659a </span>
-          </a>
+        <div class="block-data">
+          <div class="hash flex">
+            <a
+              href={
+                Utils.network_path(
+                  @network,
+                  "blocks/#{@block.hash}"
+                )
+              }
+              class="text-hover-link break-all"
+            >
+              <span><%= @block.hash %></span>
+            </a>
+            <CoreComponents.copy_button text={@block.hash} />
+          </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Block Number</div>
-        <div>98369</div>
+        <a
+          href={
+            Utils.network_path(
+              @network,
+              "blocks/#{@event.block_number}"
+            )
+          }
+          class="w-fit type"
+        >
+          <div><%= @event.block_number %></div>
+        </a>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Transaction Hash</div>
-        <div>
-          <%= "0x01b4d24a461851e8eb9924369b5d9e23e79e8bbea6abc93eae4323462a25ddac"
-          |> Utils.shorten_block_hash() %>
+        <div class="block-data">
+          <div class="hash flex">
+            <a
+              href={
+                Utils.network_path(
+                  @network,
+                  "blocks/#{@event.transaction_hash}"
+                )
+              }
+              class="text-hover-link break-all"
+            >
+              <%= @event.transaction_hash %>
+            </a>
+            <CoreComponents.copy_button text={@event.transaction_hash} />
+          </div>
         </div>
       </div>
       <div class="grid-4 custom-list-item">
         <div class="block-label !mt-0">Contract Address</div>
-        <div>
-          <%= "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
-          |> Utils.shorten_block_hash() %>
+        <div class="block-data">
+          <div class="hash flex">
+            <%= @event.from_address %>
+            <CoreComponents.copy_button text={@event.from_address} />
+          </div>
         </div>
-      </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">L1 Block Hash</div>
-        <div>
-          <%= "0x93f4c763b869dd008594f8a976c7f0bb60942db7bf314a70339e7e8c94fcfd1a"
-          |> Utils.shorten_block_hash() %>
-        </div>
-      </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">L1 Block Number</div>
-        <div>17630003</div>
       </div>
       <div class="custom-list-item">
         <div class="block-label !mt-0 lg:pb-5">Event Data</div>
         <div class="bg-black/10 p-5">
           <div class="grid-3 w-full table-th">
             <div>Input</div>
-            <div>Type</div>
             <div>Value</div>
           </div>
-          <%= for _idx <- 0..0 do %>
+          <%= for {payload, index} <- Enum.with_index(@event.data) do %>
             <div class="grid-3 w-full custom-list-item">
               <div>
-                <div class="list-h">Input</div>
-                <div>from_</div>
-              </div>
-              <div>
-                <div class="list-h">Type</div>
-                <div>felt</div>
+                <div class="list-h">Index</div>
+                <div><%= index %></div>
               </div>
               <div>
                 <div class="list-h">Value</div>
-                <%= "0x4c97c4d367b88df2f29887043750ff189f539c28fe1fed331d3359b403a8bad"
-                |> Utils.shorten_block_hash() %>
+                <div class="block-data">
+                  <div class="hash flex">
+                    <%= payload %>
+                    <CoreComponents.copy_button text={payload} />
+                  </div>
+                </div>
               </div>
             </div>
           <% end %>
@@ -97,9 +117,12 @@ defmodule StarknetExplorerWeb.EventDetailLive do
   end
 
   @impl true
-  def mount(_params = %{"identifier" => _identifier}, _session, socket) do
+  def mount(_params = %{"identifier" => identifier}, _session, socket) do
+    event = Events.get_by_id(identifier, socket.assigns.network)
+
     assigns = [
-      event: nil
+      event: event,
+      block: Block.get_by_num(event.block_number, socket.assigns.network)
     ]
 
     {:ok, assign(socket, assigns)}

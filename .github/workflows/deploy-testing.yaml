@@ -1,4 +1,8 @@
 name: Deploy https://testing.madaraexplorer.com/
+
+concurrency:
+  group: ${{ github.workflow }}
+
 on:
   push:
     branches:
@@ -47,13 +51,15 @@ jobs:
         PROVER_STORAGE: ${{ vars.PROVER_STORAGE }}
         ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_testing"
         SSH_HOST: ${{ vars.SSH_HOST }}
-        ENABLE_FETCHER: ${{ vars.ENABLE_FETCHER }}
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
         ANSIBLE_STDOUT_CALLBACK: "yaml"
-        ENABLE_LISTENER: "true"
+        ENABLE_MAINNET_SYNC: "true"
+        ENABLE_TESTNET_SYNC: "true"
+        ENABLE_TESTNET2_SYNC: "true"
         ENABLE_GATEWAY_DATA: "true"
-        CONTINUATION_TOKEN_FORMAT: "large"
         NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
         NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
+        SENTRY_ENV: "testing"
+        SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       run: |
         ansible-playbook -i ansible/inventory.yaml ansible/playbooks/deployment.yaml

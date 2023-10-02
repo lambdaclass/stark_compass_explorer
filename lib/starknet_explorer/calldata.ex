@@ -9,14 +9,8 @@ defmodule StarknetExplorer.Calldata do
   ]
 
   def parse_calldata(%{type: "INVOKE"} = tx, block_id, network) do
-    version =
-      case tx.contract do
-        nil -> nil
-        contract -> contract["contract_class_version"]
-      end
-
     calldata =
-      from_plain_calldata(tx.calldata, version)
+      from_plain_calldata(tx.calldata, tx.version)
 
     Enum.map(
       calldata,
@@ -33,10 +27,13 @@ defmodule StarknetExplorer.Calldata do
     nil
   end
 
-  def from_plain_calldata([array_len | rest], nil) do
+  def from_plain_calldata([array_len | rest], "0x0") do
+    # Cutting down array_len because some old transactions may have weird calldata
+    size = min(felt_to_int(array_len), length(rest))
+
     {calls, [_calldata_length | calldata]} =
       List.foldl(
-        Enum.to_list(1..felt_to_int(array_len)),
+        Enum.to_list(1..size),
         {[], rest},
         fn _, {acc_current, acc_rest} ->
           {new, new_rest} = get_call_header_v0(acc_rest)
@@ -44,16 +41,14 @@ defmodule StarknetExplorer.Calldata do
         end
       )
 
-    Enum.map(
-      Enum.reverse(calls),
-      fn call ->
-        %{call | :calldata => Enum.slice(calldata, call.data_offset, call.data_len)}
-      end
-    )
+    calls
+    |> Enum.reverse()
+    |> Enum.map(fn call ->
+      %{call | :calldata => Enum.slice(calldata, call.data_offset, call.data_len)}
+    end)
   end
 
-  # we assume contract_class_version 0.1.0
-  def from_plain_calldata([array_len | rest], _contract_class_version) do
+  def from_plain_calldata([array_len | rest], "0x1") do
     {calls, _} =
       List.foldl(
         Enum.to_list(1..felt_to_int(array_len)),
@@ -137,7 +132,7 @@ defmodule StarknetExplorer.Calldata do
   def get_value_for_type(%{"type" => type, "name" => name}, so_far, calldata, structs) do
     case String.ends_with?(type, "*") do
       true ->
-        type = String.replace_suffix(type, "*", "!")
+        type = String.replace_suffix(type, "*", "")
         get_multiple_values_for_type(get_array_len(name, so_far), type, calldata, structs)
 
       _ ->
@@ -279,8 +274,20 @@ defmodule StarknetExplorer.Calldata do
   end
 
   def functions_by_selector_and_version(abi, nil) do
-    {abi
-     |> List.foldl(%{}, &Map.put(&2, &1["name"] |> keccak(), &1)), %{}}
+    abi
+    |> List.foldl(
+      {%{}, %{}},
+      fn
+        elem = %{"type" => "function"}, {fn_acc, struct_acc} ->
+          {Map.put(fn_acc, elem["name"] |> keccak(), elem), struct_acc}
+
+        elem = %{"type" => "struct"}, {fn_acc, struct_acc} ->
+          {fn_acc, Map.put(struct_acc, elem["name"], elem)}
+
+        _elem, {fn_acc, struct_acc} ->
+          {fn_acc, struct_acc}
+      end
+    )
   end
 
   # we assume contract_class_version 0.1.0

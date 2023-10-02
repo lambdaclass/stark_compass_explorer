@@ -1,40 +1,23 @@
 defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
+  alias StarknetExplorerWeb.CoreComponents
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.{Data, Message, Events}
+  alias StarknetExplorer.{Data, Message, Events, Gateway}
 
   defp transaction_header(assigns) do
     ~H"""
-    <div class="flex flex-col lg:flex-row gap-2 items-baseline mb-5 lg:mb-0">
+    <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
       <h2>Transaction</h2>
-      <div
-        class="copy-container break-all pr-10 lg:pr-0"
-        id={"tsx-header-#{@transaction.hash}"}
-        phx-hook="Copy"
-      >
-        <div class="relative">
-          <div class="font-semibold">
-            <%= @transaction.hash %>
-          </div>
-          <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-            <div class="relative">
-              <img
-                class="copy-btn copy-text w-4 h-4"
-                src={~p"/images/copy.svg"}
-                data-text={@transaction.hash}
-              />
-              <img
-                class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                src={~p"/images/check-square.svg"}
-              />
-            </div>
-          </div>
-        </div>
+      <div class="font-normal text-gray-400 mt-2 lg:mt-0">
+        <%= assigns.block_timestamp
+        |> DateTime.from_unix()
+        |> then(fn {:ok, time} -> time end)
+        |> Calendar.strftime("%c") %> UTC
       </div>
     </div>
     <div
       id="dropdown"
-      class="dropdown relative bg-[#232331] p-5 mb-5 rounded-md lg:hidden"
+      class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
       phx-hook="Dropdown"
     >
       <span class="networkSelected capitalize"><%= assigns.transaction_view %></span>
@@ -44,7 +27,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     </div>
     <div class="options hidden">
       <div
-        class={"option #{if assigns.transaction_view == "overview", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "overview", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="overview"
@@ -52,7 +35,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         Overview
       </div>
       <div
-        class={"option #{if assigns.transaction_view == "events", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "events", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="events"
@@ -60,7 +43,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         Events
       </div>
       <div
-        class={"option #{if assigns.transaction_view == "message_logs", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.transaction_view == "message_logs", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="message_logs"
@@ -69,7 +52,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </div>
       <%= if @internal_calls != nil do %>
         <div
-          class={"option #{if assigns.transaction_view == "internal_calls", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+          class={"option #{if assigns.transaction_view == "internal_calls", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
           phx-click="select-view"
           ,
           phx-value-view="internal_calls"
@@ -101,94 +84,61 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   def render_info(%{transaction_view: "events"} = assigns) do
     ~H"""
-    <div class="table-th !pt-7 border-t border-gray-700 grid-5">
+    <div class="table-th !pt-7 grid-5">
       <div>Identifier</div>
       <div>Block Number</div>
       <div>Name</div>
       <div>From Address</div>
       <div>Age</div>
     </div>
-    <%= for {event,idx}  <- Enum.with_index(@transaction_receipt.events) do %>
+    <%= for event <- @events do %>
       <div class="custom-list-item grid-5">
         <div>
           <div class="list-h">Identifier</div>
-          <div>
-            <%= # TODO, this wont work yet. Fix when using SQL.
-            @transaction_receipt.block_number %>
+          <div class="block-data">
+            <div class="hash flex">
+              <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-link">
+                <%= event.id |> Utils.shorten_block_hash() %>
+              </a>
+              <CoreComponents.copy_button text={event.id} />
+            </div>
           </div>
         </div>
         <div>
           <div class="list-h">Block Number</div>
-          <div><span class="blue-label"><%= @transaction_receipt.block_number %></span></div>
-        </div>
-        <div>
           <div>
-            <div class="list-h">Name</div>
-            <div>
-              <% name = Events.get_event_name(event, @network) %>
-              <%= if !String.starts_with?(name, "0x") do %>
-                <%= name %>
-              <% else %>
-                <div
-                  class="flex gap-2 items-center copy-container"
-                  id={"copy-transaction-event-name-#{idx}"}
-                  phx-hook="Copy"
-                >
-                  <div class="relative">
-                    <div class="break-all">
-                      <span><%= name |> Utils.shorten_block_hash() %></span>
-                    </div>
-                    <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                      <div class="relative">
-                        <img
-                          class="copy-btn copy-text w-4 h-4"
-                          src={~p"/images/copy.svg"}
-                          data-text={name}
-                        />
-                        <img
-                          class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                          src={~p"/images/check-square.svg"}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              <% end %>
-            </div>
+            <span>
+              <a href={Utils.network_path(@network, "blocks/#{event.block_number}")} class="type">
+                <span><%= to_string(event.block_number) %></span>
+              </a>
+            </span>
           </div>
         </div>
         <div>
-          <div class="list-h">From Address</div>
+          <div class="list-h">Name</div>
           <div>
-            <div
-              class="flex gap-2 items-center copy-container"
-              id={"copy-event-from-addr-#{idx}"}
-              phx-hook="Copy"
-            >
-              <div class="relative">
-                <div class="break-all">
-                  <span><%= event["from_address"] |> Utils.shorten_block_hash() %></span>
-                </div>
-                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                  <div class="relative">
-                    <img
-                      class="copy-btn copy-text w-4 h-4"
-                      src={~p"/images/copy.svg"}
-                      data-text={event["from_address"]}
-                    />
-                    <img
-                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                      src={~p"/images/check-square.svg"}
-                    />
-                  </div>
+            <%= if !String.starts_with?(event.name, "0x") do %>
+              <div class={"info-label #{String.downcase(event.name)}"}><%= event.name %></div>
+            <% else %>
+              <div class="block-data">
+                <div class="hash flex">
+                  <%= event.name |> Utils.shorten_block_hash() %>
+                  <CoreComponents.copy_button text={event.name} />
                 </div>
               </div>
-            </div>
+            <% end %>
+          </div>
+        </div>
+        <div class="list-h">From Address</div>
+        <div class="block-data">
+          <div class="hash flex">
+            <%= event.from_address |> Utils.shorten_block_hash() %>
+            <CoreComponents.copy_button text={event.from_address} />
           </div>
         </div>
         <div>
           <div class="list-h">Age</div>
-          <div><%= Utils.get_block_age_from_timestamp(@block_timestamp) %></div>
+          <div><%= Utils.get_block_age_from_timestamp(event.age) %></div>
         </div>
       </div>
     <% end %>
@@ -210,133 +160,65 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <div class="grid-6 custom-list-item">
           <div>
             <div class="list-h">Message Hash</div>
-            <div
-              class="flex gap-2 items-center copy-container"
-              id={"copy-transaction-hash-#{message.message_hash}"}
-              phx-hook="Copy"
-            >
-              <div class="relative">
-                <div class="break-all text-hover-blue">
-                  <a
-                    href={Utils.network_path(@network, "messages/#{message.message_hash}")}
-                    class="text-hover-blue"
-                  >
-                    <span><%= message.message_hash |> Utils.shorten_block_hash() %></span>
-                  </a>
-                </div>
-                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                  <div class="relative">
-                    <img
-                      class="copy-btn copy-text w-4 h-4"
-                      src={~p"/images/copy.svg"}
-                      data-text={message.message_hash}
-                    />
-                    <img
-                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                      src={~p"/images/check-square.svg"}
-                    />
-                  </div>
-                </div>
+            <div class="block-data">
+              <div class="hash flex">
+                <a
+                  href={Utils.network_path(@network, "messages/#{message.message_hash}")}
+                  class="text-hover-link"
+                >
+                  <%= message.message_hash |> Utils.shorten_block_hash() %>
+                  <CoreComponents.copy_button text={message.message_hash} />
+                </a>
               </div>
             </div>
           </div>
           <div>
             <div class="list-h">Direction</div>
             <%= if Message.is_l2_to_l1(message.type) do %>
-              <div><span class="green-label">L2</span>→<span class="blue-label">L1</span></div>
+              <div>
+                <span class="info-label blue-label">L2</span>→<span class="info-label green-label">L1</span>
+              </div>
             <% else %>
-              <div><span class="blue-label">L1</span>→<span class="green-label">L2</span></div>
+              <div>
+                <span class="info-label green-label">L1</span>→<span class="info-label blue-label">L2</span>
+              </div>
             <% end %>
           </div>
           <div>
             <div class="list-h">Type</div>
-            <div>
+            <div class={"type #{String.downcase(String.replace(Message.friendly_message_type(message.type), " ", "-"))}"}>
               <%= Message.friendly_message_type(message.type) %>
             </div>
           </div>
           <div>
             <div class="list-h">From Address</div>
-            <div
-              class="flex gap-2 items-center copy-container"
-              id={"copy-from-addr-#{message.hash}"}
-              phx-hook="Copy"
-            >
-              <div class="relative">
-                <div class="break-all">
-                  <%= Utils.shorten_block_hash(message.from_address) %>
-                </div>
-                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                  <div class="relative">
-                    <img
-                      class="copy-btn copy-text w-4 h-4"
-                      src={~p"/images/copy.svg"}
-                      data-text={message.from_address}
-                    />
-                    <img
-                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                      src={~p"/images/check-square.svg"}
-                    />
-                  </div>
-                </div>
+            <div class="block-data">
+              <div class="hash flex">
+                <%= Utils.shorten_block_hash(message.from_address) %>
+                <CoreComponents.copy_button text={message.from_address} />
               </div>
             </div>
           </div>
           <div>
             <div class="list-h">To Address</div>
-            <div
-              class="flex gap-2 items-center copy-container"
-              id={"copy-to-addr-#{message.hash}"}
-              phx-hook="Copy"
-            >
-              <div class="relative">
-                <div class="break-all">
-                  <%= Utils.shorten_block_hash(message.to_address) %>
-                </div>
-                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                  <div class="relative">
-                    <img
-                      class="copy-btn copy-text w-4 h-4"
-                      src={~p"/images/copy.svg"}
-                      data-text={message.to_address}
-                    />
-                    <img
-                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                      src={~p"/images/check-square.svg"}
-                    />
-                  </div>
-                </div>
+            <div class="block-data">
+              <div class="hash flex">
+                <%= Utils.shorten_block_hash(message.to_address) %>
+                <CoreComponents.copy_button text={message.to_address} />
               </div>
             </div>
           </div>
           <div>
             <div class="list-h">Transaction Hash</div>
-            <div
-              class="flex gap-2 items-center copy-container"
-              id={"copy-transaction-hash-#{message.transaction_hash}"}
-              phx-hook="Copy"
-            >
-              <div class="relative">
-                <div class="break-all text-hover-blue">
-                  <a
-                    href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
-                    class="text-hover-blue"
-                  >
-                    <span><%= message.transaction_hash |> Utils.shorten_block_hash() %></span>
-                  </a>
-                </div>
-                <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                  <div class="relative">
-                    <img
-                      class="copy-btn copy-text w-4 h-4"
-                      src={~p"/images/copy.svg"}
-                      data-text={message.transaction_hash}
-                    />
-                    <img
-                      class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                      src={~p"/images/check-square.svg"}
-                    />
-                  </div>
-                </div>
+            <div class="block-data">
+              <div class="hash flex">
+                <a
+                  href={Utils.network_path(@network, "transactions/#{message.transaction_hash}")}
+                  class="text-hover-link"
+                >
+                  <%= message.transaction_hash |> Utils.shorten_block_hash() %>
+                </a>
+                <CoreComponents.copy_button text={message.transaction_hash} />
               </div>
             </div>
           </div>
@@ -366,9 +248,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
           </div>
           <div>
             <div class="list-h">Transaction Hash</div>
-            <div>
+            <div class="hash flex">
               <%= @transaction.hash
               |> Utils.shorten_block_hash() %>
+              <CoreComponents.copy_button text={@transaction.hash} />
             </div>
           </div>
           <div>
@@ -377,7 +260,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
               <%= if call.call_type=="CALL" do %>
                 <span class="green-label"><%= call.call_type %></span>
               <% else %>
-                <span class="lilac-label"><%= call.call_type %></span>
+                <span class="red-label"><%= call.call_type %></span>
               <% end %>
             </div>
           </div>
@@ -385,23 +268,11 @@ defmodule StarknetExplorerWeb.TransactionLive do
             <div class="list-h">Name</div>
             <div><span class="blue-label"><%= call.selector_name %></span></div>
           </div>
-          <div class="copy-container" id={"tsx-internal-calls-address-#{index}"} phx-hook="Copy">
-            <div class="relative break-all text-hover-blue">
+          <div class="block-data">
+            <div class="hash flex">
               <%= call.contract_address
               |> Utils.shorten_block_hash() %>
-              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                <div class="relative">
-                  <img
-                    class="copy-btn copy-text w-4 h-4"
-                    src={~p"/images/copy.svg"}
-                    data-text={call.contract_address}
-                  />
-                  <img
-                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                    src={~p"/images/check-square.svg"}
-                  />
-                </div>
-              </div>
+              <CoreComponents.copy_button text={call.contract_address} />
             </div>
           </div>
         </div>
@@ -418,31 +289,17 @@ defmodule StarknetExplorerWeb.TransactionLive do
     ~H"""
     <div class="grid-4 custom-list-item">
       <div class="block-label">Transaction Hash</div>
-      <div class="col-span-3 break-all">
-        <div class="copy-container" id={"tsx-overview-hash-#{@transaction.hash}"} phx-hook="Copy">
-          <div class="relative">
-            <%= @transaction.hash |> Utils.shorten_block_hash() %>
-            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-              <div class="relative">
-                <img
-                  class="copy-btn copy-text w-4 h-4"
-                  src={~p"/images/copy.svg"}
-                  data-text={@transaction.hash}
-                />
-                <img
-                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                  src={~p"/images/check-square.svg"}
-                />
-              </div>
-            </div>
-          </div>
+      <div class="block-data co-span-3">
+        <div class="hash flex">
+          <%= @transaction.hash %>
+          <CoreComponents.copy_button text={@transaction.hash} />
         </div>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Transaction Type</div>
       <div class="col-span-3">
-        <span class={"#{if @transaction.type == "INVOKE", do: "violet-label", else: "lilac-label"}"}>
+        <span class={"type #{String.downcase(String.replace(@transaction.type, " ", "-"))}"}>
           <%= @transaction.type %>
         </span>
       </div>
@@ -451,11 +308,11 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="block-label">Status</div>
       <div class="col-span-3">
         <%= if @transaction_receipt.execution_status == "REVERTED" do %>
-          <span class="pink-label">
+          <span class="orange-label">
             REVERTED
           </span>
         <% else %>
-          <span class={"#{if @transaction_receipt.finality_status == "ACCEPTED_ON_L2", do: "green-label"} #{if @transaction_receipt.finality_status == "ACCEPTED_ON_L1", do: "blue-label"} #{if @transaction_receipt.finality_status == "PENDING", do: "pink-label"}"}>
+          <span class={"info-label #{String.downcase(String.replace(@transaction_receipt.finality_status, " ", "-"))}"}>
             <%= @transaction_receipt.finality_status %>
           </span>
         <% end %>
@@ -464,10 +321,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Number</div>
       <div class="col-span-3">
-        <span class="blue-label">
+        <span>
           <a
             href={Utils.network_path(@network, "blocks/#{@transaction_receipt.block_hash}")}
-            class="text-hover-blue"
+            class="type"
           >
             <span><%= @transaction_receipt.block_number %></span>
           </a>
@@ -476,62 +333,25 @@ defmodule StarknetExplorerWeb.TransactionLive do
     </div>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Hash</div>
-      <div class="col-span-3 text-hover-blue break-all">
-        <div
-          class="copy-container"
-          id={"tsx-overview-block-#{@transaction_receipt.block_hash}"}
-          phx-hook="Copy"
-        >
-          <div class="relative">
-            <a
-              href={Utils.network_path(@network, "blocks/#{@transaction_receipt.block_hash}")}
-              class="text-hover-blue"
-            >
-              <span><%= @transaction_receipt.block_hash |> Utils.shorten_block_hash() %></span>
-            </a>
-
-            <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-              <div class="relative">
-                <img
-                  class="copy-btn copy-text w-4 h-4"
-                  src={~p"/images/copy.svg"}
-                  data-text={@transaction_receipt.block_hash}
-                />
-                <img
-                  class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                  src={~p"/images/check-square.svg"}
-                />
-              </div>
-            </div>
-          </div>
+      <div class="block-data col-span-3">
+        <div class="hash flex">
+          <a
+            href={Utils.network_path(@network, "blocks/#{@transaction_receipt.block_hash}")}
+            class="text-hover-link"
+          >
+            <%= @transaction_receipt.block_hash %>
+          </a>
+          <CoreComponents.copy_button text={@transaction_receipt.block_hash} />
         </div>
       </div>
     </div>
     <%= if @transaction.sender_address do %>
       <div class="grid-4 custom-list-item">
         <div class="block-label">Sender Address</div>
-        <div class="col-span-3 break-all">
-          <div
-            class="copy-container"
-            id={"tsx-overview-addres-#{@transaction.sender_address}"}
-            phx-hook="Copy"
-          >
-            <div class="relative">
-              <%= @transaction.sender_address |> Utils.shorten_block_hash() %>
-              <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
-                <div class="relative">
-                  <img
-                    class="copy-btn copy-text w-4 h-4"
-                    src={~p"/images/copy.svg"}
-                    data-text={@transaction.sender_address}
-                  />
-                  <img
-                    class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
-                    src={~p"/images/check-square.svg"}
-                  />
-                </div>
-              </div>
-            </div>
+        <div class="block-data col-span-3">
+          <div class="hash flex">
+            <%= @transaction.sender_address |> Utils.shorten_block_hash() %>
+            <CoreComponents.copy_button text={@transaction.sender_address} />
           </div>
         </div>
       </div>
@@ -539,7 +359,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Actual Fee</div>
       <div class="col-span-3">
-        <span class="blue-label rounded-full px-4 py-1">
+        <span class="info-label cash-label">
           <%= @transaction_receipt.actual_fee %> ETH
         </span>
       </div>
@@ -548,7 +368,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="grid-4 custom-list-item">
         <div class="block-label">Max Fee</div>
         <div class="col-span-3">
-          <span class="text-se-cash-green green-label rounded-full px-4 py-1">
+          <span class="info-label gray-label">
             <%= @transaction.max_fee %> ETH
           </span>
         </div>
@@ -564,53 +384,62 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </div>
     </div>
     <div class="custom-list-item">
-      <div class="mb-5 text-gray-500 md:text-white !flex-row gap-2">
-        <span>Input Data</span>
+      <div class="block-label !mt-8 !mb-5">
+        Input Data
       </div>
       <%= unless is_nil(@transaction.input_data) do %>
         <div class="col-span-full">
           <%= for input <- @transaction.input_data do %>
             <%= unless is_nil(input.call) do %>
-              <div class="w-full bg-black/20 p-5 mt-5" phx-no-format>
-                call <span class="text-se-violet"><%= input.call.name %></span>(<.intersperse
-                  :let={arg}
-                  enum={input.call.args}
-                ><:separator>, </:separator>
-                  <span class="text-blue-400"><%= arg.name %></span></.intersperse>)
-                <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
-              </div>
-              <div class="w-full bg-black/10 p-5">
-                <div class="grid-3 table-th">
-                  <div>Input</div>
-                  <div>Type</div>
-                  <div>Value</div>
+              <div class="inner-block custom-list !p-0">
+                <div
+                  id={"#{input.call.name}"}
+                  class="w-full bg-black/20 p-5 !flex justify-between"
+                  phx-hook="ShowTableData"
+                >
+                  <div phx-no-format><span class="flex">
+                  <span>
+                    <span>call</span>
+                    <span class="text-se-pink ml-1"><%= input.call.name %></span>
+                    (<.intersperse
+                      :let={arg}
+                      enum={input.call.args}
+                    ><:separator><span class="mr-2">,</span></:separator><span class="text-blue-400"><%= arg.name %></span></.intersperse>)
+                    <span class="text-blue-400 mx-1">-></span> <%= Utils.shorten_block_hash(input.selector) %>
+                  </span>
+                  <CoreComponents.copy_button text={input.selector} /></span>
                 </div>
-                <%= for arg <- input.call.args do %>
-                  <div class="grid-3 custom-list-item">
-                    <div>
-                      <div class="list-h">Input</div>
-                      <div>
-                        <%= arg.name %>
+                  <img
+                    class="arrow-button transform rotate-180 transition-all duration-500"
+                    src={~p"/images/arrow-up.svg"}
+                  />
+                </div>
+                <div class="hidden w-full bg-[#1e1e2b]/25 p-5">
+                  <%= for arg <- input.call.args do %>
+                    <div class="custom-list-item">
+                      <div class="pb-5">
+                        <div class="list-h">Input</div>
+                        <div>
+                          <%= arg.name %>
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <div class="list-h">Type</div>
-                      <div>
-                        <%= arg.type %>
+                      <div class="col-span-2 pb-5">
+                        <div class="list-h">Type</div>
+                        <div class="w-full overflow-x-auto">
+                          <%= arg.type %>
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <div class="list-h">Value</div>
-                      <div class="break-all">
+                      <div class="col-span-2 pb-5">
+                        <div class="list-h">Value</div>
                         <pre><%= Utils.format_arg_value(arg) %></pre>
                       </div>
                     </div>
-                  </div>
-                <% end %>
+                  <% end %>
+                </div>
               </div>
             <% else %>
               <div class="w-full bg-black/20 p-5 mt-5">
-                Not Supported <span class="text-se-violet">...</span>(...)
+                Not Supported <span class="text-se-pink">...</span>(...)
                 <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
               </div>
             <% end %>
@@ -619,10 +448,8 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <% end %>
     </div>
     <div class="custom-list-item">
-      <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
-        <span>Signature</span>
-      </div>
-      <div class="bg-black/10 p-5">
+      <div class="py-5 text-gray-500 !flex-row gap-5">Signature</div>
+      <div class="inner-block my-5">
         <div class="w-full grid-8 table-th">
           <div>Index</div>
           <div class="col-span-7">Value</div>
@@ -634,32 +461,39 @@ defmodule StarknetExplorerWeb.TransactionLive do
                 <div class="list-h">Index</div>
                 <div class="break-all"><%= index %></div>
               </div>
-              <div>
+              <div class="col-span-7">
                 <div class="list-h">Value</div>
-                <div class="break-all col-span-7"><%= signature |> Utils.shorten_block_hash() %></div>
+                <div class="block-data">
+                  <div class="hash flex">
+                    <%= signature |> Utils.shorten_block_hash() %>
+                    <CoreComponents.copy_button text={signature} />
+                  </div>
+                </div>
               </div>
             </div>
           <% end %>
         <% end %>
       </div>
     </div>
-    <div class="pt-3 mb-3 border-t border-t-gray-700">
+    <div class="pt-3 mb-3">
       <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
-        <span>Execution Resources</span><span class="gray-label text-sm">Mocked</span>
+        <span>Execution Resources</span>
       </div>
       <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
         <div class="flex flex-col justify-center items-center gap-2">
-          <span class="blue-label">STEPS</span> 5083
+          <span class="blue-label py-1 px-2 rounded-lg">STEPS</span> <%= "#{@transaction_receipt.execution_resources["n_steps"]}" %>
         </div>
         <div class="flex flex-col justify-center items-center gap-2">
-          <span class="green-label">MEMORY</span> 224
+          <span class="green-label py-1 px-2 rounded-lg">MEMORY HOLES</span> <%= "#{@transaction_receipt.execution_resources["n_memory_holes"]}" %>
         </div>
-        <div class="flex flex-col justify-center items-center gap-2">
-          <span class="pink-label">PEDERSEN_BUILTIN</span> 21
-        </div>
-        <div class="flex flex-col justify-center items-center gap-2">
-          <span class="violet-label">RANGE_CHECK_BUILTIN</span> 224
-        </div>
+        <%= for {builtin_name , instance_counter} <- @transaction_receipt.execution_resources["builtin_instance_counter"] do %>
+          <div class="flex flex-col justify-center items-center gap-2">
+            <span class={Utils.builtin_color(builtin_name)}>
+              <%= Utils.builtin_name(builtin_name) %>
+            </span>
+            <%= instance_counter %>
+          </div>
+        <% end %>
       </div>
     </div>
     """
@@ -691,7 +525,26 @@ defmodule StarknetExplorerWeb.TransactionLive do
           transaction |> Map.put(:max_fee, max_fee)
       end
 
-    receipt = transaction.receipt |> Map.put(:actual_fee, actual_fee)
+    execution_resources =
+      case Application.get_env(:starknet_explorer, :enable_gateway_data) do
+        true ->
+          {:ok, receipt} =
+            Gateway.get_transaction_receipt(transaction_hash, socket.assigns.network)
+
+          receipt["execution_resources"]
+
+        false ->
+          %{
+            "builtin_instance_counter" => %{},
+            "n_memory_holes" => "-",
+            "n_steps" => "-"
+          }
+      end
+
+    receipt =
+      transaction.receipt
+      |> Map.put(:execution_resources, execution_resources)
+      |> Map.put(:actual_fee, actual_fee)
 
     internal_calls =
       case receipt.execution_status != "REVERTED" &&
@@ -700,13 +553,15 @@ defmodule StarknetExplorerWeb.TransactionLive do
         _ -> nil
       end
 
+    events = Events.get_by_tx_hash(transaction_hash, socket.assigns.network)
+
     assigns = [
       transaction: transaction,
       transaction_receipt: receipt,
       transaction_hash: transaction_hash,
       internal_calls: internal_calls,
       transaction_view: "overview",
-      events: receipt.events,
+      events: events,
       messages: messages_sent,
       block_timestamp: block_timestamp
     ]

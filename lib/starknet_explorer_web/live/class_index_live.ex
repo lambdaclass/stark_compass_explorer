@@ -7,7 +7,7 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
   #             <li class="col-span-2">
   #               <%= live_redirect(Utils.shorten_block_hash(class.hash),
   #                 to: "/classes/#{class.hash}",
-  #                 class: "text-hover-blue"
+  #                 class: "text-se-blue"
   #               ) %>
   #             </li>
   #             <li class="col-span-2">
@@ -42,7 +42,7 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
             </div>
             <div>
               <div class="list-h">Type</div>
-              <span class="violet-label">ERC721</span>
+              <span class="pink-label">ERC721</span>
             </div>
             <div>
               <div class="list-h">Declared At</div>

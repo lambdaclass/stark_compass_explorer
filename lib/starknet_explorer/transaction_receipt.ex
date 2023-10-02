@@ -87,10 +87,11 @@ defmodule StarknetExplorer.TransactionReceipt do
   @networks [:mainnet, :testnet, :testnet2]
 
   @fields @invoke_tx_receipt_fields ++
-            @l1_receipt_handler ++ @declare_tx_receipt ++ @deploy_account_tx_receipt ++ [:network]
+            @l1_receipt_handler ++
+            @declare_tx_receipt ++ @deploy_account_tx_receipt ++ [:network, :execution_resources]
+  @primary_key {:transaction_hash, :string, []}
   schema "transaction_receipts" do
-    belongs_to :transaction, Transaction
-    field :transaction_hash
+    belongs_to :transaction, Transaction, references: :hash
     field :type, :string
     field :actual_fee, :string
     field :finality_status, :string
@@ -101,6 +102,7 @@ defmodule StarknetExplorer.TransactionReceipt do
     field :events, {:array, :map}
     field :contract_address
     field :network, Ecto.Enum, values: @networks
+    field :execution_resources, :map
     timestamps()
   end
 
@@ -139,6 +141,26 @@ defmodule StarknetExplorer.TransactionReceipt do
         where: tr.block_hash == ^block_hash
 
     Repo.all(query)
+  end
+
+  def get_status_not_finalized(block_number, network) do
+    query =
+      from t in TransactionReceipt,
+        where: t.finality_status != "ACCEPTED_ON_L1" and t.execution_status == "SUCCEEDED",
+        # TODO add index in block_number.
+        where: t.network == ^network and t.block_number == ^block_number
+
+    Repo.all(query)
+  end
+
+  def update_transaction_status(tx_hash, finality_status, execution_status, network) do
+    query =
+      from t in TransactionReceipt,
+        where: t.transaction_hash == ^tx_hash and t.network == ^network
+
+    Repo.update_all(query,
+      set: [execution_status: execution_status, finality_status: finality_status]
+    )
   end
 
   def from_rpc_tx(rpc_receipt) do

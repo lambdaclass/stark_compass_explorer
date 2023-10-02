@@ -4,7 +4,7 @@ defmodule StarknetExplorer.Message do
   import Ecto.Query
   alias StarknetExplorer.Repo
 
-  @primary_key {:message_hash, :string, autogenerate: false}
+  @primary_key {:id, :binary_id, autogenerate: true}
   @fields [
     :from_address,
     :to_address,
@@ -19,6 +19,7 @@ defmodule StarknetExplorer.Message do
   schema "messages" do
     field :from_address, :string
     field :transaction_hash, :string
+    field :message_hash, :string
     field :to_address, :string
     field :payload, {:array, :string}
     field :timestamp, :integer
@@ -66,7 +67,8 @@ defmodule StarknetExplorer.Message do
   def get_by_hash(message_hash, network) do
     query =
       from msg in StarknetExplorer.Message,
-        where: msg.message_hash == ^message_hash and msg.network == ^network
+        where: msg.message_hash == ^message_hash and msg.network == ^network,
+        limit: 1
 
     Repo.one(query)
   end
@@ -90,8 +92,18 @@ defmodule StarknetExplorer.Message do
     Repo.all(query)
   end
 
-  def get_total_count() do
-    StarknetExplorer.Message |> Repo.aggregate(:count, :to_address)
+  def paginate_messages(params, network) do
+    query =
+      from msg in StarknetExplorer.Message,
+        order_by: [desc: msg.timestamp],
+        where: msg.network == ^network
+
+    Repo.paginate(query, params)
+  end
+
+  def get_total_count(network) do
+    from(msg in __MODULE__, where: msg.network == ^network, select: count())
+    |> Repo.one()
   end
 
   def insert_from_transaction(transaction, timestamp, network) do

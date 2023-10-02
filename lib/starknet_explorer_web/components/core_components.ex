@@ -663,4 +663,55 @@ defmodule StarknetExplorerWeb.CoreComponents do
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
   end
+
+  def pagination_links(assigns) do
+    ~H"""
+    <div class="flex justify-end items-center my-5 text-base">
+      <button
+        class={if @page.page_number == 1, do: "opacity-0 pointer-events-none", else: ""}
+        id={@id}
+        phx-hook="ScrollToTop"
+        phx-click={@prev}
+      >
+        <img class="transform rotate-180" src="/images/chevron.svg" />
+      </button>
+      <div class="text-brand px-3 py-1 rounded-lg">
+        <%= @page.page_number %> / <%= @page.total_pages %>
+      </div>
+      <%= if @page.page_number != @page.total_pages do %>
+        <button id={@id} phx-hook="ScrollToTop" phx-click={@next}>
+          <img src="/images/chevron.svg" />
+        </button>
+      <% end %>
+    </div>
+    """
+  end
+
+  def copy_button(assigns) do
+    ~H"""
+    <div class="copy-container shrink-0" id={Ecto.UUID.generate()} phx-hook="Copy">
+      <div class="relative">
+        <div class="ml-2 relative shrink-0">
+          <img class="copy-btn copy-text w-5 h-5" src="/images/copy.svg" data-text={@text} />
+          <img
+            class="copy-check absolute top-0 left-0 w-5 h-5 opacity-0 pointer-events-none"
+            src="/images/check-square.svg"
+          />
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  def tooltip(assigns) do
+    ~H"""
+    <img
+      id={@id}
+      phx-hook="Tooltip"
+      data-tip={@text}
+      src="/images/help-circle.svg"
+      class={"tooltip w-4 h-4 #{assigns[:class] || ""}"}
+    />
+    """
+  end
 end

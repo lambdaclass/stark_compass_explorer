@@ -1,21 +1,28 @@
-# StarknetExplorer
+# StarkCompass
 ![image](./priv/static/images/explorer_preview.png)
 
-- [StarknetExplorer](#starknetexplorer)
+- [StarkCompass](#starkcompass)
   - [Requirements](#requirements)
   - [Local development](#local-development)
     - [Setup](#setup)
     - [RPC Provider](#rpc-provider)
     - [RPC with Juno](#rpc-with-juno)
-    - [Database](#database)
     - [Up and running](#up-and-running)
-  - [Using Madara Explorer with PostgreSQL](#using-madara-explorer-with-postgresql)
+  - [State Synchronization System](#state-synchronization-system)
+    - [WARNING ⚠️](#warning-️)
+  - [Using Stark Compass with PostgreSQL](#using-stark-compass-with-postgresql)
+  - [Remaining Tasks](#remaining-tasks)
+    - [Short/Mid Term Goals:](#shortmid-term-goals)
+    - [Long Term Goals:](#long-term-goals)
+  - [Contributing](#contributing)
+    - [Get in Touch](#get-in-touch)
 
 ## Requirements
 - SQLite
 - Erlang 25
 - Elixir 1.15, compiled with OTP 25
 - Docker (optional)
+- PostgreSQL (optional)
 
 ## Local development
 
@@ -66,38 +73,6 @@ You'll need a Mainnet Ethereum RPC provider for this to
 work, set with the env variable `$ETH_NODE_URL`, mind you
 it must be a websocket url.
 
-### Database
-You can fill an sqlite database with RPC provided data with 2 tools we provide:
-
-1. BlockListener, which will store any new blocks.
-To enable this process, before starting the explorer, set this env var:
-
-```bash
-export ENABLE_LISTENER="true"
-```
-
-2. BlockFetcher, which will store blocks from a given range.
-To use it, you simply have to call the `StarknetExplorer.BlockFetcher.fetch_in_range`
-function, you can do this interactively after starting with `make run`:
-
-```elixir
-StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10, network: :mainnet})
- ```
-
-Or, if you're on a "prod" environment, simply send it through elixir's RPC:
-```bash 
-./_build/prod/rel/starknet_explorer/bin rpc "StarknetExplorer.BlockFetcher.fetch_in_range(%{start: 100, finish: 10, network: :mainnet})"
-```
-
-There are 2 things to keep in mind here:
-1. Amount of requests:
-   If you have any constraint on how many requests you can make: keep an eye on that,
-   because the fetcher can do a lot of requests per second.
-2. Disk Usage: We're still measuring it, but we expect it to be considerable 
-   after running it for a couple of days.
-
-The db file will be stored under `/priv/repo`.
-
 ### Up and running
 If you're on MacOS, you already have SQLite.
 On Linux, your distro's repo will most certainly have a package for it.
@@ -114,12 +89,43 @@ From now on, if you want to restart the app, you can just do:
 ```bash
 make run
 ```
+## State Synchronization System
 
-## Using Madara Explorer with PostgreSQL
+The State Synchronization System facilitates the population of the database with data obtained through RPC. This system is accompanied by a utility tool known as the StateSyncSystem, which serves three fundamental tasks:
+
+1. **Listening for New Blocks**: Upon application initialization, the StateSyncSystem constantly monitors the RPC for the latest block. At regular intervals, it attempts to retrieve any newly available blocks from the RPC. If a block is not already stored in the database, the system will insert it.
+
+2. **Fetching Previous Blocks**: Upon application startup, the system identifies the lowest block number currently stored in the database (if any) or, alternatively, uses the latest block from the RPC as a starting point. It then initiates a process that, at regular intervals, retrieves earlier blocks in a reverse chronological order, continuing until it reaches block 0.
+
+3. **Updating Unfinished Blocks and Transactions**: If the finality status of a block or a transaction remains unattained, the system periodically attempts to update the database by checking for any available updates.
+
+To activate this synchronization process, you can configure the following environment variables before launching the explorer:
+
+```bash
+export ENABLE_MAINNET_SYNC=true
+export ENABLE_TESTNET_SYNC=true
+export ENABLE_TESTNET2_SYNC=true
+```
+
+It's worth noting that you have the flexibility to select which networks you want to synchronize by adjusting these environment variables.
+
+### WARNING ⚠️
+
+There are 3 things to keep in mind here:
+1. Amount of requests:
+   If you have any constraint on how many requests you can make: keep an eye on that,
+   because the State Synchronization System can do a lot of requests per second.
+2. Disk Usage: We're still measuring it, but we expect it to be considerable 
+   after running it for a couple of days.
+3. If you are going to sync a large amount of blocks, we *strongly* suggest to use PostgreSQL instead of SQLite. You can check how to swap the DB in [this section](#using-stark-compass-with-postgresql).
+
+The db file will be stored under `/priv/repo`.
+
+## Using Stark Compass with PostgreSQL
 
 If you want to handle multiple concurrent connections and a more scalable application, you may consider using PostgreSQL.
 
-Madara Explorer provides support for that, you can set the credentials to the PostgreSQL DB in the `runtime.exs` and set the environment variable `DB_TYPE` to `postgresql`.
+Stark Compass provides support for that, you can set the credentials to the PostgreSQL DB in the `runtime.exs` and set the environment variable `DB_TYPE` to `postgresql`.
 
 ```bash
 export DB_TYPE=postgresql
@@ -137,3 +143,34 @@ A Docker image of PostgreSQL is provided in the `docker-compose.yml` file, you c
 ```bash
 docker-compose up postgres
 ```
+
+## Remaining Tasks
+
+### Short/Mid Term Goals:
+
+- **Enhance SQL Query Performance**: Continuously improve the performance of SQL queries.
+- **Refine Internal Server Error Screens**: Improve the user experience by enhancing error screens.
+- **Implement Preview in the Search Bar**: Enable a preview feature in the Search Bar.
+- **Expand Search Bar Functionality**: Incorporate Events, Messages, Classes, and Contracts into the Search Bar.
+- **Preserve Leading Zeros in Hash Storage**: Ensure that leading zeros are not removed when storing hashes in the database, or adapt the Search Bar to accommodate missing leading zeros.
+- **Customizable Branding**: Allow for the customization of logos, favicons, and navbar text.
+- **Enhance Integration**: Ensure easy integration with other projects and data sources without reliance on the feeder gateway.
+
+### Long Term Goals:
+
+- **Support for Classes and Contracts**: Implement support for Classes and Contracts within the system.
+- **Optimize Trace Data Handling**: Eliminate the need to access the feeder gateway for trace data by either storing trace data internally or recording internal calls.
+- **Analytics**: Show statistics like TVL, historical data, plots, etc.
+
+## Contributing
+
+We appreciate your interest in contributing to the Stark Compass Explorer! Your contributions can help make this project even better. 
+
+PRs are more than welcome if you want to collaborate to the project. If you don't know how to implement a feature, you are still welcome to create an issue!
+
+### Get in Touch
+
+If you have any questions, suggestions, or if you'd like to contribute in any way, please feel free to reach out to us:
+
+- **Telegram**: [Lambda Starknet](https://t.me/LambdaStarkNet)
+- **GitHub Issues**: [Open an Issue](https://github.com/lambdaclass/stark_compass_explorer/issues)

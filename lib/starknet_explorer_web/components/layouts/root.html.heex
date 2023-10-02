@@ -5,31 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href={~p"/images/favicon-32x32.png"} />
+    <link rel="icon" type="image/png" sizes="16x16" href={~p"/images/favicon-16x16.png"} />
     <!-- Primary Meta Tags -->
-    <title>Madara Explorer</title>
-    <meta name="title" content="Madara Explorer" />
+    <title>Stark Compass Explorer</title>
+    <meta name="title" content="Stark Compass Explorer" />
     <meta
       name="description"
-      content="Scout the Starknet chain through the Madara Explorer. Keep track of every transaction, block and any other relevant information of Madara Starknet."
+      content="Scout the Starknet chain through the Stark Compass, the only open source Starknet Explorer. Keep track of every transaction, block and any other relevant information of Starknet."
     />
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://madarastark.com/" />
-    <meta property="og:title" content="Madara Explorer" />
+    <meta property="og:url" content="https://starkcompass.com/" />
+    <meta property="og:title" content="Stark Compass Explorer" />
     <meta
       property="og:description"
-      content="Scout the Starknet chain through the Madara Explorer. Keep track of every transaction, block and any other relevant information of Madara Starknet."
+      content="Scout the Starknet chain through the Stark Compass, the only open source Starknet Explorer. Keep track of every transaction, block and any other relevant information of Starknet."
     />
     <meta property="og:image" content={~p"/images/preview.webp"} />
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://madarastark.com/" />
-    <meta property="twitter:title" content="Madara Explorer" />
+    <meta property="twitter:url" content="https://starkcompass.com/" />
+    <meta property="twitter:title" content="Stark Compass Explorer" />
     <meta
       property="twitter:description"
-      content="Scout the Starknet chain through the Madara Explorer. Keep track of every transaction, block and any other relevant information of Madara Starknet."
+      content="Scout the Starknet chain through the Stark Compass, the only open source Starknet Explorer. Keep track of every transaction, block and any other relevant information of Starknet."
     />
     <meta property="twitter:image" content={~p"/images/preview.webp"} />
 
@@ -56,41 +56,41 @@
           ) %>
           <a
             href={Utils.network_path(@conn.assigns.network, "blocks")}
-            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+            class="hover:text-[#8A9DFF] transition-all duration-300 flex gap-2 items-center"
           >
             <img class="lg:hidden" src={~p"/images/box.svg"} /> <span>Blocks</span>
           </a>
           <a
             href={Utils.network_path(@conn.assigns.network, "transactions")}
-            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+            class="hover:text-[#8A9DFF] transition-all duration-300 flex gap-2 items-center"
           >
             <img class="lg:hidden" src={~p"/images/corner-up-right.svg"} />
             <span>Transactions</span>
           </a>
           <a
             href={Utils.network_path(@conn.assigns.network, "classes")}
-            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center hidden"
+            class="hover:text-[#8A9DFF] transition-all duration-300 flex gap-2 items-center hidden"
           >
             <img class="lg:hidden" src={~p"/images/code.svg"} />
             <span>Classes</span>
           </a>
           <a
             href={Utils.network_path(@conn.assigns.network, "messages")}
-            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+            class="hover:text-[#8A9DFF] transition-all duration-300 flex gap-2 items-center"
           >
             <img class="lg:hidden" src={~p"/images/message-square.svg"} />
             <span>Messages</span>
           </a>
           <a
             href={Utils.network_path(@conn.assigns.network, "contracts")}
-            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center hidden"
+            class="hover:text-[#8A9DFF] transition-all duration-300 flex gap-2 items-center hidden"
           >
             <img class="lg:hidden" src={~p"/images/file.svg"} />
             <span>Contracts</span>
           </a>
           <a
             href={Utils.network_path(@conn.assigns.network, "events")}
-            class="hover:text-se-blue transition-all duration-300 flex gap-2 items-center"
+            class="hover:text-[#8A9DFF] transition-all duration-300 flex gap-2 items-center"
           >
             <img class="lg:hidden" src={~p"/images/calendar.svg"} />
             <span>Events</span>
@@ -111,7 +111,7 @@
               id="options"
               class="w-full hidden absolute z-10 mt-1 rounded-md bg-container py-1 text-base text-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
             >
-              <div class="w-full py-2 hover:bg-se-violet">
+              <div class="w-full py-2 hover:bg-brand">
                 <a class="option relative pl-10" href="/">
                   <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
                   <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
@@ -119,7 +119,7 @@
                   <span>Mainnet</span>
                 </a>
               </div>
-              <div class="w-full py-2 hover:bg-se-violet">
+              <div class="w-full py-2 hover:bg-brand">
                 <a class="option relative pl-10" href="/testnet">
                   <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
                   <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
@@ -127,7 +127,7 @@
                   <span>Testnet</span>
                 </a>
               </div>
-              <div class="w-full py-2 hover:bg-se-violet">
+              <div class="w-full py-2 hover:bg-brand">
                 <a class="option relative pl-10" href="/testnet2">
                   <span class="animate-ping bg-green-500 rounded-full w-2 h-2"></span>
                   <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">

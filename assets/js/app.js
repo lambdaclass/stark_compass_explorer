@@ -37,8 +37,9 @@ const K_KEY_CODE = 75;
 
 Hooks.SearchBar = {
   mounted() {
-    document.addEventListener('keyup', (e) => {
-      if (e.keyCode === K_KEY_CODE) {
+    document.addEventListener('keydown', (e) => {
+      if (e.keyCode === K_KEY_CODE && e.metaKey) {
+        e.preventDefault();
         this.pushEvent("open-search", {})
       }
       if (e.keyCode === ESC_KEY_CODE) {
@@ -91,7 +92,14 @@ Hooks.Copy = {
     });
   },
 };
-
+Hooks.ShowTableData = {
+  mounted() {
+    this.el.addEventListener("click", () => {
+      this.el.querySelector(".arrow-button").classList.toggle("rotate-180");
+      this.el.nextElementSibling.classList.toggle("hidden");
+    });
+  },
+};
 Hooks.Stats = {
   mounted() {
     new ApexCharts(document.querySelector("#transactions-chart"), transactions).render();
@@ -287,10 +295,14 @@ let tvl = {
   },
 };
 
-// Tippy.js for Tooltip
-tippy("#tps", {
-  content: "The average transactions per second calculated from the last block",
-});
+Hooks.Tooltip = {
+  mounted() {
+    tippy(this.el, {
+      content: this.el.dataset.tip,
+      theme: "starknet-explorer",
+    });
+  },
+};
 
 //
 Hooks.Network = {
@@ -323,18 +335,26 @@ Hooks.Dropdown = {
     });
   },
 };
+Hooks.ScrollToTop = {
+  mounted() {
+    this.el.addEventListener("click", () => {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    });
+  },
+};
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks });
 // Show progress bar on live navigation and form submits. Only displays if still
-// loading after 300 msec
-topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
+// loading after 2000 msec
+topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
 
 let topBarScheduled = undefined;
 window.addEventListener("phx:page-loading-start", () => {
-  if(!topBarScheduled) {
-    topBarScheduled = setTimeout(() => topbar.show(), 300);
-  };
+  if (!topBarScheduled) {
+    topBarScheduled = setTimeout(() => topbar.show(), 2000);
+  }
 });
 window.addEventListener("phx:page-loading-stop", () => {
   clearTimeout(topBarScheduled);

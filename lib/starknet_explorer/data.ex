@@ -4,48 +4,24 @@ defmodule StarknetExplorer.Data do
   alias StarknetExplorer.{
     Rpc,
     Transaction,
-    Message,
-    Events,
     Block,
     TransactionReceipt,
     Calldata,
     Gateway
   }
 
-  @common_event_hash_to_name %{
-    "0x99cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9" => "Transfer",
-    "0x134692b230b9e1ffa39098904722134159652b09c5bc41d88d6698779d228ff" => "Approval",
-    "0x1390fd803c110ac71730ece1decfc34eb1d0088e295d4f1b125dda1e0c5b9ff" => "OwnershipTransferred",
-    "0x3774b0545aabb37c45c1eddc6a7dae57de498aae6d5e3589e362d4b4323a533" => "governor_nominated",
-    "0x19b0b96cb0e0029733092527bca81129db5f327c064199b31ed8a9f857fdee3" => "nomination_cancelled",
-    "0x3b7aa6f257721ed65dae25f8a1ee350b92d02cd59a9dcfb1fc4e8887be194ec" => "governor_removed",
-    "0x4595132f9b33b7077ebf2e7f3eb746a8e0a6d5c337c71cd8f9bf46cac3cfd7" => "governance_accepted",
-    "0x2e8a4ec40a36a027111fafdb6a46746ff1b0125d5067fbaebd8b5f227185a1e" => "implementation_added",
-    "0x3ef46b1f8c5c94765c1d63fb24422442ea26f49289a18ba89c4138ebf450f6c" =>
-      "implementation_removed",
-    "0x1205ec81562fc65c367136bd2fe1c0fff2d1986f70e4ba365e5dd747bd08753" =>
-      "implementation_upgraded",
-    "0x2c6e1be7705f64cd4ec61d51a0c8e64ceed5e787198bd3291469fb870578922" =>
-      "implementation_finalized",
-    "0x2db340e6c609371026731f47050d3976552c89b4fbb012941663841c59d1af3" => "Upgraded",
-    "0x120650e571756796b93f65826a80b3511d4f3a06808e82cb37407903b09d995" => "AdminChanged",
-    "0xe316f0d9d2a3affa97de1d99bb2aac0538e2666d0d8545545ead241ef0ccab" => "Swap",
-    "0xe14a408baf7f453312eec68e9b7d728ec5337fbdf671f917ee8c80f3255232" => "Sync",
-    "0x5ad857f66a5b55f1301ff1ed7e098ac6d4433148f0b72ebc4a2945ab85ad53" => "transaction_executed",
-    "0x10c19bef19acd19b2c9f4caa40fd47c9fbe1d9f91324d44dcd36be2dae96784" => "account_created",
-    "0x243e1de00e8a6bc1dfa3e950e6ade24c52e4a25de4dee7fb5affe918ad1e744" => "Burn",
-    "0x34e55c1cd55f1338241b50d352f0e91c7e4ffad0e4271d64eb347589ebdfd16" => "Mint"
-  }
-
-  @common_event_hashes Map.keys(@common_event_hash_to_name)
+  @doc """
+  Fetch `block_amount` blocks (defaults to 15) with txs
+  """
+  def many_blocks_with_txs(network, block_amount \\ 15) do
+    Block.latest_blocks_with_txs(block_amount, network)
+  end
 
   @doc """
-  Fetch `block_amount` blocks (defaults to 15), first
-  look them up in the db, if not found check the RPC
-  provider.
+  Fetch `block_amount` blocks (defaults to 15) without txs
   """
   def many_blocks(network, block_amount \\ 15) do
-    Block.latest_blocks_with_txs(block_amount, network)
+    Block.latest_blocks(block_amount, network)
   end
 
   def first_n_blocks(network, block_amount \\ 15) do
@@ -76,15 +52,18 @@ defmodule StarknetExplorer.Data do
   Fetch a block by its hash, first look up in
   the db, if not found, fetch from the RPC provider
   """
-  def block_by_hash(hash, network) do
-    case Block.get_by_hash(hash, network) do
+  def block_by_hash(hash, network, preload_transactions \\ true) do
+    case Block.get_by_hash(hash, network, preload_transactions) do
       nil ->
-        with {:ok, block} <- Rpc.get_block_by_hash(hash, network) do
-          StarknetExplorer.BlockUtils.store_block(block, network)
-          block = Block.from_rpc_block(block, network)
-          {:ok, block}
-        else
-          err -> {:error, err}
+        case Rpc.get_block_by_hash(hash, network) do
+          {:ok, block} ->
+            StarknetExplorer.BlockUtils.store_block(block, network)
+
+            block = Block.from_rpc_block(block, network)
+            {:ok, block}
+
+          {:error, error} ->
+            {:error, error}
         end
 
       block ->
@@ -115,15 +94,18 @@ defmodule StarknetExplorer.Data do
   Fetch a block by number, first look up in
   the db, if not found, fetch from the RPC provider
   """
-  def block_by_number(number, network) do
-    case Block.get_by_num(number, network) do
+  def block_by_number(number, network, preload_transactions \\ true) do
+    case Block.get_by_num(number, network, preload_transactions) do
       nil ->
-        with {:ok, block} <- Rpc.get_block_by_number(number, network) do
-          StarknetExplorer.BlockUtils.store_block(block, network)
-          block = Block.from_rpc_block(block, network)
-          {:ok, block}
-        else
-          err -> {:error, err}
+        case Rpc.get_block_by_number(number, network) do
+          {:ok, block} ->
+            StarknetExplorer.BlockUtils.store_block(block, network)
+
+            block = Block.from_rpc_block(block, network)
+            {:ok, block}
+
+          {:error, error} ->
+            {:error, error}
         end
 
       block ->
@@ -148,6 +130,10 @@ defmodule StarknetExplorer.Data do
       blocks ->
         {:ok, blocks}
     end
+  end
+
+  def transactions_by_block_number(block_number, network) do
+    Transaction.get_by_block_number(block_number, network)
   end
 
   @doc """
@@ -219,10 +205,24 @@ defmodule StarknetExplorer.Data do
     end
   end
 
-  def transaction_by_partial_hash(tx_hash) do
+  def transaction_by_partial_hash(tx_hash, network) do
     case Transaction.get_by_partial_hash(tx_hash) do
       nil -> {:error, "No match"}
       tx -> {:ok, tx}
+        case Rpc.get_transaction(tx_hash, network) do
+          {:ok, tx} ->
+            {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
+
+            tx =
+              tx
+              |> Transaction.from_rpc_tx()
+              |> Map.put(:receipt, receipt |> StarknetExplorerWeb.Utils.atomize_keys())
+
+            {:ok, tx}
+
+          {:error, error} ->
+            {:error, error}
+        end
     end
   end
 
@@ -256,7 +256,12 @@ defmodule StarknetExplorer.Data do
 
     tx = tx |> Map.put(:contract, contract)
 
-    input_data = Calldata.parse_calldata(tx, block_id, network)
+    input_data =
+      try do
+        Calldata.parse_calldata(tx, block_id, network)
+      rescue
+        _ -> nil
+      end
 
     {:ok, tx |> Map.put(:input_data, input_data)}
   end
@@ -266,22 +271,6 @@ defmodule StarknetExplorer.Data do
       Rpc.get_class_at(%{"block_number" => block_number}, contract_address, network)
 
     class_hash
-  end
-
-  def get_event_name(%{keys: [event_name_hashed | _]}, _network)
-      when event_name_hashed in @common_event_hashes,
-      do: @common_event_hash_to_name[event_name_hashed]
-
-  def get_event_name(%{keys: [event_name_hashed | _]}, _network) do
-    event_name_hashed
-  end
-
-  def get_event_name(%{"keys" => [event_name_hashed | _]}, _network)
-      when event_name_hashed in @common_event_hashes,
-      do: @common_event_hash_to_name[event_name_hashed]
-
-  def get_event_name(%{"keys" => [event_name_hashed | _]}, _network) do
-    event_name_hashed
   end
 
   def internal_calls(tx, network) do
@@ -354,10 +343,21 @@ defmodule StarknetExplorer.Data do
     []
   end
 
-  def get_entity_count() do
-    Map.new()
-    |> Map.put(:message_count, Message.get_total_count())
-    |> Map.put(:events_count, Events.get_total_count())
-    |> Map.put(:transaction_count, Transaction.get_total_count())
+  def get_entity_count(network) do
+    counts = StarknetExplorer.Counts.get(network)
+
+    if counts do
+      Map.new()
+      |> Map.put(:messages_count, counts.messages)
+      |> Map.put(:events_count, counts.events)
+      |> Map.put(:transaction_count, counts.transactions)
+      |> Map.put(:block_count, counts.blocks)
+    else
+      Map.new()
+      |> Map.put(:messages_count, 0)
+      |> Map.put(:events_count, 0)
+      |> Map.put(:transaction_count, 0)
+      |> Map.put(:block_count, 0)
+    end
   end
 end
