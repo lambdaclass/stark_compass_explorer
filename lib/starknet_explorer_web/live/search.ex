@@ -8,7 +8,10 @@ defmodule StarknetExplorerWeb.SearchLive do
     ~H"""
     <div id="searchbar-wrapper" phx-hook="SearchBar">
       <form id="placeholder-form" class="normal-form !my-0 w-full" phx-click="open-search">
-        <img src={~p"/images/search.svg"} class="absolute top-1/2 left-4 transform -translate-y-1/2 w-5 h-auto"/>
+        <img
+          src={~p"/images/search.svg"}
+          class="absolute top-1/2 left-4 transform -translate-y-1/2 w-5 h-auto"
+        />
         <input
           type="text"
           placeholder="Search"
@@ -16,14 +19,20 @@ defmodule StarknetExplorerWeb.SearchLive do
           readonly
         />
       </form>
-      <div id="search-overlay" class={"fixed inset-0 z-50 overflow-y-hidden #{if @opened, do: '', else: 'hidden'}"}>
-        <div class="fixed inset-0 transition-opacity bg-zinc-400/25 backdrop-blur-sm 
-          dark:bg-black/60 opacity-100 z-20 overflow-hidden" phx-click="close-search">
+      <div
+        id="search-overlay"
+        class={"fixed inset-0 z-50 overflow-y-hidden #{if @opened, do: '', else: 'hidden'}"}
+      >
+        <div
+          class="fixed inset-0 transition-opacity bg-zinc-400/25 backdrop-blur-sm 
+          dark:bg-black/60 opacity-100 z-20 overflow-hidden"
+          phx-click="close-search"
+        >
         </div>
         <div id="nav-search-bar" class="max-w-3xl lg:w-full w-3/4 mx-auto relative z-40 top-20">
           <div class="xl:w-full">
             <form class="normal-form" phx-change="update-input" phx-submit="search">
-              <div class={"relative z-20"}>
+              <div class="relative z-20">
                 <div class="absolute top-1/2 left-4 transform -translate-y-1/2 flex items-enter">
                   <%= if @loading do %>
                     <img class="w-5 h-auto" src={~p"/images/loading-blocks.svg"} />
@@ -58,8 +67,7 @@ defmodule StarknetExplorerWeb.SearchLive do
                     <% "Searching..." -> %>
                     <% "No results found" -> %>
                       <div class="flex flex-col gap-2 items-center py-4">
-                        <img class="w-5 h-auto" src={~p"/images/search-w.svg"} />
-                        No results found
+                        <img class="w-5 h-auto" src={~p"/images/search-w.svg"} /> No results found
                       </div>
                     <% _ -> %>
                       <%= assigns[:result] %>
@@ -69,10 +77,12 @@ defmodule StarknetExplorerWeb.SearchLive do
                           aria-labelledby="dropdownInformationButton"
                         >
                           <li>
-                            <a href={Utils.network_path(@network, @path)}
-                              class={"text-hover-blue"}
-                              id={"number-redirect-link"}
-                              title={get_hash(@result_item)}>
+                            <a
+                              href={Utils.network_path(@network, @path)}
+                              class="text-hover-blue"
+                              id="number-redirect-link"
+                              title={get_hash(@result_item)}
+                            >
                               <div class="cursor-pointer flex flex-row justify-start items-start block px-4 py-2 rounded-md border-2 border-zinc-700 bg-[#21212d] hover:border-brand">
                                 <div class="font-mono flex items-center gap-4 py-2">
                                   <%= case assigns[:result] do %>
@@ -87,10 +97,16 @@ defmodule StarknetExplorerWeb.SearchLive do
                                         </div>
                                       </div>
                                     <% "Message" -> %>
-                                      <img class="inline-block w-6 h-auto" src={~p"/images/message.svg"} />
+                                      <img
+                                        class="inline-block w-6 h-auto"
+                                        src={~p"/images/message.svg"}
+                                      />
                                       <%= @result_item %>
                                     <% "Transaction" -> %>
-                                      <img class="inline-block w-5 h-auto" src={~p"/images/transaction.svg"} />
+                                      <img
+                                        class="inline-block w-5 h-auto"
+                                        src={~p"/images/transaction.svg"}
+                                      />
                                       <%= @result_item %>
                                   <% end %>
                                 </div>
@@ -111,7 +127,14 @@ defmodule StarknetExplorerWeb.SearchLive do
   end
 
   def mount(_params, session, socket) do
-    new_assigns = [query: "", loading: false, matches: [], errors: [], opened: false, show_result_box: false]
+    new_assigns = [
+      query: "",
+      loading: false,
+      matches: [],
+      errors: [],
+      opened: false,
+      show_result_box: false
+    ]
 
     socket =
       socket
@@ -133,12 +156,28 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def handle_event("update-input", %{"search-input" => query}, socket) do
     send(self(), {:search, query})
-    {:noreply, assign(socket, query: query, result: "Searching...", loading: true, show_result_box: true, matches: [])}
+
+    {:noreply,
+     assign(socket,
+       query: query,
+       result: "Searching...",
+       loading: true,
+       show_result_box: true,
+       matches: []
+     )}
   end
 
   def handle_event("search", %{"search-input" => query}, socket) when byte_size(query) <= 100 do
     send(self(), {:search, query})
-    {:noreply, assign(socket, query: query, result: "Searching...", loading: true, show_result_box: true, matches: [])}
+
+    {:noreply,
+     assign(socket,
+       query: query,
+       result: "Searching...",
+       loading: true,
+       show_result_box: true,
+       matches: []
+     )}
   end
 
   def handle_info({:search, query}, socket) do
@@ -148,13 +187,34 @@ defmodule StarknetExplorerWeb.SearchLive do
       if String.length(query) > 0 do
         case try_search(query, socket.assigns.network) do
           {:tx, _tx} ->
-            fn -> assign(socket, result_item: query, result: "Transaction", loading: false, path: "transactions/#{query}") end
+            fn ->
+              assign(socket,
+                result_item: query,
+                result: "Transaction",
+                loading: false,
+                path: "transactions/#{query}"
+              )
+            end
 
           {:block, block} ->
-            fn -> assign(socket, result_item: block, result: "Block", loading: false, path: "blocks/#{get_hash(block)}") end
+            fn ->
+              assign(socket,
+                result_item: block,
+                result: "Block",
+                loading: false,
+                path: "blocks/#{get_hash(block)}"
+              )
+            end
 
           {:message, _message} ->
-            fn -> assign(socket, result_item: query, result: "Message", loading: false, path: "messages/#{query}") end
+            fn ->
+              assign(socket,
+                result_item: query,
+                result: "Message",
+                loading: false,
+                path: "messages/#{query}"
+              )
+            end
 
           :noquery ->
             fn ->
@@ -162,7 +222,7 @@ defmodule StarknetExplorerWeb.SearchLive do
             end
         end
       else
-        fn -> 
+        fn ->
           assign(socket, result: "", loading: false, show_result_box: false)
         end
       end

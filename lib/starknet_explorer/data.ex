@@ -207,8 +207,12 @@ defmodule StarknetExplorer.Data do
 
   def transaction_by_partial_hash(tx_hash, network) do
     case Transaction.get_by_partial_hash(tx_hash) do
-      nil -> {:error, "No match"}
-      tx -> {:ok, tx}
+      nil ->
+        {:error, "No match"}
+
+      tx ->
+        {:ok, tx}
+
         case Rpc.get_transaction(tx_hash, network) do
           {:ok, tx} ->
             {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
