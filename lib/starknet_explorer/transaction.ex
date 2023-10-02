@@ -2,7 +2,7 @@ defmodule StarknetExplorer.Transaction do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query
-  alias StarknetExplorer.{Transaction, Repo, TransactionReceipt}
+  alias StarknetExplorer.{Block, Transaction, Repo, TransactionReceipt}
 
   @l1_handler_tx_fields [
     :hash,
@@ -164,14 +164,19 @@ defmodule StarknetExplorer.Transaction do
     end
   end
 
-  def paginate_transactions(params, network) do
-    Transaction
-    |> where([tx], tx.network == ^network)
-    |> preload(:block)
-    |> order_by(desc: :block_number)
-    |> Repo.paginate(params)
+  def paginate_transactions_for_index(params, network) do
+    query =
+      from t in Transaction,
+        where: t.network == ^network,
+        join: b in Block,
+        on: t.block_number == b.number and t.network == b.network,
+        select: %{hash: t.hash, type: t.type, timestamp: b.timestamp, status: b.status},
+        order_by: [desc: b.timestamp]
+
+    Repo.paginate(query, params)
   end
 
+  @spec rename_rpc_fields(map) :: map
   def rename_rpc_fields(rpc_tx = %{"transaction_hash" => th}) do
     rpc_tx
     |> Map.delete("transaction_hash")
