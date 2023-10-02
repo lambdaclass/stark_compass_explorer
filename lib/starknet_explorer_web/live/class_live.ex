@@ -56,7 +56,7 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
         Overview
       </div>
       <div
-        class={"option #{if assigns.view == "deployed-contracts", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "deployed-contracts", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent hidden"}"}
         phx-click="select-view"
         ,
         phx-value-view="deployed-contracts"
@@ -64,7 +64,7 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
         Deployed Contracts
       </div>
       <div
-        class={"option #{if assigns.view == "proxied-contracts", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "proxied-contracts", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent hidden"}"}
         phx-click="select-view"
         ,
         phx-value-view="proxied-contracts"
