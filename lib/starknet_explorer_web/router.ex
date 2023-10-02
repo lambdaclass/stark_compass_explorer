@@ -31,6 +31,7 @@ defmodule StarknetExplorerWeb.Router do
       live "/messages/:identifier", MessageDetailLive
       live "/classes", ClassIndexLive
       live "/classes/:hash", ClassDetailLive
+      live "/testing", TestingLive
     end
 
     scope "/:network", StarknetExplorerWeb do

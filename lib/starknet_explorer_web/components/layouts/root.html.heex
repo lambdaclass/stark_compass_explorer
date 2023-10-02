@@ -48,6 +48,12 @@
           id="menu-options"
           class="pointer-events-none lg:pointer-events-auto absolute lg:relative top-0 left-0 w-screen lg:w-auto h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 flex flex-col lg:flex-row justify-start items-streach gap-7 lg:gap-10 bg-[#111118] my-16 lg:my-0 py-10 lg:py-0 border-t lg:border-t-0 px-5 lg:px-0"
         >
+                <a
+            href={Utils.network_path(@conn.assigns.network, "testing")}
+            class="hover:text-[#8A9DFF] transition-all duration-300 flex gap-2 items-center"
+          >
+            <img class="lg:hidden" src={~p"/images/box.svg"} /> <span>Testing</span>
+          </a>
           <a
             href={Utils.network_path(@conn.assigns.network, "blocks")}
             class="hover:text-[#8A9DFF] transition-all duration-300 flex gap-2 items-center"

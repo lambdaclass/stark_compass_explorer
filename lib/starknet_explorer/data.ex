@@ -166,17 +166,6 @@ defmodule StarknetExplorer.Data do
         do: %{"block_number" => receipt.block_number},
         else: "latest"
 
-    contract =
-      case Rpc.get_class_at(block_id, tx.sender_address, network) do
-        {:ok, contract} ->
-          contract
-
-        _ ->
-          nil
-      end
-
-    tx = tx |> Map.put(:contract, contract)
-
     input_data =
       try do
         Calldata.parse_calldata(tx, block_id, network)

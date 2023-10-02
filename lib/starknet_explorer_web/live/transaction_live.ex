@@ -73,8 +73,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
       session: %{"network" => @network}
     ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
-      <%= transaction_header(assigns) %>
+      <%= if @render_header do %>
+        <%= transaction_header(assigns) %>
+        <% end %>
+        <%= if @render_info do %>
       <%= render_info(assigns) %>
+      <% end %>
     </div>
     """
   end
@@ -504,8 +508,25 @@ defmodule StarknetExplorerWeb.TransactionLive do
     """
   end
 
+  def render_info(assigns) do
+    IO.inspect(assigns)
+    ~H"""
+    """
+  end
+
   @impl true
   def mount(%{"transaction_hash" => transaction_hash}, _session, socket) do
+    IO.inspect("mount")
+    IO.inspect(socket)
+    if connected?(socket) do
+      mount_connected(socket, transaction_hash)
+    else
+      {:ok, assign(socket, [render_header: true, render_info: false, transaction_view: "overview", block_timestamp: 0, internal_calls: %{}])}
+    end
+  end
+
+  def mount_connected(socket, transaction_hash) do
+    IO.inspect("mount_disconnected")
     {:ok, transaction = %{receipt: receipt}} =
       Data.full_transaction(transaction_hash, socket.assigns.network)
 
@@ -530,21 +551,15 @@ defmodule StarknetExplorerWeb.TransactionLive do
           transaction |> Map.put(:max_fee, max_fee)
       end
 
-    execution_resources =
-      case Application.get_env(:starknet_explorer, :enable_gateway_data) do
-        true ->
-          {:ok, receipt} =
-            Gateway.get_transaction_receipt(transaction_hash, socket.assigns.network)
-
-          receipt["execution_resources"]
-
-        false ->
+    execution_resources = if receipt.execution_resources do
+      receipt.execution_resources |> IO.inspect()
+    else
           %{
             "builtin_instance_counter" => %{},
             "n_memory_holes" => "-",
-            "n_steps" => "-"
+            "n_ steps" => "-"
           }
-      end
+    end
 
     receipt =
       transaction.receipt
@@ -566,15 +581,16 @@ defmodule StarknetExplorerWeb.TransactionLive do
       transaction_hash: transaction_hash,
       internal_calls: internal_calls,
       transaction_view: "overview",
+      block_timestamp: block_timestamp,
+      render_header: true,
+      render_info: true,
       events: events,
-      messages: messages_sent,
-      block_timestamp: block_timestamp
+      messages: messages_sent
     ]
 
     socket = assign(socket, assigns)
     {:ok, assign(socket, assigns)}
   end
-
   @impl true
   def handle_event("select-view", %{"view" => view}, socket) do
     socket = assign(socket, :transaction_view, view)
