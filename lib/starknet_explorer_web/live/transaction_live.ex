@@ -515,28 +515,26 @@ defmodule StarknetExplorerWeb.TransactionLive do
   end
 
   @impl true
-  def mount(%{"transaction_hash" => transaction_hash}, _session, socket) do
-    IO.inspect("mount")
-    IO.inspect(socket)
+  def mount(%{"transaction_hash" => transaction_hash} = params, session, socket) do
     if connected?(socket) do
       mount_connected(socket, transaction_hash)
     else
-      {:ok, assign(socket, [render_header: true, render_info: false, transaction_view: "overview", block_timestamp: 0, internal_calls: %{}])}
+      {:ok, assign(socket, [render_header: false, render_info: false, transaction_view: "overview"])}
     end
   end
 
   def mount_connected(socket, transaction_hash) do
-    IO.inspect("mount_disconnected")
+    IO.inspect("mount_connected")
     {:ok, transaction = %{receipt: receipt}} =
       Data.full_transaction(transaction_hash, socket.assigns.network)
 
-    {:ok, %{:timestamp => block_timestamp}} =
-      Data.block_by_hash(receipt.block_hash, socket.assigns.network)
-
+    # {:ok, %{:timestamp => block_timestamp}} =
+    #   Data.block_by_hash(receipt.block_hash, socket.assigns.network)
+      block_timestamp = 0
     # a tx should not have both L1->L2 and L2->L1 messages AFAIK, but just in case merge both scenarios
-    messages_sent =
-      (Message.from_transaction_receipt(receipt) ++ [Message.from_transaction(transaction)])
-      |> Enum.reject(&is_nil/1)
+    messages_sent = []
+      # (Message.from_transaction_receipt(receipt) ++ [Message.from_transaction(transaction)])
+      # |> Enum.reject(&is_nil/1)
 
     # change fee formatting
     actual_fee = Utils.hex_wei_to_eth(transaction.receipt.actual_fee)
@@ -566,14 +564,15 @@ defmodule StarknetExplorerWeb.TransactionLive do
       |> Map.put(:execution_resources, execution_resources)
       |> Map.put(:actual_fee, actual_fee)
 
-    internal_calls =
-      case receipt.execution_status != "REVERTED" &&
-             Application.get_env(:starknet_explorer, :enable_gateway_data) do
-        true -> Data.internal_calls(transaction, socket.assigns.network)
-        _ -> nil
-      end
+    internal_calls = nil
+      # case receipt.execution_status != "REVERTED" &&
+      #        Application.get_env(:starknet_explorer, :enable_gateway_data) do
+      #   true -> Data.internal_calls(transaction, socket.assigns.network)
+      #   _ -> nil
+      # end
 
-    events = Events.get_by_tx_hash(transaction_hash, socket.assigns.network)
+    events = []
+    # events = Events.get_by_tx_hash(transaction_hash, socket.assigns.network)
 
     assigns = [
       transaction: transaction,
