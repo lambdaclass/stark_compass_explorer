@@ -21,6 +21,7 @@ import "phoenix_html";
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
+
 // import { BlockVerifier } from "./hooks/block_verifier";
 // Show copyright
 // const setYear = () => {
@@ -33,7 +34,23 @@ let Hooks = {};
 
 const ESC_KEY_CODE = 27;
 const K_KEY_CODE = 75;
-let focused = false;
+
+Hooks.SearchBar = {
+  mounted() {
+    document.addEventListener('keyup', (e) => {
+      if (e.keyCode === K_KEY_CODE) {
+        this.pushEvent("open-search", {})
+      }
+      if (e.keyCode === ESC_KEY_CODE) {
+        this.pushEvent("close-search", {})
+      }
+    });
+  }
+}
+
+window.addEventListener(`phx:focus`, (event) => {
+  document.getElementById(event.detail.id).focus();
+})
 
 // Hamburger menu
 Hooks.Nav = {
@@ -307,94 +324,6 @@ Hooks.Dropdown = {
   },
 };
 
-Hooks.SearchHook = {
-  beforeUpdate() {
-    const overlay = document.querySelector("#search-overlay");
-    const form = overlay.querySelector(".normal-form");
-    const searchDropdown = form.querySelector("#dropdownInformation");
-    const hashLink = document.querySelector("#redirect-link");
-    const input = form.querySelector("input");
-    //If clicked on link hide overlay
-    if (hashLink) {
-      hashLink.addEventListener("click", () => {
-        focused = false;
-        toggleFocus(input, searchDropdown);
-        overlay.classList.add("hidden")
-        input.value = "";
-        searchDropdown.classList.add("hidden")
-      })
-    }
-  },
-  updated() {
-    const overlay = document.querySelector("#search-overlay");
-    const form = overlay.querySelector(".normal-form");
-    const searchDropdown = form.querySelector("#dropdownInformation");
-    const input = form.querySelector("input");
-    toggleFocus(input, searchDropdown);
-  }
-};
-
-function KeyPress(e) {
-  const evntObj = e;
-  const overlay = document.querySelector("#search-overlay");
-  const form = overlay.querySelector(".normal-form");
-  const input = form.querySelector("input");
-  const searchDropdown = form.querySelector("#dropdownInformation");
-
-  if ((evntObj.ctrlKey || evntObj.metaKey) && evntObj.keyCode === K_KEY_CODE) {
-    evntObj.preventDefault();
-    focused = true;
-    overlay.classList.remove("hidden");
-    toggleFocus(input, searchDropdown);
-  }
-  if (evntObj.keyCode === ESC_KEY_CODE && !overlay.classList.contains("hidden")) { 
-      evntObj.preventDefault();
-      focused = false;
-      overlay.classList.add("hidden");
-      toggleFocus(input, searchDropdown);
-  }
-}
-
-function toggleFocus(input, searchDropdown) {
-  if (focused) { 
-    input.focus();
-    if (input.value !== "") {
-      searchDropdown.classList.toggle("hidden")
-    }
-  } else {
-    input.blur();
-    searchDropdown.classList.toggle("hidden");
-  }
-}
-
-
-function activateFocus() {
-  const form = document.querySelector("#placeholder-form");
-  const placeHolderInput = form.querySelector("input");
-  const overlay = document.querySelector("#search-overlay")
-  const searchDropdown = overlay.querySelector("#dropdownInformation");
-  const overlayInput = overlay.querySelector("input")
-
-  placeHolderInput.addEventListener("click", () => {
-    console.log("clicked");
-    overlay.classList.toggle("hidden");
-    placeHolderInput.blur();
-    overlayInput.focus();
-  })
-
-  overlay.addEventListener("click", (event) => {
-    if(!overlay.classList.contains("hidden")){
-      const outsideDropdown = !searchDropdown.contains(event.target);
-      const outsideInput = !overlayInput.contains(event.target);
-      if (outsideDropdown && outsideInput) {
-        focused = false;
-        overlay.classList.toggle("hidden");
-      }
-    }
-  })
-}
-
-
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks });
 // Show progress bar on live navigation and form submits. Only displays if still
@@ -412,12 +341,6 @@ window.addEventListener("phx:page-loading-stop", () => {
   topBarScheduled = undefined;
   topbar.hide();
 });
-
-
-
-activateFocus();
-document.onkeydown = KeyPress;
-
 
 // connect if there are any LiveViews on the page
 liveSocket.connect();
