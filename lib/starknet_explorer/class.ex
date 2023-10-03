@@ -51,7 +51,7 @@ defmodule StarknetExplorer.Class do
   def insert(class) do
     %StarknetExplorer.Class{}
     |> changeset(class)
-    |> Repo.insert()
+    |> Repo.insert(on_conflict: :nothing)
   end
 
   def get_by_hash(class_hash, network) do
@@ -104,10 +104,7 @@ defmodule StarknetExplorer.Class do
             {:ok, class} =
               Rpc.get_class(%{"block_number" => block["number"]}, class_hash, network)
 
-            tx |> IO.inspect()
-
             class
-            |> IO.inspect()
             |> Map.put("class_hash", class_hash)
             # Transaction and block data must be retrieved from first class declaration.
             # we cannot assure it's the first one at this point
