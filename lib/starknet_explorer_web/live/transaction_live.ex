@@ -404,15 +404,16 @@ defmodule StarknetExplorerWeb.TransactionLive do
       </div>
       <%= if @rerender? != nil do %>
         <div class="col-span-full">
-          <%= for input <- @input_data do %>
-            <%= unless is_nil(input.call) do %>
-              <div class="inner-block custom-list !p-0">
-                <div
-                  id={"#{input.call.name}"}
-                  class="w-full bg-black/20 p-5 !flex justify-between"
-                  phx-hook="ShowTableData"
-                >
-                  <div phx-no-format><span class="flex">
+          <%= if @input_data != nil do %>
+            <%= for input <- @input_data do %>
+              <%= unless is_nil(input.call) do %>
+                <div class="inner-block custom-list !p-0">
+                  <div
+                    id={"#{input.call.name}"}
+                    class="w-full bg-black/20 p-5 !flex justify-between"
+                    phx-hook="ShowTableData"
+                  >
+                    <div phx-no-format><span class="flex">
                   <span>
                     <span>call</span>
                     <span class="text-se-pink ml-1"><%= input.call.name %></span>
@@ -424,40 +425,45 @@ defmodule StarknetExplorerWeb.TransactionLive do
                   </span>
                   <CoreComponents.copy_button text={input.selector} /></span>
                 </div>
-                  <img
-                    class="arrow-button transform rotate-180 transition-all duration-500"
-                    src={~p"/images/arrow-up.svg"}
-                  />
-                </div>
-                <div class="hidden w-full bg-[#1e1e2b]/25 p-5">
-                  <%= for arg <- input.call.args do %>
-                    <div class="custom-list-item">
-                      <div class="pb-5">
-                        <div class="list-h">Input</div>
-                        <div>
-                          <%= arg.name %>
+                    <img
+                      class="arrow-button transform rotate-180 transition-all duration-500"
+                      src={~p"/images/arrow-up.svg"}
+                    />
+                  </div>
+                  <div class="hidden w-full bg-[#1e1e2b]/25 p-5">
+                    <%= for arg <- input.call.args do %>
+                      <div class="custom-list-item">
+                        <div class="pb-5">
+                          <div class="list-h">Input</div>
+                          <div>
+                            <%= arg.name %>
+                          </div>
+                        </div>
+                        <div class="col-span-2 pb-5">
+                          <div class="list-h">Type</div>
+                          <div class="w-full overflow-x-auto">
+                            <%= arg.type %>
+                          </div>
+                        </div>
+                        <div class="col-span-2 pb-5">
+                          <div class="list-h">Value</div>
+                          <pre><%= Utils.format_arg_value(arg) %></pre>
                         </div>
                       </div>
-                      <div class="col-span-2 pb-5">
-                        <div class="list-h">Type</div>
-                        <div class="w-full overflow-x-auto">
-                          <%= arg.type %>
-                        </div>
-                      </div>
-                      <div class="col-span-2 pb-5">
-                        <div class="list-h">Value</div>
-                        <pre><%= Utils.format_arg_value(arg) %></pre>
-                      </div>
-                    </div>
-                  <% end %>
+                    <% end %>
+                  </div>
                 </div>
-              </div>
-            <% else %>
-              <div class="w-full bg-black/20 p-5 mt-5">
-                Not Supported <span class="text-se-pink">...</span>(...)
-                <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
-              </div>
+              <% else %>
+                <div class="w-full bg-black/20 p-5 mt-5">
+                  Not Supported <span class="text-se-pink">...</span>(...)
+                  <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
+                </div>
+              <% end %>
             <% end %>
+          <% else %>
+            <div class="w-full bg-black/20 p-5 mt-5">
+              Not Supported <span class="text-se-pink">...</span>(...)
+            </div>
           <% end %>
         </div>
       <% else %>
@@ -662,11 +668,15 @@ defmodule StarknetExplorerWeb.TransactionLive do
       |> Map.put(:execution_resources, execution_resources)
 
     input_data =
-      StarknetExplorer.Calldata.parse_calldata(
-        socket.assigns.transaction,
-        %{"block_number" => receipt.block_number},
-        socket.assigns.network
-      )
+      try do
+        StarknetExplorer.Calldata.parse_calldata(
+          socket.assigns.transaction,
+          %{"block_number" => receipt.block_number},
+          socket.assigns.network
+        )
+      rescue
+        _ -> nil
+      end
 
     assigns =
       [
