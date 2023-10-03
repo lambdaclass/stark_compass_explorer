@@ -7,7 +7,11 @@ defmodule StarknetExplorerWeb.SearchLive do
   def render(assigns) do
     ~H"""
     <div id="searchbar-wrapper" phx-hook="SearchBar" class="w-full mr-2 lg:mr-0 flex justify-end">
-      <form id="placeholder-form" class="normal-form !my-0 lg:!max-w-sm !m-0 lg:shrink-0 min-w-[10rem]" phx-click="open-search">
+      <form
+        id="placeholder-form"
+        class="normal-form !my-0 lg:!max-w-sm !m-0 lg:shrink-0 min-w-[10rem]"
+        phx-click="open-search"
+      >
         <img
           src={~p"/images/search.svg"}
           class="absolute top-1/2 left-4 transform -translate-y-1/2 w-5 h-auto"
@@ -87,7 +91,10 @@ defmodule StarknetExplorerWeb.SearchLive do
                                 <div class="font-mono flex items-center gap-4 py-2">
                                   <%= case assigns[:result] do %>
                                     <% "Block" -> %>
-                                      <img class="shrink-0 inline-block w-6 h-auto" src={~p"/images/box.svg"} />
+                                      <img
+                                        class="shrink-0 inline-block w-6 h-auto"
+                                        src={~p"/images/box.svg"}
+                                      />
                                       <div>
                                         <div>
                                           <%= get_number(@result_item) %>

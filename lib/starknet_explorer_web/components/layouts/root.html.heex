@@ -40,39 +40,41 @@
   <body class="bg-se-black text-white relative">
     <header class="z-30 px-5 md:px-10 mx-auto">
       <nav class="w-full max-w-7xl mx-auto flex flex-col lg:flex-row lg:gap-32 items-start lg:items-center justify-between py-5">
-        <a id="logo" href={Utils.network_path(@conn.assigns.network)} class="z-50 text-xl mb-6 lg:mb-0 shrink-0">
+        <a
+          id="logo"
+          href={Utils.network_path(@conn.assigns.network)}
+          class="z-50 text-xl mb-6 lg:mb-0 shrink-0"
+        >
           <img src={~p"/images/logo.svg"} class="h-11 xl:h-11" />
         </a>
         <div id="nav-right-side" class="flex items-center justify-between w-full gap-8">
           <%= live_render(@conn, StarknetExplorerWeb.SearchLive,
-              id: "search-bar",
-              flash: @flash,
-              session: %{"network" => @network},
-              router: StarknetExplorerWeb.Router
-            ) %>
+            id: "search-bar",
+            flash: @flash,
+            session: %{"network" => @network},
+            router: StarknetExplorerWeb.Router
+          ) %>
           <img id="hamburger" class="z-40 lg:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
           <div
             id="menu-options"
             class="w-screen h-screen lg:w-auto lg:h-auto pointer-events-none lg:pointer-events-auto fixed lg:relative top-0 left-0 h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 flex flex-col lg:flex-row justify-start lg:justify-end bg-[#111118] p-5 lg:py-0 lg:px-0 z-50"
           >
             <div class="w-full flex items-start justify-between lg:hidden">
-              <a id="logo" href={Utils.network_path(@conn.assigns.network)} class="z-50 text-xl mb-6 lg:mb-0">
+              <a
+                id="logo"
+                href={Utils.network_path(@conn.assigns.network)}
+                class="z-50 text-xl mb-6 lg:mb-0"
+              >
                 <img src={~p"/images/logo.svg"} class="h-11" />
               </a>
               <img id="close-menu" class="w-8 h-auto" phx-hook="Nav" src={~p"/images/x.svg"} />
             </div>
 
             <div class="flex flex-col lg:flex-row lg:items-center gap-4">
-              <a
-                href={Utils.network_path(@conn.assigns.network, "blocks")}
-                class="nav-item"
-              >
+              <a href={Utils.network_path(@conn.assigns.network, "blocks")} class="nav-item">
                 <img class="lg:hidden" src={~p"/images/box.svg"} /> <span>Blocks</span>
               </a>
-              <a
-                href={Utils.network_path(@conn.assigns.network, "transactions")}
-                class="nav-item"
-              >
+              <a href={Utils.network_path(@conn.assigns.network, "transactions")} class="nav-item">
                 <img class="lg:hidden" src={~p"/images/corner-up-right.svg"} />
                 <span>Transactions</span>
               </a>
@@ -83,10 +85,7 @@
                 <img class="lg:hidden" src={~p"/images/code.svg"} />
                 <span>Classes</span>
               </a>
-              <a
-                href={Utils.network_path(@conn.assigns.network, "messages")}
-                class="nav-item"
-              >
+              <a href={Utils.network_path(@conn.assigns.network, "messages")} class="nav-item">
                 <img class="lg:hidden" src={~p"/images/message-square.svg"} />
                 <span>Messages</span>
               </a>
@@ -97,10 +96,7 @@
                 <img class="lg:hidden" src={~p"/images/file.svg"} />
                 <span>Contracts</span>
               </a>
-              <a
-                href={Utils.network_path(@conn.assigns.network, "events")}
-                class="nav-item"
-              >
+              <a href={Utils.network_path(@conn.assigns.network, "events")} class="nav-item">
                 <img class="lg:hidden" src={~p"/images/calendar.svg"} />
                 <span>Events</span>
               </a>
