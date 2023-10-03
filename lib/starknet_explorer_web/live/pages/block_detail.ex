@@ -158,11 +158,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       block_age: Utils.get_block_age(block)
     ]
 
-    case Application.get_env(:starknet_explorer, :enable_gateway_data) do
-      _ ->
-        :skip
-    end
-
     {:ok, assign(socket, assigns)}
   end
 
