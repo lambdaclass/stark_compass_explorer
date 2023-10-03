@@ -66,7 +66,9 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
           <% end %>
         </div>
       </div>
-      <CoreComponents.pagination_links id="events" page={@page} prev="dec_txs" next="inc_txs" />
+      <div class="mt-2">
+        <CoreComponents.pagination_links id="events" page={@page} prev="dec_txs" next="inc_txs" />
+      </div>
     </div>
     """
   end

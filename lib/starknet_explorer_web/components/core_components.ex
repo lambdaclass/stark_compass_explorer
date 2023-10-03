@@ -666,7 +666,7 @@ defmodule StarknetExplorerWeb.CoreComponents do
 
   def pagination_links(assigns) do
     ~H"""
-    <div class="flex justify-end items-center my-5 text-base">
+    <div class="flex justify-end items-center text-base">
       <button
         class={if @page.page_number == 1, do: "opacity-0 pointer-events-none", else: ""}
         id={@id}

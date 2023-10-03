@@ -446,7 +446,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
-    <CoreComponents.pagination_links id="txs" page={@page} prev="dec_txs" next="inc_txs" />
+    <div class="mt-2">
+      <CoreComponents.pagination_links id="txs" page={@page} prev="dec_txs" next="inc_txs" />
+    </div>
     """
   end
 

@@ -6,8 +6,8 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   def render(assigns) do
     ~H"""
-    <div id="searchbar-wrapper" phx-hook="SearchBar">
-      <form id="placeholder-form" class="normal-form !my-0 w-full" phx-click="open-search">
+    <div id="searchbar-wrapper" phx-hook="SearchBar" class="w-full mr-2 lg:mr-0 flex justify-end">
+      <form id="placeholder-form" class="normal-form !my-0 lg:!max-w-sm !m-0 lg:shrink-0 min-w-[10rem]" phx-click="open-search">
         <img
           src={~p"/images/search.svg"}
           class="absolute top-1/2 left-4 transform -translate-y-1/2 w-5 h-auto"
@@ -21,15 +21,15 @@ defmodule StarknetExplorerWeb.SearchLive do
       </form>
       <div
         id="search-overlay"
-        class={"fixed inset-0 z-50 overflow-y-hidden #{if @opened, do: '', else: 'hidden'}"}
+        class={"fixed inset-0 z-50 overflow-y-hidden transition-opacity duration-100 ease-in #{if @opened, do: '', else: 'opacity-0 pointer-events-none'}"}
       >
         <div
-          class="fixed inset-0 transition-opacity bg-zinc-400/25 backdrop-blur-sm 
+          class="fixed inset-0 bg-zinc-400/25 backdrop-blur-sm 
           dark:bg-black/60 opacity-100 z-20 overflow-hidden"
           phx-click="close-search"
         >
         </div>
-        <div id="nav-search-bar" class="max-w-3xl lg:w-full w-3/4 mx-auto relative z-40 top-20">
+        <div id="nav-search-bar" class="px-5 max-w-3xl w-full mx-auto relative z-40 top-5 lg:top-20">
           <div class="xl:w-full">
             <form class="normal-form" phx-change="update-input" phx-submit="search">
               <div class="relative z-20">
@@ -59,7 +59,7 @@ defmodule StarknetExplorerWeb.SearchLive do
             <%= if @show_result_box && !@loading do %>
               <div
                 id="dropdownInformation"
-                class={"#{if @show_result_box, do: '', else: 'hidden'} absolute px-5 pt-6 -translate-y-5 z-10 bg-container rounded-lg shadow w-full mx-auto dark:bg-container dark:divide-gray-600 border border-zinc-700 focus:border-zinc-400"}
+                class={"#{if @show_result_box, do: '', else: 'hidden'} lg:absolute px-5 pt-6 -translate-y-5 z-10 bg-container rounded-lg shadow w-full mx-auto dark:bg-container dark:divide-gray-600 border border-zinc-700 focus:border-zinc-400"}
               >
                 <div class="py-3 text-sm text-gray-900 dark:text-white">
                   <%= case assigns[:result] do %>
@@ -87,27 +87,31 @@ defmodule StarknetExplorerWeb.SearchLive do
                                 <div class="font-mono flex items-center gap-4 py-2">
                                   <%= case assigns[:result] do %>
                                     <% "Block" -> %>
-                                      <img class="inline-block w-6 h-auto" src={~p"/images/box.svg"} />
+                                      <img class="shrink-0 inline-block w-6 h-auto" src={~p"/images/box.svg"} />
                                       <div>
                                         <div>
                                           <%= get_number(@result_item) %>
                                         </div>
-                                        <div class="text-zinc-400">
+                                        <div class="hash text-zinc-400">
                                           <%= get_hash(@result_item) %>
                                         </div>
                                       </div>
                                     <% "Message" -> %>
                                       <img
-                                        class="inline-block w-6 h-auto"
+                                        class="shrink-0 inline-block w-6 h-auto"
                                         src={~p"/images/message.svg"}
                                       />
-                                      <%= @result_item %>
+                                      <div class="hash">
+                                        <%= @result_item %>
+                                      </div>
                                     <% "Transaction" -> %>
                                       <img
-                                        class="inline-block w-5 h-auto"
+                                        class="shrink-0 inline-block w-5 h-auto"
                                         src={~p"/images/transaction.svg"}
                                       />
-                                      <%= @result_item %>
+                                      <div class="hash">
+                                        <%= @result_item %>
+                                      </div>
                                   <% end %>
                                 </div>
                               </div>

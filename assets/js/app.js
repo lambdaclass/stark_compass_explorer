@@ -56,14 +56,13 @@ window.addEventListener(`phx:focus`, (event) => {
 // Hamburger menu
 Hooks.Nav = {
   mounted() {
-    const hamburger = document.getElementById("hamburger");
     const options = document.querySelector("#menu-options");
-    const main = document.querySelector("main");
-    hamburger.addEventListener("click", () => {
+    const html = document.querySelector("html");
+    this.el.addEventListener("click", () => {
       options.classList.toggle("open");
       options.classList.toggle("opacity-0");
       options.classList.toggle("pointer-events-none");
-      main.classList.toggle("hidden");
+      html.classList.toggle("overflow-y-hidden");
     });
   },
 };

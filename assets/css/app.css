@@ -47,7 +47,7 @@ a,
   @apply flex flex-col text-sm md:py-3 px-5 justify-between text-left text-white rounded-lg bg-container;
 }
 .table-header {
-  @apply text-sm flex justify-between items-baseline py-2;
+  @apply text-sm flex justify-between items-center py-2 my-3;
 }
 .table-title {
   @apply font-semibold text-lg;
@@ -255,4 +255,12 @@ main .option {
 }
 .tippy-box[data-theme~="starknet-explorer"][data-placement^="right"] > .tippy-arrow::before {
   @apply border-r-brand;
+}
+
+#nav-right-side > div:first-child{
+  @apply w-full;
+}
+
+.nav-item{
+  @apply bg-se-inner-bg rounded-md py-3 px-4 lg:p-0 lg:bg-transparent border border-transparent focus:border-brand flex gap-2 items-center;
 }

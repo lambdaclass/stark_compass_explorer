@@ -18,7 +18,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col gap-1 justify-center items-center my-16">
+    <div class="flex flex-col gap-1 justify-center items-center mt-2 mb-12">
       <h1>Stark Compass</h1>
       <div class="uppercase rounded-lg px-2 py-1 text-center blue-label text-xl font-medium mt-2">
         The only open source explorer for Starknet
