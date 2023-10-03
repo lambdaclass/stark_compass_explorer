@@ -99,7 +99,7 @@ defmodule StarknetExplorer.Class do
     |> Enum.chunk_every(75)
     |> Enum.flat_map(fn chunk ->
       tasks =
-        Enum.map(chunk, fn tx = %{"class_hash" => class_hash} ->
+        Enum.map(chunk, fn _tx = %{"class_hash" => class_hash} ->
           Task.async(fn ->
             {:ok, class} =
               Rpc.get_class(%{"block_number" => block["number"]}, class_hash, network)
