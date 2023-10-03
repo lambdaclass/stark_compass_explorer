@@ -528,9 +528,11 @@ defmodule StarknetExplorerWeb.TransactionLive do
     {:ok, transaction = %{receipt: receipt}} =
       Data.full_transaction(transaction_hash, socket.assigns.network)
 
-    # {:ok, %{:timestamp => block_timestamp}} =
-    #   Data.block_by_hash(receipt.block_hash, socket.assigns.network)
-      block_timestamp = 0
+    {:ok, %{:timestamp => block_timestamp}} =
+      Data.block_by_hash(receipt.block_hash, socket.assigns.network)
+      # block_timestamp = 0
+
+
     # a tx should not have both L1->L2 and L2->L1 messages AFAIK, but just in case merge both scenarios
     messages_sent = []
       # (Message.from_transaction_receipt(receipt) ++ [Message.from_transaction(transaction)])
@@ -550,7 +552,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       end
 
     execution_resources = if receipt.execution_resources do
-      receipt.execution_resources |> IO.inspect()
+      receipt.execution_resources
     else
           %{
             "builtin_instance_counter" => %{},
@@ -564,7 +566,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       |> Map.put(:execution_resources, execution_resources)
       |> Map.put(:actual_fee, actual_fee)
 
-    internal_calls = nil
+    internal_calls = %{}
       # case receipt.execution_status != "REVERTED" &&
       #        Application.get_env(:starknet_explorer, :enable_gateway_data) do
       #   true -> Data.internal_calls(transaction, socket.assigns.network)
