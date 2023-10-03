@@ -159,6 +159,12 @@ defmodule StarknetExplorerWeb.Utils do
     end
   end
 
+  def format_json(value) do
+    value
+    |> Jason.encode!()
+    |> Jason.Formatter.pretty_print()
+  end
+
   @doc """
   iex> builtin_name("range_check_builtin")
   RANGE CHECK BUILTIN

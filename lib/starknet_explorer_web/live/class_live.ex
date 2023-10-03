@@ -219,7 +219,24 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
 
   def render_info(assigns = %{class: _block, view: "code"}) do
     ~H"""
-    <div class="text-gray-500 text-xl border-t border-t-gray-700 pt-5">In development</div>
+    <div class="grid-4 custom-list-item">
+      <div>Abi</div>
+      <div class="cols-span-3">
+        <pre>
+          <%= Utils.format_json(@class.abi) %>
+        </pre>
+      </div>
+    </div>
+    <%= if @class.sierra_program do %>
+      <div class="grid-4 custom-list-item">
+        <div>Sierra Byte Code</div>
+        <div class="cols-span-3">
+          <pre>
+            <%= Utils.format_json(@class.sierra_program) %>
+          </pre>
+        </div>
+      </div>
+    <% end %>
     """
   end
 
