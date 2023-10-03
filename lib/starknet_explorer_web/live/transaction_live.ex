@@ -41,6 +41,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
         phx-value-view="events"
       >
         Events
+        <%= if @rerender? != nil do %>
+          ( <%= @events_count %> )
+        <% end %>
       </div>
       <div
         class={"option #{if assigns.transaction_view == "message_logs", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
@@ -49,6 +52,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
         phx-value-view="message_logs"
       >
         Message Logs
+        <%= if @rerender? != nil do %>
+          ( <%= @messages_count %> )
+        <% end %>
       </div>
       <%= if @internal_calls != nil do %>
         <div
@@ -75,9 +81,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <%= if @render_header do %>
         <%= transaction_header(assigns) %>
-        <% end %>
-        <%= if @render_info do %>
-      <%= render_info(assigns) %>
+      <% end %>
+      <%= if @render_info do %>
+        <%= render_info(assigns) %>
       <% end %>
     </div>
     """
@@ -396,9 +402,9 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="block-label !mt-8 !mb-5">
         Input Data
       </div>
-      <%= unless is_nil(@transaction.input_data) do %>
+      <%= if @rerender? != nil do %>
         <div class="col-span-full">
-          <%= for input <- @transaction.input_data do %>
+          <%= for input <- @input_data do %>
             <%= unless is_nil(input.call) do %>
               <div class="inner-block custom-list !p-0">
                 <div
@@ -454,6 +460,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
             <% end %>
           <% end %>
         </div>
+      <% else %>
+        <div class="w-full bg-black/20 p-5 mt-5">
+          Loading
+        </div>
       <% end %>
     </div>
     <div class="custom-list-item">
@@ -484,59 +494,54 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <% end %>
       </div>
     </div>
-    <div class="pt-3 mb-3">
-      <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
-        <span>Execution Resources</span>
-      </div>
-      <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
-        <div class="flex flex-col justify-center items-center gap-2">
-          <span class="blue-label py-1 px-2 rounded-lg">STEPS</span> <%= "#{@transaction_receipt.execution_resources["n_steps"]}" %>
+    <%= if @rerender? != nil do %>
+      <div class="pt-3 mb-3">
+        <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
+          <span>Execution Resources</span>
         </div>
-        <div class="flex flex-col justify-center items-center gap-2">
-          <span class="green-label py-1 px-2 rounded-lg">MEMORY HOLES</span> <%= "#{@transaction_receipt.execution_resources["n_memory_holes"]}" %>
-        </div>
-        <%= for {builtin_name , instance_counter} <- @transaction_receipt.execution_resources["builtin_instance_counter"] do %>
+        <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
           <div class="flex flex-col justify-center items-center gap-2">
-            <span class={Utils.builtin_color(builtin_name)}>
-              <%= Utils.builtin_name(builtin_name) %>
-            </span>
-            <%= instance_counter %>
+            <span class="blue-label py-1 px-2 rounded-lg">STEPS</span> <%= "#{@transaction_receipt.execution_resources["n_steps"]}" %>
           </div>
-        <% end %>
+          <div class="flex flex-col justify-center items-center gap-2">
+            <span class="green-label py-1 px-2 rounded-lg">MEMORY HOLES</span> <%= "#{@transaction_receipt.execution_resources["n_memory_holes"]}" %>
+          </div>
+          <%= for {builtin_name , instance_counter} <- @transaction_receipt.execution_resources["builtin_instance_counter"] do %>
+            <div class="flex flex-col justify-center items-center gap-2">
+              <span class={Utils.builtin_color(builtin_name)}>
+                <%= Utils.builtin_name(builtin_name) %>
+              </span>
+              <%= instance_counter %>
+            </div>
+          <% end %>
+        </div>
       </div>
-    </div>
+    <% end %>
     """
   end
 
   def render_info(assigns) do
-    IO.inspect(assigns)
     ~H"""
+
     """
   end
 
   @impl true
-  def mount(%{"transaction_hash" => transaction_hash} = params, session, socket) do
+  def mount(%{"transaction_hash" => transaction_hash} = _params, _session, socket) do
     if connected?(socket) do
       mount_connected(socket, transaction_hash)
     else
-      {:ok, assign(socket, [render_header: false, render_info: false, transaction_view: "overview"])}
+      {:ok,
+       assign(socket, render_header: false, render_info: false, transaction_view: "overview")}
     end
   end
 
   def mount_connected(socket, transaction_hash) do
-    IO.inspect("mount_connected")
     {:ok, transaction = %{receipt: receipt}} =
-      Data.full_transaction(transaction_hash, socket.assigns.network)
+      Data.transaction(transaction_hash, socket.assigns.network)
 
     {:ok, %{:timestamp => block_timestamp}} =
       Data.block_by_hash(receipt.block_hash, socket.assigns.network)
-      # block_timestamp = 0
-
-
-    # a tx should not have both L1->L2 and L2->L1 messages AFAIK, but just in case merge both scenarios
-    messages_sent = []
-      # (Message.from_transaction_receipt(receipt) ++ [Message.from_transaction(transaction)])
-      # |> Enum.reject(&is_nil/1)
 
     # change fee formatting
     actual_fee = Utils.hex_wei_to_eth(transaction.receipt.actual_fee)
@@ -551,50 +556,129 @@ defmodule StarknetExplorerWeb.TransactionLive do
           transaction |> Map.put(:max_fee, max_fee)
       end
 
-    execution_resources = if receipt.execution_resources do
-      receipt.execution_resources
-    else
-          %{
-            "builtin_instance_counter" => %{},
-            "n_memory_holes" => "-",
-            "n_ steps" => "-"
-          }
-    end
+    execution_resources = %{
+      "builtin_instance_counter" => %{},
+      "n_memory_holes" => "-",
+      "n_steps" => "-"
+    }
 
     receipt =
       transaction.receipt
       |> Map.put(:execution_resources, execution_resources)
       |> Map.put(:actual_fee, actual_fee)
 
-    internal_calls = %{}
-      # case receipt.execution_status != "REVERTED" &&
-      #        Application.get_env(:starknet_explorer, :enable_gateway_data) do
-      #   true -> Data.internal_calls(transaction, socket.assigns.network)
-      #   _ -> nil
-      # end
-
-    events = []
-    # events = Events.get_by_tx_hash(transaction_hash, socket.assigns.network)
-
     assigns = [
       transaction: transaction,
       transaction_receipt: receipt,
       transaction_hash: transaction_hash,
-      internal_calls: internal_calls,
+      internal_calls: %{},
       transaction_view: "overview",
       block_timestamp: block_timestamp,
       render_header: true,
       render_info: true,
-      events: events,
-      messages: messages_sent
+      events: [],
+      messages: [],
+      rerender?: nil
     ]
 
+    Process.send_after(self(), :load_additional_info, 100)
     socket = assign(socket, assigns)
     {:ok, assign(socket, assigns)}
   end
+
+  @impl true
+  def handle_event("select-view", %{"view" => "internal_calls"}, socket) do
+    internal_calls =
+      case socket.assigns.transaction_receipt.execution_status != "REVERTED" &&
+             Application.get_env(:starknet_explorer, :enable_gateway_data) do
+        true -> Data.internal_calls(socket.assigns.transaction, socket.assigns.network)
+        _ -> nil
+      end
+
+    assigns = [
+      internal_calls: internal_calls,
+      internal_calls_count: length(Map.keys(internal_calls)),
+      rerender?: true,
+      transaction_view: "internal_calls"
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
   @impl true
   def handle_event("select-view", %{"view" => view}, socket) do
     socket = assign(socket, :transaction_view, view)
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info(:load_internal_calls, socket) do
+    internal_calls =
+      case socket.assigns.transaction_receipt.execution_status != "REVERTED" &&
+             Application.get_env(:starknet_explorer, :enable_gateway_data) do
+        true -> Data.internal_calls(socket.assigns.transaction, socket.assigns.network)
+        _ -> nil
+      end
+
+    assigns = [
+      internal_calls: internal_calls,
+      internal_calls_count: length(Map.keys(internal_calls)),
+      rerender?: true
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_info(:load_additional_info, socket) do
+    events = Events.get_by_tx_hash(socket.assigns.transaction_hash, socket.assigns.network)
+
+    messages_sent =
+      (Message.from_transaction_receipt(socket.assigns.transaction_receipt) ++
+         [Message.from_transaction(socket.assigns.transaction)])
+      |> Enum.reject(&is_nil/1)
+
+    execution_resources =
+      case Application.get_env(:starknet_explorer, :enable_gateway_data) do
+        true ->
+          {:ok, receipt} =
+            Gateway.get_transaction_receipt(
+              socket.assigns.transaction_hash,
+              socket.assigns.network
+            )
+
+          receipt["execution_resources"]
+
+        false ->
+          %{
+            "builtin_instance_counter" => %{},
+            "n_memory_holes" => "-",
+            "n_steps" => "-"
+          }
+      end
+
+    receipt =
+      socket.assigns.transaction_receipt
+      |> Map.put(:execution_resources, execution_resources)
+
+    input_data =
+      StarknetExplorer.Calldata.parse_calldata(
+        socket.assigns.transaction,
+        %{"block_number" => receipt.block_number},
+        socket.assigns.network
+      )
+
+    assigns =
+      [
+        events: events,
+        events_count: length(events),
+        messages: messages_sent,
+        messages_count: length(messages_sent),
+        transaction_receipt: receipt,
+        rerender?: true,
+        input_data: input_data
+      ]
+
+    {:noreply, assign(socket, assigns)}
   end
 end

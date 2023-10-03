@@ -166,12 +166,12 @@ defmodule StarknetExplorer.Data do
         do: %{"block_number" => receipt.block_number},
         else: "latest"
 
-    input_data = nil
-      # try do
-      #   Calldata.parse_calldata(tx, block_id, network)
-      # rescue
-      #   _ -> nil
-      # end
+    input_data =
+      try do
+        Calldata.parse_calldata(tx, block_id, network)
+      rescue
+        _ -> nil
+      end
 
     {:ok, tx |> Map.put(:input_data, input_data)}
   end
