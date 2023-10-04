@@ -56,7 +56,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
 
     Process.send_after(self(), :listener, @fetch_timer + :rand.uniform(@n_for_random))
     Process.send_after(self(), :fetcher, @fetch_timer + :rand.uniform(@n_for_random))
-    # Process.send_after(self(), :updater, @fetch_timer + :rand.uniform(@n_for_random))
+    Process.send_after(self(), :updater, @fetch_timer + :rand.uniform(@n_for_random))
     {:noreply, state}
   end
 
