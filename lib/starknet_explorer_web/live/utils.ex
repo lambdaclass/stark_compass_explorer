@@ -74,18 +74,18 @@ defmodule StarknetExplorerWeb.Utils do
   def atomize_keys(not_a_map), do: not_a_map
 
   def format_arg_value(%{:type => "felt", :value => value}) do
-    shorten_block_hash(value)
+    value
   end
 
   def format_arg_value(%{:type => "core::felt252", :value => value}) do
-    shorten_block_hash(value)
+    value
   end
 
   def format_arg_value(%{
         :type => "core::starknet::contract_address::ContractAddress",
         :value => value
       }) do
-    shorten_block_hash(value)
+    value
   end
 
   def format_arg_value(%{

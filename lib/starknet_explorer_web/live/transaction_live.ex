@@ -421,7 +421,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
                       :let={arg}
                       enum={input.call.args}
                     ><:separator><span class="mr-2">,</span></:separator><span class="text-blue-400"><%= arg.name %></span></.intersperse>)
-                    <span class="text-blue-400 mx-1">-></span> <%= Utils.shorten_block_hash(input.selector) %>
+                    <span class="text-blue-400 mx-1">-></span> <%= input.selector %>
                   </span>
                   <CoreComponents.copy_button text={input.selector} /></span>
                 </div>
@@ -448,6 +448,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
                         <div class="col-span-2 pb-5">
                           <div class="list-h">Value</div>
                           <pre><%= Utils.format_arg_value(arg) %></pre>
+                          <CoreComponents.copy_button text={Utils.format_arg_value(arg)} />
                         </div>
                       </div>
                     <% end %>
@@ -456,7 +457,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
               <% else %>
                 <div class="w-full bg-black/20 p-5 mt-5">
                   Not Supported <span class="text-se-pink">...</span>(...)
-                  <span class="text-blue-400">-></span> <%= Utils.shorten_block_hash(input.selector) %>
+                  <span class="text-blue-400">-></span> <%= input.selector %>
                 </div>
               <% end %>
             <% end %>
