@@ -94,8 +94,9 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
         :listener,
         state = %StateSyncSystem{network: network, current_block_number: current_block_number}
       ) do
-    Logger.debug("Listener fetching: #{inspect(current_block_number)}")
+    Logger.debug("[Listener] Listener fetching: #{inspect(current_block_number)}")
     {:ok, new_block_height} = Rpc.get_block_height_no_cache(network)
+    Logger.debug("[Listener] New block height: #{inspect(current_block_number)}")
     new_blocks? = new_block_height > current_block_number
 
     state =
@@ -123,7 +124,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     next_to_fetch = state.current_block_number + 1
 
     {:ok, _} = BlockUtils.fetch_store_and_cache(next_to_fetch, network)
-    Logger.debug("Block fetched and stored: #{inspect(next_to_fetch)}")
+    Logger.debug("[Listener] Block fetched and stored: #{inspect(next_to_fetch)}")
     %{state | current_block_number: next_to_fetch}
   end
 
@@ -131,7 +132,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
 
   # This means that we are fully syncd.
   defp maybe_fetch_another(%StateSyncSystem{next_to_fetch: -1} = _args) do
-    Logger.debug("Fully syncd")
+    Logger.debug("[Listener] Fully syncd")
     :ok
   end
 
