@@ -130,7 +130,10 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   defp try_fetch(_new_blocks?, state), do: state
 
   # This means that we are fully syncd.
-  defp maybe_fetch_another(%StateSyncSystem{next_to_fetch: -1} = _args), do: :ok
+  defp maybe_fetch_another(%StateSyncSystem{next_to_fetch: -1} = _args) do
+    Logger.debug("Fully syncd")
+    :ok
+  end
 
   defp maybe_fetch_another(_),
     do: Process.send_after(self(), :fetcher, @fetch_timer + :rand.uniform(@n_for_random))
