@@ -123,7 +123,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     next_to_fetch = state.current_block_number + 1
 
     {:ok, _} = BlockUtils.fetch_store_and_cache(next_to_fetch, network)
-
+    Logger.debug("Block fetched and stored: #{inspect(next_to_fetch)}")
     %{state | current_block_number: next_to_fetch}
   end
 
