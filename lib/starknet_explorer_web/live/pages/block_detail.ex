@@ -82,81 +82,96 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
       <h2>Block</h2>
       <div class="text-gray-400">
-        <%= @block.timestamp
-        |> DateTime.from_unix()
-        |> then(fn {:ok, time} -> time end)
-        |> Calendar.strftime("%c") %> UTC
+        <%= if @view != "loading" do %>
+          <%= @block.timestamp
+          |> DateTime.from_unix()
+          |> then(fn {:ok, time} -> time end)
+          |> Calendar.strftime("%c") %> UTC
+        <% else %>
+          Loading
+        <% end %>
       </div>
     </div>
-    <div
-      id="dropdown"
-      class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
-      phx-hook="Dropdown"
-    >
-      <span class="networkSelected capitalize"><%= assigns.view %></span>
-      <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
-        <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
-      </span>
-    </div>
-    <div class="options hidden">
+    <%= if @view != "loading" do %>
       <div
-        class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-        phx-click="select-view"
-        ,
-        phx-value-view="overview"
+        id="dropdown"
+        class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
+        phx-hook="Dropdown"
       >
-        Overview
+        <span class="networkSelected capitalize"><%= assigns.view %></span>
+        <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
+          <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
+        </span>
       </div>
-      <div
-        class={"option #{if assigns.view == "transactions", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-        phx-click="select-view"
-        ,
-        phx-value-view="transactions"
-      >
-        Transactions
+      <div class="options hidden">
+        <div
+          class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
+          phx-click="select-view"
+          ,
+          phx-value-view="overview"
+        >
+          Overview
+        </div>
+        <div
+          class={"option #{if assigns.view == "transactions", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
+          phx-click="select-view"
+          ,
+          phx-value-view="transactions"
+        >
+          Transactions
+        </div>
+        <div
+          class={"option #{if assigns.view == "messages", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
+          phx-click="select-view"
+          ,
+          phx-value-view="messages"
+        >
+          Message Logs
+        </div>
+        <div
+          class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
+          phx-click="select-view"
+          ,
+          phx-value-view="events"
+          ,
+        >
+          Events
+        </div>
       </div>
-      <div
-        class={"option #{if assigns.view == "messages", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-        phx-click="select-view"
-        ,
-        phx-value-view="messages"
-      >
-        Message Logs
-      </div>
-      <div
-        class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-        phx-click="select-view"
-        ,
-        phx-value-view="events"
-        ,
-      >
-        Events
-      </div>
-    </div>
+    <% end %>
     """
   end
 
   @impl true
   def mount(_params = %{"number_or_hash" => param}, _session, socket) do
-    {:ok, block} =
-      case num_or_hash(param) do
-        :hash ->
-          Data.block_by_hash(param, socket.assigns.network, false)
+    assigns =
+      if connected?(socket) do
+        {:ok, block} =
+          case num_or_hash(param) do
+            :hash ->
+              Data.block_by_hash(param, socket.assigns.network, false)
 
-        :num ->
-          {num, ""} = Integer.parse(param)
-          Data.block_by_number(num, socket.assigns.network, false)
+            :num ->
+              {num, ""} = Integer.parse(param)
+              Data.block_by_number(num, socket.assigns.network, false)
+          end
+
+        [
+          gas_price: Utils.hex_wei_to_eth(block.gas_fee_in_wei),
+          execution_resources: block.execution_resources,
+          block: block,
+          view: "overview",
+          verification: "Pending",
+          enable_verification:
+            Application.get_env(:starknet_explorer, :enable_block_verification),
+          block_age: Utils.get_block_age(block)
+        ]
+      else
+        [
+          view: "loading",
+          enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification)
+        ]
       end
-
-    assigns = [
-      gas_price: Utils.hex_wei_to_eth(block.gas_fee_in_wei),
-      execution_resources: block.execution_resources,
-      block: block,
-      view: "overview",
-      verification: "Pending",
-      enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification),
-      block_age: Utils.get_block_age(block)
-    ]
 
     {:ok, assign(socket, assigns)}
   end
@@ -553,10 +568,106 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     """
   end
 
-  # TODO:
-  # Do not hardcode:
-  # - Total Execeution Resources
-  # - Gas Price
+  def render_info(assigns = %{view: "loading"}) do
+    ~H"""
+    <%= if @enable_verification do %>
+      <div class="grid-4 custom-list-item">
+        <div class="block-label">
+          Local Verification
+        </div>
+        <div class="col-span-3">
+          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+            <span
+              id="block_verifier"
+              class={"#{if @verification == "Pending", do: "orange-label"} #{if @verification == "Verified", do: "green-label"} #{if @verification == "Failed", do: "pink-label"}"}
+              data-hash={@block.hash}
+              phx-hook="BlockVerifier"
+            >
+              <%= @verification %>
+            </span>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Block Number</div>
+      <div class="type">
+        Loading
+      </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Block Hash</div>
+      <div class="block-data col-span-3">
+        <div class="hash flex">
+          Loading
+        </div>
+      </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Block Status</div>
+      <div class="col-span-3">
+        <span class="info-label">
+          Loading
+        </span>
+      </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">State Root</div>
+      <div class="block-data col-span-3">
+        <div class="hash flex">
+          Loading
+        </div>
+      </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Parent Hash</div>
+      <div class="block-data col-span-3">
+        <div class="hash flex">
+          Loading
+        </div>
+      </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">
+        Sequencer Address
+      </div>
+      <div class="block-data col-span-3">
+        <div class="hash flex">
+          Loading
+        </div>
+      </div>
+    </div>
+    <%= if Application.get_env(:starknet_explorer, :enable_gateway_data) do %>
+      <div class="grid-4 custom-list-item">
+        <div class="block-label">
+          Gas Price
+        </div>
+        <div class="col-span-3">
+          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+            <div
+              class="break-all bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1"
+              phx-update="replace"
+              id="gas-price"
+            >
+              Loading
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid-4 custom-list-item">
+        <div class="block-label">
+          Total execution resources
+        </div>
+        <div class="col-span-3">
+          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+            Loading
+          </div>
+        </div>
+      </div>
+    <% end %>
+    """
+  end
+
   def render_info(assigns = %{block: _block, view: "overview", enable_verification: _}) do
     ~H"""
     <%= if @enable_verification do %>
