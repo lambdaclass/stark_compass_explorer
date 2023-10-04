@@ -94,6 +94,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
         :listener,
         state = %StateSyncSystem{network: network, current_block_number: current_block_number}
       ) do
+    Logger.debug("Listener fetching: #{inspect(current_block_number)}")
     {:ok, new_block_height} = Rpc.get_block_height_no_cache(network)
     new_blocks? = new_block_height > current_block_number
 
