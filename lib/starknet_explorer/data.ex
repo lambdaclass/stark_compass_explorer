@@ -28,8 +28,8 @@ defmodule StarknetExplorer.Data do
     case Block.latest_blocks_with_txs(block_amount, network) do
       no_blocks when no_blocks == nil or no_blocks == [] ->
         with {:ok, latest_block} <- Rpc.get_latest_block(network),
-             # Create a list getting all blocks from the latest block to the 
-             # latest - block_amount discards any error, returns error if 
+             # Create a list getting all blocks from the latest block to the
+             # latest - block_amount discards any error, returns error if
              # the list is empty
              blocks = [_ | _] <-
                for(

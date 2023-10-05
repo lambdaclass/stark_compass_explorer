@@ -345,7 +345,7 @@ defmodule StarknetExplorer.Block do
     query =
       from b in Block,
         order_by: [desc: b.hash],
-        where: like(^"#{hash}", b.hash) and b.network == ^network,
+        where: b.hash == ^hash and b.network == ^network,
         limit: 25
 
     Repo.all(query)

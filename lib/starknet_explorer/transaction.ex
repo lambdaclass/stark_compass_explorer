@@ -167,7 +167,7 @@ defmodule StarknetExplorer.Transaction do
   def get_by_partial_hash(hash) do
     query =
       from tx in Transaction,
-        where: like(^"#{hash}", tx.hash),
+        where: tx.hash == ^hash,
         limit: 25
 
     Repo.one(query)

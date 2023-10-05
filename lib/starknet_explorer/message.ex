@@ -76,10 +76,10 @@ defmodule StarknetExplorer.Message do
   def get_by_partial_hash(message_hash, network) do
     query =
       from msg in StarknetExplorer.Message,
-        where: like(^"#{message_hash}", msg.message_hash) and msg.network == ^network,
+        where: msg.message_hash == ^message_hash and msg.network == ^network,
         limit: 25
 
-    Repo.one(query)
+    Repo.all(query)
   end
 
   def latest_n_messages(network, n \\ 20) do

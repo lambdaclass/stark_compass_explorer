@@ -3,6 +3,7 @@ defmodule StarknetExplorerWeb.SearchLive do
   alias StarknetExplorer.Data
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.Message
+  alias StarknetExplorer.Events
 
   def render(assigns) do
     ~H"""
@@ -28,7 +29,7 @@ defmodule StarknetExplorerWeb.SearchLive do
         class={"fixed inset-0 z-50 overflow-y-hidden transition-opacity duration-100 ease-in #{if @opened, do: '', else: 'opacity-0 pointer-events-none'}"}
       >
         <div
-          class="fixed inset-0 bg-zinc-400/25 backdrop-blur-sm 
+          class="fixed inset-0 bg-zinc-400/25 backdrop-blur-sm
           dark:bg-black/60 opacity-100 z-20 overflow-hidden"
           phx-click="close-search"
         >
@@ -115,6 +116,14 @@ defmodule StarknetExplorerWeb.SearchLive do
                                       <img
                                         class="shrink-0 inline-block w-5 h-auto"
                                         src={~p"/images/transaction.svg"}
+                                      />
+                                      <div class="hash">
+                                        <%= @result_item %>
+                                      </div>
+                                      <% "Event" -> %>
+                                      <img
+                                        class="shrink-0 inline-block w-5 h-auto"
+                                        src={~p"/images/calendar.svg"}
                                       />
                                       <div class="hash">
                                         <%= @result_item %>
@@ -217,15 +226,25 @@ defmodule StarknetExplorerWeb.SearchLive do
               )
             end
 
-          {:message, _message} ->
+          {:message, message} ->
             fn ->
               assign(socket,
-                result_item: query,
+                result_item: message.message_hash,
                 result: "Message",
                 loading: false,
-                path: "messages/#{query}"
+                path: "messages/#{message.message_hash}"
               )
             end
+
+            {:event, event} ->
+              fn ->
+                assign(socket,
+                  result_item: event.id,
+                  result: "Event",
+                  loading: false,
+                  path: "events/#{event.id}"
+                )
+              end
 
           :noquery ->
             fn ->
@@ -245,7 +264,17 @@ defmodule StarknetExplorerWeb.SearchLive do
     case infer_query(query) do
       :hex -> try_by_hash(query, network)
       {:number, number} -> try_by_number(number, network)
+      :uuid -> try_by_uuid(query, network)
       :noquery -> :noquery
+    end
+  end
+
+  def try_by_uuid(uuid, network) do
+    case Events.get_by_id(uuid, network) |> IO.inspect() do
+      event = %StarknetExplorer.Events{} ->
+        {:event, event}
+      _ ->
+        :noquery
     end
   end
 
@@ -268,7 +297,8 @@ defmodule StarknetExplorerWeb.SearchLive do
 
           _ ->
             case Message.get_by_partial_hash(hash, network) do
-              {:ok, _message} -> {:message, hash}
+              [message | _] ->
+                {:message, message}
               _ -> :noquery
             end
         end
@@ -280,7 +310,11 @@ defmodule StarknetExplorerWeb.SearchLive do
   defp infer_query(query) do
     case Integer.parse(query) do
       {parsed, ""} -> {:number, parsed}
-      _ -> :noquery
+      _ ->
+        case match?({:ok, _}, Ecto.UUID.dump(query)) do
+          true -> :uuid
+          _ -> :noquery
+        end
     end
   end
 
