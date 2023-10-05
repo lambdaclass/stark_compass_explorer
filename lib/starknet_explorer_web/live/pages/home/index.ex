@@ -256,39 +256,39 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
       </div>
     </div>
     <div>
-    Related projects
-    <div class="mx-auto max-w-7xl grid lg:grid-cols-3 gap-10 lg:gap-5 mt-16">
-      <div class="table-block">
-        <div>
-          Read our blog
+      Related projects
+      <div class="mx-auto max-w-7xl grid lg:grid-cols-3 gap-10 lg:gap-5 mt-16">
+        <div class="table-block">
           <div>
-            <a href="https://blog.lambdaclass.com">https://blog.lambdaclass.com</a>
+            Read our blog
+            <div>
+              <a href="https://blog.lambdaclass.com">https://blog.lambdaclass.com</a>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="table-block">
-        <div>
-          YAS
+        <div class="table-block">
           <div>
-            YAS is Yet Another Swap on Starknet but bringing the best prices and yield to Degens.
-          </div>
-          <div>
-            <a>
-              https://www.yetanotherswap.com
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="table-block">
-        <div>
-          Follow LambdaStarknet on twitter
-          <div>
-            <a>
-              https://twitter.com/LambdaStarknet
-            </a>
+            YAS
+            <div>
+              YAS is Yet Another Swap on Starknet but bringing the best prices and yield to Degens.
+            </div>
+            <div>
+              <a>
+                https://www.yetanotherswap.com
+              </a>
+            </div>
           </div>
         </div>
-      </div>
+        <div class="table-block">
+          <div>
+            Follow LambdaStarknet on twitter
+            <div>
+              <a>
+                https://twitter.com/LambdaStarknet
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     """
