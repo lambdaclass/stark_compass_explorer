@@ -120,7 +120,7 @@ defmodule StarknetExplorerWeb.SearchLive do
                                       <div class="hash">
                                         <%= @result_item %>
                                       </div>
-                                      <% "Event" -> %>
+                                    <% "Event" -> %>
                                       <img
                                         class="shrink-0 inline-block w-5 h-auto"
                                         src={~p"/images/calendar.svg"}
@@ -236,15 +236,15 @@ defmodule StarknetExplorerWeb.SearchLive do
               )
             end
 
-            {:event, event} ->
-              fn ->
-                assign(socket,
-                  result_item: event.id,
-                  result: "Event",
-                  loading: false,
-                  path: "events/#{event.id}"
-                )
-              end
+          {:event, event} ->
+            fn ->
+              assign(socket,
+                result_item: event.id,
+                result: "Event",
+                loading: false,
+                path: "events/#{event.id}"
+              )
+            end
 
           :noquery ->
             fn ->
@@ -273,6 +273,7 @@ defmodule StarknetExplorerWeb.SearchLive do
     case Events.get_by_id(uuid, network) |> IO.inspect() do
       event = %StarknetExplorer.Events{} ->
         {:event, event}
+
       _ ->
         :noquery
     end
@@ -299,7 +300,9 @@ defmodule StarknetExplorerWeb.SearchLive do
             case Message.get_by_partial_hash(hash, network) do
               [message | _] ->
                 {:message, message}
-              _ -> :noquery
+
+              _ ->
+                :noquery
             end
         end
     end
@@ -309,7 +312,9 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   defp infer_query(query) do
     case Integer.parse(query) do
-      {parsed, ""} -> {:number, parsed}
+      {parsed, ""} ->
+        {:number, parsed}
+
       _ ->
         case match?({:ok, _}, Ecto.UUID.dump(query)) do
           true -> :uuid
