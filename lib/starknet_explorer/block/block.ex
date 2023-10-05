@@ -349,7 +349,6 @@ defmodule StarknetExplorer.Block do
         limit: 25
 
     Repo.all(query)
-    |> Repo.preload(:transactions)
   end
 
   def get_by_num(num, network, preload_transactions \\ true) do
@@ -392,12 +391,9 @@ defmodule StarknetExplorer.Block do
   def get_by_partial_num(num, network) do
     query =
       from b in Block,
-        order_by: [desc: b.number],
-        where: like(^"#{num}", b.number) and b.network == ^network,
-        limit: 25
+        where: ^num == b.number and b.network == ^network
 
     Repo.all(query)
-    |> Repo.preload(:transactions)
   end
 
   def get_by_height(height, network) when is_integer(height) do
