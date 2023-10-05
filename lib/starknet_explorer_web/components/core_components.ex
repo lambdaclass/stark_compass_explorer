@@ -688,20 +688,21 @@ defmodule StarknetExplorerWeb.CoreComponents do
 
   def copy_button(assigns) do
     ~H"""
-    <div class="copy-container shrink-0" id={Ecto.UUID.generate()} phx-hook="Copy">
-      <div class="relative">
-        <div class="ml-2 relative shrink-0">
-          <img class="copy-btn copy-text w-5 h-5" src="/images/copy.svg" data-text={@text} />
-          <img
-            class="copy-check absolute top-0 left-0 w-5 h-5 opacity-0 pointer-events-none"
-            src="/images/check-square.svg"
-          />
+      <div class="copy-container shrink-0" id={Ecto.UUID.generate()} phx-hook="Copy">
+        <div class="relative">
+          <div class="ml-2 relative shrink-0">
+            <img class="copy-btn copy-text w-5 h-5" src="/images/copy.svg" data-text={@text} />
+            <img
+              class="copy-check absolute top-0 left-0 w-5 h-5 opacity-0 pointer-events-none"
+              src="/images/check-square.svg"
+            />
+          </div>
         </div>
       </div>
-    </div>
     """
   end
 
+  @spec tooltip(any) :: Phoenix.LiveView.Rendered.t()
   def tooltip(assigns) do
     ~H"""
     <img
@@ -711,6 +712,21 @@ defmodule StarknetExplorerWeb.CoreComponents do
       src="/images/help-circle.svg"
       class={"tooltip w-4 h-4 #{assigns[:class] || ""}"}
     />
+    """
+  end
+
+  @spec loading_state(any) :: Phoenix.LiveView.Rendered.t()
+  def loading_state(assigns) do
+    ~H"""
+    <%= if @condition do  %>
+     <%= @content %>
+    <% else  %>
+      <div class="text-md pt-1 font-semibold rounded-lg bg-gray-100 text-gray-100 dark:bg-gray-700 dark:text-gray-700 inline-block w-full animate-pulseFill">
+        <%= @mock %>
+      </div>
+    <% end  %>
+
+
     """
   end
 end
