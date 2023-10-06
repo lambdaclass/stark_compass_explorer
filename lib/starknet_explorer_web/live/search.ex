@@ -35,7 +35,7 @@ defmodule StarknetExplorerWeb.SearchLive do
         >
         </div>
         <div id="nav-search-bar" class="px-5 max-w-3xl w-full mx-auto relative z-40 top-5 lg:top-20">
-          <div class="xl:w-full">
+          <div class="relative xl:w-full">
             <form class="normal-form" phx-change="update-input" phx-submit="search">
               <div class="relative z-20">
                 <div class="absolute top-1/2 left-4 transform -translate-y-1/2 flex items-enter">
