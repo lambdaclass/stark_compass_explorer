@@ -4,11 +4,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorerWeb.CoreComponents
   alias StarknetExplorer.Data
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.BlockUtils
   alias StarknetExplorer.S3
   alias StarknetExplorer.Message
   alias StarknetExplorer.Transaction
-  alias StarknetExplorer.Gateway
   alias StarknetExplorer.Events
 
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
@@ -162,44 +160,15 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           block: block,
           view: "overview",
           verification: "Pending",
-          enable_verification:
-            Application.get_env(:starknet_explorer, :enable_block_verification),
           block_age: Utils.get_block_age(block)
         ]
       else
         [
           view: "loading",
-          enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification)
         ]
       end
 
     {:ok, assign(socket, assigns)}
-  end
-
-  @impl true
-  def handle_info(:get_gateway_information, socket = %Phoenix.LiveView.Socket{}) do
-    {gas_assign, resources_assign} =
-      case Gateway.fetch_block(socket.assigns.block.number, socket.assigns.network) do
-        {:ok, block = %{"gas_price" => gas_price}} ->
-          execution_resources = BlockUtils.calculate_gateway_block_steps(block)
-          gas_price = Utils.hex_wei_to_eth(gas_price)
-
-          {gas_price, execution_resources}
-
-        {:ok, err} ->
-          Logger.error(err)
-          {"Unavailable", "Unavailable"}
-
-        {:error, _} ->
-          {"Unavailable", "Unavailable"}
-      end
-
-    socket =
-      socket
-      |> assign(:gas_price, gas_assign)
-      |> assign(:execution_resources, resources_assign)
-
-    {:noreply, socket}
   end
 
   @impl true
@@ -570,25 +539,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   def render_info(assigns = %{view: "loading"}) do
     ~H"""
-    <%= if @enable_verification do %>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label">
-          Local Verification
-        </div>
-        <div class="col-span-3">
-          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-            <span
-              id="block_verifier"
-              class={"#{if @verification == "Pending", do: "orange-label"} #{if @verification == "Verified", do: "green-label"} #{if @verification == "Failed", do: "pink-label"}"}
-              data-hash={@block.hash}
-              phx-hook="BlockVerifier"
-            >
-              <%= @verification %>
-            </span>
-          </div>
-        </div>
-      </div>
-    <% end %>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Number</div>
       <div class="type">
@@ -668,27 +618,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     """
   end
 
-  def render_info(assigns = %{block: _block, view: "overview", enable_verification: _}) do
+  def render_info(assigns = %{block: _block, view: "overview"}) do
     ~H"""
-    <%= if @enable_verification do %>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label">
-          Local Verification
-        </div>
-        <div class="col-span-3">
-          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-            <span
-              id="block_verifier"
-              class={"#{if @verification == "Pending", do: "orange-label"} #{if @verification == "Verified", do: "green-label"} #{if @verification == "Failed", do: "pink-label"}"}
-              data-hash={@block.hash}
-              phx-hook="BlockVerifier"
-            >
-              <%= @verification %>
-            </span>
-          </div>
-        </div>
-      </div>
-    <% end %>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Number</div>
       <div class="type">
