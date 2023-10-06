@@ -675,6 +675,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <a href={Utils.network_path(@network, "blocks/#{@block.hash}")} class="text-hover-link">
             <%= @block.hash %>
           </a>
+          <CoreComponents.copy_button text={@block.hash} />
         </div>
       </div>
     </div>
@@ -691,6 +692,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="block-data col-span-3">
         <div class="hash flex">
           <%= @block.new_root %>
+          <CoreComponents.copy_button text={@block.new_root} />
         </div>
       </div>
     </div>
@@ -704,6 +706,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           >
             <%= @block.parent_hash %>
           </a>
+          <CoreComponents.copy_button text={@block.parent_hash} />
         </div>
       </div>
     </div>
@@ -714,6 +717,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       <div class="block-data col-span-3">
         <div class="hash flex">
           <%= @block.sequencer_address %>
+          <CoreComponents.copy_button text={@block.sequencer_address} />
         </div>
       </div>
     </div>
