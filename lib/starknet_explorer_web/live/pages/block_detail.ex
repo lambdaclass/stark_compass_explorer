@@ -162,15 +162,30 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
                  end
                ) do
             block = %StarknetExplorer.Block{} ->
+              Logger.debug("[Block Detail] Found block #{block.number} in cache")
               {:ok, block}
 
             _ ->
               case type do
                 :hash ->
-                  Data.block_by_hash(param, socket.assigns.network, false)
+                  {time, res} =
+                    :timer.tc(fn -> Data.block_by_hash(param, socket.assigns.network, false) end)
+
+                  Logger.debug(
+                    "[Block Detail] Fetched block #{param} in #{time} microseconds, using hash"
+                  )
+
+                  res
 
                 :num ->
-                  Data.block_by_number(param, socket.assigns.network, false)
+                  {time, res} =
+                    :timer.tc(fn -> Data.block_by_number(param, socket.assigns.network, false) end)
+
+                  Logger.debug(
+                    "[Block Detail] Fetched block #{param} in #{time} microseconds, using number"
+                  )
+
+                  res
               end
           end
 
