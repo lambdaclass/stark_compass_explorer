@@ -125,11 +125,6 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           </div>
         </a>
       </div>
-      <div class="text-gray-600 bg-gray-800/10 border-t border-t-gray-700 flex justify-center items-center py-4 px-4 text-sm mt-6">
-        <div>
-          *We are still syncing historical data so the above numbers might not reflect the current status
-        </div>
-      </div>
     </div>
 
     <div class="mx-auto max-w-7xl grid lg:grid-cols-2 gap-10 lg:gap-5 mt-16">
