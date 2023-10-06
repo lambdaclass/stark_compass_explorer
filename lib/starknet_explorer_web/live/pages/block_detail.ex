@@ -142,16 +142,36 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   @impl true
   def mount(_params = %{"number_or_hash" => param}, _session, socket) do
+    {type, param} =
+      case num_or_hash(param) do
+        :hash ->
+          {:hash, param}
+
+        :num ->
+          {num, ""} = Integer.parse(param)
+          {:num, num}
+      end
+
     assigns =
       if connected?(socket) do
         {:ok, block} =
-          case num_or_hash(param) do
-            :hash ->
-              Data.block_by_hash(param, socket.assigns.network, false)
+          case Enum.find(
+                 StarknetExplorer.IndexCache.latest_blocks(socket.assigns.network),
+                 fn block ->
+                   block.number == param or block.hash == param
+                 end
+               ) do
+            block = %StarknetExplorer.Block{} ->
+              {:ok, block}
 
-            :num ->
-              {num, ""} = Integer.parse(param)
-              Data.block_by_number(num, socket.assigns.network, false)
+            _ ->
+              case type do
+                :hash ->
+                  Data.block_by_hash(param, socket.assigns.network, false)
+
+                :num ->
+                  Data.block_by_number(param, socket.assigns.network, false)
+              end
           end
 
         [
@@ -164,7 +184,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         ]
       else
         [
-          view: "loading",
+          view: "loading"
         ]
       end
 
