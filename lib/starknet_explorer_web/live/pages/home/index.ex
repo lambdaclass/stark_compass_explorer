@@ -29,7 +29,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
     </div>
     <div class="mx-auto max-w-7xl mt-4 mb-5">
       <div class="flex justify-between">
-        <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-6">
+        <div class="relative inline-flex items-start gap-3 bg-container p-3 pr-4 text-sm mb-6 rounded-lg overflow-hidden">
           <img src={~p"/images/zap.svg"} class="my-auto" />
           <div class="flex">
             <div class="flex items-center gap-2 border-r border-r-gray-700 pr-2 mr-2">
@@ -67,7 +67,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </div>
       </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <a href={Utils.network_path(@network, "blocks")} class="bg-container text-gray-100">
+        <a href={Utils.network_path(@network, "blocks")} class="bg-container text-gray-100 rounded-lg overflow-hidden">
           <div class="relative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
               <img src={~p"/images/box.svg"} class="my-auto w-6 h-auto" />
@@ -82,7 +82,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             </div>
           </div>
         </a>
-        <a href={Utils.network_path(@network, "messages")} class="bg-container text-gray-100">
+        <a href={Utils.network_path(@network, "messages")} class="bg-container text-gray-100 rounded-lg overflow-hidden">
           <div class="reative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
               <img src={~p"/images/message-square.svg"} class="my-auto w-6 h-auto" />
@@ -97,7 +97,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             </div>
           </div>
         </a>
-        <a href={Utils.network_path(@network, "events")} class="bg-container text-gray-100">
+        <a href={Utils.network_path(@network, "events")} class="bg-container text-gray-100 rounded-lg overflow-hidden">
           <div class="reative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
               <img src={~p"/images/calendar.svg"} class="my-auto w-6 h-auto" />
@@ -112,7 +112,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             </div>
           </div>
         </a>
-        <a href={Utils.network_path(@network, "transactions")} class="bg-container text-gray-100">
+        <a href={Utils.network_path(@network, "transactions")} class="bg-container text-gray-100 rounded-lg overflow-hidden">
           <div class="reative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
               <img src={~p"/images/corner-up-right.svg"} class="my-auto w-6 h-auto" />
@@ -255,39 +255,38 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </div>
       </div>
     </div>
-    <div>
-      Related projects
-      <div class="mx-auto max-w-7xl grid lg:grid-cols-3 gap-10 lg:gap-5 mt-16">
-        <div class="table-block">
-          <div>
+
+    <div class="mx-auto max-w-7xl mt-16">
+      <div class="table-title">Related projects</div>
+      <div class="mx-auto max-w-7xl grid lg:grid-cols-3 gap-10 lg:gap-7 mt-4">
+        <div class="pt-5 pb-6 px-6 text-white rounded-lg transition bg-container hover:bg-se-inner-bg border border-dashed border-se-inner-border">
+          <div class="subtitle">
             Read our blog
-            <div>
-              <a href="https://blog.lambdaclass.com">https://blog.lambdaclass.com</a>
-            </div>
+          </div>
+          <div>
+            <a href="https://blog.lambdaclass.com">https://blog.lambdaclass.com</a>
           </div>
         </div>
-        <div class="table-block">
-          <div>
+        <div class="pt-5 pb-6 px-6 text-white rounded-lg transition bg-container hover:bg-se-inner-bg border border-dashed border-se-inner-border">
+          <div class="subtitle">
             YAS
-            <div>
-              YAS is Yet Another Swap on Starknet but bringing the best prices and yield to Degens.
-            </div>
-            <div>
-              <a>
-                https://www.yetanotherswap.com
-              </a>
-            </div>
+          </div>
+          <div>
+            YAS is Yet Another Swap on Starknet but bringing the best prices and yield to Degens.
+          </div>
+          <div>
+            <a class="inline-block mt-3">
+              https://www.yetanotherswap.com
+            </a>
           </div>
         </div>
-        <div class="table-block">
-          <div>
+        <div class="pt-5 pb-6 px-6 text-white rounded-lg transition bg-container hover:bg-se-inner-bg border border-dashed border-se-inner-border">
+          <div class="subtitle">
             Follow LambdaStarknet on twitter
-            <div>
-              <a>
-                https://twitter.com/LambdaStarknet
-              </a>
-            </div>
           </div>
+          <a>
+            https://twitter.com/LambdaStarknet
+          </a>
         </div>
       </div>
     </div>
