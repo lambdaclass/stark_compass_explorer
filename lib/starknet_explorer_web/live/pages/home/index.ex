@@ -64,7 +64,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
         </div>
       </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <a href={Utils.network_path(@network, "blocks")} class="bg-container text-gray-100 rounded-lg overflow-hidden">
+        <a
+          href={Utils.network_path(@network, "blocks")}
+          class="bg-container text-gray-100 rounded-lg overflow-hidden"
+        >
           <div class="relative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
               <img src={~p"/images/box.svg"} class="my-auto w-6 h-auto" />
@@ -79,7 +82,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             </div>
           </div>
         </a>
-        <a href={Utils.network_path(@network, "messages")} class="bg-container text-gray-100 rounded-lg overflow-hidden">
+        <a
+          href={Utils.network_path(@network, "messages")}
+          class="bg-container text-gray-100 rounded-lg overflow-hidden"
+        >
           <div class="reative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
               <img src={~p"/images/message-square.svg"} class="my-auto w-6 h-auto" />
@@ -94,7 +100,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             </div>
           </div>
         </a>
-        <a href={Utils.network_path(@network, "events")} class="bg-container text-gray-100 rounded-lg overflow-hidden">
+        <a
+          href={Utils.network_path(@network, "events")}
+          class="bg-container text-gray-100 rounded-lg overflow-hidden"
+        >
           <div class="reative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
               <img src={~p"/images/calendar.svg"} class="my-auto w-6 h-auto" />
@@ -109,7 +118,10 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             </div>
           </div>
         </a>
-        <a href={Utils.network_path(@network, "transactions")} class="bg-container text-gray-100 rounded-lg overflow-hidden">
+        <a
+          href={Utils.network_path(@network, "transactions")}
+          class="bg-container text-gray-100 rounded-lg overflow-hidden"
+        >
           <div class="reative bg-container">
             <div class="flex items-start gap-6 my-4 mx-8">
               <img src={~p"/images/corner-up-right.svg"} class="my-auto w-6 h-auto" />
