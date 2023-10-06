@@ -20,7 +20,7 @@ defmodule StarknetExplorer.BlockUtils do
   def fetch_and_store(block_height, network) do
     with false <- already_stored?(block_height, network),
          {:ok, block = %{"block_number" => block_number}} <- fetch_block(block_height, network),
-         :ok <- store_block(block, network) do
+         {:ok, _} <- store_block(block, network) do
       {:ok, block_number}
     else
       true ->

@@ -56,7 +56,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
           ( <%= @messages_count %> )
         <% end %>
       </div>
-      <%= if @internal_calls != nil do %>
+      <%= if @internal_calls != nil  and @transaction_receipt.execution_status != "REVERTED" do %>
         <div
           class={"option #{if assigns.transaction_view == "internal_calls", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
           phx-click="select-view"
@@ -73,11 +73,6 @@ defmodule StarknetExplorerWeb.TransactionLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-      id: "search-bar",
-      flash: @flash,
-      session: %{"network" => @network}
-    ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <%= if @render_header do %>
         <%= transaction_header(assigns) %>
@@ -264,8 +259,13 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <div>
             <div class="list-h">Transaction Hash</div>
             <div class="hash flex">
-              <%= @transaction.hash
-              |> Utils.shorten_block_hash() %>
+              <a
+                href={Utils.network_path(@network, "transactions/#{@transaction.hash}")}
+                class="text-hover-link"
+              >
+                <%= @transaction.hash
+                |> Utils.shorten_block_hash() %>
+              </a>
               <CoreComponents.copy_button text={@transaction.hash} />
             </div>
           </div>
@@ -647,13 +647,21 @@ defmodule StarknetExplorerWeb.TransactionLive do
     execution_resources =
       case Application.get_env(:starknet_explorer, :enable_gateway_data) do
         true ->
-          {:ok, receipt} =
-            Gateway.get_transaction_receipt(
-              socket.assigns.transaction_hash,
-              socket.assigns.network
-            )
+          case Gateway.get_transaction_receipt(
+                 socket.assigns.transaction_hash,
+                 socket.assigns.network
+               ) do
+            {:ok, %{"execution_resources" => execution_resources} = _receipt} ->
+              execution_resources
 
-          receipt["execution_resources"]
+            {:ok, _} ->
+              # This means that the transactions is reverted
+              %{
+                "builtin_instance_counter" => %{},
+                "n_memory_holes" => "-",
+                "n_steps" => "-"
+              }
+          end
 
         false ->
           %{

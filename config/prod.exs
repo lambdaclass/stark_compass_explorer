@@ -12,7 +12,6 @@ config :starknet_explorer, StarknetExplorerWeb.Endpoint,
 config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: StarknetExplorer.Finch
 
 # Do not print debug messages in production
-# config :logger, level: :info
 config :logger, level: :debug
 
 # Runtime production configuration, including reading

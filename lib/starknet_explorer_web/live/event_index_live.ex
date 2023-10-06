@@ -7,10 +7,6 @@ defmodule StarknetExplorerWeb.EventIndexLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-      id: "search-bar",
-      flash: @flash
-    ) %>
     <div class="max-w-7xl mx-auto">
       <div class="table-header">
         <h2>Events</h2>
@@ -91,7 +87,9 @@ defmodule StarknetExplorerWeb.EventIndexLive do
           </div>
         <% end %>
       </div>
-      <CoreComponents.pagination_links id="events" page={@page} prev="dec_events" next="inc_events" />
+      <div class="mt-2">
+        <CoreComponents.pagination_links id="events" page={@page} prev="dec_events" next="inc_events" />
+      </div>
     </div>
     """
   end

@@ -21,6 +21,7 @@ import "phoenix_html";
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
+
 // import { BlockVerifier } from "./hooks/block_verifier";
 // Show copyright
 // const setYear = () => {
@@ -31,17 +32,37 @@ import topbar from "../vendor/topbar";
 
 let Hooks = {};
 
+const ESC_KEY_CODE = 27;
+const K_KEY_CODE = 75;
+
+Hooks.SearchBar = {
+  mounted() {
+    document.addEventListener('keydown', (e) => {
+      if (e.keyCode === K_KEY_CODE && e.metaKey) {
+        e.preventDefault();
+        this.pushEvent("open-search", {})
+      }
+      if (e.keyCode === ESC_KEY_CODE) {
+        this.pushEvent("close-search", {})
+      }
+    });
+  }
+}
+
+window.addEventListener(`phx:focus`, (event) => {
+  document.getElementById(event.detail.id).focus();
+})
+
 // Hamburger menu
 Hooks.Nav = {
   mounted() {
-    const hamburger = document.getElementById("hamburger");
     const options = document.querySelector("#menu-options");
-    const main = document.querySelector("main");
-    hamburger.addEventListener("click", () => {
+    const html = document.querySelector("html");
+    this.el.addEventListener("click", () => {
       options.classList.toggle("open");
       options.classList.toggle("opacity-0");
       options.classList.toggle("pointer-events-none");
-      main.classList.toggle("hidden");
+      html.classList.toggle("overflow-y-hidden");
     });
   },
 };
@@ -324,7 +345,6 @@ Hooks.ScrollToTop = {
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken }, hooks: Hooks });
-
 // Show progress bar on live navigation and form submits. Only displays if still
 // loading after 2000 msec
 topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });

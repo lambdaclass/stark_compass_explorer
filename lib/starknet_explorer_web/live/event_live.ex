@@ -6,11 +6,6 @@ defmodule StarknetExplorerWeb.EventDetailLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-      id: "search-bar",
-      flash: @flash,
-      session: %{"network" => @network}
-    ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
         <h2>Event</h2>

@@ -164,6 +164,23 @@ defmodule StarknetExplorer.Transaction do
     end
   end
 
+  def get_by_partial_hash(hash) do
+    query =
+      from tx in Transaction,
+        where: tx.hash == ^hash,
+        limit: 25
+
+    Repo.one(query)
+  end
+
+  def paginate_transactions(params, network) do
+    Transaction
+    |> where([tx], tx.network == ^network)
+    |> preload(:block)
+    |> order_by(desc: :block_number)
+    |> Repo.paginate(params)
+  end
+
   def paginate_transactions_for_index(params, network) do
     query =
       from t in Transaction,

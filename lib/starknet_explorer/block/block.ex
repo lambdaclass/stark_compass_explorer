@@ -341,6 +341,16 @@ defmodule StarknetExplorer.Block do
     end
   end
 
+  def get_by_partial_hash(hash, network) do
+    query =
+      from b in Block,
+        order_by: [desc: b.hash],
+        where: b.hash == ^hash and b.network == ^network,
+        limit: 25
+
+    Repo.all(query)
+  end
+
   def get_by_num(num, network, preload_transactions \\ true) do
     query =
       from b in Block,
@@ -376,6 +386,14 @@ defmodule StarknetExplorer.Block do
 
     Repo.one(query)
     |> Repo.preload(:transactions)
+  end
+
+  def get_by_partial_num(num, network) do
+    query =
+      from b in Block,
+        where: ^num == b.number and b.network == ^network
+
+    Repo.all(query)
   end
 
   def get_by_height(height, network) when is_integer(height) do

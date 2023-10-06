@@ -4,11 +4,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorerWeb.CoreComponents
   alias StarknetExplorer.Data
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.BlockUtils
   alias StarknetExplorer.S3
   alias StarknetExplorer.Message
   alias StarknetExplorer.Transaction
-  alias StarknetExplorer.Gateway
   alias StarknetExplorer.Events
 
   defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
@@ -144,16 +142,56 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   @impl true
   def mount(_params = %{"number_or_hash" => param}, _session, socket) do
+    {type, param} =
+      case num_or_hash(param) do
+        :hash ->
+          {:hash, param}
+
+        :num ->
+          {num, ""} = Integer.parse(param)
+          {:num, num}
+      end
+
     assigns =
       if connected?(socket) do
         {:ok, block} =
-          case num_or_hash(param) do
-            :hash ->
-              Data.block_by_hash(param, socket.assigns.network, false)
+          case :timer.tc(fn ->
+                 Enum.find(
+                   StarknetExplorer.IndexCache.latest_blocks(socket.assigns.network),
+                   fn block ->
+                     block.number == param or block.hash == param
+                   end
+                 )
+               end) do
+            {time, block} = {_, %StarknetExplorer.Block{}} ->
+              Logger.debug(
+                "[Block Detail] Found block #{block.number} in cache in #{time} microseconds"
+              )
 
-            :num ->
-              {num, ""} = Integer.parse(param)
-              Data.block_by_number(num, socket.assigns.network, false)
+              {:ok, block}
+
+            {time, _} ->
+              case type do
+                :hash ->
+                  {query_time, res} =
+                    :timer.tc(fn -> Data.block_by_hash(param, socket.assigns.network, false) end)
+
+                  Logger.debug(
+                    "[Block Detail] Fetched block #{param} in #{query_time} microseconds, query took #{time} microseconds, using :hash"
+                  )
+
+                  res
+
+                :num ->
+                  {query_time, res} =
+                    :timer.tc(fn -> Data.block_by_number(param, socket.assigns.network, false) end)
+
+                  Logger.debug(
+                    "[Block Detail] Fetched block #{param} in #{query_time} microseconds, query took #{time} microsecond, using :num"
+                  )
+
+                  res
+              end
           end
 
         [
@@ -162,44 +200,15 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           block: block,
           view: "overview",
           verification: "Pending",
-          enable_verification:
-            Application.get_env(:starknet_explorer, :enable_block_verification),
           block_age: Utils.get_block_age(block)
         ]
       else
         [
-          view: "loading",
-          enable_verification: Application.get_env(:starknet_explorer, :enable_block_verification)
+          view: "loading"
         ]
       end
 
     {:ok, assign(socket, assigns)}
-  end
-
-  @impl true
-  def handle_info(:get_gateway_information, socket = %Phoenix.LiveView.Socket{}) do
-    {gas_assign, resources_assign} =
-      case Gateway.fetch_block(socket.assigns.block.number, socket.assigns.network) do
-        {:ok, block = %{"gas_price" => gas_price}} ->
-          execution_resources = BlockUtils.calculate_gateway_block_steps(block)
-          gas_price = Utils.hex_wei_to_eth(gas_price)
-
-          {gas_price, execution_resources}
-
-        {:ok, err} ->
-          Logger.error(err)
-          {"Unavailable", "Unavailable"}
-
-        {:error, _} ->
-          {"Unavailable", "Unavailable"}
-      end
-
-    socket =
-      socket
-      |> assign(:gas_price, gas_assign)
-      |> assign(:execution_resources, resources_assign)
-
-    {:noreply, socket}
   end
 
   @impl true
@@ -377,11 +386,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-      id: "search-bar",
-      flash: @flash,
-      session: %{"network" => @network}
-    ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <%= block_detail_header(assigns) %>
       <%= render_info(assigns) %>
@@ -461,7 +465,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
-    <CoreComponents.pagination_links id="txs" page={@page} prev="dec_txs" next="inc_txs" />
+    <div class="mt-2">
+      <CoreComponents.pagination_links id="txs" page={@page} prev="dec_txs" next="inc_txs" />
+    </div>
     """
   end
 
@@ -570,25 +576,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   def render_info(assigns = %{view: "loading"}) do
     ~H"""
-    <%= if @enable_verification do %>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label">
-          Local Verification
-        </div>
-        <div class="col-span-3">
-          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-            <span
-              id="block_verifier"
-              class={"#{if @verification == "Pending", do: "orange-label"} #{if @verification == "Verified", do: "green-label"} #{if @verification == "Failed", do: "pink-label"}"}
-              data-hash={@block.hash}
-              phx-hook="BlockVerifier"
-            >
-              <%= @verification %>
-            </span>
-          </div>
-        </div>
-      </div>
-    <% end %>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Number</div>
       <div class="type">
@@ -668,31 +655,14 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     """
   end
 
-  def render_info(assigns = %{block: _block, view: "overview", enable_verification: _}) do
+  def render_info(assigns = %{block: _block, view: "overview"}) do
     ~H"""
-    <%= if @enable_verification do %>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label">
-          Local Verification
-        </div>
-        <div class="col-span-3">
-          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-            <span
-              id="block_verifier"
-              class={"#{if @verification == "Pending", do: "orange-label"} #{if @verification == "Verified", do: "green-label"} #{if @verification == "Failed", do: "pink-label"}"}
-              data-hash={@block.hash}
-              phx-hook="BlockVerifier"
-            >
-              <%= @verification %>
-            </span>
-          </div>
-        </div>
-      </div>
-    <% end %>
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Number</div>
       <div class="type">
-        <%= @block.number %>
+        <a href={Utils.network_path(@network, "blocks/#{@block.hash}")} class="text-hover-link">
+          <%= @block.number %>
+        </a>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
