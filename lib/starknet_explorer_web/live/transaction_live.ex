@@ -56,7 +56,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
           ( <%= @messages_count %> )
         <% end %>
       </div>
-      <%= if @internal_calls != nil do %>
+      <%= if @internal_calls != nil  and @transaction_receipt.execution_status != "REVERTED" do %>
         <div
           class={"option #{if assigns.transaction_view == "internal_calls", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
           phx-click="select-view"
