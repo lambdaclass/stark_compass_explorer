@@ -647,13 +647,21 @@ defmodule StarknetExplorerWeb.TransactionLive do
     execution_resources =
       case Application.get_env(:starknet_explorer, :enable_gateway_data) do
         true ->
-          {:ok, receipt} =
-            Gateway.get_transaction_receipt(
-              socket.assigns.transaction_hash,
-              socket.assigns.network
-            )
+          case Gateway.get_transaction_receipt(
+                 socket.assigns.transaction_hash,
+                 socket.assigns.network
+               ) do
+            {:ok, %{"execution_resources" => execution_resources} = _receipt} ->
+              execution_resources
 
-          receipt["execution_resources"]
+            {:ok, _} ->
+              # This means that the transactions is reverted
+              %{
+                "builtin_instance_counter" => %{},
+                "n_memory_holes" => "-",
+                "n_steps" => "-"
+              }
+          end
 
         false ->
           %{
