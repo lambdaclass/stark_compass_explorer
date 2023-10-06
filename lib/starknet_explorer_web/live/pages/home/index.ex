@@ -258,7 +258,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
 
     <div class="mx-auto max-w-7xl mt-16">
       <div class="table-title">Related projects</div>
-      <div class="mx-auto max-w-7xl grid lg:grid-cols-3 gap-10 lg:gap-7 mt-4">
+      <div class="mx-auto max-w-7xl grid lg:grid-cols-3 gap-5 lg:gap-7 mt-6 lg:mt-4">
         <div class="pt-5 pb-6 px-6 text-white rounded-lg transition bg-container hover:bg-se-inner-bg border border-dashed border-se-inner-border">
           <div class="subtitle">
             Read our blog
