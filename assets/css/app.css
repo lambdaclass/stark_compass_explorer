@@ -47,7 +47,7 @@ a,
   @apply flex flex-col text-sm md:py-3 px-5 justify-between text-left text-white rounded-lg bg-container;
 }
 .table-header {
-  @apply text-sm flex justify-between items-baseline py-2;
+  @apply text-sm flex justify-between items-center py-2 my-3;
 }
 .table-title {
   @apply font-semibold text-lg;
@@ -129,11 +129,21 @@ a,
 
 /* Search bar */
 form {
-  @apply relative !w-full !max-w-7xl !mx-auto lg:!-mt-10 mb-8 lg:!mb-10;
+  @apply !relative !w-full !max-w-7xl !mx-auto;
 }
+
 input {
-  @apply !bg-container border !border-gray-700 !text-white !pr-10 !w-full text-ellipsis;
+  @apply !bg-container border !border-gray-700 !text-white !pr-10 !w-full text-ellipsis !rounded-lg;
 }
+
+.focus {
+  @apply transition ease-in-out delay-150 lg:translate-y-28  lg:translate-x-36  lg:scale-125 scale-110 duration-300;
+}
+
+.un-focus {
+  @apply transition ease-in-out delay-150 -translate-y-0 scale-100 duration-300;
+}
+
 
 /* Detail pages */
 .block-label {
@@ -181,6 +191,10 @@ input {
 }
 .cash-label {
   @apply text-se-cash-green bg-se-cash-green/5 border-se-cash-green;
+}
+
+.modal-form {
+  @apply !mt-20
 }
 
 /* Dropdown */
@@ -241,4 +255,12 @@ main .option {
 }
 .tippy-box[data-theme~="starknet-explorer"][data-placement^="right"] > .tippy-arrow::before {
   @apply border-r-brand;
+}
+
+#nav-right-side > div:first-child{
+  @apply w-full;
+}
+
+.nav-item{
+  @apply bg-se-inner-bg rounded-md py-3 px-4 lg:p-0 lg:bg-transparent border border-transparent focus:border-brand flex gap-2 items-center;
 }

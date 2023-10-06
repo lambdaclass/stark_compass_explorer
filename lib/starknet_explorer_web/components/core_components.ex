@@ -369,7 +369,8 @@ defmodule StarknetExplorerWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "#{@rest[:class]}",
+          " block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
@@ -665,7 +666,7 @@ defmodule StarknetExplorerWeb.CoreComponents do
 
   def pagination_links(assigns) do
     ~H"""
-    <div class="flex justify-end items-center my-5 text-base">
+    <div class="flex justify-end items-center text-base">
       <button
         class={if @page.page_number == 1, do: "opacity-0 pointer-events-none", else: ""}
         id={@id}

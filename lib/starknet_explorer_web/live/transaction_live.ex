@@ -73,11 +73,6 @@ defmodule StarknetExplorerWeb.TransactionLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-      id: "search-bar",
-      flash: @flash,
-      session: %{"network" => @network}
-    ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <%= if @render_header do %>
         <%= transaction_header(assigns) %>

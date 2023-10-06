@@ -24,6 +24,30 @@ defmodule StarknetExplorer.Data do
     Block.latest_blocks(block_amount, network)
   end
 
+  def first_n_blocks(network, block_amount \\ 15) do
+    case Block.latest_blocks_with_txs(block_amount, network) do
+      no_blocks when no_blocks == nil or no_blocks == [] ->
+        with {:ok, latest_block} <- Rpc.get_latest_block(network),
+             # Create a list getting all blocks from the latest block to the
+             # latest - block_amount discards any error, returns error if
+             # the list is empty
+             blocks = [_ | _] <-
+               for(
+                 n <- 1..block_amount,
+                 block = Rpc.get_block_by_number(latest_block.number - n, network),
+                 match?({:ok, _}, block),
+                 do: block
+               ) do
+          {:ok, blocks}
+        else
+          _ -> {:error, "list is empty"}
+        end
+
+      blocks ->
+        {:ok, blocks}
+    end
+  end
+
   @doc """
   Fetch a block by its hash, first look up in
   the db, if not found, fetch from the RPC provider
@@ -47,6 +71,25 @@ defmodule StarknetExplorer.Data do
     end
   end
 
+  def block_by_partial_hash(hash, network) do
+    case Block.get_by_partial_hash(hash, network) do
+      no_blocks when no_blocks == nil or no_blocks == [] ->
+        with {:ok, blocks} <- first_n_blocks(network, 50) do
+          {:ok,
+           for(
+             nth_block <- blocks,
+             String.contains?(nth_block.hash, hash),
+             do: nth_block
+           )}
+        else
+          err -> {:error, err}
+        end
+
+      blocks ->
+        {:ok, blocks}
+    end
+  end
+
   @doc """
   Fetch a block by number, first look up in
   the db, if not found, fetch from the RPC provider
@@ -67,6 +110,25 @@ defmodule StarknetExplorer.Data do
 
       block ->
         {:ok, block}
+    end
+  end
+
+  def block_by_partial_number(number, network) do
+    case Block.get_by_partial_num(number, network) do
+      no_blocks when no_blocks == nil or no_blocks == [] ->
+        with {:ok, blocks} <- first_n_blocks(network, 50) do
+          {:ok,
+           for(
+             nth_block <- blocks,
+             String.contains?(Integer.to_string(nth_block.number), Integer.to_string(number)),
+             do: nth_block
+           )}
+        else
+          err -> {:error, err}
+        end
+
+      blocks ->
+        {:ok, blocks}
     end
   end
 
@@ -127,6 +189,30 @@ defmodule StarknetExplorer.Data do
   def transaction(tx_hash, network) do
     case Transaction.get_by_hash_with_receipt(tx_hash) do
       nil ->
+        with {:ok, %{"transaction_hash" => _transaction} = tx} <-
+               Rpc.get_transaction(tx_hash, network),
+             {:ok, receipt} <- Rpc.get_transaction_receipt(tx_hash, network) do
+          {:ok,
+           tx
+           |> Transaction.from_rpc_tx()
+           |> Map.put(:receipt, receipt |> StarknetExplorerWeb.Utils.atomize_keys())}
+        else
+          err -> {:error, err}
+        end
+
+      tx ->
+        {:ok, tx}
+    end
+  end
+
+  def transaction_by_partial_hash(tx_hash, network) do
+    case Transaction.get_by_partial_hash(tx_hash) do
+      nil ->
+        {:error, "No match"}
+
+      tx ->
+        {:ok, tx}
+
         case Rpc.get_transaction(tx_hash, network) do
           {:ok, tx} ->
             {:ok, receipt} = Rpc.get_transaction_receipt(tx_hash, network)
@@ -141,9 +227,6 @@ defmodule StarknetExplorer.Data do
           {:error, error} ->
             {:error, error}
         end
-
-      tx ->
-        {:ok, tx}
     end
   end
 

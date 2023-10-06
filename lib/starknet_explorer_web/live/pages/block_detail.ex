@@ -386,11 +386,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <%= live_render(@socket, StarknetExplorerWeb.SearchLive,
-      id: "search-bar",
-      flash: @flash,
-      session: %{"network" => @network}
-    ) %>
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <%= block_detail_header(assigns) %>
       <%= render_info(assigns) %>
@@ -470,7 +465,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
-    <CoreComponents.pagination_links id="txs" page={@page} prev="dec_txs" next="inc_txs" />
+    <div class="mt-2">
+      <CoreComponents.pagination_links id="txs" page={@page} prev="dec_txs" next="inc_txs" />
+    </div>
     """
   end
 
