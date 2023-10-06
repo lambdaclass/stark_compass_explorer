@@ -692,7 +692,9 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Block Number</div>
       <div class="type">
-        <%= @block.number %>
+        <a href={Utils.network_path(@network, "blocks/#{@block.hash}")} class="text-hover-link">
+          <%= @block.number %>
+        </a>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
