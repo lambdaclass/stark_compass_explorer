@@ -264,8 +264,13 @@ defmodule StarknetExplorerWeb.TransactionLive do
           <div>
             <div class="list-h">Transaction Hash</div>
             <div class="hash flex">
-              <%= @transaction.hash
-              |> Utils.shorten_block_hash() %>
+              <a
+                href={Utils.network_path(@network, "transactions/#{@transaction.hash}")}
+                class="text-hover-link"
+              >
+                <%= @transaction.hash
+                |> Utils.shorten_block_hash() %>
+              </a>
               <CoreComponents.copy_button text={@transaction.hash} />
             </div>
           </div>
