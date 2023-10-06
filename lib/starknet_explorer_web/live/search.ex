@@ -19,7 +19,7 @@ defmodule StarknetExplorerWeb.SearchLive do
         />
         <input
           type="text"
-          placeholder="Search"
+          placeholder="Search (cmd+K or ctrl+K)"
           class="pl-12 pr-5 py-3 text-normal w-full text-sm"
           readonly
         />
