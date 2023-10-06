@@ -155,34 +155,39 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     assigns =
       if connected?(socket) do
         {:ok, block} =
-          case Enum.find(
-                 StarknetExplorer.IndexCache.latest_blocks(socket.assigns.network),
-                 fn block ->
-                   block.number == param or block.hash == param
-                 end
-               ) do
-            block = %StarknetExplorer.Block{} ->
-              Logger.debug("[Block Detail] Found block #{block.number} in cache")
+          case :timer.tc(fn ->
+                 Enum.find(
+                   StarknetExplorer.IndexCache.latest_blocks(socket.assigns.network),
+                   fn block ->
+                     block.number == param or block.hash == param
+                   end
+                 )
+               end) do
+            {time, block} = {_, %StarknetExplorer.Block{}} ->
+              Logger.debug(
+                "[Block Detail] Found block #{block.number} in cache in #{time} microseconds"
+              )
+
               {:ok, block}
 
-            _ ->
+            {time, _} ->
               case type do
                 :hash ->
-                  {time, res} =
+                  {query_time, res} =
                     :timer.tc(fn -> Data.block_by_hash(param, socket.assigns.network, false) end)
 
                   Logger.debug(
-                    "[Block Detail] Fetched block #{param} in #{time} microseconds, using hash"
+                    "[Block Detail] Fetched block #{param} in #{query_time} microseconds, query took #{time} microseconds, using :hash"
                   )
 
                   res
 
                 :num ->
-                  {time, res} =
+                  {query_time, res} =
                     :timer.tc(fn -> Data.block_by_number(param, socket.assigns.network, false) end)
 
                   Logger.debug(
-                    "[Block Detail] Fetched block #{param} in #{time} microseconds, using number"
+                    "[Block Detail] Fetched block #{param} in #{query_time} microseconds, query took #{time} microsecond, using :num"
                   )
 
                   res
