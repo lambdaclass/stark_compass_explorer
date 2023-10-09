@@ -136,6 +136,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           Events (<%= @events_count %>)
         </div>
       <% end %>
+      <%= if !@tabs? do %>
+        <span>
+          <div class="option not-active lg:border-b-transparent text-gray-400" }>
+            Loading tabs...
+          </div>
+        </span>
+      <% end %>
     </div>
     """
   end
