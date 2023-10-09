@@ -90,26 +90,26 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <% end %>
       </div>
     </div>
-    <%= if @view != "loading" do %>
+    <div
+      id="dropdown"
+      class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
+      phx-hook="Dropdown"
+    >
+      <span class="networkSelected capitalize"><%= assigns.view %></span>
+      <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
+        <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
+      </span>
+    </div>
+    <div class="options hidden">
       <div
-        id="dropdown"
-        class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
-        phx-hook="Dropdown"
+        class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
+        phx-click="select-view"
+        ,
+        phx-value-view="overview"
       >
-        <span class="networkSelected capitalize"><%= assigns.view %></span>
-        <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
-          <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
-        </span>
+        Overview
       </div>
-      <div class="options hidden">
-        <div
-          class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-          phx-click="select-view"
-          ,
-          phx-value-view="overview"
-        >
-          Overview
-        </div>
+      <%= if @tabs? do %>
         <div
           class={"option #{if assigns.view == "transactions", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
           phx-click="select-view"
@@ -135,8 +135,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         >
           Events
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
     """
   end
 
@@ -152,61 +152,55 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           {:num, num}
       end
 
-    assigns =
-      if connected?(socket) do
-        {:ok, block} =
-          case :timer.tc(fn ->
-                 Enum.find(
-                   StarknetExplorer.IndexCache.latest_blocks(socket.assigns.network),
-                   fn block ->
-                     block.number == param or block.hash == param
-                   end
-                 )
-               end) do
-            {time, block} = {_, %StarknetExplorer.Block{}} ->
+    {:ok, block} =
+      case :timer.tc(fn ->
+             Enum.find(
+               StarknetExplorer.IndexCache.latest_blocks(socket.assigns.network),
+               fn block ->
+                 block.number == param or block.hash == param
+               end
+             )
+           end) do
+        {time, block} = {_, %StarknetExplorer.Block{}} ->
+          Logger.debug(
+            "[Block Detail] Found block #{block.number} in cache in #{time} microseconds"
+          )
+
+          {:ok, block}
+
+        {time, _} ->
+          case type do
+            :hash ->
+              {query_time, res} =
+                :timer.tc(fn -> Data.block_by_hash(param, socket.assigns.network, false) end)
+
               Logger.debug(
-                "[Block Detail] Found block #{block.number} in cache in #{time} microseconds"
+                "[Block Detail] Fetched block #{param} in #{query_time} microseconds, query took #{time} microseconds, using :hash"
               )
 
-              {:ok, block}
+              res
 
-            {time, _} ->
-              case type do
-                :hash ->
-                  {query_time, res} =
-                    :timer.tc(fn -> Data.block_by_hash(param, socket.assigns.network, false) end)
+            :num ->
+              {query_time, res} =
+                :timer.tc(fn -> Data.block_by_number(param, socket.assigns.network, false) end)
 
-                  Logger.debug(
-                    "[Block Detail] Fetched block #{param} in #{query_time} microseconds, query took #{time} microseconds, using :hash"
-                  )
+              Logger.debug(
+                "[Block Detail] Fetched block #{param} in #{query_time} microseconds, query took #{time} microsecond, using :num"
+              )
 
-                  res
-
-                :num ->
-                  {query_time, res} =
-                    :timer.tc(fn -> Data.block_by_number(param, socket.assigns.network, false) end)
-
-                  Logger.debug(
-                    "[Block Detail] Fetched block #{param} in #{query_time} microseconds, query took #{time} microsecond, using :num"
-                  )
-
-                  res
-              end
+              res
           end
-
-        [
-          gas_price: Utils.hex_wei_to_eth(block.gas_fee_in_wei),
-          execution_resources: block.execution_resources,
-          block: block,
-          view: "overview",
-          verification: "Pending",
-          block_age: Utils.get_block_age(block)
-        ]
-      else
-        [
-          view: "loading"
-        ]
       end
+
+    assigns = [
+      gas_price: Utils.hex_wei_to_eth(block.gas_fee_in_wei),
+      execution_resources: block.execution_resources,
+      block: block,
+      view: "overview",
+      verification: "Pending",
+      block_age: Utils.get_block_age(block),
+      tabs?: connected?(socket)
+    ]
 
     {:ok, assign(socket, assigns)}
   end
@@ -571,87 +565,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       <% end %>
     </div>
-    """
-  end
-
-  def render_info(assigns = %{view: "loading"}) do
-    ~H"""
-    <div class="grid-4 custom-list-item">
-      <div class="block-label">Block Number</div>
-      <div class="type">
-        Loading
-      </div>
-    </div>
-    <div class="grid-4 custom-list-item">
-      <div class="block-label">Block Hash</div>
-      <div class="block-data col-span-3">
-        <div class="hash flex">
-          Loading
-        </div>
-      </div>
-    </div>
-    <div class="grid-4 custom-list-item">
-      <div class="block-label">Block Status</div>
-      <div class="col-span-3">
-        <span class="info-label">
-          Loading
-        </span>
-      </div>
-    </div>
-    <div class="grid-4 custom-list-item">
-      <div class="block-label">State Root</div>
-      <div class="block-data col-span-3">
-        <div class="hash flex">
-          Loading
-        </div>
-      </div>
-    </div>
-    <div class="grid-4 custom-list-item">
-      <div class="block-label">Parent Hash</div>
-      <div class="block-data col-span-3">
-        <div class="hash flex">
-          Loading
-        </div>
-      </div>
-    </div>
-    <div class="grid-4 custom-list-item">
-      <div class="block-label">
-        Sequencer Address
-      </div>
-      <div class="block-data col-span-3">
-        <div class="hash flex">
-          Loading
-        </div>
-      </div>
-    </div>
-    <%= if Application.get_env(:starknet_explorer, :enable_gateway_data) do %>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label">
-          Gas Price
-        </div>
-        <div class="col-span-3">
-          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-            <div
-              class="break-all bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1"
-              phx-update="replace"
-              id="gas-price"
-            >
-              Loading
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label">
-          Total execution resources
-        </div>
-        <div class="col-span-3">
-          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-            Loading
-          </div>
-        </div>
-      </div>
-    <% end %>
     """
   end
 
