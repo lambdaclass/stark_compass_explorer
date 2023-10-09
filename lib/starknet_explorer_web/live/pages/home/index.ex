@@ -279,7 +279,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             YAS is Yet Another Swap on Starknet but bringing the best prices and yield to Degens.
           </div>
           <div>
-            <a class="inline-block mt-3">
+            <a class="inline-block mt-3" href="https://www.yetanotherswap.com">
               https://www.yetanotherswap.com
             </a>
           </div>
@@ -288,7 +288,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           <div class="subtitle">
             Follow LambdaStarknet on twitter
           </div>
-          <a>
+          <a href="https://twitter.com/LambdaStarknet">
             https://twitter.com/LambdaStarknet
           </a>
         </div>
