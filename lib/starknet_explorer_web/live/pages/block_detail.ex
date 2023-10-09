@@ -116,7 +116,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           ,
           phx-value-view="transactions"
         >
-          Transactions
+          Transactions (<%= @transactions_count %>)
         </div>
         <div
           class={"option #{if assigns.view == "messages", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
@@ -124,7 +124,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           ,
           phx-value-view="messages"
         >
-          Message Logs
+          Message Logs (<%= @messages_count %>)
         </div>
         <div
           class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
@@ -133,7 +133,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           phx-value-view="events"
           ,
         >
-          Events
+          Events (<%= @events_count %>)
         </div>
       <% end %>
     </div>
@@ -192,15 +192,42 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           end
       end
 
-    assigns = [
-      gas_price: Utils.hex_wei_to_eth(block.gas_fee_in_wei),
-      execution_resources: block.execution_resources,
-      block: block,
-      view: "overview",
-      verification: "Pending",
-      block_age: Utils.get_block_age(block),
-      tabs?: connected?(socket)
-    ]
+    socket = assign(socket, :block, block)
+
+    extra_assings =
+      if connected?(socket) do
+        transactions = block_transactions(socket)
+
+        # note: most transactions receipt do not contain messages
+        l1_to_l2_messages =
+          transactions |> Enum.map(&Message.from_transaction/1) |> Enum.reject(&is_nil/1)
+
+        messages =
+          (transactions
+           |> Enum.map(fn tx -> tx.receipt end)
+           |> Enum.flat_map(&Message.from_transaction_receipt/1)) ++ l1_to_l2_messages
+
+        [
+          transactions_count: length(transactions),
+          messages_count: length(messages),
+          events_count: Events.get_count_by_block(block.number, socket.assigns.network),
+          transactions: transactions,
+          messages: messages
+        ]
+      else
+        []
+      end
+
+    assigns =
+      [
+        gas_price: Utils.hex_wei_to_eth(block.gas_fee_in_wei),
+        execution_resources: block.execution_resources,
+        block: block,
+        view: "overview",
+        verification: "Pending",
+        block_age: Utils.get_block_age(block),
+        tabs?: connected?(socket)
+      ] ++ extra_assings
 
     {:ok, assign(socket, assigns)}
   end
@@ -211,20 +238,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         %{"view" => "messages"},
         socket
       ) do
-    transactions = block_transactions(socket)
-
-    # note: most transactions receipt do not contain messages
-    l1_to_l2_messages =
-      transactions |> Enum.map(&Message.from_transaction/1) |> Enum.reject(&is_nil/1)
-
-    messages =
-      (transactions
-       |> Enum.map(fn tx -> tx.receipt end)
-       |> Enum.flat_map(&Message.from_transaction_receipt/1)) ++ l1_to_l2_messages
-
     assigns = [
-      view: "messages",
-      messages: messages
+      view: "messages"
     ]
 
     {:noreply, assign(socket, assigns)}

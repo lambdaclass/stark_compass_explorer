@@ -173,6 +173,14 @@ defmodule StarknetExplorer.Events do
     |> Repo.one()
   end
 
+  def get_count_by_block(block_number, network) do
+    from(event in __MODULE__,
+      where: event.network == ^network and event.block_number == ^block_number,
+      select: count()
+    )
+    |> Repo.one()
+  end
+
   def fetch_from_rpc(block_hash, network) do
     # 1..1000 is a made up number, we are capable of bringing at most 1000 * @chunk_size events.
     # It will halt when the last page is received.
