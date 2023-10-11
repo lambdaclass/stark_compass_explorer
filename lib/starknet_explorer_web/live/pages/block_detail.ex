@@ -241,6 +241,48 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   @impl true
   def handle_event(
+        "change-page",
+        %{"page-number-input" => page_number},
+        socket
+      ) do
+    assigns =
+      case socket.assigns.view do
+        "transactions" ->
+          filter = Map.get(socket.assigns, :tx_filter, "ALL")
+
+          page =
+            Transaction.paginate_txs_by_block_number(
+              %{page: page_number},
+              socket.assigns.block.number,
+              socket.assigns.network,
+              filter
+            )
+
+          [
+            page: page
+          ]
+
+        "events" ->
+          page =
+            Events.paginate_events(
+              %{page: page_number},
+              socket.assigns.block.number,
+              socket.assigns.network
+            )
+
+          [
+            page: page
+          ]
+
+        _ ->
+          []
+      end
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event(
         "select-filter",
         %{"filter" => filter},
         socket

@@ -683,6 +683,18 @@ defmodule StarknetExplorerWeb.CoreComponents do
           <img src="/images/chevron.svg" />
         </button>
       <% end %>
+      <form class="normal-form" phx-submit="change-page">
+        <div class="relative z-20">
+          <.input
+            type="number"
+            name="page-number-input"
+            value={nil}
+            id="page-number-input"
+            class="py-3 pl-12 pr-5 !rounded-b-none"
+            placeholder="Page number"
+          />
+        </div>
+      </form>
     </div>
     """
   end

@@ -90,6 +90,16 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
     pagination(socket, new_page_number)
   end
 
+  @impl true
+  def handle_event(
+        "change-page",
+        %{"page-number-input" => page_number},
+        socket
+      ) do
+    new_page_number = String.to_integer(page_number)
+    pagination(socket, new_page_number)
+  end
+
   def pagination(socket, new_page_number) do
     page =
       Block.paginate_blocks(
