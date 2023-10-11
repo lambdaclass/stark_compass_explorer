@@ -295,7 +295,8 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     assigns = [
       view: "transactions",
       page: page,
-      receipts: block_transactions_receipt(socket)
+      receipts: block_transactions_receipt(socket),
+      tx_filter: "ALL"
     ]
 
     {:noreply, assign(socket, assigns)}
@@ -439,69 +440,73 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   def render_tx_filter(assigns) do
     ~H"""
-    <div
-      id="dropdown"
-      class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
-      phx-hook="Dropdown"
-    >
-      <span class="networkSelected capitalize"><%= assigns.view %></span>
-      <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
-        <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
-      </span>
-    </div>
     <div>
-      <div class="options hidden">
+      <div>
         <div
-          class={"option #{if is_nil(Map.get(assigns, :tx_filter)), do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-          phx-click="select-filter"
-          ,
-          phx-value-filter="ALL"
+          id="dropdown"
+          class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
+          phx-hook="Dropdown"
         >
-          All
+          <span class="networkSelected capitalize"><%= assigns.view %></span>
+          <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
+            <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
+          </span>
         </div>
-        <%= if @tabs? do %>
-          <div
-            class={"option #{if Map.get(assigns, :tx_filter) == "INVOKE", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-            phx-click="select-filter"
-            ,
-            phx-value-filter="INVOKE"
-          >
-            Invoke
+        <div>
+          <div class="options hidden">
+            <div
+              class={"option #{if Map.get(assigns, :tx_filter) == "ALL", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
+              phx-click="select-filter"
+              ,
+              phx-value-filter="ALL"
+            >
+              All
+            </div>
+            <%= if @tabs? do %>
+              <div
+                class={"option #{if Map.get(assigns, :tx_filter) == "INVOKE", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
+                phx-click="select-filter"
+                ,
+                phx-value-filter="INVOKE"
+              >
+                Invoke
+              </div>
+              <div
+                class={"option #{if Map.get(assigns, :tx_filter) == "DEPLOY_ACCOUNT", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
+                phx-click="select-filter"
+                ,
+                phx-value-filter="DEPLOY_ACCOUNT"
+              >
+                Deploy Account
+              </div>
+              <div
+                class={"option #{if Map.get(assigns, :tx_filter) == "DEPLOY", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
+                phx-click="select-filter"
+                ,
+                phx-value-filter="DEPLOY"
+              >
+                Deploy
+              </div>
+              <div
+                class={"option #{if Map.get(assigns, :tx_filter) == "DECLARE", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
+                phx-click="select-filter"
+                ,
+                phx-value-filter="DECLARE"
+                ,
+              >
+                Declare
+              </div>
+            <% end %>
+            <div
+              class={"option #{if Map.get(assigns, :tx_filter) == "L1_HANDLER", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
+              phx-click="select-filter"
+              ,
+              phx-value-filter="L1_HANDLER"
+              ,
+            >
+              L1 Handler
+            </div>
           </div>
-          <div
-            class={"option #{if Map.get(assigns, :tx_filter) == "DEPLOY_ACCOUNT", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-            phx-click="select-filter"
-            ,
-            phx-value-filter="DEPLOY_ACCOUNT"
-          >
-            Deploy Account
-          </div>
-          <div
-            class={"option #{if Map.get(assigns, :tx_filter) == "DEPLOY", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-            phx-click="select-filter"
-            ,
-            phx-value-filter="DEPLOY"
-          >
-            Deploy
-          </div>
-          <div
-            class={"option #{if Map.get(assigns, :tx_filter) == "DECLARE", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-            phx-click="select-filter"
-            ,
-            phx-value-filter="DECLARE"
-            ,
-          >
-            Declare
-          </div>
-        <% end %>
-        <div
-          class={"option #{if Map.get(assigns, :tx_filter) == "L1_HANDLER", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-          phx-click="select-filter"
-          ,
-          phx-value-filter="L1_HANDLER"
-          ,
-        >
-          L1 Handler
         </div>
       </div>
     </div>
