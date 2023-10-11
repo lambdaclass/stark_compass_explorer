@@ -416,21 +416,17 @@ defmodule StarknetExplorerWeb.TransactionLive do
                     <div class="flex items-center gap-0.5 flex-wrap">
                       <span>call</span>
                       <span class="text-se-pink ml-1"><%= input.call.name %></span>
-                      (<.intersperse
-                        :let={arg}
-                        enum={input.call.args}
-                      ><:separator><span class="mr-2">,</span></:separator><span class="text-blue-400"><%= arg.name %></span></.intersperse>)
-                      <span class="text-blue-400 mx-1">-></span>
+                      (<.intersperse :let={arg} enum={input.call.args}>
+                        <:separator><span class="mr-2">,</span></:separator>
+                        <span class="text-blue-400"><%= arg.name %></span>
+                      </.intersperse>) <span class="text-blue-400 mx-1">-></span>
                       <div class="hash">
                         <%= input.selector %>
                         <CoreComponents.copy_button text={input.selector} />
                       </div>
                     </div>
                     <div class="arrow-button transition-all duration-200 shrink-0">
-                      <img
-                        class="transform -rotate-90"
-                        src={~p"/images/chevron.svg"}
-                      />
+                      <img class="transform -rotate-90" src={~p"/images/chevron.svg"} />
                     </div>
                   </div>
                   <div class="w-full bg-[#1e1e2b]/25 p-5">
