@@ -410,27 +410,30 @@ defmodule StarknetExplorerWeb.TransactionLive do
                 <div class="inner-block custom-list !p-0">
                   <div
                     id={"#{input.call.name}"}
-                    class="w-full bg-black/20 p-5 !flex justify-between"
+                    class="w-full bg-black/20 p-5 !flex items-start justify-between hover:bg-black/10"
                     phx-hook="ShowTableData"
                   >
-                    <div phx-no-format><span class="flex">
-                  <span>
-                    <span>call</span>
-                    <span class="text-se-pink ml-1"><%= input.call.name %></span>
-                    (<.intersperse
-                      :let={arg}
-                      enum={input.call.args}
-                    ><:separator><span class="mr-2">,</span></:separator><span class="text-blue-400"><%= arg.name %></span></.intersperse>)
-                    <span class="text-blue-400 mx-1">-></span> <%= input.selector %>
-                  </span>
-                  <CoreComponents.copy_button text={input.selector} /></span>
-                </div>
-                    <img
-                      class="arrow-button transform rotate-180 transition-all duration-500"
-                      src={~p"/images/arrow-up.svg"}
-                    />
+                    <div class="flex items-center gap-0.5 flex-wrap">
+                      <span>call</span>
+                      <span class="text-se-pink ml-1"><%= input.call.name %></span>
+                      (<.intersperse
+                        :let={arg}
+                        enum={input.call.args}
+                      ><:separator><span class="mr-2">,</span></:separator><span class="text-blue-400"><%= arg.name %></span></.intersperse>)
+                      <span class="text-blue-400 mx-1">-></span>
+                      <div class="hash">
+                        <%= input.selector %>
+                        <CoreComponents.copy_button text={input.selector} />
+                      </div>
+                    </div>
+                    <div class="arrow-button transition-all duration-200 shrink-0">
+                      <img
+                        class="transform -rotate-90"
+                        src={~p"/images/chevron.svg"}
+                      />
+                    </div>
                   </div>
-                  <div class="hidden w-full bg-[#1e1e2b]/25 p-5">
+                  <div class="w-full bg-[#1e1e2b]/25 p-5">
                     <%= for arg <- input.call.args do %>
                       <div class="custom-list-item">
                         <div class="pb-5">
@@ -447,8 +450,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
                         </div>
                         <div class="col-span-2 pb-5">
                           <div class="list-h">Value</div>
-                          <pre><%= Utils.format_arg_value(arg) %></pre>
-                          <CoreComponents.copy_button text={Utils.format_arg_value(arg)} />
+                          <div class="hash flex">
+                            <%= Utils.format_arg_value(arg) %>
+                            <CoreComponents.copy_button text={Utils.format_arg_value(arg)} />
+                          </div>
                         </div>
                       </div>
                     <% end %>
