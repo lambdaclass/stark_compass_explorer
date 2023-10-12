@@ -233,10 +233,17 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         view: "overview",
         verification: "Pending",
         block_age: Utils.get_block_age(block),
-        tabs?: connected?(socket)
+        tabs?: connected?(socket),
+        active_pagination_id: ""
       ] ++ extra_assings
 
     {:ok, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event("toggle-page-edit", %{"target" => target}, socket) do
+    socket = assign(socket, active_pagination_id: target)
+    {:noreply, push_event(socket, "focus", %{id: target})}
   end
 
   @impl true
@@ -628,7 +635,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       </div>
     <% end %>
     <div class="mt-2">
-      <CoreComponents.pagination_links id="txs" page={@page} prev="dec_txs" next="inc_txs" />
+      <CoreComponents.pagination_links
+        id="txs"
+        page={@page}
+        prev="dec_txs"
+        next="inc_txs"
+        active_pagination_id={@active_pagination_id}
+      />
     </div>
     """
   end
@@ -894,7 +907,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
-    <CoreComponents.pagination_links id="events" page={@page} prev="dec_events" next="inc_events" />
+    <CoreComponents.pagination_links
+      id="events"
+      page={@page}
+      prev="dec_events"
+      next="inc_events"
+      active_pagination_id={@active_pagination_id}
+    />
     """
   end
 
