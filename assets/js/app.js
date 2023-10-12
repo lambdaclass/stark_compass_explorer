@@ -55,6 +55,16 @@ window.addEventListener(`phx:focus`, (event) => {
   }
 })
 
+window.addEventListener(`phx:select`, (event) => {
+  event.target.select();
+})
+
+window.addEventListener(`phx:blur`, (event) => {
+  setTimeout(() => {
+    document.activeElement.blur();
+  }, 100);
+})
+
 // Hamburger menu
 Hooks.Nav = {
   mounted() {
