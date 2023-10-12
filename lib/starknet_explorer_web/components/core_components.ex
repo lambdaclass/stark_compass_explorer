@@ -673,7 +673,11 @@ defmodule StarknetExplorerWeb.CoreComponents do
         phx-hook="ScrollToTop"
         phx-click={@prev}
       >
-        <img class="transform rotate-180" src="/images/chevron.svg" />
+        <img
+          alt="Arrow to go to the next page"
+          class="transform rotate-180"
+          src="/images/chevron.svg"
+        />
       </button>
       <div class="flex items-center text-brand px-3 py-1 rounded-lg">
         <div
@@ -706,7 +710,7 @@ defmodule StarknetExplorerWeb.CoreComponents do
       </div>
       <%= if @page.page_number != @page.total_pages do %>
         <button id={"scroll-#{@id}"} phx-hook="ScrollToTop" phx-click={@next}>
-          <img src="/images/chevron.svg" />
+          <img alt="Arrow to go to the previous page" src="/images/chevron.svg" />
         </button>
       <% end %>
     </div>
@@ -718,8 +722,14 @@ defmodule StarknetExplorerWeb.CoreComponents do
     <div class="copy-container shrink-0" id={Ecto.UUID.generate()} phx-hook="Copy">
       <div class="relative">
         <div class="ml-2 relative shrink-0">
-          <img class="copy-btn copy-text w-5 h-5" src="/images/copy.svg" data-text={@text} />
           <img
+            alt="Copy to clipboard"
+            class="copy-btn copy-text w-5 h-5"
+            src="/images/copy.svg"
+            data-text={@text}
+          />
+          <img
+            alt="Copied to clipboard"
             class="copy-check absolute top-0 left-0 w-5 h-5 opacity-0 pointer-events-none"
             src="/images/check-square.svg"
           />
@@ -732,6 +742,7 @@ defmodule StarknetExplorerWeb.CoreComponents do
   def tooltip(assigns) do
     ~H"""
     <img
+      alt="Help"
       id={@id}
       phx-hook="Tooltip"
       data-tip={@text}

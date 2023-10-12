@@ -14,6 +14,7 @@ defmodule StarknetExplorerWeb.SearchLive do
         phx-click="open-search"
       >
         <img
+          alt="Search bar icon"
           src={~p"/images/search.svg"}
           class="absolute top-1/2 left-4 transform -translate-y-1/2 w-5 h-auto"
         />
@@ -40,10 +41,10 @@ defmodule StarknetExplorerWeb.SearchLive do
               <div class="relative z-20">
                 <div class="absolute top-1/2 left-4 transform -translate-y-1/2 flex items-enter">
                   <%= if @loading do %>
-                    <img class="w-5 h-auto" src={~p"/images/loading-blocks.svg"} />
+                    <img alt="Loading blocks" class="w-5 h-auto" src={~p"/images/loading-blocks.svg"} />
                   <% else %>
                     <button type="submit">
-                      <img class="w-5 h-auto" src={~p"/images/search.svg"} />
+                      <img alt="Submit request" class="w-5 h-auto" src={~p"/images/search.svg"} />
                     </button>
                   <% end %>
                 </div>
@@ -72,7 +73,8 @@ defmodule StarknetExplorerWeb.SearchLive do
                     <% "Searching..." -> %>
                     <% "No results found" -> %>
                       <div class="flex flex-col gap-2 items-center py-4">
-                        <img class="w-5 h-auto" src={~p"/images/search-w.svg"} /> No results found
+                        <img alt="Empty results" class="w-5 h-auto" src={~p"/images/search-w.svg"} />
+                        No results found
                       </div>
                     <% _ -> %>
                       <%= assigns[:result] %>
@@ -93,6 +95,7 @@ defmodule StarknetExplorerWeb.SearchLive do
                                   <%= case assigns[:result] do %>
                                     <% "Block" -> %>
                                       <img
+                                        alt="Blocks logo"
                                         class="shrink-0 inline-block w-6 h-auto"
                                         src={~p"/images/box.svg"}
                                       />
@@ -106,6 +109,7 @@ defmodule StarknetExplorerWeb.SearchLive do
                                       </div>
                                     <% "Message" -> %>
                                       <img
+                                        alt="Messages logo"
                                         class="shrink-0 inline-block w-6 h-auto"
                                         src={~p"/images/message.svg"}
                                       />
@@ -114,6 +118,7 @@ defmodule StarknetExplorerWeb.SearchLive do
                                       </div>
                                     <% "Transaction" -> %>
                                       <img
+                                        alt="Transactions logo"
                                         class="shrink-0 inline-block w-5 h-auto"
                                         src={~p"/images/transaction.svg"}
                                       />
@@ -122,6 +127,7 @@ defmodule StarknetExplorerWeb.SearchLive do
                                       </div>
                                     <% "Event" -> %>
                                       <img
+                                        alt="Events logo"
                                         class="shrink-0 inline-block w-5 h-auto"
                                         src={~p"/images/calendar.svg"}
                                       />
