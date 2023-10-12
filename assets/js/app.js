@@ -50,7 +50,9 @@ Hooks.SearchBar = {
 }
 
 window.addEventListener(`phx:focus`, (event) => {
-  document.getElementById(event.detail.id).focus();
+  if (event.detail.id.length){
+    document.getElementById(event.detail.id).focus();
+  }
 })
 
 // Hamburger menu

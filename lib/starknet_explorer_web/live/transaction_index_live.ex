@@ -11,7 +11,13 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
     <div class="max-w-7xl mx-auto">
       <div class="table-header">
         <h2>Transactions</h2>
-        <CoreComponents.pagination_links id="transactions" page={@page} prev="dec_txs" next="inc_txs" />
+        <CoreComponents.pagination_links
+          id="transactions-top-pagination"
+          page={@page}
+          prev="dec_txs"
+          next="inc_txs"
+          active_pagination_id={@active_pagination_id}
+        />
       </div>
       <div class="table-block">
         <div class="grid-7 table-th">
@@ -67,7 +73,13 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
         </div>
       </div>
       <div class="mt-2">
-        <CoreComponents.pagination_links id="events" page={@page} prev="dec_txs" next="inc_txs" />
+        <CoreComponents.pagination_links
+          id="transactions-bottom-pagination"
+          page={@page}
+          prev="dec_txs"
+          next="inc_txs"
+          active_pagination_id={@active_pagination_id}
+        />
       </div>
     </div>
     """
@@ -79,7 +91,8 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
 
     {:ok,
      assign(socket,
-       page: page
+       page: page,
+       active_pagination_id: ""
      )}
   end
 
@@ -110,6 +123,11 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
       ) do
     new_page_number = String.to_integer(page_number)
     pagination(socket, new_page_number)
+  end
+
+  def handle_event("toggle-page-edit", %{"target" => target}, socket) do
+    socket = assign(socket, active_pagination_id: target)
+    {:noreply, push_event(socket, "focus", %{id: target})}
   end
 
   def pagination(socket, new_page_number) do
