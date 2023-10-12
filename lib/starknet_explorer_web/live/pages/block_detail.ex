@@ -496,7 +496,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
           phx-hook="Dropdown"
         >
-          <span class="networkSelected capitalize"><%= assigns.view %></span>
+          <span class="networkSelected capitalize"><%= assigns.tx_filter %></span>
           <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
             <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
           </span>
