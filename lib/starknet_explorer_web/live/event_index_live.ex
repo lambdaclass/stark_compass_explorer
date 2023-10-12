@@ -10,7 +10,13 @@ defmodule StarknetExplorerWeb.EventIndexLive do
     <div class="max-w-7xl mx-auto">
       <div class="table-header">
         <h2>Events</h2>
-        <CoreComponents.pagination_links id="events" page={@page} prev="dec_events" next="inc_events" />
+        <CoreComponents.pagination_links
+          id="events-top-pagination"
+          page={@page}
+          prev="dec_events"
+          next="inc_events"
+          active_pagination_id={@active_pagination_id}
+        />
       </div>
       <div class="table-block">
         <div class="grid-6 table-th">
@@ -88,7 +94,13 @@ defmodule StarknetExplorerWeb.EventIndexLive do
         <% end %>
       </div>
       <div class="mt-2">
-        <CoreComponents.pagination_links id="events" page={@page} prev="dec_events" next="inc_events" />
+        <CoreComponents.pagination_links
+          id="events-bottom-pagination"
+          page={@page}
+          prev="dec_events"
+          next="inc_events"
+          active_pagination_id={@active_pagination_id}
+        />
       </div>
     </div>
     """
@@ -106,7 +118,8 @@ defmodule StarknetExplorerWeb.EventIndexLive do
       )
 
     assigns = [
-      page: page
+      page: page,
+      active_pagination_id: ""
     ]
 
     {:ok, assign(socket, assigns)}
@@ -121,6 +134,21 @@ defmodule StarknetExplorerWeb.EventIndexLive do
   def handle_event("dec_events", _value, socket) do
     new_page_number = socket.assigns.page.page_number - 1
     pagination(socket, new_page_number)
+  end
+
+  @impl true
+  def handle_event(
+        "change-page",
+        %{"page-number-input" => page_number},
+        socket
+      ) do
+    new_page_number = String.to_integer(page_number)
+    pagination(socket, new_page_number)
+  end
+
+  def handle_event("toggle-page-edit", %{"target" => target}, socket) do
+    socket = assign(socket, active_pagination_id: target)
+    {:noreply, push_event(socket, "focus", %{id: target})}
   end
 
   def pagination(socket, new_page_number) do

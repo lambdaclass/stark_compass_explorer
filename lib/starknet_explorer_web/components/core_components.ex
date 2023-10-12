@@ -675,11 +675,37 @@ defmodule StarknetExplorerWeb.CoreComponents do
       >
         <img class="transform rotate-180" src="/images/chevron.svg" />
       </button>
-      <div class="text-brand px-3 py-1 rounded-lg">
-        <%= @page.page_number %> / <%= @page.total_pages %>
+      <div class="flex items-center text-brand px-3 py-1 rounded-lg">
+        <div
+          class={"page-number #{if @active_pagination_id == "page-number-input-#{@id}", do: 'hidden', else: ''}"}
+          phx-click="toggle-page-edit"
+          phx-value-target={"page-number-input-#{@id}"}
+        >
+          <%= @page.page_number %>
+        </div>
+        <form
+          class={"#{if @active_pagination_id == "page-number-input-#{@id}", do: '', else: 'hidden'}"}
+          phx-submit="change-page"
+        >
+          <div class="relative z-20">
+            <.input
+              type="number"
+              name="page-number-input"
+              value={nil}
+              id={"page-number-input-#{@id}"}
+              class="page-number"
+              placeholder={@page.page_number}
+              phx-blur="toggle-page-edit"
+              phx-value-target=""
+            />
+          </div>
+        </form>
+        <div class="shrink-0">
+          / <%= @page.total_pages %>
+        </div>
       </div>
       <%= if @page.page_number != @page.total_pages do %>
-        <button id={@id} phx-hook="ScrollToTop" phx-click={@next}>
+        <button id={"scroll-#{@id}"} phx-hook="ScrollToTop" phx-click={@next}>
           <img src="/images/chevron.svg" />
         </button>
       <% end %>

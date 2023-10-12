@@ -274,3 +274,22 @@ main .option {
 .nav-item{
   @apply bg-se-inner-bg rounded-md py-3 px-4 lg:p-0 lg:bg-transparent border border-transparent focus:border-brand flex gap-2 items-center;
 }
+
+.page-number{
+  @apply !w-auto !py-1 !px-3 !mr-2 bg-container border border-gray-700 text-white !rounded-md text-sm text-right;
+}
+input.page-number{
+  @apply !w-14;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input.page-number::-webkit-outer-spin-button,
+input.page-number::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input.page-number[type=number] {
+  -moz-appearance: textfield;
+}
