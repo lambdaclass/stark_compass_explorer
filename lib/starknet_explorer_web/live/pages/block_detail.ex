@@ -97,7 +97,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     >
       <span class="networkSelected capitalize"><%= assigns.view %></span>
       <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
-        <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
+        <img
+          alt="Dropdown menu of block detail screens"
+          class="transform rotate-90 w-5 h-5"
+          src={~p"/images/dropdown.svg"}
+        />
       </span>
     </div>
     <div class="options hidden">
@@ -233,10 +237,77 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         view: "overview",
         verification: "Pending",
         block_age: Utils.get_block_age(block),
-        tabs?: connected?(socket)
+        tabs?: connected?(socket),
+        active_pagination_id: ""
       ] ++ extra_assings
 
     {:ok, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event(
+        "change-page",
+        %{"page-number-input" => page_number},
+        socket
+      ) do
+    assigns =
+      case socket.assigns.view do
+        "transactions" ->
+          filter = Map.get(socket.assigns, :tx_filter, "ALL")
+
+          page =
+            Transaction.paginate_txs_by_block_number(
+              %{page: page_number},
+              socket.assigns.block.number,
+              socket.assigns.network,
+              filter
+            )
+
+          [
+            page: page
+          ]
+
+        "events" ->
+          page =
+            Events.paginate_events(
+              %{page: page_number},
+              socket.assigns.block.number,
+              socket.assigns.network
+            )
+
+          [
+            page: page
+          ]
+
+        _ ->
+          []
+      end
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event(
+        "select-filter",
+        %{"filter" => filter},
+        socket
+      ) do
+    page =
+      Transaction.paginate_txs_by_block_number(
+        %{page: 0},
+        socket.assigns.block.number,
+        socket.assigns.network,
+        filter
+      )
+
+    assigns = [
+      view: "transactions",
+      page: page,
+      receipts: block_transactions_receipt(socket),
+      tx_filter: filter
+    ]
+
+    {:noreply, assign(socket, assigns)}
   end
 
   @impl true
@@ -489,9 +560,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
           phx-hook="Dropdown"
         >
-          <span class="networkSelected capitalize"><%= assigns.view %></span>
+          <span class="networkSelected capitalize"><%= assigns.tx_filter %></span>
           <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
-            <img class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
+            <img
+              alt="Dropdown menu of transaction types"
+              class="transform rotate-90 w-5 h-5"
+              src={~p"/images/dropdown.svg"}
+            />
           </span>
         </div>
         <div>
@@ -608,11 +683,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
                   <img
+                    alt="Copy button logo"
                     class="copy-btn copy-text w-4 h-4"
                     src={~p"/images/copy.svg"}
                     data-text={sender_address || "-"}
                   />
                   <img
+                    alt="Copied checkmark logo"
                     class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
                     src={~p"/images/check-square.svg"}
                   />
@@ -628,7 +705,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       </div>
     <% end %>
     <div class="mt-2">
-      <CoreComponents.pagination_links id="txs" page={@page} prev="dec_txs" next="inc_txs" />
+      <CoreComponents.pagination_links
+        id="txs"
+        page={@page}
+        prev="dec_txs"
+        next="inc_txs"
+        active_pagination_id={@active_pagination_id}
+      />
     </div>
     """
   end
@@ -717,11 +800,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
                 <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                   <div class="relative">
                     <img
+                      alt="Copy button logo"
                       class="copy-btn copy-text w-4 h-4"
                       src={~p"/images/copy.svg"}
                       data-text={message.transaction_hash}
                     />
                     <img
+                      alt="Copied checkmark logo"
                       class="copy-check absolute top-0 left-0 w-4 h-4 opacity-0 pointer-events-none"
                       src={~p"/images/check-square.svg"}
                     />
@@ -894,7 +979,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     <% end %>
-    <CoreComponents.pagination_links id="events" page={@page} prev="dec_events" next="inc_events" />
+    <CoreComponents.pagination_links
+      id="events"
+      page={@page}
+      prev="dec_events"
+      next="inc_events"
+      active_pagination_id={@active_pagination_id}
+    />
     """
   end
 

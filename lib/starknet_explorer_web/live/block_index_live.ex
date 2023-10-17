@@ -77,7 +77,8 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
   def mount(_params, _session, socket) do
     {:ok,
      assign(socket,
-       page: Block.paginate_blocks(%{}, socket.assigns.network)
+       page: Block.paginate_blocks(%{}, socket.assigns.network),
+       active_pagination_id: ""
      )}
   end
 

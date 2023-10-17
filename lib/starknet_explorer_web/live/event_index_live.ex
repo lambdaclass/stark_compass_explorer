@@ -116,7 +116,8 @@ defmodule StarknetExplorerWeb.EventIndexLive do
       )
 
     assigns = [
-      page: page
+      page: page,
+      active_pagination_id: ""
     ]
 
     {:ok, assign(socket, assigns)}

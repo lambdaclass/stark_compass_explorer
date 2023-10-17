@@ -191,7 +191,9 @@ defmodule StarknetExplorer.Transaction do
     |> Repo.paginate(params)
   end
 
-  def paginate_transactions_for_index(params, network) do
+  def paginate_transactions_for_index(params, network, filter \\ "ALL")
+
+  def paginate_transactions_for_index(params, network, "ALL") do
     query =
       from t in Transaction,
         where: t.network == ^network,
@@ -207,6 +209,18 @@ defmodule StarknetExplorer.Transaction do
       end
 
     query |> Repo.paginate(Map.put(params, :options, %{total_entries: total_rows}))
+  end
+
+  def paginate_transactions_for_index(params, network, filter) do
+    query =
+      from t in Transaction,
+        where: t.network == ^network and t.type == ^filter,
+        join: b in Block,
+        on: t.block_number == b.number and t.network == b.network,
+        select: %{hash: t.hash, type: t.type, timestamp: b.timestamp, status: b.status},
+        order_by: [desc: b.timestamp]
+
+    query |> Repo.paginate(params)
   end
 
   @spec rename_rpc_fields(map) :: map

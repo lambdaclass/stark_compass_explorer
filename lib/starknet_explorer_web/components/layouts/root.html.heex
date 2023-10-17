@@ -7,6 +7,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href={~p"/images/favicon-32x32.png"} />
     <link rel="icon" type="image/png" sizes="16x16" href={~p"/images/favicon-16x16.png"} />
+    <link rel="icon" type="image/png" sizes="48x48" href={~p"/images/favicon-48x48.png"} />
     <!-- Primary Meta Tags -->
     <title>Stark Compass Explorer</title>
     <meta name="title" content="Stark Compass Explorer" />
@@ -45,7 +46,7 @@
           href={Utils.network_path(@conn.assigns.network)}
           class="z-50 text-xl mb-6 lg:mb-0 shrink-0"
         >
-          <img src={~p"/images/logo.svg"} class="h-11 xl:h-11" />
+          <img alt="Logo of the website" src={~p"/images/logo.svg"} class="h-11 xl:h-11" />
         </a>
         <div id="nav-right-side" class="flex items-center justify-between w-full gap-8">
           <%= live_render(@conn, StarknetExplorerWeb.SearchLive,
@@ -54,7 +55,13 @@
             session: %{"network" => @network},
             router: StarknetExplorerWeb.Router
           ) %>
-          <img id="hamburger" class="z-40 lg:hidden" phx-hook="Nav" src={~p"/images/menu.svg"} />
+          <img
+            alt="Menu"
+            id="hamburger"
+            class="z-40 lg:hidden"
+            phx-hook="Nav"
+            src={~p"/images/menu.svg"}
+          />
           <div
             id="menu-options"
             class="w-screen h-screen lg:w-auto lg:h-auto pointer-events-none lg:pointer-events-auto fixed lg:relative top-0 left-0 h-screen lg:h-auto transition-all duration-300 opacity-0 lg:opacity-100 flex flex-col lg:flex-row justify-start lg:justify-end bg-[#111118] p-5 lg:py-0 lg:px-0 z-40"
@@ -65,39 +72,54 @@
                 href={Utils.network_path(@conn.assigns.network)}
                 class="z-50 text-xl mb-6 lg:mb-0"
               >
-                <img src={~p"/images/logo.svg"} class="h-11" />
+                <img alt="Logo menu" src={~p"/images/logo.svg"} class="h-11" />
               </a>
-              <img id="close-menu" class="w-8 h-auto" phx-hook="Nav" src={~p"/images/x.svg"} />
+              <img
+                alt="Close menu"
+                id="close-menu"
+                class="w-8 h-auto"
+                phx-hook="Nav"
+                src={~p"/images/x.svg"}
+              />
             </div>
 
             <div class="flex flex-col lg:flex-row lg:items-center gap-4">
               <a href={Utils.network_path(@conn.assigns.network, "blocks")} class="nav-item">
-                <img class="lg:hidden" src={~p"/images/box.svg"} /> <span>Blocks</span>
+                <img alt="Logo of the blocks" class="lg:hidden" src={~p"/images/box.svg"} />
+                <span>Blocks</span>
               </a>
               <a href={Utils.network_path(@conn.assigns.network, "transactions")} class="nav-item">
-                <img class="lg:hidden" src={~p"/images/corner-up-right.svg"} />
+                <img
+                  alt="Logo of the transactions"
+                  class="lg:hidden"
+                  src={~p"/images/corner-up-right.svg"}
+                />
                 <span>Transactions</span>
               </a>
               <a
                 href={Utils.network_path(@conn.assigns.network, "classes")}
                 class="nav-item !hidden"
               >
-                <img class="lg:hidden" src={~p"/images/code.svg"} />
+                <img alt="Logo of the classes" class="lg:hidden" src={~p"/images/code.svg"} />
                 <span>Classes</span>
               </a>
               <a href={Utils.network_path(@conn.assigns.network, "messages")} class="nav-item">
-                <img class="lg:hidden" src={~p"/images/message-square.svg"} />
+                <img
+                  alt="Logo of the messages"
+                  class="lg:hidden"
+                  src={~p"/images/message-square.svg"}
+                />
                 <span>Messages</span>
               </a>
               <a
                 href={Utils.network_path(@conn.assigns.network, "contracts")}
                 class="nav-item !hidden"
               >
-                <img class="lg:hidden" src={~p"/images/file.svg"} />
+                <img alt="Logo of the contracts" class="lg:hidden" src={~p"/images/file.svg"} />
                 <span>Contracts</span>
               </a>
               <a href={Utils.network_path(@conn.assigns.network, "events")} class="nav-item">
-                <img class="lg:hidden" src={~p"/images/calendar.svg"} />
+                <img alt="Logo of the events" class="lg:hidden" src={~p"/images/calendar.svg"} />
                 <span>Events</span>
               </a>
               <div class="relative w-fit shrink-0 self-end">
@@ -110,7 +132,11 @@
                   <span class="absolute top-1/2 left-5 transform -translate-x-1/2 -translate-y-1/2 opacity-50 bg-green-500 rounded-full w-2 h-2">
                   </span>
                   <span class="block truncate capitalize"><%= @network %></span>
-                  <img class="transform rotate-90 w-4 h-4" src={~p"/images/dropdown.svg"} />
+                  <img
+                    alt="Dropdown menu"
+                    class="transform rotate-90 w-4 h-4"
+                    src={~p"/images/dropdown.svg"}
+                  />
                 </div>
                 <div
                   id="options"
