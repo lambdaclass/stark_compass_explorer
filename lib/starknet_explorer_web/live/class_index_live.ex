@@ -20,9 +20,8 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
       <div class="table-block">
         <div class="grid-6 table-th">
           <div>Class Hash</div>
-          <div>Version</div>
-          <div>Transaction Hash</div>
-          <div>Declared by</div>
+          <div class="col-span-2">Transaction Hash</div>
+          <div class="col-span-2">Declared by</div>
           <div>Declared at</div>
         </div>
         <%= for class <- @page.entries do %>
@@ -41,13 +40,7 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
                 </div>
               </div>
             </div>
-            <div>
-              <div class="list-h">Version</div>
-              <div class="type">
-                <%= class.version %>
-              </div>
-            </div>
-            <div>
+            <div class="col-span-2">
               <div class="list-h">Transaction Hash</div>
               <div class="block-data">
                 <div class="hash flex">
@@ -63,7 +56,7 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
                 </div>
               </div>
             </div>
-            <div>
+            <div class="col-span-2">
               <div class="list-h">Declared by</div>
               <div class="block-data">
                 <div class="hash flex">

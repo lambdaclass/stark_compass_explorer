@@ -16,7 +16,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
      put_flash(
        socket,
        :info,
-       "We are currently working to support Contracts and Classes, stay tuned to our Twitter for updates."
+       "We are currently working to support Contracts, stay tuned to our Twitter for updates."
      )}
   end
 

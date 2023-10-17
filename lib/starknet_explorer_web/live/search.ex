@@ -54,7 +54,7 @@ defmodule StarknetExplorerWeb.SearchLive do
                   value={@query}
                   id="search-input"
                   class={"py-3 pl-12 pr-5 #{if @show_result_box && !@loading, do: '!rounded-b-none', else: ''}"}
-                  placeholder="Search Blocks, Transactions, Messages and Events (coming soon: Classes and Contracts)"
+                  placeholder="Search Blocks, Transactions, Classes, Messages and Events (coming soon: Contracts)"
                   phx-debounce="500"
                 />
                 <div class="py-1 px-2 bg-gray-800 rounded-md text-sm text-gray-300 absolute top-1/2 right-4 -translate-y-1/2">
@@ -130,6 +130,15 @@ defmodule StarknetExplorerWeb.SearchLive do
                                         alt="Events logo"
                                         class="shrink-0 inline-block w-5 h-auto"
                                         src={~p"/images/calendar.svg"}
+                                      />
+                                      <div class="hash">
+                                        <%= @result_item %>
+                                      </div>
+                                    <% "Class" -> %>
+                                      <img
+                                        alt="Class logo"
+                                        class="shrink-0 inline-block w-5 h-auto"
+                                        src={~p"/images/code.svg"}
                                       />
                                       <div class="hash">
                                         <%= @result_item %>
@@ -212,6 +221,16 @@ defmodule StarknetExplorerWeb.SearchLive do
     navigate_fun =
       if String.length(query) > 0 do
         case try_search(query, socket.assigns.network) do
+          {:class, _class} ->
+            fn ->
+              assign(socket,
+                result_item: query,
+                result: "Class",
+                loading: false,
+                path: "classes/#{query}"
+              )
+            end
+
           {:tx, _tx} ->
             fn ->
               assign(socket,
@@ -297,18 +316,24 @@ defmodule StarknetExplorerWeb.SearchLive do
       {:ok, transaction} ->
         {:tx, transaction}
 
-      {:error, _} ->
-        case Data.block_by_partial_hash(hash, network) do
-          {:ok, blocks = [_ | _]} ->
-            {:block, List.first(blocks)}
+      _ ->
+        case StarknetExplorer.Class.get_by_hash(hash, network) |> IO.inspect() do
+          %StarknetExplorer.Class{} = class ->
+            {:class, class}
 
           _ ->
-            case Message.get_by_partial_hash(hash, network) do
-              [message | _] ->
-                {:message, message}
+            case Data.block_by_partial_hash(hash, network) do
+              {:ok, blocks = [_ | _]} ->
+                {:block, List.first(blocks)}
 
               _ ->
-                :noquery
+                case Message.get_by_partial_hash(hash, network) do
+                  [message | _] ->
+                    {:message, message}
+
+                  _ ->
+                    :noquery
+                end
             end
         end
     end
