@@ -135,9 +135,12 @@ defmodule StarknetExplorer.Block do
       |> rename_rpc_fields
       |> Map.put("network", network)
 
-    events =
+    events_from_rpc =
       block["hash"]
       |> Events.fetch_from_rpc(network)
+
+    events =
+      events_from_rpc
       |> Enum.with_index(fn %{"keys" => keys} = event, index ->
         event
         |> Map.put("network", network)
@@ -146,6 +149,50 @@ defmodule StarknetExplorer.Block do
         |> Map.put("block_number", block["number"])
         |> Map.put("name", Events.get_event_name(event, network))
         |> Map.put("name_hashed", List.first(keys))
+      end)
+
+    # Here, i want to create the changesets for the contracts and classes in the state update.
+    # Then, use those changesets to update the contracts and classes in the database through the Block.insert_from_rpc_response method.
+
+    # The classes changeset should be created using the "declared_classes" and "deprecated_declared_classes" from the "state_diff" field in the state_update.
+    # Also, we need to add the "network" field to the changeset and the version field, using "Cairo 1.0" for the "declared_classes" and "Cairo 0" for the "deprecated_declared_classes".
+    # {:ok, state_update} =
+    #   StarknetExplorer.Rpc.get_state_update(%{"block_number" => block.number}, network)
+
+    # deployed_contracts =
+    #   Enum.map(state_update["state_diff"]["deployed_contracts"], fn contracts ->
+    #     %{
+    #       "timestamp" => block["timestamp"],
+    #       "nonce" => 0,
+    #       "network" => network,
+    #       "class_hash" => contracts["class_hash"],
+    #       "address" => contracts["address"]
+    #     }
+    #     # Missing fields:
+    #     # field :deployed_by_address, :string -> Look for a workaround
+    #     # field :version, :string -> Extract from class.
+    #     # field :balance, :string -> IDK
+    #     # field :type, :string -> IDK.
+    #     # belongs_to :deployed_at_transaction, StarknetExplorer.Transaction, references: :hash -> Look for a workaround
+    #   end)
+
+    declared_classes_changeset =
+      Enum.reduce(block["transactions"], [], fn tx, acc ->
+        if tx["type"] == "DECLARE" do
+          acc ++
+            [
+              StarknetExplorer.Class.changeset(%StarknetExplorer.Class{}, %{
+                "timestamp" => block["timestamp"],
+                "network" => network,
+                "hash" => tx["class_hash"],
+                "version" => tx["version"],
+                "declared_at_transaction" => tx["hash"],
+                "declared_by_address" => tx["sender_address"]
+              })
+            ]
+        else
+          acc
+        end
       end)
 
     transaction_result =
@@ -178,6 +225,10 @@ defmodule StarknetExplorer.Block do
             Message.insert_from_transaction_receipt(receipt, network)
             Message.insert_from_transaction(inserted_tx, block.timestamp, network)
           end)
+
+        Enum.each(declared_classes_changeset, fn changeset ->
+          {:ok, _} = Repo.insert(changeset)
+        end)
 
         Enum.each(events, fn event -> {:ok, _event} = Events.insert(event) end)
       end)

@@ -25,7 +25,7 @@ defmodule StarknetExplorer.Contract do
   @primary_key {:address, :string, []}
   schema "contracts" do
     field :deployed_by_address, :string
-    field :timestamp, :string
+    field :timestamp, :integer
     field :version, :string
     field :balance, :string
     field :type, :string

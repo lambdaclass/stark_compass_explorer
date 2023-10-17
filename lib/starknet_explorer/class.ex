@@ -1,20 +1,18 @@
 defmodule StarknetExplorer.Class do
   use Ecto.Schema
   import Ecto.Changeset
-  # import Ecto.Query
+  import Ecto.Query
   alias StarknetExplorer.Repo
 
   @networks [:mainnet, :testnet, :testnet2]
 
   @fields [
     :declared_by_address,
+    :declared_at_transaction,
     :timestamp,
     :version,
-    :type,
     :network,
-    :hash,
-    :declared_at_transaction,
-    :declared_by_address
+    :hash
   ]
 
   @required [
@@ -24,12 +22,11 @@ defmodule StarknetExplorer.Class do
 
   @primary_key {:hash, :string, []}
   schema "classes" do
-    field :timestamp, :string
+    field :timestamp, :integer
     field :declared_by_address, :string
     field :version, :string
-    field :type, :string
     field :network, Ecto.Enum, values: @networks
-    belongs_to :declared_at_transaction, StarknetExplorer.Transaction, references: :hash
+    field :declared_at_transaction, :string
 
     timestamps()
   end
@@ -37,12 +34,26 @@ defmodule StarknetExplorer.Class do
   def changeset(schema, params) do
     schema
     |> cast(params, @fields)
+    |> foreign_key_constraint(:declared_at_transaction)
     |> validate_required(@required)
   end
 
-  def insert(event) do
+  def insert(params) do
     %StarknetExplorer.Class{}
-    |> changeset(event)
+    |> changeset(params)
     |> Repo.insert()
+  end
+
+  def get_page(params, network) do
+    StarknetExplorer.Class
+    |> where([p], p.network == ^network)
+    |> order_by(desc: :timestamp)
+    |> Repo.paginate(params)
+  end
+
+  def get_by_hash(hash, network) do
+    StarknetExplorer.Class
+    |> where([p], p.hash == ^hash and p.network == ^network)
+    |> Repo.one()
   end
 end

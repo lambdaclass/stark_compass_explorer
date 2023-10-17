@@ -4,19 +4,11 @@ defmodule :"Elixir.StarknetExplorer.Repo.Migrations.Add-contracts-and-classes" d
   def change do
     create table("classes", primary_key: false) do
       add :hash, :string, primary_key: true
-      add :timestamp, :string
+      add :timestamp, :integer
       add :declared_by_address, :string
       add :version, :string
       add :network, :string, null: false
-      add :type, :string
-
-      references("transactions",
-        on_delete: :delete_all,
-        column: :hash,
-        name: :declared_at_transaction,
-        prefix: nil,
-        type: :string
-      )
+      add :declared_at_transaction, :string
 
       timestamps()
     end
@@ -24,7 +16,7 @@ defmodule :"Elixir.StarknetExplorer.Repo.Migrations.Add-contracts-and-classes" d
     create table("contracts", primary_key: false) do
       add :address, :string, primary_key: true
       add :deployed_by_address, :string
-      add :timestamp, :string
+      add :timestamp, :integer
       add :version, :string
       add :balance, :string
       add :type, :string

@@ -1,22 +1,24 @@
 defmodule StarknetExplorerWeb.ClassDetailLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-  # defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
-  # defp num_or_hash(_num), do: :num
+  alias StarknetExplorerWeb.CoreComponents
 
   defp class_detail_header(assigns) do
     ~H"""
-    <div class="flex flex-row justify-between lg:justify-start gap-5 items-baseline pb-5 lg:pb-0">
-      <div class="flex flex-col lg:flex-row gap-2 items-baseline">
-        <h2>Class</h2>
-        <div class="font-semibold">
-          <%= Utils.shorten_block_hash(
-            "0x02eb7823cce8b6e15c027b509a8d1a7e3d2afc4ec32e892902c67e4abd4beb81"
-          ) %>
-        </div>
+    <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
+      <h2>Transaction</h2>
+      <div class="font-normal text-gray-400 mt-2 lg:mt-0">
+        <%= @class.timestamp
+        |> DateTime.from_unix()
+        |> then(fn {:ok, time} -> time end)
+        |> Calendar.strftime("%c") %> UTC
       </div>
-      <span class="gray-label text-sm">Mocked</span>
     </div>
+    """
+  end
+
+  def dropdown_menu(assigns) do
+    ~H"""
     <div
       id="dropdown"
       class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
@@ -29,7 +31,7 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     </div>
     <div class="options hidden">
       <div
-        class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="overview"
@@ -37,23 +39,23 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
         Overview
       </div>
       <div
-        class={"option #{if assigns.view == "deployed-contracts", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "deployed_contracts", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
-        phx-value-view="deployed-contracts"
+        phx-value-view="proxied_contracts"
       >
         Deployed Contracts
       </div>
       <div
-        class={"option #{if assigns.view == "proxied-contracts", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "proxied_contracts", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
-        phx-value-view="proxied-contracts"
+        phx-value-view="proxied_contracts"
       >
         Proxied Contracts
       </div>
       <div
-        class={"option #{if assigns.view == "code", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "code", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="code"
@@ -65,28 +67,14 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
   end
 
   @impl true
-  def mount(_params = %{"hash" => _hash}, _session, socket) do
-    # {:ok, block} =
-    #   case num_or_hash(param) do
-    #     :hash ->
-    #       Rpc.get_block_by_hash(param)
-
-    #     :num ->
-    #       {num, ""} = Integer.parse(param)
-    #       Rpc.get_block_by_number(num)
-    #   end
-
-    # assigns = [
-    #   block: block,
-    #   view: "overview"
-    # ]
+  def mount(_params = %{"hash" => hash}, _session, socket) do
+    class = StarknetExplorer.Class.get_by_hash(hash, socket.assigns.network)
 
     assigns = [
-      class: nil,
+      class: class,
       view: "overview"
     ]
 
-    # {:ok, assign(socket, assigns)}
     {:ok, assign(socket, assigns)}
   end
 
@@ -163,45 +151,59 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
   def render_info(assigns = %{class: _block, view: "overview"}) do
     ~H"""
     <div class="grid-4 custom-list-item">
-      <div>Class Hash</div>
-      <div class="cols-span-3">
-        <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
-        |> Utils.shorten_block_hash() %>
+      <div class="block-label !mt-0">Class Hash</div>
+      <div class="block-data">
+        <div class="hash flex">
+          <%= @class.hash %>
+          <CoreComponents.copy_button text={@class.hash} />
+        </div>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
-      <div>Declared By Contract Address</div>
-      <div class="cols-span-3">
-        <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
-        |> Utils.shorten_block_hash() %>
+      <div class="block-label !mt-0">Declared by Address</div>
+      <div class="block-data">
+        <div class="hash flex">
+          <a
+            href={
+              Utils.network_path(
+                @network,
+                "contracts/#{@class.declared_by_address}"
+              )
+            }
+            class="text-hover-link break-all"
+          >
+            <span><%= @class.declared_by_address %></span>
+          </a>
+          <CoreComponents.copy_button text={@class.declared_by_address} />
+        </div>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
-      <div>Declared At Transaction Hash</div>
-      <div class="cols-span-3">
-        <a
-          href={
-            Utils.network_path(
-              @network,
-              "transactions/0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
-            )
-          }
-          class="text-se-blue"
-        >
-          <span>
-            <%= "0x06E681A4DA193CFD86E28A2879A17F4AEDB4439D61A4A776B1E5686E9A4F96B2"
-            |> Utils.shorten_block_hash() %>
-          </span>
-        </a>
+      <div class="block-label !mt-0">Declared at Transaction</div>
+      <div class="block-data">
+        <div class="hash flex">
+          <a
+            href={
+              Utils.network_path(
+                @network,
+                "transactions/#{@class.declared_at_transaction}"
+              )
+            }
+            class="text-hover-link break-all"
+          >
+            <span><%= @class.declared_at_transaction %></span>
+          </a>
+          <CoreComponents.copy_button text={@class.declared_at_transaction} />
+        </div>
       </div>
     </div>
     <div class="grid-4 custom-list-item">
-      <div>Declared At</div>
-      <div class="cols-span-3">July 4, 2023 at 7:10:11 PM GMT-3</div>
-    </div>
-    <div class="grid-4 custom-list-item">
-      <div>Class Version</div>
-      <div class="cols-span-3">Cairo 1.0</div>
+      <div class="block-label !mt-0">Version</div>
+      <div class="block-data">
+        <div class="flex">
+          Cairo <%= @class.version %>
+        </div>
+      </div>
     </div>
     """
   end

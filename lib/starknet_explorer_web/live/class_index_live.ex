@@ -1,55 +1,96 @@
 defmodule StarknetExplorerWeb.ClassIndexLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.Utils
-
-  # <%= for {class, idx} <- Enum.with_index(@classes) do %>
-  # <ul id={"class-#{idx}"} class="transactions-grid border-t border-gray-600">
-  #             <li class="col-span-2">
-  #               <%= live_redirect(Utils.shorten_block_hash(class.hash),
-  #                 to: "/classes/#{class.hash}",
-  #                 class: "text-se-blue"
-  #               ) %>
-  #             </li>
-  #             <li class="col-span-2">
-  #               <%= transaction["type"] %>
-  #             </li>
-  #             <li class="col-span-2"><%= block["status"] %></li>
-  #             <li><%= Utils.get_block_age(block) %></li>
-  #           </ul>
-  # <% end %>
+  alias StarknetExplorerWeb.CoreComponents
 
   @impl true
   def render(assigns) do
     ~H"""
     <div class="max-w-7xl mx-auto">
-      <div class="table-header !justify-start gap-5">
+      <div class="table-header">
         <h2>Classes</h2>
-        <span class="gray-label text-sm">Mocked</span>
+        <CoreComponents.pagination_links
+          id="events-top-pagination"
+          page={@page}
+          prev="dec_events"
+          next="inc_events"
+          active_pagination_id={@active_pagination_id}
+        />
       </div>
       <div class="table-block">
-        <div class="grid-3 table-th">
+        <div class="grid-6 table-th">
           <div>Class Hash</div>
-          <div>Type</div>
-          <div>Declared At</div>
+          <div>Version</div>
+          <div>Transaction Hash</div>
+          <div>Declared by</div>
+          <div>Declared at</div>
         </div>
-        <%= for idx <- 0..30 do %>
-          <div id={"class-#{idx}"} class="grid-3 custom-list-item">
+        <%= for class <- @page.entries do %>
+          <div class="grid-6 custom-list-item">
             <div>
               <div class="list-h">Class Hash</div>
-              <%= Utils.shorten_block_hash(
-                "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-              ) %>
+              <div class="block-data">
+                <div class="hash flex">
+                  <a
+                    href={Utils.network_path(@network, "classes/#{class.hash}")}
+                    class="text-hover-link"
+                  >
+                    <%= class.hash |> Utils.shorten_block_hash() %>
+                  </a>
+                  <CoreComponents.copy_button text={class.hash} />
+                </div>
+              </div>
             </div>
             <div>
-              <div class="list-h">Type</div>
-              <span class="pink-label">ERC721</span>
+              <div class="list-h">Version</div>
+              <div class="type">
+                <%= class.version %>
+              </div>
             </div>
             <div>
-              <div class="list-h">Declared At</div>
-              <div>17h</div>
+              <div class="list-h">Transaction Hash</div>
+              <div class="block-data">
+                <div class="hash flex">
+                  <a
+                    href={
+                      Utils.network_path(@network, "transactions/#{class.declared_at_transaction}")
+                    }
+                    class="text-hover-link"
+                  >
+                    <%= class.declared_at_transaction |> Utils.shorten_block_hash() %>
+                  </a>
+                  <CoreComponents.copy_button text={class.declared_at_transaction} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="list-h">Declared by</div>
+              <div class="block-data">
+                <div class="hash flex">
+                  <%= Utils.shorten_block_hash(class.declared_by_address) %>
+                  <CoreComponents.copy_button text={class.declared_by_address} />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="list-h">Declared at</div>
+              <div class="block-data">
+                <div class="hash flex">
+                  <%= Utils.get_block_age_from_timestamp(class.timestamp) %>
+                </div>
+              </div>
             </div>
           </div>
         <% end %>
+      </div>
+      <div class="mt-2">
+        <CoreComponents.pagination_links
+          id="events-bottom-pagination"
+          page={@page}
+          prev="dec_events"
+          next="inc_events"
+          active_pagination_id={@active_pagination_id}
+        />
       </div>
     </div>
     """
@@ -57,15 +98,35 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    Process.send(self(), :load_classes, [])
+    page =
+      StarknetExplorer.Class.get_page(
+        %{page: 1},
+        socket.assigns.network
+      )
 
-    {:ok, assign(socket, classes: [])}
+    assigns = [page: page, active_pagination_id: ""]
+    {:ok, assign(socket, assigns)}
   end
 
   @impl true
-  def handle_info(:load_classes, socket) do
-    # TODO: Fetch this from the db
-    {:noreply, assign(socket, classes: [])}
-    # {:noreply, assign(socket, classes: Utils.list_classes())}
+  def handle_event("inc_events", _value, socket) do
+    new_page_number = socket.assigns.page.page_number + 1
+    pagination(socket, new_page_number)
+  end
+
+  def handle_event("dec_events", _value, socket) do
+    new_page_number = socket.assigns.page.page_number - 1
+    pagination(socket, new_page_number)
+  end
+
+  def pagination(socket, new_page_number) do
+    page =
+      StarknetExplorer.Class.get_page(
+        %{page: new_page_number},
+        socket.assigns.network
+      )
+
+    assigns = [page: page]
+    {:noreply, assign(socket, assigns)}
   end
 end
