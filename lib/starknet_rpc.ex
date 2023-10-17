@@ -58,6 +58,9 @@ defmodule StarknetExplorer.Rpc do
   def get_class(block_id, class_hash, network),
     do: send_request("starknet_getClass", [block_id, class_hash], network)
 
+  def get_state_update(block_id, network),
+    do: send_request("starknet_getStateUpdate", [block_id], network)
+
   def call(block_id, contract_address, selector, network),
     do:
       send_request(
