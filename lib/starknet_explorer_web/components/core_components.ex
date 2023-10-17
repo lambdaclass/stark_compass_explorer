@@ -689,7 +689,7 @@ defmodule StarknetExplorerWeb.CoreComponents do
               id={"page-number-input-#{@id}"}
               class="page-number"
               placeholder={@page.page_number}
-              phx-click={ JS.dispatch("phx:select", to: "#page-number-input-#{@id}") }
+              phx-click={JS.dispatch("phx:select", to: "#page-number-input-#{@id}")}
             />
           </div>
         </form>

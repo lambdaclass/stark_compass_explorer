@@ -98,13 +98,18 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
 
   def render_tx_filter(assigns) do
     ~H"""
-      <div class="relative z-20">
-        <form id="test" phx-change="select-filter">
-          <select value={@tx_filter} name="filter" id="filter" class="bg-container border border-gray-700 text-brand rounded-md text-sm py-1 w-full">
-            <%= Phoenix.HTML.Form.options_for_select(filter_options(), @tx_filter) %>
-          </select>
-        </form>
-      </div>
+    <div class="relative z-20">
+      <form id="test" phx-change="select-filter">
+        <select
+          value={@tx_filter}
+          name="filter"
+          id="filter"
+          class="bg-container border border-gray-700 text-brand rounded-md text-sm py-1 w-full"
+        >
+          <%= Phoenix.HTML.Form.options_for_select(filter_options(), @tx_filter) %>
+        </select>
+      </form>
+    </div>
     """
   end
 
@@ -164,7 +169,6 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
       )
 
     IO.inspect(Map.get(socket.assigns, :tx_filter))
-
 
     socket = assign(socket, page: page, tx_filter: filter)
     {:noreply, push_event(socket, "blur", %{})}
