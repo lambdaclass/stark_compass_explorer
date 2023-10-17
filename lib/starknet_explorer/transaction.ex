@@ -160,6 +160,12 @@ defmodule StarknetExplorer.Transaction do
     Repo.all(query)
   end
 
+  def get_page_by_sender_address(params, address, network) do
+    Transaction
+    |> where([p], p.sender_address == ^address and p.network == ^network)
+    |> Repo.paginate(params)
+  end
+
   def get_by_hash_with_receipt(hash) do
     query =
       from tx in Transaction,

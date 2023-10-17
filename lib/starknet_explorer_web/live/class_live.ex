@@ -6,13 +6,15 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
   defp class_detail_header(assigns) do
     ~H"""
     <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
-      <h2>Transaction</h2>
-      <div class="font-normal text-gray-400 mt-2 lg:mt-0">
-        <%= @class.timestamp
-        |> DateTime.from_unix()
-        |> then(fn {:ok, time} -> time end)
-        |> Calendar.strftime("%c") %> UTC
-      </div>
+      <h2>Class</h2>
+      <%= if !is_nil(@class) do %>
+        <div class="font-normal text-gray-400 mt-2 lg:mt-0">
+          <%= @class.timestamp
+          |> DateTime.from_unix()
+          |> then(fn {:ok, time} -> time end)
+          |> Calendar.strftime("%c") %> UTC
+        </div>
+      <% end %>
     </div>
     """
   end
@@ -145,6 +147,14 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
         <div>22h</div>
       </div>
     <% end %>
+    """
+  end
+
+  def render_info(assigns = %{class: nil, view: "overview"}) do
+    ~H"""
+    <div class="text-gray-500 text-xl border-t border-t-gray-700 pt-5">
+      We are still syncing the blockchain. Please try again later.
+    </div>
     """
   end
 

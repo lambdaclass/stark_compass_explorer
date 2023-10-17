@@ -181,6 +181,12 @@ defmodule StarknetExplorer.Events do
     |> Repo.one()
   end
 
+  def get_page_by_address(params, address, network) do
+    Events
+    |> where([p], p.from_address == ^address and p.network == ^network)
+    |> Repo.paginate(params)
+  end
+
   def fetch_from_rpc(block_hash, network) do
     # 1..1000 is a made up number, we are capable of bringing at most 1000 * @chunk_size events.
     # It will halt when the last page is received.

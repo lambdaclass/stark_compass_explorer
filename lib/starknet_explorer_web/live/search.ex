@@ -143,6 +143,15 @@ defmodule StarknetExplorerWeb.SearchLive do
                                       <div class="hash">
                                         <%= @result_item %>
                                       </div>
+                                    <% "Contract" -> %>
+                                      <img
+                                        alt="Contracts logo"
+                                        class="shrink-0 inline-block w-5 h-auto"
+                                        src={~p"/images/file.svg"}
+                                      />
+                                      <div class="hash">
+                                        <%= @result_item %>
+                                      </div>
                                   <% end %>
                                 </div>
                               </div>
@@ -221,6 +230,16 @@ defmodule StarknetExplorerWeb.SearchLive do
     navigate_fun =
       if String.length(query) > 0 do
         case try_search(query, socket.assigns.network) do
+          {:contract, _} ->
+            fn ->
+              assign(socket,
+                result_item: query,
+                result: "Contract",
+                loading: false,
+                path: "contracts/#{query}"
+              )
+            end
+
           {:class, _class} ->
             fn ->
               assign(socket,
@@ -317,22 +336,28 @@ defmodule StarknetExplorerWeb.SearchLive do
         {:tx, transaction}
 
       _ ->
-        case StarknetExplorer.Class.get_by_hash(hash, network) |> IO.inspect() do
-          %StarknetExplorer.Class{} = class ->
-            {:class, class}
+        case StarknetExplorer.Contract.get_by_address(hash, network) |> IO.inspect() do
+          %StarknetExplorer.Contract{} = contract ->
+            {:contract, contract}
 
           _ ->
-            case Data.block_by_partial_hash(hash, network) do
-              {:ok, blocks = [_ | _]} ->
-                {:block, List.first(blocks)}
+            case StarknetExplorer.Class.get_by_hash(hash, network) do
+              %StarknetExplorer.Class{} = class ->
+                {:class, class}
 
               _ ->
-                case Message.get_by_partial_hash(hash, network) do
-                  [message | _] ->
-                    {:message, message}
+                case Data.block_by_partial_hash(hash, network) do
+                  {:ok, blocks = [_ | _]} ->
+                    {:block, List.first(blocks)}
 
                   _ ->
-                    :noquery
+                    case Message.get_by_partial_hash(hash, network) do
+                      [message | _] ->
+                        {:message, message}
+
+                      _ ->
+                        :noquery
+                    end
                 end
             end
         end

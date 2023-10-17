@@ -22,23 +22,9 @@ defmodule :"Elixir.StarknetExplorer.Repo.Migrations.Add-contracts-and-classes" d
       add :type, :string
       add :nonce, :string
       add :network, :string, null: false
+      add :class_hash, :string, null: false
+      add :deployed_at_transaction, :string
       timestamps()
-
-      references("classes",
-        on_delete: :delete_all,
-        column: :hash,
-        name: :class_hash,
-        prefix: nil,
-        type: :string
-      )
-
-      references("transactions",
-        on_delete: :delete_all,
-        column: :hash,
-        name: :deployed_at_transaction,
-        prefix: nil,
-        type: :string
-      )
     end
   end
 end

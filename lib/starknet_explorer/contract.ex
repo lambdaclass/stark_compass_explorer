@@ -1,12 +1,13 @@
 defmodule StarknetExplorer.Contract do
   use Ecto.Schema
   import Ecto.Changeset
-  # import Ecto.Query
+  import Ecto.Query
   alias StarknetExplorer.Repo
 
   @networks [:mainnet, :testnet, :testnet2]
   @fields [
-    :deploted_by_address,
+    :address,
+    :deployed_by_address,
     :timestamp,
     :version,
     :balance,
@@ -18,6 +19,7 @@ defmodule StarknetExplorer.Contract do
   ]
 
   @required [
+    :address,
     :class_hash,
     :network
   ]
@@ -31,10 +33,9 @@ defmodule StarknetExplorer.Contract do
     field :type, :string
     field :nonce, :string
     field :network, Ecto.Enum, values: @networks
+    field :class_hash, :string
+    field :deployed_at_transaction, :string
     timestamps()
-
-    belongs_to :class_hash, StarknetExplorer.Class, references: :hash
-    belongs_to :deployed_at_transaction, StarknetExplorer.Transaction, references: :hash
   end
 
   def changeset(schema, params) do
@@ -47,5 +48,18 @@ defmodule StarknetExplorer.Contract do
     %StarknetExplorer.Contract{}
     |> changeset(event)
     |> Repo.insert()
+  end
+
+  def get_page(params, network) do
+    StarknetExplorer.Contract
+    |> where([p], p.network == ^network)
+    |> order_by(desc: :timestamp)
+    |> Repo.paginate(params)
+  end
+
+  def get_by_address(address, network) do
+    StarknetExplorer.Contract
+    |> where([p], p.address == ^address and p.network == ^network)
+    |> Repo.one()
   end
 end

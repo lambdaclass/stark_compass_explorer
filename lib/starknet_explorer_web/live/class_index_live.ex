@@ -112,6 +112,21 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
     pagination(socket, new_page_number)
   end
 
+  @impl true
+  def handle_event(
+        "change-page",
+        %{"page-number-input" => page_number},
+        socket
+      ) do
+    new_page_number = String.to_integer(page_number)
+    pagination(socket, new_page_number)
+  end
+
+  def handle_event("toggle-page-edit", %{"target" => target}, socket) do
+    socket = assign(socket, active_pagination_id: target)
+    {:noreply, push_event(socket, "focus", %{id: target})}
+  end
+
   def pagination(socket, new_page_number) do
     page =
       StarknetExplorer.Class.get_page(

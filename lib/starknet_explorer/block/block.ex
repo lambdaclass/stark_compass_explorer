@@ -156,25 +156,26 @@ defmodule StarknetExplorer.Block do
 
     # The classes changeset should be created using the "declared_classes" and "deprecated_declared_classes" from the "state_diff" field in the state_update.
     # Also, we need to add the "network" field to the changeset and the version field, using "Cairo 1.0" for the "declared_classes" and "Cairo 0" for the "deprecated_declared_classes".
-    # {:ok, state_update} =
-    #   StarknetExplorer.Rpc.get_state_update(%{"block_number" => block.number}, network)
+    {:ok, state_update} =
+      StarknetExplorer.Rpc.get_state_update(%{"block_number" => block["number"]}, network)
 
-    # deployed_contracts =
-    #   Enum.map(state_update["state_diff"]["deployed_contracts"], fn contracts ->
-    #     %{
-    #       "timestamp" => block["timestamp"],
-    #       "nonce" => 0,
-    #       "network" => network,
-    #       "class_hash" => contracts["class_hash"],
-    #       "address" => contracts["address"]
-    #     }
-    #     # Missing fields:
-    #     # field :deployed_by_address, :string -> Look for a workaround
-    #     # field :version, :string -> Extract from class.
-    #     # field :balance, :string -> IDK
-    #     # field :type, :string -> IDK.
-    #     # belongs_to :deployed_at_transaction, StarknetExplorer.Transaction, references: :hash -> Look for a workaround
-    #   end)
+    deployed_contracts =
+      Enum.map(state_update["state_diff"]["deployed_contracts"], fn contract ->
+        StarknetExplorer.Contract.changeset(%StarknetExplorer.Contract{}, %{
+          "timestamp" => block["timestamp"],
+          "nonce" => "0",
+          "network" => network,
+          "class_hash" => contract["class_hash"],
+          "address" => contract["address"]
+        })
+
+        # Missing fields:
+        # field :deployed_by_address, :string -> Look for a workaround
+        # field :version, :string -> Extract from class.
+        # field :balance, :string -> IDK
+        # field :type, :string -> IDK.
+        # belongs_to :deployed_at_transaction, StarknetExplorer.Transaction, references: :hash -> Look for a workaround
+      end)
 
     declared_classes_changeset =
       Enum.reduce(block["transactions"], [], fn tx, acc ->
@@ -227,6 +228,10 @@ defmodule StarknetExplorer.Block do
           end)
 
         Enum.each(declared_classes_changeset, fn changeset ->
+          {:ok, _} = Repo.insert(changeset)
+        end)
+
+        Enum.each(deployed_contracts, fn changeset ->
           {:ok, _} = Repo.insert(changeset)
         end)
 

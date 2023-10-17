@@ -100,6 +100,10 @@
                 <img alt="Logo of the classes" class="lg:hidden" src={~p"/images/code.svg"} />
                 <span>Classes</span>
               </a>
+              <a href={Utils.network_path(@conn.assigns.network, "contracts")} class="nav-item">
+                <img alt="Logo of the contracts" class="lg:hidden" src={~p"/images/file.svg"} />
+                <span>Contracts</span>
+              </a>
               <a href={Utils.network_path(@conn.assigns.network, "messages")} class="nav-item">
                 <img
                   alt="Logo of the messages"
@@ -107,13 +111,6 @@
                   src={~p"/images/message-square.svg"}
                 />
                 <span>Messages</span>
-              </a>
-              <a
-                href={Utils.network_path(@conn.assigns.network, "contracts")}
-                class="nav-item !hidden"
-              >
-                <img alt="Logo of the contracts" class="lg:hidden" src={~p"/images/file.svg"} />
-                <span>Contracts</span>
               </a>
               <a href={Utils.network_path(@conn.assigns.network, "events")} class="nav-item">
                 <img alt="Logo of the events" class="lg:hidden" src={~p"/images/calendar.svg"} />
