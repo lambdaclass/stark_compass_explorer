@@ -8,6 +8,7 @@ defmodule :"Elixir.StarknetExplorer.Repo.Migrations.Add-contracts-and-classes" d
       add :declared_by_address, :string
       add :version, :string
       add :network, :string, null: false
+      add :type, :string
 
       references("transactions",
         on_delete: :delete_all,
