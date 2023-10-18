@@ -20,12 +20,13 @@ defmodule StarknetExplorer.Class do
     :network
   ]
 
-  @primary_key {:hash, :string, []}
+  @primary_key false
   schema "classes" do
+    field :hash, :string, primary_key: true
+    field :network, Ecto.Enum, values: @networks, primary_key: true
     field :timestamp, :integer
     field :declared_by_address, :string
     field :version, :string
-    field :network, Ecto.Enum, values: @networks
     field :declared_at_transaction, :string
 
     timestamps()

@@ -24,15 +24,16 @@ defmodule StarknetExplorer.Contract do
     :network
   ]
 
-  @primary_key {:address, :string, []}
+  @primary_key false
   schema "contracts" do
+    field :address, :string, primary_key: true
+    field :network, Ecto.Enum, values: @networks, primary_key: true
     field :deployed_by_address, :string
     field :timestamp, :integer
     field :version, :string
     field :balance, :string
     field :type, :string
     field :nonce, :string
-    field :network, Ecto.Enum, values: @networks
     field :class_hash, :string
     field :deployed_at_transaction, :string
     timestamps()
