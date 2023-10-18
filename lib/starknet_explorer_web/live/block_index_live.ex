@@ -15,7 +15,6 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
           page={@page}
           prev="dec_events"
           next="inc_events"
-          active_pagination_id={@active_pagination_id}
         />
       </div>
       <div class="table-block">
@@ -68,7 +67,6 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
           page={@page}
           prev="dec_events"
           next="inc_events"
-          active_pagination_id={@active_pagination_id}
         />
       </div>
     </div>
@@ -113,11 +111,6 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
     pagination(socket, new_page_number)
   end
 
-  def handle_event("toggle-page-edit", %{"target" => target}, socket) do
-    socket = assign(socket, active_pagination_id: target)
-    {:noreply, push_event(socket, "focus", %{id: target})}
-  end
-
   def pagination(socket, new_page_number) do
     page =
       Block.paginate_blocks(
@@ -125,7 +118,8 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
         socket.assigns.network
       )
 
-    assigns = [page: page]
-    {:noreply, assign(socket, assigns)}
+    socket = assign(socket, page: page)
+
+    {:noreply, push_event(socket, "blur", %{})}
   end
 end

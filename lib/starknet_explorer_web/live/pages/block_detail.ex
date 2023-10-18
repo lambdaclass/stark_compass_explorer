@@ -245,12 +245,6 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   end
 
   @impl true
-  def handle_event("toggle-page-edit", %{"target" => target}, socket) do
-    socket = assign(socket, active_pagination_id: target)
-    {:noreply, push_event(socket, "focus", %{id: target})}
-  end
-
-  @impl true
   def handle_event(
         "change-page",
         %{"page-number-input" => page_number},

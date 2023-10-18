@@ -680,27 +680,16 @@ defmodule StarknetExplorerWeb.CoreComponents do
         />
       </button>
       <div class="flex items-center text-brand px-3 py-1 rounded-lg">
-        <div
-          class={"page-number #{if @active_pagination_id == "page-number-input-#{@id}", do: 'hidden', else: ''}"}
-          phx-click="toggle-page-edit"
-          phx-value-target={"page-number-input-#{@id}"}
-        >
-          <%= @page.page_number %>
-        </div>
-        <form
-          class={"#{if @active_pagination_id == "page-number-input-#{@id}", do: '', else: 'hidden'}"}
-          phx-submit="change-page"
-        >
+        <form phx-submit="change-page">
           <div class="relative z-20">
             <.input
               type="number"
               name="page-number-input"
-              value={nil}
+              value={@page.page_number}
               id={"page-number-input-#{@id}"}
               class="page-number"
               placeholder={@page.page_number}
-              phx-blur="toggle-page-edit"
-              phx-value-target=""
+              phx-click={JS.dispatch("phx:select", to: "#page-number-input-#{@id}")}
             />
           </div>
         </form>

@@ -276,10 +276,10 @@ main .option {
 }
 
 .page-number{
-  @apply !w-auto !py-1 !px-3 !mr-2 bg-container border border-gray-700 text-white !rounded-md text-sm text-right;
+  @apply !w-auto !py-px !px-3 !mr-2 bg-container border border-gray-700 text-white !rounded-md text-right;
 }
 input.page-number{
-  @apply !w-14;
+  @apply !w-20 !text-se-link;
 }
 
 /* Chrome, Safari, Edge, Opera */
