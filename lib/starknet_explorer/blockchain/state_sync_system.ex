@@ -116,8 +116,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     {:ok, next_to_fetch} =
       case BlockUtils.fetch_store_and_cache(next_to_fetch, network) do
         {:ok, :already_stored} ->
-          {:ok, lowest_number} = BlockUtils.get_lowest_block_number(network)
-          {:ok, lowest_number - 1}
+          BlockUtils.get_lowest_block_number(network)
 
         {:ok, _} ->
           {:ok, next_to_fetch - 1}
