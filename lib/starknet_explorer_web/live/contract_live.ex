@@ -1,19 +1,29 @@
 defmodule StarknetExplorerWeb.ContractDetailLive do
   use StarknetExplorerWeb, :live_view
-  alias StarknetExplorerWeb.Utils
+  alias StarknetExplorerWeb.{CoreComponents, Utils}
+
+  @starkgate_eth_token System.get_env("ETH_BALANCE_CONTRACT") ||
+                         "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
+  @balanceOf_selector "0x2e4263afad30923c891518314c3c95dbe830a16874e8abc5777a9a20b54c76e"
 
   defp contract_detail_header(assigns) do
     ~H"""
-    <div class="flex flex-row justify-between lg:justify-start gap-5 items-baseline pb-5 lg:pb-0">
-      <div class="flex flex-col lg:flex-row items-baseline gap-2">
-        <h2>Contract</h2>
-        <%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-        |> Utils.shorten_block_hash() %>
-      </div>
-      <div class="">
-        <span class="gray-label text-sm">Mocked</span>
-      </div>
+    <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
+      <h2>Contract</h2>
+      <%= if !is_nil(@contract) do %>
+        <div class="font-normal text-gray-400 mt-2 lg:mt-0">
+          <%= @contract.timestamp
+          |> DateTime.from_unix()
+          |> then(fn {:ok, time} -> time end)
+          |> Calendar.strftime("%c") %> UTC
+        </div>
+      <% end %>
     </div>
+    """
+  end
+
+  defp contract_dropdown(assigns) do
+    ~H"""
     <div
       id="dropdown"
       class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
@@ -26,7 +36,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
     </div>
     <div class="options hidden">
       <div
-        class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="overview"
@@ -34,7 +44,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Overview
       </div>
       <div
-        class={"option #{if assigns.view == "transactions", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "transactions", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="transactions"
@@ -42,7 +52,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Transactions
       </div>
       <div
-        class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "events", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="events"
@@ -50,65 +60,100 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Events
       </div>
       <div
-        class={"option #{if assigns.view == "account-calls", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "account-calls", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"} !hidden"}
         phx-click="select-view"
         ,
         phx-value-view="account-calls"
       >
-        Account Calls
+        Account Calls (WIP)
       </div>
       <div
-        class={"option #{if assigns.view == "message-logs", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
-        phx-click="select-view"
-        ,
-        phx-value-view="message-logs"
-      >
-        Message Logs
-      </div>
-      <div
-        class={"option #{if assigns.view == "portfolio", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "portfolio", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"} !hidden"}
         phx-click="select-view"
         ,
         phx-value-view="portfolio"
       >
-        Portfolio
+        Portfolio (WIP)
       </div>
       <div
-        class={"option #{if assigns.view == "class-code-history", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "class-code-history", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"} !hidden"}
         phx-click="select-view"
         ,
         phx-value-view="class-code-history"
       >
-        Class Code/History
+        Code History (WIP)
       </div>
       <div
-        class={"option #{if assigns.view == "read-write-contract", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "read-write", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"} !hidden"}
         phx-click="select-view"
         ,
-        phx-value-view="read-write-contract"
+        phx-value-view="read-write"
       >
-        Read/Write Contract
+        Read/Write (WIP)
       </div>
       <div
-        class={"option #{if assigns.view == "token-transfers", do: "lg:!border-b-se-blue", else: "lg:border-b-transparent"}"}
+        class={"option #{if assigns.view == "token-transfers", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"} !hidden"}
         phx-click="select-view"
         ,
         phx-value-view="token-transfers"
       >
-        Token Transfers
+        Token Transfers (WIP)
       </div>
     </div>
     """
   end
 
   @impl true
-  def mount(_params = %{"address" => _}, _session, socket) do
-    assigns = [
-      contract: nil,
-      view: "overview"
-    ]
+  def mount(_params = %{"address" => address}, _session, socket) do
+    assigns =
+      case StarknetExplorer.Contract.get_by_address(address, socket.assigns.network) do
+        nil ->
+          [
+            view: "contract_not_found",
+            contract: nil
+          ]
 
-    {:ok, assign(socket, assigns)}
+        contract ->
+          class = StarknetExplorer.Class.get_by_hash(contract.class_hash, socket.assigns.network)
+
+          # Since the Eth balance is stored in the Starkgate: ETH Token contract, we need to request
+          # the new balance from the Starknet node.
+          {:ok, [balance_in_wei, _]} =
+            StarknetExplorer.Rpc.call(
+              "latest",
+              @starkgate_eth_token,
+              @balanceOf_selector,
+              socket.assigns.network,
+              [contract.address]
+            )
+
+          [
+            contract: contract,
+            view: "overview",
+            class: class,
+            balance: balance_in_wei
+          ]
+      end
+
+    {:ok,
+     put_flash(
+       assign(socket, assigns),
+       :info,
+       "We are working adding features to this page. Some info may be missing. Sorry for the inconvenience."
+     )}
+  end
+
+  @impl true
+  def render(%{contract: nil} = assigns) do
+    ~H"""
+    <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
+      <%= contract_detail_header(assigns) %>
+      <div class="text-gray-500 text-xl border-t border-t-gray-700 pt-5">
+        The contract was not found.
+        We are still syncing the blockchain, please try again later.
+      </div>
+    </div>
+    """
   end
 
   @impl true
@@ -116,342 +161,250 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
     ~H"""
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <%= contract_detail_header(assigns) %>
+      <%= contract_dropdown(assigns) %>
       <%= render_info(assigns) %>
     </div>
     """
   end
 
-  def render_info(assigns = %{contract: _contract, view: "overview"}) do
+  def render_info(%{view: "overview"} = assigns) do
     ~H"""
-    <div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">Contract Address</div>
-        <div>
-          <%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-          |> Utils.shorten_block_hash() %>
-        </div>
-      </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">Class Hash</div>
-        <div>
-          <%= "0x06e681a4da193cfd86e28a2879a17f4aedb4439d61a4a776b1e5686e9a4f96b2"
-          |> Utils.shorten_block_hash() %>
-        </div>
-      </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">Eth Balance</div>
-        <div>0.003035759798471112 ETH</div>
-      </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">Type</div>
-        <div>PROXY ACCOUNT</div>
-      </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">Deployed By Contract Address</div>
-        <div>
-          <%= "0x0358941c0a4b15738d1f5a6419f4e13d5bca0fdfe36b5548816e9d003989258a"
-          |> Utils.shorten_block_hash() %>
-        </div>
-      </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">Deployed At Transaction Hash</div>
-        <div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Address</div>
+      <div class="block-data col-span-3">
+        <div class="hash flex">
           <a
-            href={
-              Utils.network_path(
-                @network,
-                "transactions/0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
-              )
-            }
-            class="text-se-blue"
+            href={Utils.network_path(@network, "contracts/#{@contract.address}")}
+            class="text-hover-link"
           >
-            <span>
-              <%= "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
-              |> Utils.shorten_block_hash() %>
-            </span>
+            <%= @contract.address %>
           </a>
+          <CoreComponents.copy_button text={@contract.address} />
         </div>
       </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">Deployed At</div>
-        <div>July 5, 2023 at 5:30:51 PM GMT-3</div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Class Hash</div>
+      <div class="block-data col-span-3">
+        <div class="hash flex">
+          <a
+            href={Utils.network_path(@network, "classes/#{@contract.class_hash}")}
+            class="text-hover-link"
+          >
+            <%= @contract.class_hash %>
+          </a>
+          <CoreComponents.copy_button text={@contract.class_hash} />
+        </div>
       </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label !mt-0">Class Version</div>
-        <div>Cairo 0</div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Eth Balance</div>
+      <div class="col-span-3">
+        <%= if is_nil(@balance) do %>
+          <span class="info-label cash-label">WORK IN PROGRESS</span>
+        <% else %>
+          <span class="info-label cash-label">
+            <%= Utils.hex_wei_to_eth(@balance) %> ETH
+          </span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Type</div>
+      <div class="col-span-3">
+        <%= if is_nil(@contract.type) do %>
+          <span class="info-label">-</span>
+        <% else %>
+          <span class="type">
+            <%= @contract.type %>
+          </span>
+        <% end %>
+      </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Deployed by Address</div>
+      <div class="block-data col-span-3">
+        <div class="hash flex">
+          <%= if is_nil(@contract.deployed_by_address) do %>
+            <span class="info-label">-</span>
+          <% else %>
+            <a
+              href={Utils.network_path(@network, "contracts/#{@contract.deployed_by_address}")}
+              class="text-hover-link"
+            >
+              <%= @contract.deployed_by_address %>
+            </a>
+            <CoreComponents.copy_button text={@contract.deployed_by_address} />
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Deployed at Transaction</div>
+      <div class="block-data col-span-3">
+        <div class="hash flex">
+          <%= if is_nil(@contract.deployed_at_transaction) do %>
+            <span class="info-label">-</span>
+          <% else %>
+            <a
+              href={Utils.network_path(@network, "transactions/#{@contract.deployed_at_transaction}")}
+              class="text-hover-link"
+            >
+              <%= # @contract.deployed_at_transaction %>
+            </a>
+            <CoreComponents.copy_button text={@contract.deployed_at_transaction} />
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">Class Version</div>
+      <div class="col-span-3">
+        <span class="type">
+          <%= if is_nil(@class) do %>
+            -
+          <% else %>
+            <%= @class.version %>
+          <% end %>
+        </span>
       </div>
     </div>
     """
   end
 
-  def render_info(assigns = %{contract: _, view: "transactions"}) do
+  def render_info(assigns = %{view: "transactions"}) do
     ~H"""
-    <div class="table-th !pt-7 border-t border-gray-700 grid-7">
-      <div>Transaction Hash</div>
-      <div>Block Number</div>
-      <div>Status</div>
+    <div class="grid-3 table-th !pt-7">
+      <div>Hash</div>
       <div>Type</div>
-      <div>Calls</div>
-      <div>Address</div>
-      <div>Age</div>
+      <div>Version</div>
     </div>
-    <%= for _ <- 0..10 do %>
-      <div class="grid-7 custom-list-item">
-        <div>
-          <div class="list-h">Transaction Hash</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Block Number</div>
-          <div>
-            <a
-              href={
-                Utils.network_path(
-                  @network,
-                  "blocks/98133"
-                )
-              }
-              class="text-se-blue"
-            >
-              <span> 98133 </span>
-            </a>
-          </div>
-        </div>
-        <div>
-          <div class="list-h">Status</div>
-          <div>ACCEPTED_ON_L2</div>
-        </div>
-        <div>
-          <div class="list-h">Type</div>
-          <div>DEPLOY_ACCOUNT</div>
-        </div>
-        <div>
-          <div class="list-h">Calls</div>
-          <div>constructor</div>
-        </div>
-        <div>
-          <div class="list-h">Address</div>
-          <div>
-            <%= Utils.shorten_block_hash(
-              "0x0358941c0a4b15738d1f5a6419f4e13d5bca0fdfe36b5548816e9d003989258a"
-            ) %>
-          </div>
-        </div>
-        <div>
-          <div class="list-h">Age</div>
-          <div>25min</div>
+    <%= if @page.total_entries == 0 do %>
+      <div class="grid-3 custom-list-item">
+        <div class="text-gray-500 text-xl pt-5">
+          No transactions found
         </div>
       </div>
+    <% else %>
+      <%= for %{hash: hash, type: type, version: version} <- @page.entries do %>
+        <div class="grid-3 custom-list-item">
+          <div>
+            <div class="list-h">Hash</div>
+            <div class="block-data">
+              <div class="hash flex">
+                <a href={Utils.network_path(@network, "transactions/#{hash}")} class="text-hover-link">
+                  <span><%= Utils.shorten_block_hash(hash) %></span>
+                </a>
+                <CoreComponents.copy_button text={hash} />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="list-h">Type</div>
+            <div>
+              <span class={"type #{String.downcase(type)}"}>
+                <%= type %>
+              </span>
+            </div>
+          </div>
+          <div>
+            <div class="list-h">Version</div>
+            <div><%= version %></div>
+          </div>
+        </div>
+      <% end %>
     <% end %>
+    <div class="mt-2">
+      <CoreComponents.pagination_links
+        id="txs"
+        page={@page}
+        prev="dec_txs"
+        next="inc_txs"
+        active_pagination_id={@active_pagination_id}
+      />
+    </div>
     """
   end
 
   def render_info(assigns = %{contract: _contract, view: "events"}) do
     ~H"""
-    <div class="table-th !pt-7 border-t border-gray-700 grid-6">
+    <div class="table-th !pt-7 grid-3">
       <div>Identifier</div>
-      <div>Block Number</div>
       <div>Transaction Hash</div>
       <div>Name</div>
-      <div>From Address</div>
-      <div>Age</div>
     </div>
-    <%= for _ <- 0..10 do %>
-      <div class="grid-6 custom-list-item">
-        <div>
-          <div class="list-h">Identifier</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3_0"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Block Number</div>
-          <div>
-            <a
-              href={
-                Utils.network_path(
-                  @network,
-                  "blocks/98133"
-                )
-              }
-              class="text-se-blue"
-            >
-              <span> 98133 </span>
-            </a>
-          </div>
-        </div>
-        <div>
-          <div class="list-h">Transaction Hash</div>
-          <a
-            href={
-              Utils.network_path(
-                @network,
-                "transactions/0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
-              )
-            }
-            class="text-se-blue"
-          >
-            <span>
-              <%= Utils.shorten_block_hash(
-                "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
-              ) %>
-            </span>
-          </a>
-        </div>
-        <div>
-          <div class="list-h">Name</div>
-          <div>account_created</div>
-        </div>
-        <div>
-          <div class="list-h">From Address</div>
-          <%= Utils.shorten_block_hash(
-            "0x0358941c0a4b15738d1f5a6419f4e13d5bca0fdfe36b5548816e9d003989258a"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Age</div>
-          <div>28min</div>
+    <%= if @page.total_entries == 0 do %>
+      <div class="grid-3 custom-list-item">
+        <div class="text-gray-500 text-xl pt-5">
+          No events found
         </div>
       </div>
+    <% else %>
+      <%= for event <- @page.entries do %>
+        <div class="custom-list-item grid-3">
+          <div>
+            <div class="list-h">Identifier</div>
+            <div class="block-data">
+              <div class="hash flex">
+                <a href={Utils.network_path(@network, "events/#{event.id}")} class="text-hover-link">
+                  <%= event.id |> Utils.shorten_block_hash() %>
+                </a>
+                <CoreComponents.copy_button text={event.id} />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="list-h">Transaction Hash</div>
+            <div class="block-data">
+              <div class="hash flex">
+                <a
+                  href={Utils.network_path(@network, "transactions/#{event.transaction_hash}")}
+                  class="text-hover-link"
+                >
+                  <%= event.transaction_hash |> Utils.shorten_block_hash() %>
+                </a>
+                <CoreComponents.copy_button text={event.transaction_hash} />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="list-h">Name</div>
+            <div>
+              <%= if !String.starts_with?(event.name, "0x") do %>
+                <div class={"info-label #{String.downcase(event.name)}"}><%= event.name %></div>
+              <% else %>
+                <div class="block-data">
+                  <div class="hash flex">
+                    <%= event.name |> Utils.shorten_block_hash() %>
+                    <CoreComponents.copy_button text={event.name} />
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
     <% end %>
+    <CoreComponents.pagination_links
+      id="events"
+      page={@page}
+      prev="dec_events"
+      next="inc_events"
+      active_pagination_id={@active_pagination_id}
+    />
     """
   end
 
   def render_info(assigns = %{contract: _contract, view: "account-calls"}) do
     ~H"""
-    <div class="table-th !pt-7 border-t border-gray-700 grid-6">
-      <div>Identifier</div>
-      <div>Block Number</div>
-      <div>Transaction Hash</div>
-      <div>Name</div>
-      <div>Contract Address</div>
-      <div>Age</div>
-    </div>
-    <%= for _ <- 0..10 do %>
-      <div class="grid-6 custom-list-item">
-        <div>
-          <div class="list-h">Identifier</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3_0"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Block Number</div>
-          <div>98133</div>
-        </div>
-        <div>
-          <div class="list-h">Transaction Hash</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Name</div>
-          <div>account_created</div>
-        </div>
-        <div>
-          <div class="list-h">Contract Address</div>
-          <%= Utils.shorten_block_hash(
-            "0x0358941c0a4b15738d1f5a6419f4e13d5bca0fdfe36b5548816e9d003989258a"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Age</div>
-          <div>28min</div>
-        </div>
-      </div>
-    <% end %>
-    """
-  end
-
-  def render_info(assigns = %{contract: _contract, view: "message-logs"}) do
-    ~H"""
-    <div class="table-th !pt-7 border-t border-gray-700 grid-8">
-      <div>Identifier</div>
-      <div>Message Hash</div>
-      <div>Direction</div>
-      <div>Type</div>
-      <div>From Address</div>
-      <div>To Address</div>
-      <div>Transaction Hash</div>
-      <div>Age</div>
-    </div>
-    <%= for _ <- 0..10 do %>
-      <div class="grid-8 custom-list-item">
-        <div>
-          <div class="list-h">Identifier</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3_0"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Message Hash</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3_0"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Direction</div>
-          <div>L2 -> L1</div>
-        </div>
-        <div>
-          <div class="list-h">Type</div>
-          <div>REGISTERED_ON_L1</div>
-        </div>
-        <div>
-          <div class="list-h">From Address</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3_0"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">To Address</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3_0"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Transaction Hash</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3_0"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Age</div>
-          <div>9min</div>
-        </div>
-      </div>
-    <% end %>
+    <div class="text-gray-500 text-xl border-t border-t-gray-700 pt-5">In development</div>
     """
   end
 
   def render_info(assigns = %{contract: _contract, view: "portfolio"}) do
     ~H"""
-    <div class="table-th !pt-7 border-t border-gray-700 grid-3">
-      <div>Symbol</div>
-      <div>Token</div>
-      <div>Balance</div>
-    </div>
-    <%= for _ <- 0..10 do %>
-      <div class="grid-3 custom-list-item">
-        <div>
-          <div class="list-h">Symbol</div>
-          <div>ETH</div>
-        </div>
-        <div>
-          <div class="list-h">Token</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3_0"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Balance</div>
-          <div>0.001133486641858774</div>
-        </div>
-      </div>
-    <% end %>
+    <div class="text-gray-500 text-xl border-t border-t-gray-700 pt-5">In development</div>
     """
   end
 
@@ -461,7 +414,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
     """
   end
 
-  def render_info(assigns = %{contract: _contract, view: "read-write-contract"}) do
+  def render_info(assigns = %{contract: _contract, view: "read-write"}) do
     ~H"""
     <div class="text-gray-500 text-xl border-t border-t-gray-700 pt-5">In development</div>
     """
@@ -469,71 +422,128 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
 
   def render_info(assigns = %{contract: _contract, view: "token-transfers"}) do
     ~H"""
-    <div class="table-th !pt-7 border-t border-gray-700 grid-9">
-      <div>Transaction Hash</div>
-      <div>Call</div>
-      <div>Events</div>
-      <div>Account Calls</div>
-      <div>Message Logs</div>
-      <div>Portfolio</div>
-      <div>Class/Code History</div>
-      <div>Read/Write Contract</div>
-      <div>Token Transfers</div>
-    </div>
-    <%= for _ <- 0..10 do %>
-      <div class="grid-9 custom-list-item">
-        <div>
-          <div class="list-h">Transaction Hash</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3_0"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Call</div>
-          <div>transfer</div>
-        </div>
-        <div>
-          <div class="list-h">Events</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3_0"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Account Calls</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3_0"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Message Logs</div>
-          <div>0.001569</div>
-        </div>
-        <div>
-          <div class="list-h">Portfolio</div>
-          <%= Utils.shorten_block_hash(
-            "0x065150851e490476ca3cc69dbd70911a03b305951335b3aeb77d2eb0ce757df3_0"
-          ) %>
-        </div>
-        <div>
-          <div class="list-h">Class/Code History</div>
-          <div>1h</div>
-        </div>
-        <div>
-          <div class="list-h">Read/Write Contract</div>
-          <div>1h</div>
-        </div>
-        <div>
-          <div class="list-h">Token Transfers</div>
-          <div>1h</div>
-        </div>
-      </div>
-    <% end %>
+    <div class="text-gray-500 text-xl border-t border-t-gray-700 pt-5">In development</div>
     """
+  end
+
+  def handle_event("dec_txs", _value, socket) do
+    new_page_number = socket.assigns.page.page_number - 1
+
+    page =
+      StarknetExplorer.Transaction.get_page_by_sender_address(
+        %{page: new_page_number},
+        socket.assigns.contract.address,
+        socket.assigns.network
+      )
+
+    assigns = [
+      page: page,
+      view: "transactions"
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  def handle_event("inc_txs", _value, socket) do
+    new_page_number = socket.assigns.page.page_number + 1
+
+    page =
+      StarknetExplorer.Transaction.get_page_by_sender_address(
+        %{page: new_page_number},
+        socket.assigns.contract.address,
+        socket.assigns.network
+      )
+
+    assigns = [
+      page: page,
+      view: "transactions"
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event(
+        "select-view",
+        %{"view" => "transactions"},
+        socket
+      ) do
+    page =
+      StarknetExplorer.Transaction.get_page_by_sender_address(
+        %{page: 0},
+        socket.assigns.contract.address,
+        socket.assigns.network
+      )
+
+    assigns = [
+      view: "transactions",
+      page: page,
+      active_pagination_id: "txs"
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event(
+        "select-view",
+        %{"view" => "events"},
+        socket
+      ) do
+    page =
+      StarknetExplorer.Events.get_page_by_address(
+        %{page: 0},
+        socket.assigns.contract.address,
+        socket.assigns.network
+      )
+
+    assigns = [
+      view: "events",
+      page: page,
+      active_pagination_id: "events"
+    ]
+
+    {:noreply, assign(socket, assigns)}
   end
 
   @impl true
   def handle_event("select-view", %{"view" => view}, socket) do
     socket = assign(socket, :view, view)
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event(
+        "change-page",
+        %{"page-number-input" => page_number},
+        socket
+      ) do
+    new_page_number = String.to_integer(page_number)
+
+    case socket.assigns.view do
+      "transactions" ->
+        page =
+          StarknetExplorer.Transaction.get_page_by_sender_address(
+            %{page: new_page_number},
+            socket.assigns.contract.address,
+            socket.assigns.network
+          )
+
+        assigns = [
+          page: page,
+          active_pagination_id: "txs"
+        ]
+
+        {:noreply, assign(socket, assigns)}
+
+      _ ->
+        {:noreply, socket}
+    end
+  end
+
+  @impl true
+  def handle_event("toggle-page-edit", %{"target" => target}, socket) do
+    socket = assign(socket, active_pagination_id: target)
+    {:noreply, push_event(socket, "focus", %{id: target})}
   end
 end

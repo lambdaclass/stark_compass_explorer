@@ -64,6 +64,15 @@ defmodule StarknetExplorer.Message do
     end)
   end
 
+  def get_page_by_from_address(params, address, network) do
+    query =
+      from msg in StarknetExplorer.Message,
+        where: msg.from_address == ^address and msg.network == ^network,
+        order_by: [desc: msg.timestamp]
+
+    Repo.paginate(query, params)
+  end
+
   def get_by_hash(message_hash, network) do
     query =
       from msg in StarknetExplorer.Message,
