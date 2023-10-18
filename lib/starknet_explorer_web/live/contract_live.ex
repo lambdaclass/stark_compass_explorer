@@ -3,6 +3,8 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
   alias StarknetExplorerWeb.{CoreComponents, Utils}
   alias StarknetExplorer.Message
 
+  @starkgate_eth_token "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
+
   defp contract_detail_header(assigns) do
     ~H"""
     <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
@@ -113,10 +115,20 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
     contract = StarknetExplorer.Contract.get_by_address(address, socket.assigns.network)
     class = StarknetExplorer.Class.get_by_hash(contract.class_hash, socket.assigns.network)
 
+    {:ok, [balance_in_wei, _]} =
+      StarknetExplorer.Rpc.call(
+        "latest",
+        @starkgate_eth_token,
+        "0x2e4263afad30923c891518314c3c95dbe830a16874e8abc5777a9a20b54c76e",
+        socket.assigns.network,
+        [contract.address]
+      )
+
     assigns = [
       contract: contract,
       view: "overview",
-      class: class
+      class: class,
+      balance: balance_in_wei
     ]
 
     {:ok, assign(socket, assigns)}
@@ -168,11 +180,11 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Eth Balance</div>
       <div class="col-span-3">
-        <%= if is_nil(@contract.balance) do %>
+        <%= if is_nil(@balance) do %>
           <span class="info-label cash-label">WORK IN PROGRESS</span>
         <% else %>
           <span class="info-label cash-label">
-            <%= @contract.balance %> ETH
+            <%= Utils.hex_wei_to_eth(@balance) %> ETH
           </span>
         <% end %>
       </div>
@@ -525,7 +537,6 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         socket.assigns.contract.address,
         socket.assigns.network
       )
-      |> IO.inspect()
 
     assigns = [
       view: "transactions",

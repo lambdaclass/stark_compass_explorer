@@ -54,7 +54,7 @@ defmodule StarknetExplorerWeb.SearchLive do
                   value={@query}
                   id="search-input"
                   class={"py-3 pl-12 pr-5 #{if @show_result_box && !@loading, do: '!rounded-b-none', else: ''}"}
-                  placeholder="Search Blocks, Transactions, Classes, Messages and Events (coming soon: Contracts)"
+                  placeholder="Search Blocks, Transactions, Classes, Contracts, Messages and Events"
                   phx-debounce="500"
                 />
                 <div class="py-1 px-2 bg-gray-800 rounded-md text-sm text-gray-300 absolute top-1/2 right-4 -translate-y-1/2">
