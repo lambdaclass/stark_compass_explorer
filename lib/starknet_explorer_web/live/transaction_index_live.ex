@@ -9,16 +9,20 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
   def render(assigns) do
     ~H"""
     <div class="max-w-7xl mx-auto">
-      <div class="table-header">
+      <div class="table-header flex flex-col md:flex-row gap-5 !items-start">
         <h2>Transactions</h2>
-        <%= render_tx_filter(assigns) %>
-        <CoreComponents.pagination_links
-          id="transactions-top-pagination"
-          page={@page}
-          prev="dec_txs"
-          next="inc_txs"
-          active_pagination_id={@active_pagination_id}
-        />
+        <div class="flex justify-between md:justify-end items-center">
+          <div class="w-1/2 pr-6 max-w-[15rem] flex gap-3 items-center">
+            <span class="hidden md:block text-gray-400">TYPE:</span>
+            <%= render_tx_filter(assigns) %>
+          </div>
+          <CoreComponents.pagination_links
+            id="transactions-top-pagination"
+            page={@page}
+            prev="dec_txs"
+            next="inc_txs"
+          />
+        </div>
       </div>
       <div class="table-block">
         <div class="grid-7 table-th">
@@ -28,48 +32,54 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
           <div>Age</div>
         </div>
         <div id="transactions">
-          <%= for {transaction, idx} <- Enum.with_index(@page.entries) do %>
-            <div id={"transaction-#{idx}"} class="grid-7 custom-list-item">
-              <div class="col-span-2">
-                <div class="list-h">Transaction Hash</div>
-                <div class="block-data">
-                  <div class="hash flex">
-                    <a
-                      href={
-                        Utils.network_path(
-                          @network,
-                          "transactions/#{transaction.hash}"
-                        )
-                      }
-                      class="text-hover-link"
-                    >
-                      <%= Utils.shorten_block_hash(transaction.hash) %>
-                    </a>
-                    <CoreComponents.copy_button text={transaction.hash} />
+          <%= if length(@page.entries) == 0 do %>
+            <div class="py-3 text-base">
+              No results found.
+            </div>
+          <% else %>
+            <%= for {transaction, idx} <- Enum.with_index(@page.entries) do %>
+              <div id={"transaction-#{idx}"} class="grid-7 custom-list-item">
+                <div class="col-span-2">
+                  <div class="list-h">Transaction Hash</div>
+                  <div class="block-data">
+                    <div class="hash flex">
+                      <a
+                        href={
+                          Utils.network_path(
+                            @network,
+                            "transactions/#{transaction.hash}"
+                          )
+                        }
+                        class="text-hover-link"
+                      >
+                        <%= Utils.shorten_block_hash(transaction.hash) %>
+                      </a>
+                      <CoreComponents.copy_button text={transaction.hash} />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="col-span-2">
-                <div class="list-h">Type</div>
+                <div class="col-span-2">
+                  <div class="list-h">Type</div>
+                  <div>
+                    <span class={"type #{String.downcase(transaction.type)}"}>
+                      <%= transaction.type %>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-span-2">
+                  <div class="list-h">Status</div>
+                  <div>
+                    <span class={"info-label #{String.downcase(transaction.status)}"}>
+                      <%= transaction.status %>
+                    </span>
+                  </div>
+                </div>
                 <div>
-                  <span class={"type #{String.downcase(transaction.type)}"}>
-                    <%= transaction.type %>
-                  </span>
+                  <div class="list-h">Age</div>
+                  <%= Utils.get_block_age_from_timestamp(transaction.timestamp) %>
                 </div>
               </div>
-              <div class="col-span-2">
-                <div class="list-h">Status</div>
-                <div>
-                  <span class={"info-label #{String.downcase(transaction.status)}"}>
-                    <%= transaction.status %>
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div class="list-h">Age</div>
-                <%= Utils.get_block_age_from_timestamp(transaction.timestamp) %>
-              </div>
-            </div>
+            <% end %>
           <% end %>
         </div>
       </div>
@@ -88,77 +98,17 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
 
   def render_tx_filter(assigns) do
     ~H"""
-    <div>
-      <div>
-        <div
-          id="dropdown"
-          class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
-          phx-hook="Dropdown"
+    <div class="relative z-20">
+      <form id="test" phx-change="select-filter">
+        <select
+          value={@tx_filter}
+          name="filter"
+          id="filter"
+          class="bg-container border border-gray-700 text-brand rounded-md text-sm py-1 w-full"
         >
-          <span class="networkSelected capitalize"><%= assigns.tx_filter %></span>
-          <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
-            <img
-              alt="Dropdown menu"
-              class="transform rotate-90 w-5 h-5"
-              src={~p"/images/dropdown.svg"}
-            />
-          </span>
-        </div>
-        <div>
-          <div class="options hidden">
-            <div
-              class={"option #{if Map.get(assigns, :tx_filter) == "ALL", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-              phx-click="select-filter"
-              ,
-              phx-value-filter="ALL"
-            >
-              All
-            </div>
-            <div
-              class={"option #{if Map.get(assigns, :tx_filter) == "INVOKE", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-              phx-click="select-filter"
-              ,
-              phx-value-filter="INVOKE"
-            >
-              Invoke
-            </div>
-            <div
-              class={"option #{if Map.get(assigns, :tx_filter) == "DEPLOY_ACCOUNT", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-              phx-click="select-filter"
-              ,
-              phx-value-filter="DEPLOY_ACCOUNT"
-            >
-              Deploy Account
-            </div>
-            <div
-              class={"option #{if Map.get(assigns, :tx_filter) == "DEPLOY", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-              phx-click="select-filter"
-              ,
-              phx-value-filter="DEPLOY"
-            >
-              Deploy
-            </div>
-            <div
-              class={"option #{if Map.get(assigns, :tx_filter) == "DECLARE", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-              phx-click="select-filter"
-              ,
-              phx-value-filter="DECLARE"
-              ,
-            >
-              Declare
-            </div>
-            <div
-              class={"option #{if Map.get(assigns, :tx_filter) == "L1_HANDLER", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-              phx-click="select-filter"
-              ,
-              phx-value-filter="L1_HANDLER"
-              ,
-            >
-              L1 Handler
-            </div>
-          </div>
-        </div>
-      </div>
+          <%= Phoenix.HTML.Form.options_for_select(filter_options(), @tx_filter) %>
+        </select>
+      </form>
     </div>
     """
   end
@@ -185,7 +135,8 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
 
   @impl true
   def handle_event("select-filter", %{"filter" => filter}, socket) do
-    pagination(socket, 1, filter)
+    IO.inspect(filter)
+    pagination(assign(socket, tx_filter: filter), 1, filter)
   end
 
   @impl true
@@ -209,11 +160,6 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
     pagination(socket, new_page_number, Map.get(socket.assigns, :tx_filter, "ALL"))
   end
 
-  def handle_event("toggle-page-edit", %{"target" => target}, socket) do
-    socket = assign(socket, active_pagination_id: target)
-    {:noreply, push_event(socket, "focus", %{id: target})}
-  end
-
   def pagination(socket, new_page_number, filter \\ "ALL") do
     page =
       Transaction.paginate_transactions_for_index(
@@ -222,6 +168,11 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
         filter
       )
 
-    {:noreply, assign(socket, page: page, tx_filter: filter)}
+    IO.inspect(Map.get(socket.assigns, :tx_filter))
+
+    socket = assign(socket, page: page, tx_filter: filter)
+    {:noreply, push_event(socket, "blur", %{})}
   end
+
+  def filter_options, do: ["ALL", "INVOKE", "DEPLOY_ACCOUNT", "DEPLOY", "DECLARE", "L1_HANDLER"]
 end

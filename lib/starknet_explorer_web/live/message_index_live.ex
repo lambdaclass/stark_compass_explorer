@@ -15,7 +15,6 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
           page={@page}
           prev="dec_events"
           next="inc_events"
-          active_pagination_id={@active_pagination_id}
         />
       </div>
       <div class="table-block">
@@ -102,7 +101,6 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
           page={@page}
           prev="dec_events"
           next="inc_events"
-          active_pagination_id={@active_pagination_id}
         />
       </div>
     </div>
@@ -115,8 +113,7 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
 
     {:ok,
      assign(socket,
-       page: page,
-       active_pagination_id: ""
+       page: page
      )}
   end
 
@@ -141,11 +138,6 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
     pagination(socket, new_page_number)
   end
 
-  def handle_event("toggle-page-edit", %{"target" => target}, socket) do
-    socket = assign(socket, active_pagination_id: target)
-    {:noreply, push_event(socket, "focus", %{id: target})}
-  end
-
   def pagination(socket, new_page_number) do
     page =
       Message.paginate_messages(
@@ -153,6 +145,8 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
         socket.assigns.network
       )
 
-    {:noreply, assign(socket, page: page)}
+    socket = assign(socket, page: page)
+
+    {:noreply, push_event(socket, "blur", %{})}
   end
 end

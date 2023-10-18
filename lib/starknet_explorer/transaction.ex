@@ -220,13 +220,7 @@ defmodule StarknetExplorer.Transaction do
         select: %{hash: t.hash, type: t.type, timestamp: b.timestamp, status: b.status},
         order_by: [desc: b.timestamp]
 
-    total_rows =
-      case StarknetExplorer.Counts.get(network) do
-        nil -> get_total_count(network)
-        entities_count -> entities_count.transactions
-      end
-
-    query |> Repo.paginate(Map.put(params, :options, %{total_entries: total_rows}))
+    query |> Repo.paginate(params)
   end
 
   @spec rename_rpc_fields(map) :: map
