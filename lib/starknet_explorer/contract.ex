@@ -36,6 +36,7 @@ defmodule StarknetExplorer.Contract do
     field :nonce, :string
     field :class_hash, :string
     field :deployed_at_transaction, :string
+
     timestamps()
   end
 
@@ -43,6 +44,7 @@ defmodule StarknetExplorer.Contract do
     schema
     |> cast(params, @fields)
     |> validate_required(@required)
+    |> unique_constraint([:address, :network])
   end
 
   def insert(event) do

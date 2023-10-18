@@ -36,6 +36,7 @@ defmodule StarknetExplorer.Class do
     schema
     |> cast(params, @fields)
     |> validate_required(@required)
+    |> unique_constraint([:hash, :network])
   end
 
   def insert(params) do
