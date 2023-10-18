@@ -4,6 +4,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
   alias StarknetExplorer.Message
 
   @starkgate_eth_token "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
+  @balance_of_selector "0x2e4263afad30923c891518314c3c95dbe830a16874e8abc5777a9a20b54c76e"
 
   defp contract_detail_header(assigns) do
     ~H"""
@@ -119,7 +120,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
       StarknetExplorer.Rpc.call(
         "latest",
         @starkgate_eth_token,
-        "0x2e4263afad30923c891518314c3c95dbe830a16874e8abc5777a9a20b54c76e",
+        @balance_of_selector,
         socket.assigns.network,
         [contract.address]
       )
