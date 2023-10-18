@@ -50,6 +50,13 @@ defmodule StarknetExplorer.Contract do
     |> Repo.insert()
   end
 
+  def get_page_by_class_hash(params, class_hash, network) do
+    StarknetExplorer.Contract
+    |> where([p], p.class_hash == ^class_hash and p.network == ^network)
+    |> order_by(desc: :timestamp)
+    |> Repo.paginate(params)
+  end
+
   def get_page(params, network) do
     StarknetExplorer.Contract
     |> where([p], p.network == ^network)

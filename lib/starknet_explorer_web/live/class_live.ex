@@ -85,7 +85,41 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     ~H"""
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
       <%= class_detail_header(assigns) %>
+      <%= class_dropdown(assigns) %>
       <%= render_info(assigns) %>
+    </div>
+    """
+  end
+
+  defp class_dropdown(assigns) do
+    ~H"""
+    <div
+      id="dropdown"
+      class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
+      phx-hook="Dropdown"
+    >
+      <span class="networkSelected capitalize"><%= assigns.view %></span>
+      <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
+        <img alt="Dropdown menu" class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
+      </span>
+    </div>
+    <div class="options hidden">
+      <div
+        class={"option #{if assigns.view == "overview", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
+        phx-click="select-view"
+        ,
+        phx-value-view="overview"
+      >
+        Overview
+      </div>
+      <div
+        class={"option #{if assigns.view == "deployed_contracts", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
+        phx-click="select-view"
+        ,
+        phx-value-view="deployed_contracts"
+      >
+        Deployed Contracts
+      </div>
     </div>
     """
   end
@@ -153,7 +187,8 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
   def render_info(assigns = %{class: nil, view: "overview"}) do
     ~H"""
     <div class="text-gray-500 text-xl border-t border-t-gray-700 pt-5">
-      We are still syncing the blockchain. Please try again later.
+      The class was not found.
+      We are still syncing the blockchain, please try again later.
     </div>
     """
   end
@@ -222,6 +257,88 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
     ~H"""
     <div class="text-gray-500 text-xl border-t border-t-gray-700 pt-5">In development</div>
     """
+  end
+
+  def render_info(assigns = %{class: _block, view: "deployed_contracts"}) do
+    ~H"""
+    <div class="table-th !pt-7 grid-3">
+      <div>Contract Address</div>
+      <div>Class Hash</div>
+      <div>Age</div>
+    </div>
+    <%= if @page.total_entries == 0 do %>
+      <div class="grid-3 custom-list-item">
+        <div class="text-gray-500 text-xl pt-5">
+          No events found
+        </div>
+      </div>
+    <% else %>
+      <%= for contract <- @page.entries do %>
+        <div class="custom-list-item grid-3">
+          <div>
+            <div class="list-h">Contract Address</div>
+            <div class="block-data">
+              <div class="hash flex">
+                <a
+                  href={Utils.network_path(@network, "contracts/#{contract.address}")}
+                  class="text-hover-link"
+                >
+                  <%= contract.address |> Utils.shorten_block_hash() %>
+                </a>
+                <CoreComponents.copy_button text={contract.address} />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="list-h">Class Hash</div>
+            <div class="block-data">
+              <div class="hash flex">
+                <a
+                  href={Utils.network_path(@network, "classes/#{@class.hash}")}
+                  class="text-hover-link"
+                >
+                  <%= @class.hash |> Utils.shorten_block_hash() %>
+                </a>
+                <CoreComponents.copy_button text={@class.hash} />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="list-h">Age</div>
+            <%= contract.timestamp
+            |> DateTime.from_unix()
+            |> then(fn {:ok, time} -> time end)
+            |> Calendar.strftime("%c") %> UTC
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+    <CoreComponents.pagination_links
+      id="events"
+      page={@page}
+      prev="dec_events"
+      next="inc_events"
+      active_pagination_id={@active_pagination_id}
+    />
+    """
+  end
+
+  @impl true
+  def handle_event("select-view", %{"view" => "deployed_contracts"}, socket) do
+    page =
+      StarknetExplorer.Contract.get_page_by_class_hash(
+        %{page_number: 0},
+        socket.assigns.class.hash,
+        socket.assigns.network
+      )
+
+    assigns = [
+      page: page,
+      view: "deployed_contracts",
+      active_pagination_id: "deployed_contracts"
+    ]
+
+    {:noreply, assign(socket, assigns)}
   end
 
   @impl true
