@@ -123,7 +123,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
           {:ok, next_to_fetch - 1}
       end
 
-    state = %{state | next_to_fetch: next_to_fetch}
+    state = %{state | next_to_fetch: next_to_fetch - 1}
 
     maybe_fetch_another(state)
 
