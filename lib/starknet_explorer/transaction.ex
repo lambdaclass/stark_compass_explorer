@@ -8,7 +8,6 @@ defmodule StarknetExplorer.Transaction do
     :hash,
     :version,
     :type,
-    :nonce,
     :contract_address,
     :entry_point_selector,
     :calldata
@@ -30,7 +29,6 @@ defmodule StarknetExplorer.Transaction do
     :sender_address,
     :hash,
     :max_fee,
-    :nonce,
     :signature,
     :type,
     :version
@@ -40,7 +38,6 @@ defmodule StarknetExplorer.Transaction do
     :class_hash,
     :hash,
     :max_fee,
-    :nonce,
     :sender_address,
     :signature,
     :type,
@@ -62,7 +59,6 @@ defmodule StarknetExplorer.Transaction do
     :contract_address_salt,
     :hash,
     :max_fee,
-    :nonce,
     :signature,
     :type,
     :version
@@ -73,7 +69,7 @@ defmodule StarknetExplorer.Transaction do
             @declare_tx_fields ++
             @deploy_contract_tx_fields ++
             @deploy_account_tx_fields ++
-            [:network]
+            [:network, :nonce]
 
   @networks [:mainnet, :testnet, :testnet2]
 
