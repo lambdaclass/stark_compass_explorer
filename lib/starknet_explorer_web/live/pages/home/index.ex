@@ -12,12 +12,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   def mount(_params, _session, socket) do
     socket = load_blocks(socket)
 
-    {:ok,
-     put_flash(
-       socket,
-       :info,
-       "We are currently working to support Contracts, stay tuned to our Twitter for updates."
-     )}
+    {:ok, socket}
   end
 
   @impl true
