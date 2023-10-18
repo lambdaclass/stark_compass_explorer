@@ -87,7 +87,7 @@ defmodule StarknetExplorer.Block do
       end)
 
     {contracts, classes} =
-      if is_nil(block_from_sql) or not block_from_sql.state_updated do
+      if is_nil(block_from_sql.state_updated) or not block_from_sql.state_updated do
         # Here, i want to create the changesets for the contracts and classes in the state update.
         # Then, use those changesets to update the contracts and classes in the database through the Block.insert_from_rpc_response method.
 
