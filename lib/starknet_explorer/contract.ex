@@ -44,7 +44,7 @@ defmodule StarknetExplorer.Contract do
     schema
     |> cast(params, @fields)
     |> validate_required(@required)
-    |> unique_constraint([:address, :network])
+    |> unique_constraint([:address, :network], name: :contracts_pkey)
   end
 
   def insert(event) do
