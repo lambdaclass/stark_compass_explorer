@@ -10,7 +10,7 @@ defmodule StarknetExplorer.BlockUtils do
       {:ok, block_number}
     else
       true ->
-        {:ok, block_height}
+        {:ok, :already_stored}
 
       error ->
         {:error, error}

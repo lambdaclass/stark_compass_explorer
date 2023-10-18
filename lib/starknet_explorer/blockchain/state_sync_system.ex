@@ -112,10 +112,18 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
         state = %StateSyncSystem{network: network, next_to_fetch: next_to_fetch}
       ) do
     Logger.debug("[Fetcher] Fetcher fetching: #{inspect(next_to_fetch)}")
-    {:ok, _} = BlockUtils.fetch_store_and_cache(next_to_fetch, network)
-    {:ok, lowest_block_number} = BlockUtils.get_lowest_block_number(network)
 
-    state = %{state | next_to_fetch: lowest_block_number - 1}
+    {:ok, next_to_fetch} =
+      case BlockUtils.fetch_store_and_cache(next_to_fetch - 1, network) do
+        {:ok, :already_stored} ->
+          {:ok, lowest_number} = BlockUtils.get_lowest_block_number(network)
+          {:ok, lowest_number - 1}
+
+        {:ok, _} ->
+          {:ok, next_to_fetch - 1}
+      end
+
+    state = %{state | next_to_fetch: next_to_fetch}
 
     maybe_fetch_another(state)
 
