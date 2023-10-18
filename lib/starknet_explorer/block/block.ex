@@ -163,11 +163,11 @@ defmodule StarknetExplorer.Block do
         Repo.update!(tx_receipt_changeset)
 
         Enum.each(classes, fn changeset ->
-          {:ok, _} = Repo.insert(changeset)
+          Repo.insert(changeset)
         end)
 
         Enum.each(contracts, fn changeset ->
-          {:ok, _} = Repo.insert(changeset)
+          Repo.insert(changeset)
         end)
       end)
     end)
@@ -295,11 +295,11 @@ defmodule StarknetExplorer.Block do
           end)
 
         Enum.each(declared_classes_changeset, fn changeset ->
-          {:ok, _} = Repo.insert(changeset)
+          Repo.insert(changeset)
         end)
 
         Enum.each(deployed_contracts, fn changeset ->
-          {:ok, _} = Repo.insert(changeset)
+          Repo.insert(changeset)
         end)
 
         Enum.each(events, fn event -> {:ok, _event} = Events.insert(event) end)
