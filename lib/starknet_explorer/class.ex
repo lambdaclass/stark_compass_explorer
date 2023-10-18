@@ -34,7 +34,6 @@ defmodule StarknetExplorer.Class do
   def changeset(schema, params) do
     schema
     |> cast(params, @fields)
-    |> foreign_key_constraint(:declared_at_transaction)
     |> validate_required(@required)
   end
 
