@@ -5,6 +5,8 @@ ENV MIX_ENV=prod
 WORKDIR /explorer
 COPY . .
 
+RUN apt update && apt install -y git
+
 RUN mix local.hex --force
 RUN mix local.rebar --force
 RUN mix deps.get 
