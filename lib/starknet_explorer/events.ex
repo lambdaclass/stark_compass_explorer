@@ -82,6 +82,7 @@ defmodule StarknetExplorer.Events do
   def insert(event) do
     %StarknetExplorer.Events{}
     |> changeset(event)
+    |> IO.inspect()
     |> Repo.insert()
   end
 
