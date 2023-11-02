@@ -148,6 +148,7 @@ defmodule StarknetExplorer.Block do
           state_updated: true,
           has_contracts_and_classes: true
         )
+        |> IO.inspect()
 
       Repo.update!(block_changeset)
 
