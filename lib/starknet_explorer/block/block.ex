@@ -301,12 +301,20 @@ defmodule StarknetExplorer.Block do
             Message.insert_from_transaction(inserted_tx, block.timestamp, network)
           end)
 
-        Enum.each(declared_classes_changeset, fn changeset ->
-          Repo.insert(changeset)
+        Enum.each(declared_classes_changeset, fn class ->
+          Repo.insert(
+            class,
+            on_conflict: [set: [block_number: class.data["block_number"]]],
+            conflict_target: [:hash, :network]
+          )
         end)
 
-        Enum.each(deployed_contracts, fn changeset ->
-          Repo.insert(changeset)
+        Enum.each(deployed_contracts, fn contract ->
+          Repo.insert(
+            contract,
+            on_conflict: [set: [block_number: contract.data["block_number"]]],
+            conflict_target: [:address, :network]
+          )
         end)
 
         Enum.each(events, fn event -> {:ok, _event} = Events.insert(event) end)
