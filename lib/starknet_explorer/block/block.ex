@@ -140,6 +140,8 @@ defmodule StarknetExplorer.Block do
       end
 
     StarknetExplorer.Repo.transaction(fn ->
+      IO.inspect("block_from_sql: #{inspect(block_from_sql)}")
+
       block_changeset =
         Ecto.Changeset.change(block_from_sql,
           status: status,
