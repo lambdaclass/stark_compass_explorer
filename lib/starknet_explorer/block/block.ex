@@ -304,7 +304,7 @@ defmodule StarknetExplorer.Block do
         Enum.each(declared_classes_changeset, fn class ->
           Repo.insert(
             class,
-            on_conflict: [set: [block_number: class.data["block_number"]]],
+            on_conflict: [set: [block_number: block.number]],
             conflict_target: [:hash, :network]
           )
         end)
@@ -312,7 +312,7 @@ defmodule StarknetExplorer.Block do
         Enum.each(deployed_contracts, fn contract ->
           Repo.insert(
             contract,
-            on_conflict: [set: [block_number: contract.data["block_number"]]],
+            on_conflict: [set: [block_number: block.number]],
             conflict_target: [:address, :network]
           )
         end)
