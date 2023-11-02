@@ -89,7 +89,8 @@ defmodule StarknetExplorer.Block do
       end)
 
     {contracts, classes} =
-      if is_nil(block_from_sql.has_contracts_and_classes) or not block_from_sql.has_contracts_and_classes do
+      if is_nil(block_from_sql.has_contracts_and_classes) or
+           not block_from_sql.has_contracts_and_classes do
         # Here, i want to create the changesets for the contracts and classes in the state update.
         # Then, use those changesets to update the contracts and classes in the database through the Block.insert_from_rpc_response method.
 
@@ -161,21 +162,21 @@ defmodule StarknetExplorer.Block do
         Repo.update!(tx_receipt_changeset)
       end)
 
-        Enum.each(classes, fn class ->
-          Repo.insert(
-            class,
-            on_conflict: [set: [block_number: class.block_number]],
-            conflict_target: [:hash, :network]
-          )
-        end)
+      Enum.each(classes, fn class ->
+        Repo.insert(
+          class,
+          on_conflict: [set: [block_number: class.block_number]],
+          conflict_target: [:hash, :network]
+        )
+      end)
 
-        Enum.each(contracts, fn contract ->
-          Repo.insert(
-            contract,
-            on_conflict: [set: [block_number: contract.block_number]],
-            conflict_target: [:address, :network]
-          )
-        end)
+      Enum.each(contracts, fn contract ->
+        Repo.insert(
+          contract,
+          on_conflict: [set: [block_number: contract.block_number]],
+          conflict_target: [:address, :network]
+        )
+      end)
     end)
   end
 
@@ -534,7 +535,8 @@ defmodule StarknetExplorer.Block do
       from b in Block,
         where:
           b.status != "ACCEPTED_ON_L1" or is_nil(b.gas_fee_in_wei) or b.gas_fee_in_wei == "" or
-            is_nil(b.execution_resources) or b.state_updated == false or (not b.has_contracts_and_classes),
+            is_nil(b.execution_resources) or b.state_updated == false or
+            not b.has_contracts_and_classes,
         where: b.network == ^network,
         limit: 1,
         order_by: [asc: b.number]
