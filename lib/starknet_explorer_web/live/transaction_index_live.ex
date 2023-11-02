@@ -135,7 +135,6 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
 
   @impl true
   def handle_event("select-filter", %{"filter" => filter}, socket) do
-    IO.inspect(filter)
     pagination(assign(socket, tx_filter: filter), 1, filter)
   end
 
@@ -167,8 +166,6 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
         socket.assigns.network,
         filter
       )
-
-    IO.inspect(Map.get(socket.assigns, :tx_filter))
 
     socket = assign(socket, page: page, tx_filter: filter)
     {:noreply, push_event(socket, "blur", %{})}

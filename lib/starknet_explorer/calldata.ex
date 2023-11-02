@@ -227,8 +227,7 @@ defmodule StarknetExplorer.Calldata do
           :implementation => implementation_data
         }
 
-      {:error, error} ->
-        error |> IO.inspect()
+      {:error, _error} ->
         nil
     end
   end

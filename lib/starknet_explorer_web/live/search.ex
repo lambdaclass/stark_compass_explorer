@@ -314,7 +314,7 @@ defmodule StarknetExplorerWeb.SearchLive do
   end
 
   def try_by_uuid(uuid, network) do
-    case Events.get_by_id(uuid, network) |> IO.inspect() do
+    case Events.get_by_id(uuid, network) do
       event = %StarknetExplorer.Events{} ->
         {:event, event}
 
@@ -336,7 +336,7 @@ defmodule StarknetExplorerWeb.SearchLive do
         {:tx, transaction}
 
       _ ->
-        case StarknetExplorer.Contract.get_by_address(hash, network) |> IO.inspect() do
+        case StarknetExplorer.Contract.get_by_address(hash, network) do
           %StarknetExplorer.Contract{} = contract ->
             {:contract, contract}
 
