@@ -19,7 +19,8 @@ defmodule StarknetExplorer.Block do
     :gas_fee_in_wei,
     :execution_resources,
     :network,
-    :state_updated
+    :state_updated,
+    :has_contracts_and_classes
   ]
 
   @required_fields [
@@ -44,6 +45,7 @@ defmodule StarknetExplorer.Block do
     field :execution_resources, :integer
     field :network, Ecto.Enum, values: @networks
     field :state_updated, :boolean, default: false
+    field :has_contracts_and_classes, :boolean, default: false
 
     has_many :transactions, StarknetExplorer.Transaction,
       foreign_key: :block_number,
@@ -87,7 +89,8 @@ defmodule StarknetExplorer.Block do
       end)
 
     {contracts, classes} =
-      if is_nil(block_from_sql.state_updated) or not block_from_sql.state_updated do
+      if is_nil(block_from_sql.has_contracts_and_classes) or
+           not block_from_sql.has_contracts_and_classes do
         # Here, i want to create the changesets for the contracts and classes in the state update.
         # Then, use those changesets to update the contracts and classes in the database through the Block.insert_from_rpc_response method.
 
@@ -101,20 +104,14 @@ defmodule StarknetExplorer.Block do
 
         deployed_contracts =
           Enum.map(state_update["state_diff"]["deployed_contracts"], fn contract ->
-            StarknetExplorer.Contract.changeset(%StarknetExplorer.Contract{}, %{
-              "timestamp" => block_from_sql.timestamp,
-              "nonce" => "0",
-              "network" => block_from_sql.network,
-              "class_hash" => contract["class_hash"],
-              "address" => contract["address"]
-            })
-
-            # Missing fields:
-            # field :deployed_by_address, :string -> Look for a workaround
-            # field :version, :string -> Extract from class.
-            # field :balance, :string -> IDK
-            # field :type, :string -> IDK.
-            # belongs_to :deployed_at_transaction, StarknetExplorer.Transaction, references: :hash -> Look for a workaround
+            %StarknetExplorer.Contract{
+              timestamp: block_from_sql.timestamp,
+              nonce: "0",
+              network: block_from_sql.network,
+              class_hash: contract["class_hash"],
+              address: contract["address"],
+              block_number: block_from_sql.number
+            }
           end)
 
         declared_classes_changeset =
@@ -122,14 +119,15 @@ defmodule StarknetExplorer.Block do
             if tx.type == "DECLARE" do
               acc ++
                 [
-                  StarknetExplorer.Class.changeset(%StarknetExplorer.Class{}, %{
-                    "timestamp" => block_from_sql.timestamp,
-                    "network" => block_from_sql.network,
-                    "hash" => tx.class_hash,
-                    "version" => tx.version,
-                    "declared_at_transaction" => tx.hash,
-                    "declared_by_address" => tx.sender_address
-                  })
+                  %StarknetExplorer.Class{
+                    timestamp: block_from_sql.timestamp,
+                    network: block_from_sql.network,
+                    hash: tx.class_hash,
+                    version: tx.version,
+                    declared_at_transaction: tx.hash,
+                    declared_by_address: tx.sender_address,
+                    block_number: block_from_sql.number
+                  }
                 ]
             else
               acc
@@ -147,7 +145,8 @@ defmodule StarknetExplorer.Block do
           status: status,
           gas_fee_in_wei: gas_fee_in_wei,
           execution_resources: execution_resources,
-          state_updated: true
+          state_updated: true,
+          has_contracts_and_classes: true
         )
 
       Repo.update!(block_changeset)
@@ -161,14 +160,22 @@ defmodule StarknetExplorer.Block do
           )
 
         Repo.update!(tx_receipt_changeset)
+      end)
 
-        Enum.each(classes, fn changeset ->
-          Repo.insert(changeset)
-        end)
+      Enum.each(classes, fn class ->
+        Repo.insert(
+          class,
+          on_conflict: [set: [block_number: class.block_number]],
+          conflict_target: [:hash, :network]
+        )
+      end)
 
-        Enum.each(contracts, fn changeset ->
-          Repo.insert(changeset)
-        end)
+      Enum.each(contracts, fn contract ->
+        Repo.insert(
+          contract,
+          on_conflict: [set: [block_number: contract.block_number]],
+          conflict_target: [:address, :network]
+        )
       end)
     end)
   end
@@ -201,6 +208,7 @@ defmodule StarknetExplorer.Block do
       |> rename_rpc_fields
       |> Map.put("network", network)
       |> Map.put("state_updated", true)
+      |> Map.put("has_contracts_and_classes", true)
 
     events_from_rpc =
       block["hash"]
@@ -233,15 +241,9 @@ defmodule StarknetExplorer.Block do
           "nonce" => "0",
           "network" => network,
           "class_hash" => contract["class_hash"],
-          "address" => contract["address"]
+          "address" => contract["address"],
+          "block_number" => block["number"]
         })
-
-        # Missing fields:
-        # field :deployed_by_address, :string -> Look for a workaround
-        # field :version, :string -> Extract from class.
-        # field :balance, :string -> IDK
-        # field :type, :string -> IDK.
-        # belongs_to :deployed_at_transaction, StarknetExplorer.Transaction, references: :hash -> Look for a workaround
       end)
 
     declared_classes_changeset =
@@ -255,7 +257,8 @@ defmodule StarknetExplorer.Block do
                 "hash" => tx["class_hash"],
                 "version" => tx["version"],
                 "declared_at_transaction" => tx["hash"],
-                "declared_by_address" => tx["sender_address"]
+                "declared_by_address" => tx["sender_address"],
+                "block_number" => block["number"]
               })
             ]
         else
@@ -532,7 +535,8 @@ defmodule StarknetExplorer.Block do
       from b in Block,
         where:
           b.status != "ACCEPTED_ON_L1" or is_nil(b.gas_fee_in_wei) or b.gas_fee_in_wei == "" or
-            is_nil(b.execution_resources) or b.state_updated == false,
+            is_nil(b.execution_resources) or b.state_updated == false or
+            not b.has_contracts_and_classes,
         where: b.network == ^network,
         limit: 1,
         order_by: [asc: b.number]

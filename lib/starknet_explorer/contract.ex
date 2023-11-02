@@ -15,7 +15,8 @@ defmodule StarknetExplorer.Contract do
     :nonce,
     :network,
     :class_hash,
-    :deployed_at_transaction
+    :deployed_at_transaction,
+    :block_number
   ]
 
   @required [
@@ -36,6 +37,7 @@ defmodule StarknetExplorer.Contract do
     field :nonce, :string
     field :class_hash, :string
     field :deployed_at_transaction, :string
+    field :block_number, :integer
 
     timestamps()
   end

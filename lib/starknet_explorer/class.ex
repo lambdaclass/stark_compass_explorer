@@ -12,7 +12,8 @@ defmodule StarknetExplorer.Class do
     :timestamp,
     :version,
     :network,
-    :hash
+    :hash,
+    :block_number
   ]
 
   @required [
@@ -28,6 +29,7 @@ defmodule StarknetExplorer.Class do
     field :declared_by_address, :string
     field :version, :string
     field :declared_at_transaction, :string
+    field :block_number, :integer
 
     timestamps()
   end
