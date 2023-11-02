@@ -33,8 +33,10 @@ defmodule StarknetExplorer.Block do
     :network
   ]
 
-  @primary_key {:number, :integer, []}
+  @primary_key false
   schema "blocks" do
+    field :number, :integer, primary_key: true
+    field :network, Ecto.Enum, values: @networks, primary_key: true
     field :status, :string
     field :hash, :string
     field :parent_hash, :string
@@ -43,7 +45,6 @@ defmodule StarknetExplorer.Block do
     field :sequencer_address, :string, default: ""
     field :gas_fee_in_wei, :string
     field :execution_resources, :integer
-    field :network, Ecto.Enum, values: @networks
     field :state_updated, :boolean, default: false
     field :has_contracts_and_classes, :boolean, default: false
 
