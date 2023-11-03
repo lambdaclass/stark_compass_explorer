@@ -1,4 +1,4 @@
-name: Deploy https://madaraexplorer.com/
+name: Deploy https://starkcompass.com/
 
 concurrency:
   group: ${{ github.workflow }}
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://madaraexplorer.com/
+      url: https://starkcompass.com/
     steps:
 
     - name: Checkout
