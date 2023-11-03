@@ -147,5 +147,5 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   end
 
   defp maybe_fetch_another(_),
-    do: Process.send_after(self(), :fetcher, @fetch_timer_fetcher + :rand.uniform(@n_for_random))
+    do: Process.send_after(self(), :fetcher, :rand.uniform(@n_for_random))
 end
