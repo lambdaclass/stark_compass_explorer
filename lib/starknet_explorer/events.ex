@@ -23,6 +23,17 @@ defmodule StarknetExplorer.Events do
            ] ++ @required
 
   @common_event_hash_to_name %{
+    "0x9149d2123147c5f43d258257fef0b7b969db78269369ebcf5ebb9eef8592f2" => "Deposit",
+    "0xa2fb82b5656725dad81c7112b2c4ef0119096677c3c0fd82632d0a74f07666" => "InterestRatesSync",
+    "0x30c296ae369716818de77cb5b71ce9cda7cc2c0e8456f474e0abb1ae8d017da" => "AccumulatorsSync",
+    "0x2324062bde6ebb76ffd17d55fee62fee62a4877588eb02524b19c091983b365" => "CollateralEnabled",
+    "0x1dcde06aabdbca2f80aa51392b345d7549d7757aa855f7e37f5d335ac8243b1" => "TransactionExecuted",
+    "0x3159b5cf425448a640d4666273b957d14e6c7a6a5a6a758af3c58d7ab7841fb" => "IncreaseLiquidity",
+    "0x112d26124b60e4d99e8c4387c732086fd96b159bf3d72e6d8f5f60c944533f1" => "account_upgraded",
+    "0x38f6a5b87c23cee6e7294bcc3302e95019f70f81586ff3cac38581f5ca96381" => "OwnerAdded",
+    "0x12b4597159a73c3f0f23a49a92e5a3d3e51f2d865a40669db649123433d1a5b" => "VerifierDataUpdate",
+    "0x157717768aca88da4ac4279765f09f4d0151823d573537fbbeb950cdbd9a870" => "Swapped",
+    "0x1dcde06aabdbca2f80aa51392b345d7549d7757aa855f7e37f5d335ac8243b1" => "TransactionExecuted",
     "0x99cd8bde557814842a3121e8ddfd433a539b8c9f14bf31ebf108d12e6196e9" => "Transfer",
     "0x134692b230b9e1ffa39098904722134159652b09c5bc41d88d6698779d228ff" => "Approval",
     "0x1390fd803c110ac71730ece1decfc34eb1d0088e295d4f1b125dda1e0c5b9ff" => "OwnershipTransferred",
