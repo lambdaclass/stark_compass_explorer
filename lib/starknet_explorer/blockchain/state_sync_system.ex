@@ -9,7 +9,8 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   # The highest possible value for the random values.
   @n_for_random 5
   @fetch_timer :timer.seconds(5)
-
+  # We want to fetch every 2 seconds, reducing the time to sync.
+  @fetch_timer_fetcher :timer.seconds(2)
   def start_link([network: _network, name: name] = arg) do
     GenServer.start_link(__MODULE__, arg, name: name)
   end
@@ -146,5 +147,5 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   end
 
   defp maybe_fetch_another(_),
-    do: Process.send_after(self(), :fetcher, @fetch_timer + :rand.uniform(@n_for_random))
+    do: Process.send_after(self(), :fetcher, @fetch_timer_fetcher + :rand.uniform(@n_for_random))
 end
