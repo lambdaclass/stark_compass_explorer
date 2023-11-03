@@ -148,17 +148,12 @@ docker-compose up postgres
 
 ### Short/Mid Term Goals:
 
-- **Enhance SQL Query Performance**: Continuously improve the performance of SQL queries.
-- **Refine Internal Server Error Screens**: Improve the user experience by enhancing error screens.
-- **Implement Preview in the Search Bar**: Enable a preview feature in the Search Bar.
-- **Expand Search Bar Functionality**: Incorporate Events, Messages, Classes, and Contracts into the Search Bar.
 - **Preserve Leading Zeros in Hash Storage**: Ensure that leading zeros are not removed when storing hashes in the database, or adapt the Search Bar to accommodate missing leading zeros.
 - **Customizable Branding**: Allow for the customization of logos, favicons, and navbar text.
 - **Enhance Integration**: Ensure easy integration with other projects and data sources without reliance on the feeder gateway.
 
 ### Long Term Goals:
 
-- **Support for Classes and Contracts**: Implement support for Classes and Contracts within the system.
 - **Optimize Trace Data Handling**: Eliminate the need to access the feeder gateway for trace data by either storing trace data internally or recording internal calls.
 - **Analytics**: Show statistics like TVL, historical data, plots, etc.
 
