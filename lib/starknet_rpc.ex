@@ -2,6 +2,8 @@ defmodule StarknetExplorer.Rpc do
   use Tesla
   plug(Tesla.Middleware.Headers, [{"content-type", "application/json"}])
 
+  def get_spec_version, do: send_request("starknet_specVersion", [], :mainnet)
+
   def get_transaction_trace(tx_hash, network),
     do: send_request("starknet_traceTransaction", [tx_hash], network)
 
