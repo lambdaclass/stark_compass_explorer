@@ -29,6 +29,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   @common_selectors Map.keys(@common_selectors_to_name)
 
+  defp display_internal_calls?(internal_calls, transaction_receipt, socket) do
+    not is_nil(internal_calls) and transaction_receipt.execution_status != "REVERTED" and
+      connected?(socket) and transaction_receipt.type != "DECLARE" and
+      not is_nil(transaction_receipt.execution_resources)
+  end
+
   defp transaction_header(assigns) do
     ~H"""
     <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
@@ -81,7 +87,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
           ( <%= @messages_count %> )
         <% end %>
       </div>
-      <%= if @internal_calls != nil and @transaction_receipt.execution_status != "REVERTED" and connected?(@socket) and @transaction_receipt.type != "DECLARE" do %>
+      <%= if display_internal_calls?(@internal_calls, @transaction_receipt, @socket) do %>
         <div
           class={"option #{if assigns.transaction_view == "internal_calls", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
           phx-click="select-view"
@@ -482,30 +488,41 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <% end %>
       </div>
     </div>
-    <div class="pt-3 mb-3">
-      <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
-        <span>Execution Resources</span>
+    <%= if is_nil(@transaction_receipt.execution_resources) do %>
+      <div class="pt-3 mb-3">
+        <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
+          <span>Execution Resources</span>
+        </div>
+        <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
+          The node doesn't support execution resources.
+        </div>
       </div>
-      <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
-        <div class="flex flex-col justify-center items-center gap-2">
-          <span class="blue-label py-1 px-2 rounded-lg">STEPS</span> <%= "#{Utils.hex_to_integer(@transaction_receipt.execution_resources["steps"])}" %>
+    <% else %>
+      <div class="pt-3 mb-3">
+        <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
+          <span>Execution Resources</span>
         </div>
-        <div class="flex flex-col justify-center items-center gap-2">
-          <span class="green-label py-1 px-2 rounded-lg">MEMORY HOLES</span> <%= "#{Utils.hex_to_integer(@transaction_receipt.execution_resources["memory_holes"])}" %>
-        </div>
-        <%= for {builtin_name, resources} <- @transaction_receipt.execution_resources do %>
-          <%= if String.ends_with?(builtin_name, "_applications") and resources != "0x0" do %>
-            <% temp_name = String.trim_trailing(builtin_name, "_applications") %>
-            <div class="flex flex-col justify-center items-center gap-2">
-              <span class={"#{Utils.builtin_color(temp_name)} py-1 px-2 rounded-lg"}>
-                <%= Utils.builtin_name(temp_name) %>
-              </span>
-              <%= Utils.hex_to_integer(resources) %>
-            </div>
+        <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
+          <div class="flex flex-col justify-center items-center gap-2">
+            <span class="blue-label py-1 px-2 rounded-lg">STEPS</span> <%= "#{Utils.hex_to_integer(@transaction_receipt.execution_resources["steps"])}" %>
+          </div>
+          <div class="flex flex-col justify-center items-center gap-2">
+            <span class="green-label py-1 px-2 rounded-lg">MEMORY HOLES</span> <%= "#{Utils.hex_to_integer(@transaction_receipt.execution_resources["memory_holes"])}" %>
+          </div>
+          <%= for {builtin_name, resources} <- @transaction_receipt.execution_resources do %>
+            <%= if String.ends_with?(builtin_name, "_applications") and resources != "0x0" do %>
+              <% temp_name = String.trim_trailing(builtin_name, "_applications") %>
+              <div class="flex flex-col justify-center items-center gap-2">
+                <span class={"#{Utils.builtin_color(temp_name)} py-1 px-2 rounded-lg"}>
+                  <%= Utils.builtin_name(temp_name) %>
+                </span>
+                <%= Utils.hex_to_integer(resources) %>
+              </div>
+            <% end %>
           <% end %>
-        <% end %>
+        </div>
       </div>
-    </div>
+    <% end %>
     """
   end
 
@@ -617,6 +634,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
   def handle_event("select-view", %{"view" => "internal_calls"}, socket) do
     {:ok, trace} =
       Rpc.get_transaction_trace(socket.assigns.transaction.hash, socket.assigns.network)
+      |> IO.inspect()
 
     trace =
       case Map.get(trace, "type") do
@@ -647,12 +665,15 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   @impl true
   def handle_info(:load_additional_info, socket) do
-    events = Events.get_by_tx_hash(socket.assigns.transaction_hash, socket.assigns.network)
+    events =
+      Events.get_by_tx_hash(socket.assigns.transaction_hash, socket.assigns.network)
+      |> IO.inspect()
 
     messages_sent =
       (Message.from_transaction_receipt(socket.assigns.transaction_receipt) ++
          [Message.from_transaction(socket.assigns.transaction)])
       |> Enum.reject(&is_nil/1)
+      |> IO.inspect()
 
     input_data =
       try do
@@ -664,6 +685,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       rescue
         _ -> nil
       end
+      |> IO.inspect()
 
     assigns =
       [
