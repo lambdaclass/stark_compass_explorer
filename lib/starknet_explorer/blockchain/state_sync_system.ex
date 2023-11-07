@@ -109,6 +109,15 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   @impl true
   def handle_info(
         :fetcher,
+        state = %StateSyncSystem{next_to_fetch: 0}
+      ) do
+    Logger.debug("[Fetcher] Fully synced")
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_info(
+        :fetcher,
         state = %StateSyncSystem{network: network, next_to_fetch: next_to_fetch}
       ) do
     Logger.debug("[Fetcher] Fetcher fetching: #{inspect(next_to_fetch)}")
@@ -140,7 +149,7 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   defp try_fetch(_new_blocks?, state), do: state
 
   # This means that we are fully syncd.
-  defp maybe_fetch_another(%StateSyncSystem{next_to_fetch: -1} = _args) do
+  defp maybe_fetch_another(%StateSyncSystem{next_to_fetch: 0} = _args) do
     Logger.debug("[Listener] Fully syncd")
     :ok
   end
