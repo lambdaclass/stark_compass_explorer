@@ -2,7 +2,32 @@ defmodule StarknetExplorerWeb.TransactionLive do
   use StarknetExplorerWeb, :live_view
   alias StarknetExplorerWeb.CoreComponents
   alias StarknetExplorerWeb.Utils
-  alias StarknetExplorer.{Data, Message, Events, Gateway}
+  alias StarknetExplorer.{Data, Message, Events, TransactionReceipt, Rpc}
+
+  @common_selectors_to_name %{
+    "0x15d40a3d6ca2ac30f4031e42be28da9b056fef9bb7357ac5e85627ee876e5ad" => "__execute__",
+    "0x83afd3f4caedc6eebf44246fe54e38c95e3179a5ec9ea81740eca5b482d12e" => "transfer",
+    "0x2f0b3c5710379609eb5495f1ecd348cb28167711b73609fe565a72734550354" => "mint",
+    "0x32a99297e1d12a9b91d4f90d5dd4b160d93c84a9e3b4daa916fec14ec852e05" => "transaction",
+    "0x219209e083275171774dab1df80982e9df2096516f06319c5c6d71ae0a8480c" => "approve",
+    "0x1171593aa5bdadda4d6b0efde6cc94ee7649c3163d5efeb19da6c16d63a2a63" => "multi_route_swap",
+    "0x2e4263afad30923c891518314c3c95dbe830a16874e8abc5777a9a20b54c76e" => "balanceOf",
+    "0x41b033f4a31df8067c24d1e9b550a2ce75fd4a29e1147af9752174f0e6cb20" => "transferFrom",
+    "0x260bb04cf90403013190e77d7e75f3d40d3d307180364da33c63ff53061d4e8" => "feeInfo",
+    "0x15543c3708653cda9d418b4ccd3be11368e40636c10c44b18cfe756b6d88b29" => "swap",
+    "0x168652c307c1e813ca11cfb3a601f1cf3b22452021a5052d8b05f1f1f8a3e92" => "lock",
+    "0x399c6d7581cbb37d2e578d3097bfdd3323e05447f1fd7670b6c3a3fb9d9ff79" => "locked",
+    "0x25ef2564dc27d90f0cd3ffbe419481249901a2c185139533c6cded38ae979b3" => "swap_after_lock",
+    "0x63ecb4395e589622a41a66715a0eac930abc9f0b92c0b1dcda630adfb2bf2d" => "get_pool_price",
+    "0xc73f681176fc7b3f9693986fd7b14581e8d540519e27400e88b8713932be01" => "deposit",
+    "0x15511cc3694f64379908437d6d64458dc76d02482052bfb8a5b33a72c054c77" => "withdraw",
+    "0x19ea78dfeefee473cead0f17e6cea7018f57abbf524110c3d3a369b248c7ce0" => "publicMint",
+    "0x28ffe4ff0f226a9107253e17a904099aa4f63a02a5621de0576e5aa71bc5194" => "constructor",
+    "0x2d757788a8d8d6f21d1cd40bce38a8222d70654214e96ff95d8086e684fbee5" => "handle_deposit",
+    "0x151e58b29179122a728eab07c8847e5baf5802379c5db3a7d57a8263a7bd1d" => "permissionedMint"
+  }
+
+  @common_selectors Map.keys(@common_selectors_to_name)
 
   defp transaction_header(assigns) do
     ~H"""
@@ -56,7 +81,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
           ( <%= @messages_count %> )
         <% end %>
       </div>
-      <%= if @internal_calls != nil  and @transaction_receipt.execution_status != "REVERTED" do %>
+      <%= if @internal_calls != nil and @transaction_receipt.execution_status != "REVERTED" and connected?(@socket) and @transaction_receipt.type != "DECLARE" do %>
         <div
           class={"option #{if assigns.transaction_view == "internal_calls", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
           phx-click="select-view"
@@ -241,57 +266,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
   def render_info(%{transaction_view: "internal_calls"} = assigns) do
     ~H"""
     <div class="table-block">
-      <div class="grid-5 table-th">
-        <div>Identifier</div>
-        <div>Transaction Hash</div>
+      <div class="grid-3 table-th">
         <div>Type</div>
         <div>Name</div>
         <div>Contract Address</div>
       </div>
-      <%= for {index, call} <- @internal_calls do %>
-        <div class="grid-5 custom-list-item">
-          <div>
-            <div class="list-h">Identifier</div>
-            <div>
-              <%= "#{@transaction.hash}_#{call.scope}_#{index}" |> Utils.shorten_block_hash() %>
-            </div>
-          </div>
-          <div>
-            <div class="list-h">Transaction Hash</div>
-            <div class="hash flex">
-              <a
-                href={Utils.network_path(@network, "transactions/#{@transaction.hash}")}
-                class="text-hover-link"
-              >
-                <%= @transaction.hash
-                |> Utils.shorten_block_hash() %>
-              </a>
-              <CoreComponents.copy_button text={@transaction.hash} />
-            </div>
-          </div>
-          <div>
-            <div class="list-h">Type</div>
-            <div>
-              <%= if call.call_type=="CALL" do %>
-                <span class="green-label"><%= call.call_type %></span>
-              <% else %>
-                <span class="red-label"><%= call.call_type %></span>
-              <% end %>
-            </div>
-          </div>
-          <div>
-            <div class="list-h">Name</div>
-            <div><span class="blue-label"><%= call.selector_name %></span></div>
-          </div>
-          <div class="block-data">
-            <div class="hash flex">
-              <%= call.contract_address
-              |> Utils.shorten_block_hash() %>
-              <CoreComponents.copy_button text={call.contract_address} />
-            </div>
-          </div>
-        </div>
-      <% end %>
+      <%= render_internal_call(@trace, assigns) %>
     </div>
     """
   end
@@ -375,7 +355,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="block-label">Actual Fee</div>
       <div class="col-span-3">
         <span class="info-label cash-label">
-          <%= @transaction_receipt.actual_fee %> ETH
+          <%= Utils.hex_wei_to_eth(@transaction_receipt.actual_fee) %> ETH
         </span>
       </div>
     </div>
@@ -502,29 +482,30 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <% end %>
       </div>
     </div>
-    <%= if @rerender? != nil do %>
-      <div class="pt-3 mb-3">
-        <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
-          <span>Execution Resources</span>
+    <div class="pt-3 mb-3">
+      <div class="mb-5 text-gray-500 md:text-white !flex-row gap-5">
+        <span>Execution Resources</span>
+      </div>
+      <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
+        <div class="flex flex-col justify-center items-center gap-2">
+          <span class="blue-label py-1 px-2 rounded-lg">STEPS</span> <%= "#{Utils.hex_to_integer(@transaction_receipt.execution_resources["steps"])}" %>
         </div>
-        <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
-          <div class="flex flex-col justify-center items-center gap-2">
-            <span class="blue-label py-1 px-2 rounded-lg">STEPS</span> <%= "#{@transaction_receipt.execution_resources["n_steps"]}" %>
-          </div>
-          <div class="flex flex-col justify-center items-center gap-2">
-            <span class="green-label py-1 px-2 rounded-lg">MEMORY HOLES</span> <%= "#{@transaction_receipt.execution_resources["n_memory_holes"]}" %>
-          </div>
-          <%= for {builtin_name , instance_counter} <- @transaction_receipt.execution_resources["builtin_instance_counter"] do %>
+        <div class="flex flex-col justify-center items-center gap-2">
+          <span class="green-label py-1 px-2 rounded-lg">MEMORY HOLES</span> <%= "#{Utils.hex_to_integer(@transaction_receipt.execution_resources["memory_holes"])}" %>
+        </div>
+        <%= for {builtin_name, resources} <- @transaction_receipt.execution_resources do %>
+          <%= if String.ends_with?(builtin_name, "_applications") and resources != "0x0" do %>
+            <% temp_name = String.trim_trailing(builtin_name, "_applications") %>
             <div class="flex flex-col justify-center items-center gap-2">
-              <span class={Utils.builtin_color(builtin_name)}>
-                <%= Utils.builtin_name(builtin_name) %>
+              <span class={"#{Utils.builtin_color(temp_name)} py-1 px-2 rounded-lg"}>
+                <%= Utils.builtin_name(temp_name) %>
               </span>
-              <%= instance_counter %>
+              <%= Utils.hex_to_integer(resources) %>
             </div>
           <% end %>
-        </div>
+        <% end %>
       </div>
-    <% end %>
+    </div>
     """
   end
 
@@ -534,25 +515,74 @@ defmodule StarknetExplorerWeb.TransactionLive do
     """
   end
 
-  @impl true
-  def mount(%{"transaction_hash" => transaction_hash} = _params, _session, socket) do
-    if connected?(socket) do
-      mount_connected(socket, transaction_hash)
-    else
-      {:ok,
-       assign(socket, render_header: false, render_info: false, transaction_view: "overview")}
-    end
+  def prettify_call_name(name) when name in @common_selectors, do: @common_selectors_to_name[name]
+  def prettify_call_name(hash = <<"0x", _rest::binary>>), do: Utils.shorten_block_hash(hash)
+  def prettify_call_name(name), do: name
+
+  def render_internal_call(nil, _assigns), do: ""
+  def render_internal_call([], _assigns), do: ""
+
+  def render_internal_call(call, assigns) do
+    assigns = assign(assigns, :call, call)
+
+    ~H"""
+    <div class="grid-3 custom-list-item">
+      <div>
+        <div class="list-h">Type</div>
+        <div>
+          <%= if @call["call_type"] =="CALL" do %>
+            <span class="green-label"><%= @call["call_type"] %></span>
+          <% else %>
+            <span class="red-label"><%= @call["call_type"] %></span>
+          <% end %>
+        </div>
+      </div>
+      <div class="block-data">
+        <div class="list-h">Name</div>
+        <div class="hash flex">
+          <span class="blue-label">
+            <%= prettify_call_name(@call["entry_point_selector"]) %>
+          </span>
+          <CoreComponents.copy_button text={@call["entry_point_selector"]} />
+        </div>
+      </div>
+      <div class="block-data">
+        <div class="hash flex">
+          <%= @call["contract_address"]
+          |> Utils.shorten_block_hash() %>
+          <CoreComponents.copy_button text={@call["contract_address"]} />
+        </div>
+      </div>
+    </div>
+    <%= for internal_call <- @call["calls"] do %>
+      <%= render_internal_call(internal_call, assigns) %>
+    <% end %>
+    """
   end
 
-  def mount_connected(socket, transaction_hash) do
+  @impl true
+  def mount(%{"transaction_hash" => transaction_hash} = _params, _session, socket) do
     {:ok, transaction = %{receipt: receipt}} =
       Data.transaction(transaction_hash, socket.assigns.network)
 
+    receipt =
+      if not is_nil(receipt.execution_resources) and
+           Map.has_key?(receipt.execution_resources, "steps") do
+        receipt
+      else
+        {:ok, new_receipt} = Rpc.get_transaction_receipt(transaction_hash, socket.assigns.network)
+
+        {:ok, new_receipt} =
+          TransactionReceipt.update_execution_resources(
+            receipt,
+            new_receipt["execution_resources"]
+          )
+
+        new_receipt
+      end
+
     {:ok, %{:timestamp => block_timestamp}} =
       Data.block_by_hash(receipt.block_hash, socket.assigns.network)
-
-    # change fee formatting
-    actual_fee = Utils.hex_wei_to_eth(transaction.receipt.actual_fee)
 
     transaction =
       case transaction.type do
@@ -563,17 +593,6 @@ defmodule StarknetExplorerWeb.TransactionLive do
           max_fee = Utils.hex_wei_to_eth(transaction.max_fee)
           transaction |> Map.put(:max_fee, max_fee)
       end
-
-    execution_resources = %{
-      "builtin_instance_counter" => %{},
-      "n_memory_holes" => "-",
-      "n_steps" => "-"
-    }
-
-    receipt =
-      transaction.receipt
-      |> Map.put(:execution_resources, execution_resources)
-      |> Map.put(:actual_fee, actual_fee)
 
     assigns = [
       transaction: transaction,
@@ -596,16 +615,23 @@ defmodule StarknetExplorerWeb.TransactionLive do
 
   @impl true
   def handle_event("select-view", %{"view" => "internal_calls"}, socket) do
-    internal_calls =
-      case socket.assigns.transaction_receipt.execution_status != "REVERTED" &&
-             Application.get_env(:starknet_explorer, :enable_gateway_data) do
-        true -> Data.internal_calls(socket.assigns.transaction, socket.assigns.network)
-        _ -> nil
+    {:ok, trace} =
+      Rpc.get_transaction_trace(socket.assigns.transaction.hash, socket.assigns.network)
+
+    trace =
+      case Map.get(trace, "type") do
+        "INVOKE" ->
+          trace["execute_invocation"]
+
+        "DEPLOY_ACCOUNT" ->
+          trace["constructor_invocation"]
+
+        "L1_HANDLER" ->
+          trace["function_invocation"]
       end
 
     assigns = [
-      internal_calls: internal_calls,
-      internal_calls_count: length(Map.keys(internal_calls)),
+      trace: trace,
       rerender?: true,
       transaction_view: "internal_calls"
     ]
@@ -620,24 +646,6 @@ defmodule StarknetExplorerWeb.TransactionLive do
   end
 
   @impl true
-  def handle_info(:load_internal_calls, socket) do
-    internal_calls =
-      case socket.assigns.transaction_receipt.execution_status != "REVERTED" &&
-             Application.get_env(:starknet_explorer, :enable_gateway_data) do
-        true -> Data.internal_calls(socket.assigns.transaction, socket.assigns.network)
-        _ -> nil
-      end
-
-    assigns = [
-      internal_calls: internal_calls,
-      internal_calls_count: length(Map.keys(internal_calls)),
-      rerender?: true
-    ]
-
-    {:noreply, assign(socket, assigns)}
-  end
-
-  @impl true
   def handle_info(:load_additional_info, socket) do
     events = Events.get_by_tx_hash(socket.assigns.transaction_hash, socket.assigns.network)
 
@@ -646,42 +654,11 @@ defmodule StarknetExplorerWeb.TransactionLive do
          [Message.from_transaction(socket.assigns.transaction)])
       |> Enum.reject(&is_nil/1)
 
-    execution_resources =
-      case Application.get_env(:starknet_explorer, :enable_gateway_data) do
-        true ->
-          case Gateway.get_transaction_receipt(
-                 socket.assigns.transaction_hash,
-                 socket.assigns.network
-               ) do
-            {:ok, %{"execution_resources" => execution_resources} = _receipt} ->
-              execution_resources
-
-            {:ok, _} ->
-              # This means that the transactions is reverted
-              %{
-                "builtin_instance_counter" => %{},
-                "n_memory_holes" => "-",
-                "n_steps" => "-"
-              }
-          end
-
-        false ->
-          %{
-            "builtin_instance_counter" => %{},
-            "n_memory_holes" => "-",
-            "n_steps" => "-"
-          }
-      end
-
-    receipt =
-      socket.assigns.transaction_receipt
-      |> Map.put(:execution_resources, execution_resources)
-
     input_data =
       try do
         StarknetExplorer.Calldata.parse_calldata(
           socket.assigns.transaction,
-          %{"block_number" => receipt.block_number},
+          %{"block_number" => socket.assigns.transaction_receipt.block_number},
           socket.assigns.network
         )
       rescue
@@ -694,7 +671,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
         events_count: length(events),
         messages: messages_sent,
         messages_count: length(messages_sent),
-        transaction_receipt: receipt,
+        transaction_receipt: socket.assigns.transaction_receipt,
         rerender?: true,
         input_data: input_data
       ]

@@ -52,29 +52,15 @@ defmodule StarknetExplorer.BlockUtils do
 
   def update_block_and_transactions(
         block_from_sql,
-        block_from_rpc = %{"block_number" => block_number},
+        block_from_rpc,
         network
       ) do
     with {:ok, receipts} <- receipts_for_block(block_from_rpc, network) do
       block_from_rpc =
         block_from_rpc
         |> Map.put("network", network)
-
-      block_from_rpc =
-        case Application.get_env(:starknet_explorer, :enable_gateway_data) do
-          true ->
-            {:ok, gateway_block = %{"gas_price" => gas_price}} =
-              StarknetExplorer.Gateway.fetch_block(block_number, network)
-
-            block_from_rpc
-            |> Map.put("gas_fee_in_wei", gas_price)
-            |> Map.put("execution_resources", calculate_gateway_block_steps(gateway_block))
-
-          _ ->
-            block_from_rpc
-            |> Map.put("gas_fee_in_wei", "0")
-            |> Map.put("execution_resources", 0)
-        end
+        |> Map.put("gas_fee_in_wei", block_from_rpc["l1_gas_price"]["price_in_wei"])
+        |> Map.put("execution_resources", calculate_block_steps_from_receipts(receipts))
 
       Block.update_from_rpc_response(block_from_sql, block_from_rpc, receipts)
     end
@@ -85,22 +71,8 @@ defmodule StarknetExplorer.BlockUtils do
       block =
         block
         |> Map.put("network", network)
-
-      block =
-        case Application.get_env(:starknet_explorer, :enable_gateway_data) do
-          true ->
-            {:ok, gateway_block = %{"gas_price" => gas_price}} =
-              StarknetExplorer.Gateway.fetch_block(block_number, network)
-
-            block
-            |> Map.put("gas_fee_in_wei", gas_price)
-            |> Map.put("execution_resources", calculate_gateway_block_steps(gateway_block))
-
-          _ ->
-            block
-            |> Map.put("gas_fee_in_wei", "0")
-            |> Map.put("execution_resources", 0)
-        end
+        |> Map.put("gas_fee_in_wei", block["l1_gas_price"]["price_in_wei"])
+        |> Map.put("execution_resources", calculate_block_steps_from_receipts(receipts))
 
       {:ok, amount_blocks, amount_txs, amount_events, amount_messages} =
         Block.insert_from_rpc_response(block, receipts, network)
@@ -183,7 +155,7 @@ defmodule StarknetExplorer.BlockUtils do
   Get the lowest uncompleted block number from DB.
   If any block is present in the DB, use RPC.
   A block can be uncompleted if:
-  - gateway data is missing (execution resources & fee)
+  - Missing execution resources & fee
   - block status != "ACCEPTED_ON_L1"
   """
   def get_lowest_not_completed_block(network) when is_atom(network) do
@@ -206,17 +178,22 @@ defmodule StarknetExplorer.BlockUtils do
     end
   end
 
-  def calculate_gateway_block_steps(_gateway_block = %{"transaction_receipts" => receipts}) do
+  def calculate_block_steps_from_receipts(receipts) do
     receipts
-    |> get_steps_from_gateway_receipts
+    |> get_steps_from_receipts
     |> Enum.sum()
   end
 
-  defp get_steps_from_gateway_receipts(receipts) do
+  defp get_steps_from_receipts(receipts) do
     receipts
+    |> Map.values()
     |> Enum.map(fn
-      %{"execution_resources" => %{"n_steps" => steps}} -> steps
-      _ -> nil
+      %{"execution_resources" => %{"steps" => steps}} ->
+        steps
+        |> StarknetExplorerWeb.Utils.hex_to_integer()
+
+      _ ->
+        nil
     end)
     |> Enum.reject(&is_nil/1)
   end

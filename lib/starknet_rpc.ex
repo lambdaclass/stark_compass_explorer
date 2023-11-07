@@ -2,6 +2,9 @@ defmodule StarknetExplorer.Rpc do
   use Tesla
   plug(Tesla.Middleware.Headers, [{"content-type", "application/json"}])
 
+  def get_transaction_trace(tx_hash, network),
+    do: send_request("starknet_traceTransaction", [tx_hash], network)
+
   def get_latest_block_no_cache(network),
     do: send_request_no_cache("starknet_getBlockWithTxs", ["latest"], network)
 

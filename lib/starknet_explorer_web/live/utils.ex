@@ -3,6 +3,12 @@ defmodule StarknetExplorerWeb.Utils do
   alias StarknetExplorer.DateUtils
   use StarknetExplorerWeb, :verified_routes
 
+  def hex_to_integer(hex_value) do
+    hex_value
+    |> String.trim_leading("0x")
+    |> String.to_integer(16)
+  end
+
   def shorten_block_hash(nil), do: ""
 
   def shorten_block_hash(block_hash) do
@@ -146,6 +152,11 @@ defmodule StarknetExplorerWeb.Utils do
     case builtin_name do
       "pedersen_builtin" -> "orange-label"
       "range_check_builtin" -> "pink-label"
+      "keccak_builtin" -> "red-label"
+      "bitwise_builtin" -> "blue-label"
+      "ecdsa_builtin" -> "purple-label"
+      "ec_op_builtin" -> "green-label"
+      "poseidon_builtin" -> "orange-label"
       _ -> "green-label"
     end
   end
