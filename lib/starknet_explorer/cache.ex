@@ -4,14 +4,12 @@ defmodule StarknetExplorer.IndexCache do
   def start_link(_) do
     blocks_mainnet = StarknetExplorer.Data.many_blocks_with_txs("mainnet")
     blocks_testnet = StarknetExplorer.Data.many_blocks_with_txs("testnet")
-    blocks_testnet2 = StarknetExplorer.Data.many_blocks_with_txs("testnet2")
 
     Agent.start_link(
       fn ->
         %{
           "mainnet" => blocks_mainnet,
-          "testnet" => blocks_testnet,
-          "testnet2" => blocks_testnet2
+          "testnet" => blocks_testnet
         }
       end,
       name: __MODULE__

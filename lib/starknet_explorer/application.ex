@@ -4,13 +4,9 @@ defmodule StarknetExplorer.Application do
   @moduledoc false
   # import Cachex.Spec
   use Application
-  # @networks Application.compile_env(:starknet_explorer, :allowed_networks)
+
   @impl true
   def start(_type, _args) do
-    # cache_child_specs =
-    #   @networks
-    #   |> Enum.flat_map(fn net -> cache_supervisor_spec(net) end)
-
     mainnet_state_sync =
       if System.get_env("ENABLE_MAINNET_SYNC") == "true" do
         # Start the State Sync System server for mainnet.
@@ -39,20 +35,6 @@ defmodule StarknetExplorer.Application do
         []
       end
 
-    testnet2_state_sync =
-      if System.get_env("ENABLE_TESTNET2_SYNC") == "true" do
-        # Start the State Sync System server for testnet2.
-        [
-          Supervisor.child_spec(
-            {StarknetExplorer.Blockchain.StateSyncSystem,
-             [network: :testnet2, name: :testnet2_state_sync]},
-            id: :testnet2_state_sync
-          )
-        ]
-      else
-        []
-      end
-
     children =
       [
         # Start the Telemetry supervisor
@@ -68,7 +50,7 @@ defmodule StarknetExplorer.Application do
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
         StarknetExplorer.IndexCache
-      ] ++ testnet2_state_sync ++ testnet_state_sync ++ mainnet_state_sync
+      ] ++ testnet_state_sync ++ mainnet_state_sync
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

@@ -43,7 +43,6 @@
       MIX_ENV: prod
       RPC_API_HOST: "{{ lookup('ansible.builtin.env', 'RPC_API_HOST') }}"
       TESTNET_RPC_API_HOST: "{{ lookup('ansible.builtin.env', 'TESTNET_RPC_API_HOST') }}"
-      TESTNET_2_RPC_API_HOST: "{{ lookup('ansible.builtin.env', 'TESTNET_2_RPC_API_HOST') }}"
       DB_TYPE: "{{ lookup('ansible.builtin.env', 'DB_TYPE') }}"
       DATABASE_URL: "{{ lookup('ansible.builtin.env', 'DATABASE_URL') }}"
       NEWRELIC_KEY:
@@ -54,7 +53,6 @@
       SENTRY_DSN: "{{ lookup('ansible.builtin.env', 'SENTRY_DSN') }}"
       ENABLE_MAINNET_SYNC: "{{ lookup('ansible.builtin.env', 'ENABLE_MAINNET_SYNC') }}"
       ENABLE_TESTNET_SYNC: "{{ lookup('ansible.builtin.env', 'ENABLE_TESTNET_SYNC') }}"
-      ENABLE_TESTNET2_SYNC: "{{ lookup('ansible.builtin.env', 'ENABLE_TESTNET2_SYNC') }}"
       ENABLE_GATEWAY_DATA: "{{ lookup('ansible.builtin.env', 'ENABLE_GATEWAY_DATA') }}"
     args:
       chdir: /home/starknet_explorer/tmp/madara_explorer
@@ -84,7 +82,6 @@
       database_url: "{{ lookup('ansible.builtin.env', 'DATABASE_URL') }}"
       rpc_api_host: "{{ lookup('ansible.builtin.env', 'RPC_API_HOST') }}"
       testnet_rpc_api_host: "{{ lookup('ansible.builtin.env', 'TESTNET_RPC_API_HOST') }}"
-      testnet_2_rpc_api_host: "{{ lookup('ansible.builtin.env', 'TESTNET_2_RPC_API_HOST') }}"
       aws_access_key_id: "{{ lookup('ansible.builtin.env', 'AWS_ACCESS_KEY_ID') }}"
       aws_secret_access_key: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY') }}"
       aws_region: "{{ lookup('ansible.builtin.env', 'AWS_REGION') }}"
@@ -95,7 +92,6 @@
       sentry_dsn: "{{ lookup('ansible.builtin.env', 'SENTRY_DSN') }}"
       enable_mainnet_sync: "{{ lookup('ansible.builtin.env', 'ENABLE_MAINNET_SYNC') }}"
       enable_testnet_sync: "{{ lookup('ansible.builtin.env', 'ENABLE_TESTNET_SYNC') }}"
-      enable_testnet2_sync: "{{ lookup('ansible.builtin.env', 'ENABLE_TESTNET2_SYNC') }}"
       enable_gateway_data: "{{ lookup('ansible.builtin.env', 'ENABLE_GATEWAY_DATA') }}"
 
   - name: Create user systemd directory

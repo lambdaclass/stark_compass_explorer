@@ -4,7 +4,7 @@ defmodule StarknetExplorerWeb.Live.CommonAssigns do
   def on_mount(:network, params, _session, socket) do
     socket =
       case Map.get(params, "network") do
-        network when network in ["testnet", "testnet2"] ->
+        network when network in ["testnet"] ->
           network =
             network
             |> String.to_existing_atom()

@@ -62,7 +62,7 @@ config :esbuild,
   ]
 
 config :starknet_explorer,
-  allowed_networks: [:mainnet, :testnet, :testnet2]
+  allowed_networks: [:mainnet, :testnet]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

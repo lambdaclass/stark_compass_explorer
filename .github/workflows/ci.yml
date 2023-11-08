@@ -18,7 +18,6 @@ jobs:
     env: 
       RPC_API_HOST: ${{ secrets.RPC_API_HOST }}
       TESTNET_RPC_API_HOST: ${{ secrets.TESTNET_RPC_API_HOST }}
-      TESTNET_2_RPC_API_HOST: ${{ secrets.TESTNET_2_RPC_API_HOST }}
     name: Build and test
     runs-on: ubuntu-latest
     services:
