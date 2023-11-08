@@ -818,34 +818,32 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
       </div>
     </div>
-    <%= if Application.get_env(:starknet_explorer, :enable_gateway_data) do %>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label">
-          Gas Price
-        </div>
-        <div class="col-span-3">
-          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-            <div
-              class="break-all bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1"
-              phx-update="replace"
-              id="gas-price"
-            >
-              <%= @gas_price %> ETH
-            </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">
+        Gas Price
+      </div>
+      <div class="col-span-3">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+          <div
+            class="break-all bg-se-cash-green/10 text-se-cash-green rounded-full px-4 py-1"
+            phx-update="replace"
+            id="gas-price"
+          >
+            <%= @gas_price %> ETH
           </div>
         </div>
       </div>
-      <div class="grid-4 custom-list-item">
-        <div class="block-label">
-          Total execution resources
-        </div>
-        <div class="col-span-3">
-          <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
-            <%= "#{@execution_resources} steps" %>
-          </div>
+    </div>
+    <div class="grid-4 custom-list-item">
+      <div class="block-label">
+        Total execution resources
+      </div>
+      <div class="col-span-3">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-2">
+          <%= "#{@execution_resources} steps" %>
         </div>
       </div>
-    <% end %>
+    </div>
     """
   end
 

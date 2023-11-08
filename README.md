@@ -57,12 +57,6 @@ export TESTNET_RPC_API_HOST=testnet_rpc_hostname
 export TESTNET_2_RPC_API_HOST=testnet_2_rpc_hostname
 ```
 
-Some of the desired data related to Starknet is not currently available through the RPC standard. Because of this, the explorer also gets information through the feeder gateway API. In order to enable this functionality, the variable `ENABLE_GATEWAY_DATA` needs to be set to `true` (if nothing is set, it will default to `false`). Note that this is only pertinent to the Starknet networks and not other particular networks that are compatible with the RPC standard.
-
-```bash
-export ENABLE_GATEWAY_DATA=true
-``````
-
 ### RPC with Juno
 
 ```bash
@@ -150,11 +144,9 @@ docker-compose up postgres
 
 - **Preserve Leading Zeros in Hash Storage**: Ensure that leading zeros are not removed when storing hashes in the database, or adapt the Search Bar to accommodate missing leading zeros.
 - **Customizable Branding**: Allow for the customization of logos, favicons, and navbar text.
-- **Enhance Integration**: Ensure easy integration with other projects and data sources without reliance on the feeder gateway.
 
 ### Long Term Goals:
 
-- **Optimize Trace Data Handling**: Eliminate the need to access the feeder gateway for trace data by either storing trace data internally or recording internal calls.
 - **Analytics**: Show statistics like TVL, historical data, plots, etc.
 
 ## Contributing

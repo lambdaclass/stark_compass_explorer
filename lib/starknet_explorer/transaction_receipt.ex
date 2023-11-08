@@ -163,6 +163,11 @@ defmodule StarknetExplorer.TransactionReceipt do
     )
   end
 
+  def update_execution_resources(receipt, execution_resources) do
+    receipt_updated = Ecto.Changeset.change(receipt, execution_resources: execution_resources)
+    Repo.update(receipt_updated)
+  end
+
   def from_rpc_tx(rpc_receipt) do
     struct(%__MODULE__{}, rpc_receipt |> StarknetExplorerWeb.Utils.atomize_keys())
   end

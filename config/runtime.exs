@@ -38,12 +38,6 @@ testnet_2_rpc_host =
     environment variable for testnet 2 is missing.
     """
 
-config :starknet_explorer,
-  rpc_host: rpc_host,
-  testnet_host: testnet_rpc_host,
-  testnet_2_host: testnet_2_rpc_host,
-  enable_gateway_data: System.get_env("ENABLE_GATEWAY_DATA") == "true"
-
 config :starknet_explorer, rpc_host: rpc_host
 
 config :starknet_explorer,
