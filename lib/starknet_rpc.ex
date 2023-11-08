@@ -81,7 +81,7 @@ defmodule StarknetExplorer.Rpc do
         network
       )
 
-  defp send_request(method, args, network) when network in [:mainnet, :testnet, :testnet2] do
+  defp send_request(method, args, network) when network in [:mainnet, :testnet] do
     payload = build_payload(method, args)
 
     case cache_lookup(method, args, network) do
@@ -107,7 +107,7 @@ defmodule StarknetExplorer.Rpc do
   end
 
   defp send_request_no_cache(method, args, network)
-       when network in [:mainnet, :testnet, :testnet2] do
+       when network in [:mainnet, :testnet] do
     payload = build_payload(method, args)
     host = fetch_rpc_host(network)
     {:ok, rsp} = post(host, payload)
@@ -116,7 +116,6 @@ defmodule StarknetExplorer.Rpc do
 
   defp fetch_rpc_host(:mainnet), do: Application.fetch_env!(:starknet_explorer, :rpc_host)
   defp fetch_rpc_host(:testnet), do: Application.fetch_env!(:starknet_explorer, :testnet_host)
-  defp fetch_rpc_host(:testnet2), do: Application.fetch_env!(:starknet_explorer, :testnet_2_host)
 
   defp build_payload(method, params) do
     %{
@@ -152,7 +151,7 @@ defmodule StarknetExplorer.Rpc do
 
   defp do_cache_lookup(cache_type, key, network)
        when cache_type in [:block_cache, :tx_cache, :request_cache] and
-              network in [:mainnet, :testnet, :testnet2] do
+              network in [:mainnet, :testnet] do
     cache_name = :"#{network}_#{cache_type}"
 
     case Cachex.get(cache_name, key) do

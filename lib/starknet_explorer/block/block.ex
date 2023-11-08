@@ -7,7 +7,7 @@ defmodule StarknetExplorer.Block do
   alias StarknetExplorerWeb.Utils
   alias StarknetExplorer.TransactionReceipt, as: Receipt
   require Logger
-  @networks [:mainnet, :testnet, :testnet2]
+  @networks [:mainnet, :testnet]
   @cast_fields [
     :number,
     :status,

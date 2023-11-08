@@ -43,7 +43,6 @@ jobs:
         PHX_SERVER: ${{ vars.PHX_SERVER }}
         RPC_API_HOST: ${{ secrets.RPC_API_HOST }}
         TESTNET_RPC_API_HOST: ${{ secrets.TESTNET_RPC_API_HOST }}
-        TESTNET_2_RPC_API_HOST: ${{ secrets.TESTNET_2_RPC_API_HOST }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ vars.AWS_REGION }}
@@ -58,7 +57,6 @@ jobs:
         SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         ENABLE_MAINNET_SYNC: "true"
         ENABLE_TESTNET_SYNC: "true"
-        ENABLE_TESTNET2_SYNC: "true"
         ENABLE_GATEWAY_DATA: "true"
       run: |
         ansible-playbook -i ansible/inventory.yaml ansible/playbooks/deployment.yaml

@@ -54,7 +54,6 @@ Set the following environment variables:
 ```bash
 export RPC_API_HOST=your_rpc_hostname
 export TESTNET_RPC_API_HOST=testnet_rpc_hostname
-export TESTNET_2_RPC_API_HOST=testnet_2_rpc_hostname
 ```
 
 ### RPC with Juno
@@ -98,7 +97,6 @@ To activate this synchronization process, you can configure the following enviro
 ```bash
 export ENABLE_MAINNET_SYNC=true
 export ENABLE_TESTNET_SYNC=true
-export ENABLE_TESTNET2_SYNC=true
 ```
 
 It's worth noting that you have the flexibility to select which networks you want to synchronize by adjusting these environment variables.
