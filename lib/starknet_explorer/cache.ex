@@ -32,10 +32,10 @@ defmodule StarknetExplorer.IndexCache do
       new_blocks =
         state[network_string]
         |> List.insert_at(0, block)
-        |> maybe_delete_last_block()
         |> Enum.sort(fn block_1, block_2 ->
           block_1.number > block_2.number
         end)
+        |> maybe_delete_last_block()
 
       Map.put(state, network_string, new_blocks)
     end)
