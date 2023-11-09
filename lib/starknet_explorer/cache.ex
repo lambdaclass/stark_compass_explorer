@@ -30,7 +30,7 @@ defmodule StarknetExplorer.IndexCache do
       block = block_number |> StarknetExplorer.Block.get_by_num(network_string)
 
       Logger.debug("Adding block from DB: #{inspect(block)}")
-      Logger.debug("State: #{inspect(state)}")
+      IO.inspect("State: #{inspect(state)}", printable_limit: :infinity, limit: :infinity)
 
       new_blocks =
         state[network_string]
