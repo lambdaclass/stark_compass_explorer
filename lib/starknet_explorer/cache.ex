@@ -1,5 +1,6 @@
 defmodule StarknetExplorer.IndexCache do
   use Agent
+  require Logger
 
   def start_link(_) do
     blocks_mainnet = StarknetExplorer.Data.many_blocks_with_txs("mainnet")
@@ -26,6 +27,9 @@ defmodule StarknetExplorer.IndexCache do
       ## Yes, really.
       network_string = Atom.to_string(network)
       block = block_number |> StarknetExplorer.Block.get_by_num(network_string)
+
+      Logger.debug("Adding block from DB: #{inspect(block)}")
+      Logger.debug("State: #{inspect(state)}")
 
       new_blocks =
         state[network_string]
