@@ -7,8 +7,8 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   use GenServer
   require Logger
   # The highest possible value for the random values.
-  @n_for_random 1
-  @fetch_timer :timer.seconds(1)
+  @n_for_random 3
+  @fetch_timer :timer.seconds(3)
 
   def start_link([network: _network, name: name] = arg) do
     GenServer.start_link(__MODULE__, arg, name: name)
