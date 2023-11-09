@@ -271,7 +271,8 @@ defmodule StarknetExplorer.Block do
       StarknetExplorer.Repo.transaction(fn ->
         block_changeset = Block.changeset_with_validations(%Block{}, block)
 
-        {:ok, block} = Repo.insert(block_changeset)
+        {:ok, block} =
+          Repo.insert(block_changeset) |> IO.inspect(label: "Block insertion in DB", pretty: true)
 
         _txs_changeset =
           Enum.map(txs, fn tx ->
