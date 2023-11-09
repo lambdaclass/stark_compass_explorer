@@ -634,7 +634,6 @@ defmodule StarknetExplorerWeb.TransactionLive do
   def handle_event("select-view", %{"view" => "internal_calls"}, socket) do
     {:ok, trace} =
       Rpc.get_transaction_trace(socket.assigns.transaction.hash, socket.assigns.network)
-      |> IO.inspect()
 
     trace =
       case Map.get(trace, "type") do
@@ -667,13 +666,11 @@ defmodule StarknetExplorerWeb.TransactionLive do
   def handle_info(:load_additional_info, socket) do
     events =
       Events.get_by_tx_hash(socket.assigns.transaction_hash, socket.assigns.network)
-      |> IO.inspect()
 
     messages_sent =
       (Message.from_transaction_receipt(socket.assigns.transaction_receipt) ++
          [Message.from_transaction(socket.assigns.transaction)])
       |> Enum.reject(&is_nil/1)
-      |> IO.inspect()
 
     input_data =
       try do
@@ -685,7 +682,6 @@ defmodule StarknetExplorerWeb.TransactionLive do
       rescue
         _ -> nil
       end
-      |> IO.inspect()
 
     assigns =
       [

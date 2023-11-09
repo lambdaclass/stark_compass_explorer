@@ -272,7 +272,7 @@ defmodule StarknetExplorer.Block do
         block_changeset = Block.changeset_with_validations(%Block{}, block)
 
         {:ok, block} =
-          Repo.insert(block_changeset) |> IO.inspect(label: "Block insertion in DB", pretty: true)
+          Repo.insert(block_changeset)
 
         _txs_changeset =
           Enum.map(txs, fn tx ->
@@ -494,7 +494,6 @@ defmodule StarknetExplorer.Block do
 
     if preload_transactions do
       Repo.one(query)
-      |> IO.inspect(label: "Repo.one(query)")
       |> Repo.preload(:transactions)
     else
       Repo.one(query)

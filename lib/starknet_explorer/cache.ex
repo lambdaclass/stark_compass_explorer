@@ -25,10 +25,8 @@ defmodule StarknetExplorer.IndexCache do
     Agent.update(__MODULE__, fn state ->
       ## We fetch from the database here just to make the map keys atoms instead of strings
       ## Yes, really.
-      IO.inspect("Adding block #{block_number} to cache")
       network_string = Atom.to_string(network)
       block = block_number |> StarknetExplorer.Block.get_by_num(network_string)
-      IO.inspect("Adding block from DB: #{inspect(block)}")
 
       new_blocks =
         state[network_string]
