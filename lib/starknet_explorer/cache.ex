@@ -37,7 +37,7 @@ defmodule StarknetExplorer.IndexCache do
         |> List.insert_at(0, block)
         |> IO.inspect(printable_limit: :infinity, limit: :infinity)
         |> Enum.sort(fn block_1, block_2 ->
-          IO.inspect("Comparing #{block_1} and #{block_2}")
+          IO.inspect("Comparing #{inspect(block_1)} and #{inspect(block_2)}")
           block_1.number > block_2.number
         end)
         |> maybe_delete_last_block()
