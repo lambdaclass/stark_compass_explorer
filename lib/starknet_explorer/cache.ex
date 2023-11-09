@@ -28,7 +28,7 @@ defmodule StarknetExplorer.IndexCache do
       IO.inspect("Adding block #{block_number} to cache")
       network_string = Atom.to_string(network)
       block = block_number |> StarknetExplorer.Block.get_by_num(network_string)
-      Logger.debug("Adding block from DB: #{inspect(block)}")
+      IO.inspect("Adding block from DB: #{inspect(block)}")
 
       new_blocks =
         state[network_string]

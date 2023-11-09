@@ -492,26 +492,12 @@ defmodule StarknetExplorer.Block do
       from b in Block,
         where: b.number == ^num and b.network == ^network
 
-    # These try catches are to guard against people sending big numbers that
-    # make postgres raise because the number doesn't fit.
-    case preload_transactions do
-      true ->
-        try do
-          Repo.one(query)
-          |> IO.inspect(label: "Repo.one(query)")
-          |> Repo.preload(:transactions)
-        rescue
-          _ ->
-            nil
-        end
-
-      false ->
-        try do
-          Repo.one(query)
-        rescue
-          _ ->
-            nil
-        end
+    if preload_transactions do
+      Repo.one(query)
+      |> IO.inspect(label: "Repo.one(query)")
+      |> Repo.preload(:transactions)
+    else
+      Repo.one(query)
     end
   end
 
