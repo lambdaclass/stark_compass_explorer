@@ -28,14 +28,16 @@ defmodule StarknetExplorer.IndexCache do
       IO.inspect("Adding block #{block_number} to cache")
       network_string = Atom.to_string(network)
       block = block_number |> StarknetExplorer.Block.get_by_num(network_string)
-
-      Logger.debug("Adding block from DB: #{inspect(block)}")
+      Logger.debug("Network: #{block[network_string]}")
+      Logger.debug("Adding block from DB: #{inspect(block[network_string])}")
       IO.inspect("State: #{inspect(state)}", printable_limit: :infinity, limit: :infinity)
 
       new_blocks =
         state[network_string]
         |> List.insert_at(0, block)
+        |> IO.inspect("New block: #{block}", printable_limit: :infinity, limit: :infinity)
         |> Enum.sort(fn block_1, block_2 ->
+          IO.inspect("Comparing #{block_1} and #{block_2}")
           block_1.number > block_2.number
         end)
         |> maybe_delete_last_block()
