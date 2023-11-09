@@ -35,7 +35,7 @@ defmodule StarknetExplorer.IndexCache do
       new_blocks =
         state[network_string]
         |> List.insert_at(0, block)
-        |> IO.inspect("New block: #{block}", printable_limit: :infinity, limit: :infinity)
+        |> IO.inspect(printable_limit: :infinity, limit: :infinity)
         |> Enum.sort(fn block_1, block_2 ->
           IO.inspect("Comparing #{block_1} and #{block_2}")
           block_1.number > block_2.number
