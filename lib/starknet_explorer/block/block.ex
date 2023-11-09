@@ -497,6 +497,7 @@ defmodule StarknetExplorer.Block do
       true ->
         try do
           Repo.one(query)
+          |> IO.inspect(label: "Repo.one(query)")
           |> Repo.preload(:transactions)
         rescue
           _ ->
