@@ -162,10 +162,10 @@ defmodule StarknetExplorer.Transaction do
     |> Repo.paginate(params)
   end
 
-  def get_by_hash_with_receipt(hash) do
+  def get_by_hash_with_receipt(hash, network) do
     query =
       from tx in Transaction,
-        where: tx.hash == ^hash
+        where: tx.hash == ^hash and tx.network == ^network
 
     case Repo.one(query) do
       nil ->

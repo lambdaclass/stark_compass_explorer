@@ -186,7 +186,7 @@ defmodule StarknetExplorer.Data do
   end
 
   def transaction(tx_hash, network) do
-    case Transaction.get_by_hash_with_receipt(tx_hash) do
+    case Transaction.get_by_hash_with_receipt(tx_hash, network) do
       nil ->
         with {:ok, %{"transaction_hash" => _transaction} = tx} <-
                Rpc.get_transaction(tx_hash, network),
