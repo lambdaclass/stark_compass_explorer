@@ -8,7 +8,9 @@ defmodule StarknetExplorer.Application do
   @impl true
   def start(_type, _args) do
     mainnet_state_sync =
-      if System.get_env("ENABLE_MAINNET_SYNC") == "true" do
+      if System.get_env("DISABLE_MAINNET_SYNC") == "true" do
+        []
+      else
         # Start the State Sync System server for mainnet.
         [
           Supervisor.child_spec(
@@ -17,12 +19,12 @@ defmodule StarknetExplorer.Application do
             id: :mainnet_state_sync
           )
         ]
-      else
-        []
       end
 
     testnet_state_sync =
-      if System.get_env("ENABLE_TESTNET_SYNC") == "true" do
+      if System.get_env("DISABLE_TESTNET_SYNC") == "true" do
+        []
+      else
         # Start the State Sync System server for testnet.
         [
           Supervisor.child_spec(
@@ -31,8 +33,6 @@ defmodule StarknetExplorer.Application do
             id: :testnet_state_sync
           )
         ]
-      else
-        []
       end
 
     children =
