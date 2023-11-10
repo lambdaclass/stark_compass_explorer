@@ -329,14 +329,11 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         %{"view" => "transactions"},
         socket
       ) do
-    filter = Map.get(socket.assigns, :tx_filter, "ALL")
-
     page =
       Transaction.paginate_txs_by_block_number(
         %{page: 0},
         socket.assigns.block.number,
-        socket.assigns.network,
-        filter
+        socket.assigns.network
       )
 
     assigns = [
