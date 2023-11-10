@@ -634,7 +634,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div>
           <div class="list-h">Age</div>
-          <div>
+          <div class="flex items-center gap-2">
             <%= Utils.get_block_age_from_timestamp(@block.timestamp) %>
             <CoreComponents.tooltip
               id="transaction-timestamp-tooltip"
@@ -917,7 +917,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div>
           <div class="list-h">Age</div>
-          <div>
+          <div class="flex items-center gap-2">
             <%= @block_age %>
             <CoreComponents.tooltip
               id="event-timestamp-tooltip"

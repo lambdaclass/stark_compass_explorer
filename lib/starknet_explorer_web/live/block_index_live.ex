@@ -57,10 +57,8 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
             <div class="block-data">
               <div class="list-h">Age</div>
               <div class="hash flex">
-                <div>
+                <div class="flex items-center gap-2">
                   <%= Utils.get_block_age(block) %>
-                </div>
-                <div>
                   <CoreComponents.tooltip
                     id="block-timestamp-tooltip"
                     text={"#{block.timestamp

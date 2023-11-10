@@ -68,7 +68,7 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
             <div>
               <div class="list-h">Declared at</div>
               <div class="block-data">
-                <div class="hash flex">
+                <div class="flex items-center gap-2">
                   <%= Utils.get_block_age_from_timestamp(class.timestamp) %>
                   <CoreComponents.tooltip
                     id="class-timestamp-tooltip"

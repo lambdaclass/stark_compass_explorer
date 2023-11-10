@@ -50,7 +50,7 @@ defmodule StarknetExplorerWeb.ContractIndexLive do
             </div>
             <div>
               <div class="list-h">Deployed At</div>
-              <div>
+              <div class="flex items-center gap-2">
                 <%= Utils.get_block_age_from_timestamp(contract.timestamp) %>
                 <CoreComponents.tooltip
                   id="contract-timestamp-tooltip"

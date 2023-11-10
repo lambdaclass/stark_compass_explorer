@@ -79,15 +79,17 @@
       /> Timestamp
     </div>
     <div>
-      <%= Utils.get_block_age_from_timestamp(@message.timestamp) %>
-      <CoreComponents.tooltip
-        id="message-timestamp-tooltip"
-        text={"#{@message.timestamp
+      <div class="flex items-center gap-2">
+        <%= Utils.get_block_age_from_timestamp(@message.timestamp) %>
+        <CoreComponents.tooltip
+          id="message-timestamp-tooltip"
+          text={"#{@message.timestamp
             |> DateTime.from_unix()
             |> then(fn {:ok, time} -> time end)
             |> Calendar.strftime("%c")} UTC"}
-        class="translate-y-px"
-      />
+          class="translate-y-px"
+        />
+      </div>
     </div>
   </div>
   <%= if !Message.is_l2_to_l1(@message.type) do %>
