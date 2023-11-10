@@ -52,6 +52,14 @@ defmodule StarknetExplorerWeb.ContractIndexLive do
               <div class="list-h">Deployed At</div>
               <div>
                 <%= Utils.get_block_age_from_timestamp(contract.timestamp) %>
+                <CoreComponents.tooltip
+                  id="contract-timestamp-tooltip"
+                  text={"#{contract.timestamp
+                        |> DateTime.from_unix()
+                        |> then(fn {:ok, time} -> time end)
+                        |> Calendar.strftime("%c")} UTC"}
+                  class="translate-y-px"
+                />
               </div>
             </div>
           </div>

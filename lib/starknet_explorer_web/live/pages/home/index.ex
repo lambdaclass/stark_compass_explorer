@@ -205,6 +205,14 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <div>
                 <div class="list-h">Age</div>
                 <%= Utils.get_block_age(block) %>
+                <CoreComponents.tooltip
+                  id="block-timestamp-tooltip"
+                  text={"#{block.timestamp
+                    |> DateTime.from_unix()
+                    |> then(fn {:ok, time} -> time end)
+                    |> Calendar.strftime("%c")} UTC"}
+                  class="translate-y-px"
+                />
               </div>
             </div>
           <% end %>
@@ -265,6 +273,14 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
               <div>
                 <div class="list-h">Age</div>
                 <%= Utils.get_block_age_from_timestamp(transaction.block_timestamp) %>
+                <CoreComponents.tooltip
+                  id="transaction-timestamp-tooltip"
+                  text={"#{transaction.block_timestamp
+                    |> DateTime.from_unix()
+                    |> then(fn {:ok, time} -> time end)
+                    |> Calendar.strftime("%c")} UTC"}
+                  class="translate-y-px"
+                />
               </div>
             </div>
           <% end %>

@@ -70,6 +70,14 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
               <div class="block-data">
                 <div class="hash flex">
                   <%= Utils.get_block_age_from_timestamp(class.timestamp) %>
+                  <CoreComponents.tooltip
+                    id="class-timestamp-tooltip"
+                    text={"#{class.timestamp
+                        |> DateTime.from_unix()
+                        |> then(fn {:ok, time} -> time end)
+                        |> Calendar.strftime("%c")} UTC"}
+                    class="translate-y-px"
+                  />
                 </div>
               </div>
             </div>

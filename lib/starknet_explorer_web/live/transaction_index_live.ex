@@ -77,6 +77,14 @@ defmodule StarknetExplorerWeb.TransactionIndexLive do
                 <div>
                   <div class="list-h">Age</div>
                   <%= Utils.get_block_age_from_timestamp(transaction.timestamp) %>
+                  <CoreComponents.tooltip
+                    id="transaction-timestamp-tooltip"
+                    text={"#{transaction.timestamp
+                        |> DateTime.from_unix()
+                        |> then(fn {:ok, time} -> time end)
+                        |> Calendar.strftime("%c")} UTC"}
+                    class="translate-y-px"
+                  />
                 </div>
               </div>
             <% end %>

@@ -634,7 +634,17 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div>
           <div class="list-h">Age</div>
-          <div><%= Utils.get_block_age_from_timestamp(@block.timestamp) %></div>
+          <div>
+            <%= Utils.get_block_age_from_timestamp(@block.timestamp) %>
+            <CoreComponents.tooltip
+              id="transaction-timestamp-tooltip"
+              text={"#{@block.timestamp
+                        |> DateTime.from_unix()
+                        |> then(fn {:ok, time} -> time end)
+                        |> Calendar.strftime("%c")} UTC"}
+              class="translate-y-px"
+            />
+          </div>
         </div>
       </div>
     <% end %>
@@ -907,7 +917,17 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div>
           <div class="list-h">Age</div>
-          <div><%= @block_age %></div>
+          <div>
+            <%= @block_age %>
+            <CoreComponents.tooltip
+              id="event-timestamp-tooltip"
+              text={"#{event.age
+                        |> DateTime.from_unix()
+                        |> then(fn {:ok, time} -> time end)
+                        |> Calendar.strftime("%c")} UTC"}
+              class="translate-y-px"
+            />
+          </div>
         </div>
       </div>
     <% end %>
