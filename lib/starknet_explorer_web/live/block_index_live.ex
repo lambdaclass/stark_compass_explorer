@@ -54,9 +54,21 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
                 </span>
               </div>
             </div>
-            <div>
+            <div class="block-data">
               <div class="list-h">Age</div>
-              <%= Utils.get_block_age(block) %>
+              <div class="hash flex">
+                <div class="flex items-center gap-2">
+                  <%= Utils.get_block_age(block) %>
+                  <CoreComponents.tooltip
+                    id="block-timestamp-tooltip"
+                    text={"#{block.timestamp
+                        |> DateTime.from_unix()
+                        |> then(fn {:ok, time} -> time end)
+                        |> Calendar.strftime("%c")} UTC"}
+                    class="translate-y-px"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         <% end %>
