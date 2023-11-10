@@ -45,7 +45,10 @@ make setup
 
 ### RPC Provider
 
-You now have the choice of connecting the explorer to an RPC API provider of your choice, e.g. Infura with an API key, or by running your own Juno node. 
+You now have the choice of connecting the explorer to an RPC API provider of your choice, e.g. Infura with an API key, or by running your own Juno node.
+
+To fully utilize the capabilities of the explorer, it is crucial to connect it to an RPC provider that is compatible with the [starknet-specs v0.5.0](https://github.com/starkware-libs/starknet-specs).
+
 
 To run it locally, you'll need to set the RPC API url of the network. If you're using a provider like Infura, this will look something like this: `https://starknet-mainnet.infura.io/v3/your_api_key`
 
@@ -92,11 +95,11 @@ The State Synchronization System facilitates the population of the database with
 
 3. **Updating Unfinished Blocks and Transactions**: If the finality status of a block or a transaction remains unattained, the system periodically attempts to update the database by checking for any available updates.
 
-To activate this synchronization process, you can configure the following environment variables before launching the explorer:
+The synchronization process is activated by default, you can turn it off by configuring the following environment variables before launching the explorer:
 
 ```bash
-export ENABLE_MAINNET_SYNC=true
-export ENABLE_TESTNET_SYNC=true
+export DISABLE_MAINNET_SYNC=true
+export DISABLE_TESTNET_SYNC=true
 ```
 
 It's worth noting that you have the flexibility to select which networks you want to synchronize by adjusting these environment variables.
