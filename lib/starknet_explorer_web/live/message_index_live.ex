@@ -64,7 +64,12 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
               <div class="list-h">From Address</div>
               <div class="block-data">
                 <div class="hash flex">
-                  <%= Utils.shorten_block_hash(message.from_address) %>
+                  <a
+                    href={Utils.network_path(@network, "contracts/#{message.from_address}")}
+                    class="text-hover-link"
+                  >
+                    <%= Utils.shorten_block_hash(message.from_address) %>
+                  </a>
                   <CoreComponents.copy_button text={message.from_address} />
                 </div>
               </div>
@@ -73,7 +78,12 @@ defmodule StarknetExplorerWeb.MessageIndexLive do
               <div class="list-h">To Address</div>
               <div class="block-data">
                 <div class="hash flex">
-                  <%= Utils.shorten_block_hash(message.to_address) %>
+                  <a
+                    href={Utils.network_path(@network, "contracts/#{message.to_address}")}
+                    class="text-hover-link"
+                  >
+                    <%= Utils.shorten_block_hash(message.to_address) %>
+                  </a>
                   <CoreComponents.copy_button text={message.to_address} />
                 </div>
               </div>

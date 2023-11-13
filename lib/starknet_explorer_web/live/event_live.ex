@@ -81,7 +81,12 @@ defmodule StarknetExplorerWeb.EventDetailLive do
         <div class="block-label !mt-0">Contract Address</div>
         <div class="block-data">
           <div class="hash flex">
-            <%= @event.from_address %>
+            <a
+              href={Utils.network_path(@network, "contracts/#{@event.from_address}")}
+              class="text-hover-link"
+            >
+              <%= @event.from_address %>
+            </a>
             <CoreComponents.copy_button text={@event.from_address} />
           </div>
         </div>
