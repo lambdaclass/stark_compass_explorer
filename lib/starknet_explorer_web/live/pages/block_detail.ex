@@ -609,7 +609,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           <div class="flex gap-2 items-center copy-container" id={"copy-addr-#{hash}"} phx-hook="Copy">
             <div class="relative">
               <div class="break-all text-hover-blue">
-                <%= Utils.shorten_block_hash(sender_address || "-") %>
+                <a
+                  href={Utils.network_path(@network, "contracts/#{sender_address}")}
+                  class="text-hover-link"
+                >
+                  <%= Utils.shorten_block_hash(sender_address || "-") %>
+                </a>
               </div>
               <div class="absolute top-1/2 -right-6 tranform -translate-y-1/2">
                 <div class="relative">
@@ -705,10 +710,14 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
           </div>
           <div>
             <div class="list-h">From Address</div>
-
             <div class="block-data">
               <div class="hash flex">
-                <%= Utils.shorten_block_hash(message.from_address) %>
+                <a
+                  href={Utils.network_path(@network, "contracts/#{message.from_address}")}
+                  class="text-hover-link"
+                >
+                  <%= Utils.shorten_block_hash(message.from_address) %>
+                </a>
                 <CoreComponents.copy_button text={message.from_address} />
               </div>
             </div>
@@ -717,7 +726,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             <div class="list-h">To Address</div>
             <div class="block-data">
               <div class="hash flex">
-                <%= Utils.shorten_block_hash(message.to_address) %>
+                <a
+                  href={Utils.network_path(@network, "contracts/#{message.to_address}")}
+                  class="text-hover-link"
+                >
+                  <%= Utils.shorten_block_hash(message.to_address) %>
+                </a>
                 <CoreComponents.copy_button text={message.to_address} />
               </div>
             </div>
@@ -908,7 +922,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         <div class="list-h">From Address</div>
         <div class="block-data">
           <div class="hash flex">
-            <%= event.from_address |> Utils.shorten_block_hash() %>
+            <a
+              href={Utils.network_path(@network, "contracts/#{event.from_address}")}
+              class="text-hover-link"
+            >
+              <%= event.from_address |> Utils.shorten_block_hash() %>
+            </a>
             <CoreComponents.copy_button text={event.from_address} />
           </div>
         </div>
