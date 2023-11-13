@@ -173,7 +173,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
         <div class="list-h">From Address</div>
         <div class="block-data">
           <div class="hash flex">
-            <%= event.from_address |> Utils.shorten_block_hash() %>
+            <a
+              href={Utils.network_path(@network, "contracts/#{event.from_address}")}
+              class="text-hover-link"
+            >
+              <%= event.from_address |> Utils.shorten_block_hash() %>
+            </a>
             <CoreComponents.copy_button text={event.from_address} />
           </div>
         </div>
@@ -245,7 +250,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
             <div class="list-h">From Address</div>
             <div class="block-data">
               <div class="hash flex">
-                <%= Utils.shorten_block_hash(message.from_address) %>
+                <a
+                  href={Utils.network_path(@network, "contracts/#{message.from_address}")}
+                  class="text-hover-link"
+                >
+                  <%= Utils.shorten_block_hash(message.from_address) %>
+                </a>
                 <CoreComponents.copy_button text={message.from_address} />
               </div>
             </div>
@@ -254,7 +264,12 @@ defmodule StarknetExplorerWeb.TransactionLive do
             <div class="list-h">To Address</div>
             <div class="block-data">
               <div class="hash flex">
-                <%= Utils.shorten_block_hash(message.to_address) %>
+                <a
+                  href={Utils.network_path(@network, "contracts/#{message.to_address}")}
+                  class="text-hover-link"
+                >
+                  <%= Utils.shorten_block_hash(message.to_address) %>
+                </a>
                 <CoreComponents.copy_button text={message.to_address} />
               </div>
             </div>

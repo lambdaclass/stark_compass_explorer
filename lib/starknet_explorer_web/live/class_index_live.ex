@@ -60,7 +60,12 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
               <div class="list-h">Declared by</div>
               <div class="block-data">
                 <div class="hash flex">
-                  <%= Utils.shorten_block_hash(class.declared_by_address) %>
+                  <a
+                    href={Utils.network_path(@network, "contracts/#{class.declared_by_address}")}
+                    class="text-hover-link"
+                  >
+                    <%= Utils.shorten_block_hash(class.declared_by_address) %>
+                  </a>
                   <CoreComponents.copy_button text={class.declared_by_address} />
                 </div>
               </div>
