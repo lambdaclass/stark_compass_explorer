@@ -33,7 +33,7 @@ defmodule StarknetExplorer.Contract do
     field :timestamp, :integer
     field :version, :string
     field :balance, :string
-    field :type, :string
+    field :type, {:array, :string}
     field :nonce, :string
     field :class_hash, :string
     field :deployed_at_transaction, :string
