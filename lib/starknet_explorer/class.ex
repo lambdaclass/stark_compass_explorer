@@ -63,7 +63,9 @@ defmodule StarknetExplorer.Class do
     :version,
     :network,
     :hash,
-    :block_number
+    :block_number,
+    :type,
+    :type_updated
   ]
 
   @required [
@@ -81,6 +83,7 @@ defmodule StarknetExplorer.Class do
     field :declared_at_transaction, :string
     field :block_number, :integer
     field :type, {:array, :string}
+    field :type_updated, :boolean, default: false
 
     timestamps()
   end
