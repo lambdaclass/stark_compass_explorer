@@ -114,6 +114,12 @@ defmodule StarknetExplorer.Class do
     |> Repo.one()
   end
 
+  def get_out_of_date_class(network) do
+    StarknetExplorer.Class
+    |> where([p], p.network == ^network and p.type_updated == false)
+    |> Repo.one()
+  end
+
   @doc """
   Updates the class type of the class with the given hash.
   """
@@ -121,7 +127,7 @@ defmodule StarknetExplorer.Class do
   def update_class_type_from_rpc(class) do
     types = get_types_for_class(class.hash, class.network)
 
-    Ecto.Changeset.change(class, type: types)
+    Ecto.Changeset.change(class, type: types, types_updated: true)
     |> Repo.update()
   end
 
