@@ -127,7 +127,7 @@ defmodule StarknetExplorer.Class do
   def update_class_type_from_rpc(class) do
     types = get_types_for_class(class.hash, class.network)
 
-    Ecto.Changeset.change(class, type: types, types_updated: true)
+    Ecto.Changeset.change(class, type: types, type_updated: true)
     |> Repo.update()
   end
 
@@ -180,6 +180,7 @@ defmodule StarknetExplorer.Class do
           do: [type_name(type)],
           else: []
     end)
+    |> Enum.uniq()
   end
 
   defp type_name("ERC20_camel_case"), do: "ERC20"

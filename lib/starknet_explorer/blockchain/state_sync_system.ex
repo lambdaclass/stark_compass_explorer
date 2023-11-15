@@ -85,6 +85,8 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
         state = %StateSyncSystem{network: network, class_to_update: class_to_update}
       ) do
     {:ok, _class_updated} = Class.update_class_type_from_rpc(class_to_update)
+    Logger.debug("[Class Update] Class updated: #{inspect(class_to_update.hash)}")
+
     state = %{state | class_to_update: Class.get_out_of_date_class(network)}
 
     Process.send_after(self(), :update_class, @fetch_timer + :rand.uniform(@n_for_random))

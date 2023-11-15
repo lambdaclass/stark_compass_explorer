@@ -2,6 +2,7 @@ defmodule StarknetExplorer.Block do
   use Ecto.Schema
   import Ecto.Query
   import Ecto.Changeset
+  alias StarknetExplorer.Class
   alias StarknetExplorer.Events
   alias StarknetExplorer.{Repo, Transaction, Block, Message}
   alias StarknetExplorerWeb.Utils
@@ -250,6 +251,8 @@ defmodule StarknetExplorer.Block do
     declared_classes_changeset =
       Enum.reduce(block["transactions"], [], fn tx, acc ->
         if tx["type"] == "DECLARE" do
+          types = Class.get_types_for_class(tx["class_hash"], network)
+
           acc ++
             [
               StarknetExplorer.Class.changeset(%StarknetExplorer.Class{}, %{
@@ -259,7 +262,9 @@ defmodule StarknetExplorer.Block do
                 "version" => tx["version"],
                 "declared_at_transaction" => tx["hash"],
                 "declared_by_address" => tx["sender_address"],
-                "block_number" => block["number"]
+                "block_number" => block["number"],
+                "type" => types,
+                "type_updated" => true
               })
             ]
         else
