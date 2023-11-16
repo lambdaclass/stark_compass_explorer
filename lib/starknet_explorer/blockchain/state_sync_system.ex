@@ -2,8 +2,16 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   @moduledoc """
   State Sync System.
   """
-  alias StarknetExplorer.{Block, BlockUtils, Rpc, Blockchain.StateSyncSystem}
-  defstruct [:current_block_number, :network, :next_to_fetch, :updater_block_number]
+  alias StarknetExplorer.{Block, BlockUtils, Rpc, Blockchain.StateSyncSystem, Class}
+
+  defstruct [
+    :current_block_number,
+    :network,
+    :next_to_fetch,
+    :updater_block_number,
+    :class_to_update
+  ]
+
   use GenServer
   require Logger
   # The highest possible value for the random values.
@@ -47,16 +55,41 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
     {:ok, lowest_not_finished_block_number} =
       BlockUtils.get_lowest_not_completed_block(network)
 
+    class_to_update = Class.get_out_of_date_class(network)
+
     state = %StateSyncSystem{
       current_block_number: block_height,
       next_to_fetch: lowest_block_number,
       updater_block_number: lowest_not_finished_block_number,
+      class_to_update: class_to_update,
       network: network
     }
 
     Process.send_after(self(), :listener, @fetch_timer + :rand.uniform(@n_for_random))
     Process.send_after(self(), :fetcher, @fetch_timer + :rand.uniform(@n_for_random))
     Process.send_after(self(), :updater, @fetch_timer + :rand.uniform(@n_for_random))
+    Process.send_after(self(), :update_class, @fetch_timer + :rand.uniform(@n_for_random))
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_info(
+        :update_class,
+        state = %StateSyncSystem{class_to_update: nil}
+      ),
+      do: {:noreply, state}
+
+  @impl true
+  def handle_info(
+        :update_class,
+        state = %StateSyncSystem{network: network, class_to_update: class_to_update}
+      ) do
+    {:ok, _class_updated} = Class.update_class_type_from_rpc(class_to_update)
+    Logger.debug("[Class Update] Class updated: #{inspect(class_to_update.hash)}")
+
+    state = %{state | class_to_update: Class.get_out_of_date_class(network)}
+
+    Process.send_after(self(), :update_class, @fetch_timer + :rand.uniform(@n_for_random))
     {:noreply, state}
   end
 
