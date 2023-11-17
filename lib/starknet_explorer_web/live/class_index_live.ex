@@ -18,14 +18,15 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
         />
       </div>
       <div class="table-block">
-        <div class="grid-6 table-th">
+        <div class="grid-7 table-th">
           <div>Class Hash</div>
+          <div>Type</div>
           <div class="col-span-2">Transaction Hash</div>
           <div class="col-span-2">Declared by</div>
           <div>Declared at</div>
         </div>
         <%= for class <- @page.entries do %>
-          <div class="grid-6 custom-list-item">
+          <div class="grid-7 custom-list-item">
             <div>
               <div class="list-h">Class Hash</div>
               <div class="block-data">
@@ -40,6 +41,8 @@ defmodule StarknetExplorerWeb.ClassIndexLive do
                 </div>
               </div>
             </div>
+            <div class="list-h">Type</div>
+            <CoreComponents.render_class_types class={class} />
             <div class="col-span-2">
               <div class="list-h">Transaction Hash</div>
               <div class="block-data">

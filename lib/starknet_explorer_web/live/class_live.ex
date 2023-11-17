@@ -243,6 +243,10 @@ defmodule StarknetExplorerWeb.ClassDetailLive do
       </div>
     </div>
     <div class="grid-4 custom-list-item">
+      <div class="block-label !mt-0">Type</div>
+      <CoreComponents.render_class_types class={@class} />
+    </div>
+    <div class="grid-4 custom-list-item">
       <div class="block-label !mt-0">Version</div>
       <div class="block-data">
         <div class="flex">

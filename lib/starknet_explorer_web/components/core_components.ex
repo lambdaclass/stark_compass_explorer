@@ -740,4 +740,30 @@ defmodule StarknetExplorerWeb.CoreComponents do
     />
     """
   end
+
+  def render_class_types(%{class: nil} = assigns) do
+    ~H"""
+    <div>
+      Class not loaded
+    </div>
+    """
+  end
+
+  def render_class_types(%{class: %{type: []}} = assigns) do
+    ~H"""
+    <div>
+      -
+    </div>
+    """
+  end
+
+  def render_class_types(assigns) do
+    ~H"""
+    <%= for type <- @class.type do %>
+      <div>
+        <%= type %>
+      </div>
+    <% end %>
+    """
+  end
 end

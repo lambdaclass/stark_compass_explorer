@@ -17,13 +17,14 @@ defmodule StarknetExplorerWeb.ContractIndexLive do
         />
       </div>
       <div class="table-block">
-        <div class="grid-3 table-th">
+        <div class="grid-4 table-th">
           <div>Address</div>
+          <div>type</div>
           <div>Class Hash</div>
           <div>Deployed At</div>
         </div>
         <%= for contract <- @page.entries do %>
-          <div class="grid-3 custom-list-item">
+          <div class="grid-4 custom-list-item">
             <div class="list-h">Address</div>
             <div class="block-data">
               <div class="hash flex">
@@ -36,6 +37,8 @@ defmodule StarknetExplorerWeb.ContractIndexLive do
                 <CoreComponents.copy_button text={contract.address} />
               </div>
             </div>
+            <div class="list-h">Type</div>
+            <CoreComponents.render_class_types class={contract.class} />
             <div class="list-h">Class Hash</div>
             <div class="block-data">
               <div class="hash flex">
