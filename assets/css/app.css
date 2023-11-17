@@ -225,17 +225,17 @@ main .option {
 }
 .type.l2_to_l1_executed_on_l2,
 .type-blue,
-.consumed-on-l2 {
+.consumed-on-l2, .proxy {
   @apply text-se-blue;
 }
-.type.deploy_account {
+.type.deploy_account, .account {
   @apply text-se-pink;
 }
-.type.declare,
+.type.declare, .erc721,
 .l1_handler {
   @apply text-se-red;
 }
-.type.invoke {
+.type.invoke, .erc20 {
   @apply text-se-orange;
 }
 
