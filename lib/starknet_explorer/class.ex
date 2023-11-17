@@ -111,12 +111,14 @@ defmodule StarknetExplorer.Class do
   def get_by_hash(hash, network) do
     StarknetExplorer.Class
     |> where([p], p.hash == ^hash and p.network == ^network)
+    |> limit(1)
     |> Repo.one()
   end
 
   def get_out_of_date_class(network) do
     StarknetExplorer.Class
     |> where([p], p.network == ^network and p.type_updated == false)
+    |> limit(1)
     |> Repo.one()
   end
 
