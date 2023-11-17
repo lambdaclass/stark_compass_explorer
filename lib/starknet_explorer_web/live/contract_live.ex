@@ -213,13 +213,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
     <div class="grid-4 custom-list-item">
       <div class="block-label">Type</div>
       <div class="col-span-3">
-        <%= if is_nil(@contract.type) do %>
-          <span class="info-label">-</span>
-        <% else %>
-          <span class="type">
-            <%= @contract.type %>
-          </span>
-        <% end %>
+        <CoreComponents.render_class_types class={@class} />
       </div>
     </div>
     <div class="grid-4 custom-list-item">

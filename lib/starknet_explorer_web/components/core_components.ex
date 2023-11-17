@@ -740,4 +740,32 @@ defmodule StarknetExplorerWeb.CoreComponents do
     />
     """
   end
+
+  def render_class_types(%{class: nil} = assigns) do
+    ~H"""
+    <div>
+      -
+    </div>
+    """
+  end
+
+  def render_class_types(%{class: %{type: []}} = assigns) do
+    ~H"""
+    <div>
+      -
+    </div>
+    """
+  end
+
+  def render_class_types(assigns) do
+    ~H"""
+    <div class="flex gap-2 w-full !flex-row">
+      <%= for type <- @class.type do %>
+        <span class={"type #{String.downcase(String.replace(type, " ", "-"))}"}>
+          <%= type %>
+        </span>
+      <% end %>
+    </div>
+    """
+  end
 end

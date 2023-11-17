@@ -63,10 +63,21 @@ defmodule StarknetExplorer.Contract do
   end
 
   def get_page(params, network) do
-    StarknetExplorer.Contract
-    |> where([p], p.network == ^network)
-    |> order_by(desc: :timestamp)
-    |> Repo.paginate(params)
+    page =
+      StarknetExplorer.Contract
+      |> where([p], p.network == ^network)
+      |> order_by(desc: :timestamp)
+      |> Repo.paginate(params)
+
+    page_entries =
+      page
+      |> Map.get(:entries, [])
+      |> Enum.map(fn contract ->
+        contract
+        |> Map.put(:class, StarknetExplorer.Class.get_by_hash(contract.class_hash, network))
+      end)
+
+    Map.put(page, :entries, page_entries)
   end
 
   def get_by_address(address, network) do
