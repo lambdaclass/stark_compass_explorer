@@ -15,7 +15,7 @@
 
   - name: Clone repo in tmp dir
     ansible.builtin.git:
-      repo: git@github.com:lambdaclass/madara_explorer.git
+      repo: git@github.com:lambdaclass/stark_compass_explorer.git
       version: "{{ lookup('ansible.builtin.env', 'GIT_BRANCH') }}"
       dest: /home/starknet_explorer/tmp/madara_explorer
       ssh_opts: "-o StrictHostKeyChecking=no"
