@@ -28,6 +28,7 @@ defmodule Abi do
         number when is_integer(number) -> <<number::unsigned-big-integer-size(256)>>
         hex when is_binary(hex) -> encode_hex(hex)
         array when is_list(array) -> Enum.map(array, &encode_packed_mixed([&1])) |> Enum.join()
+        nil -> ""
         _ -> raise "Unsupported type"
       end
 
