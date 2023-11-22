@@ -151,6 +151,13 @@ defmodule StarknetExplorer.Blockchain.StateSyncSystem do
   @impl true
   def handle_info(
         :fetcher,
+        state = %StateSyncSystem{next_to_fetch: -1}
+      ),
+      do: {:noreply, state}
+
+  @impl true
+  def handle_info(
+        :fetcher,
         state = %StateSyncSystem{network: network, next_to_fetch: next_to_fetch}
       ) do
     Logger.debug("[Fetcher] Fetcher fetching: #{inspect(next_to_fetch)}")
