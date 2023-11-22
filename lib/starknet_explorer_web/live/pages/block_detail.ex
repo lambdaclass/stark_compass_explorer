@@ -482,81 +482,21 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     """
   end
 
+  def filter_options, do: ["ALL", "INVOKE", "DEPLOY_ACCOUNT", "DEPLOY", "DECLARE", "L1_HANDLER"]
+
   def render_tx_filter(assigns) do
     ~H"""
-    <div>
-      <div>
-        <div
-          id="dropdown"
-          class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
-          phx-hook="Dropdown"
+    <div class="relative z-20">
+      <form id="test" phx-change="select-filter">
+        <select
+          value={@tx_filter}
+          name="filter"
+          id="filter"
+          class="bg-container border border-gray-700 text-brand rounded-md text-sm py-1 w-full"
         >
-          <span class="networkSelected capitalize"><%= assigns.tx_filter %></span>
-          <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
-            <img
-              alt="Dropdown menu of transaction types"
-              class="transform rotate-90 w-5 h-5"
-              src={~p"/images/dropdown.svg"}
-            />
-          </span>
-        </div>
-        <div>
-          <div class="options hidden">
-            <div
-              class={"option #{if Map.get(assigns, :tx_filter) == "ALL", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-              phx-click="select-filter"
-              ,
-              phx-value-filter="ALL"
-            >
-              All
-            </div>
-            <%= if @tabs? do %>
-              <div
-                class={"option #{if Map.get(assigns, :tx_filter) == "INVOKE", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-                phx-click="select-filter"
-                ,
-                phx-value-filter="INVOKE"
-              >
-                Invoke
-              </div>
-              <div
-                class={"option #{if Map.get(assigns, :tx_filter) == "DEPLOY_ACCOUNT", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-                phx-click="select-filter"
-                ,
-                phx-value-filter="DEPLOY_ACCOUNT"
-              >
-                Deploy Account
-              </div>
-              <div
-                class={"option #{if Map.get(assigns, :tx_filter) == "DEPLOY", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-                phx-click="select-filter"
-                ,
-                phx-value-filter="DEPLOY"
-              >
-                Deploy
-              </div>
-              <div
-                class={"option #{if Map.get(assigns, :tx_filter) == "DECLARE", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-                phx-click="select-filter"
-                ,
-                phx-value-filter="DECLARE"
-                ,
-              >
-                Declare
-              </div>
-            <% end %>
-            <div
-              class={"option #{if Map.get(assigns, :tx_filter) == "L1_HANDLER", do: "lg:!border-b-se-blue text-white", else: "lg:border-b-transparent text-gray-400"}"}
-              phx-click="select-filter"
-              ,
-              phx-value-filter="L1_HANDLER"
-              ,
-            >
-              L1 Handler
-            </div>
-          </div>
-        </div>
-      </div>
+          <%= Phoenix.HTML.Form.options_for_select(filter_options(), @tx_filter) %>
+        </select>
+      </form>
     </div>
     """
   end
