@@ -486,17 +486,22 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   def render_tx_filter(assigns) do
     ~H"""
-    <div class="relative z-20">
-      <form id="test" phx-change="select-filter">
-        <select
-          value={@tx_filter}
-          name="filter"
-          id="filter"
-          class="bg-container border border-gray-700 text-brand rounded-md text-sm py-1 w-full"
-        >
-          <%= Phoenix.HTML.Form.options_for_select(filter_options(), @tx_filter) %>
-        </select>
-      </form>
+    <div class="table-header flex flex-col md:flex-row gap-5 !items-start">
+      <div class="w-1/2 pr-6 max-w-[15rem] flex gap-3 items-center">
+        <span class="hidden md:block text-gray-400">TYPE:</span>
+        <div class="relative z-20">
+          <form id="test" phx-change="select-filter">
+            <select
+              value={@tx_filter}
+              name="filter"
+              id="filter"
+              class="bg-container border border-gray-700 text-brand rounded-md text-sm py-1 w-full"
+            >
+              <%= Phoenix.HTML.Form.options_for_select(filter_options(), @tx_filter) %>
+            </select>
+          </form>
+        </div>
+      </div>
     </div>
     """
   end
