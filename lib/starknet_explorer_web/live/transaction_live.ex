@@ -475,7 +475,11 @@ defmodule StarknetExplorerWeb.TransactionLive do
               <% else %>
                 <div class="w-full bg-black/20 p-5 mt-5">
                   Not Supported <span class="text-se-pink">...</span>(...)
-                  <span class="text-blue-400">-></span> <%= input.selector %>
+                  <span class="text-blue-400">-></span>
+                  <div class="hash">
+                    <%= input.selector %>
+                    <CoreComponents.copy_button text={input.selector} />
+                  </div>
                 </div>
               <% end %>
             <% end %>
