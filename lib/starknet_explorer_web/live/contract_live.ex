@@ -22,6 +22,16 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
     """
   end
 
+  defp tab_name("overview"), do: "Overview"
+  defp tab_name("events"), do: "Events"
+  defp tab_name("transactions"), do: "Transactions"
+  defp tab_name("account-calls"), do: "Account Calls"
+  defp tab_name("portfolio"), do: "Portfolio"
+  defp tab_name("class-code-history"), do: "Class Code History"
+  defp tab_name("read-write"), do: "Read/Write"
+  defp tab_name("token-transfers"), do: "Token Transfers"
+  defp tab_name(name), do: name
+
   defp contract_dropdown(assigns) do
     ~H"""
     <div
@@ -29,7 +39,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
       class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
       phx-hook="Dropdown"
     >
-      <span class="networkSelected capitalize"><%= assigns.view %></span>
+      <span class="networkSelected capitalize"><%= tab_name(assigns.view) %></span>
       <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
         <img alt="Dropdown menu" class="transform rotate-90 w-5 h-5" src={~p"/images/dropdown.svg"} />
       </span>
