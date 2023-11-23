@@ -301,6 +301,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
             Read our blog
           </div>
           <div>
+            Check out our articles on distributed systems, machine learning, compilers, operating systems, security and cryptography.
             <a href="https://blog.lambdaclass.com">https://blog.lambdaclass.com</a>
           </div>
         </div>
@@ -321,6 +322,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
           <div class="subtitle">
             Follow LambdaStarknet on twitter
           </div>
+          Follow us on Twitter to get the latest updates on Starknet and our projects.
           <a href="https://twitter.com/LambdaStarknet">
             https://twitter.com/LambdaStarknet
           </a>
