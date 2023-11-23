@@ -434,6 +434,13 @@ defmodule StarknetExplorer.Block do
     query
     |> Repo.all()
     |> Repo.preload(:transactions)
+    |> Enum.map(fn block ->
+      block
+      |> Map.put(
+        :transactions,
+        Enum.filter(block.transactions, fn tx -> tx.network == network end)
+      )
+    end)
   end
 
   @doc """
