@@ -7,6 +7,7 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   alias StarknetExplorer.IndexCache
   use Phoenix.Component
   use StarknetExplorerWeb, :live_view
+  require Logger
 
   @impl true
   def mount(_params, _session, socket) do
@@ -330,6 +331,15 @@ defmodule StarknetExplorerWeb.HomeLive.Index do
   end
 
   def load_blocks(socket) do
+    Logger.debug("Loading blocks")
+    Logger.debug("Socket assigns: #{inspect(socket.assigns)}")
+    Logger.debug("Socket assigns network: #{inspect(socket.assigns.network)}")
+    Logger.debug("Cache blocks: #{inspect(IndexCache.latest_blocks(socket.assigns.network))}")
+
+    Logger.debug(
+      "Data blocks: #{inspect(StarknetExplorer.Data.many_blocks_with_txs(socket.assigns.network))}"
+    )
+
     blocks =
       if length(IndexCache.latest_blocks(socket.assigns.network)) < 15 do
         StarknetExplorer.Data.many_blocks_with_txs(socket.assigns.network)
