@@ -75,6 +75,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     end
   end
 
+  defp tab_name("transactions"), do: "Transactions"
+  defp tab_name("messages"), do: "Messages"
+  defp tab_name("events"), do: "Events"
+  defp tab_name("overview"), do: "Overview"
+  defp tab_name(name), do: name
+
   defp block_detail_header(assigns) do
     ~H"""
     <div class="flex flex-col md:flex-row justify-between mb-5 lg:mb-0">
@@ -95,7 +101,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       class="dropdown relative bg-[#232331] p-5 mb-2 rounded-md lg:hidden"
       phx-hook="Dropdown"
     >
-      <span class="networkSelected capitalize"><%= assigns.view %></span>
+      <span class="networkSelected capitalize"><%= tab_name(assigns.view) %></span>
       <span class="absolute inset-y-0 right-5 transform translate-1/2 flex items-center">
         <img
           alt="Dropdown menu of block detail screens"
