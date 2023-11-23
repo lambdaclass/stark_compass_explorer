@@ -431,15 +431,12 @@ defmodule StarknetExplorer.Block do
         where: b.network == ^network,
         limit: ^amount
 
-    query
-    |> Repo.all()
-    |> Repo.preload(:transactions)
+    Repo.all(query)
     |> Enum.map(fn block ->
-      block
-      |> Map.put(
-        :transactions,
-        Enum.filter(block.transactions, fn tx -> tx.network == network end)
-      )
+      preload_query =
+        from tx in Transaction, where: tx.block_number == ^block.number and tx.network == ^network
+
+      Repo.preload(block, transactions: preload_query)
     end)
   end
 
@@ -479,13 +476,15 @@ defmodule StarknetExplorer.Block do
       from b in Block,
         where: b.hash == ^hash and b.network == ^network
 
-    case preload_transactions do
-      true ->
-        Repo.one(query)
-        |> Repo.preload(:transactions)
+    block = Repo.one(query)
 
-      false ->
-        Repo.one(query)
+    if preload_transactions do
+      preload_query =
+        from tx in Transaction, where: tx.block_number == ^block.number and tx.network == ^network
+
+      Repo.preload(block, transactions: preload_query)
+    else
+      block
     end
   end
 
@@ -504,22 +503,30 @@ defmodule StarknetExplorer.Block do
       from b in Block,
         where: b.number == ^num and b.network == ^network
 
-    if preload_transactions do
-      Repo.one(query)
-      |> Repo.preload(:transactions)
+    block = Repo.one(query)
+
+    if preload_transactions and not is_nil(block) do
+      preload_query =
+        from tx in Transaction, where: tx.block_number == ^block.number and tx.network == ^network
+
+      Repo.preload(block, transactions: preload_query)
     else
-      Repo.one(query)
+      block
     end
   end
 
   def get_by_number_with_receipts_preload(num, network) do
+    preload_query =
+      from tx in Transaction,
+        where: tx.block_number == ^num and tx.network == ^network,
+        preload: :receipt
+
     query =
       from b in Block,
         where: b.number == ^num and b.network == ^network,
-        preload: [transactions: :receipt]
+        preload: [transactions: ^preload_query]
 
     Repo.one(query)
-    |> Repo.preload(:transactions)
   end
 
   def get_by_partial_num(num, network) do

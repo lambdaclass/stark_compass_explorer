@@ -186,11 +186,15 @@ defmodule StarknetExplorer.Transaction do
   end
 
   def paginate_transactions(params, network) do
-    Transaction
-    |> where([tx], tx.network == ^network)
-    |> preload(:block)
-    |> order_by(desc: :block_number)
-    |> Repo.paginate(params)
+    query =
+      from tx in Transaction,
+        join: b in Block,
+        as: :block,
+        on: tx.block_number == b.number and tx.network == ^network,
+        where: tx.network == ^network,
+        order_by: [desc: :block_number]
+
+    Repo.paginate(query, params)
   end
 
   def paginate_transactions_for_index(params, network, filter \\ "ALL")
