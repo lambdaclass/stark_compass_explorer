@@ -172,4 +172,8 @@ defmodule StarknetExplorerWeb.Utils do
   def network_path(:testnet, remaining_path) do
     "/testnet/#{remaining_path}"
   end
+
+  def format_version(<<"0x", hex_val::binary>>), do: "Cairo " <> hex_val
+  def format_version(nil), do: "-"
+  def format_version(version), do: version
 end
