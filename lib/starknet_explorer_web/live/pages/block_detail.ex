@@ -546,7 +546,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
         </div>
         <div>
           <div class="list-h">Version</div>
-          <div><%= version %></div>
+          <div><%= Utils.format_version(version) %></div>
         </div>
         <div>
           <div class="list-h">Status</div>

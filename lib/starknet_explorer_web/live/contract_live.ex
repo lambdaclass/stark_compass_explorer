@@ -269,7 +269,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
           <%= if is_nil(@class) do %>
             -
           <% else %>
-            <%= @class.version %>
+            <%= Utils.format_version(@class.version) %>
           <% end %>
         </span>
       </div>
@@ -314,7 +314,7 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
           </div>
           <div>
             <div class="list-h">Version</div>
-            <div><%= version %></div>
+            <div><%= Utils.format_version(version) %></div>
           </div>
         </div>
       <% end %>
