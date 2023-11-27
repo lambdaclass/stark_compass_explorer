@@ -870,20 +870,22 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
             <% end %>
           </div>
         </div>
-        <div class="list-h">From Address</div>
-        <div class="block-data">
-          <div class="hash flex">
-            <a
-              href={Utils.network_path(@network, "contracts/#{event.from_address}")}
-              class="text-hover-link"
-            >
-              <%= event.from_address |> Utils.shorten_block_hash() %>
-            </a>
-            <CoreComponents.copy_button text={event.from_address} />
+        <div>
+          <div class="list-h">From Address</div>
+          <div class="block-data">
+            <div class="hash flex">
+              <a
+                href={Utils.network_path(@network, "contracts/#{event.from_address}")}
+                class="text-hover-link"
+              >
+                <%= event.from_address |> Utils.shorten_block_hash() %>
+              </a>
+              <CoreComponents.copy_button text={event.from_address} />
+            </div>
           </div>
         </div>
-        <div>
-          <div class="list-h">Age</div>
+        <div class="list-h">Age</div>
+        <div class="hash flex">
           <div class="flex items-center gap-2">
             <%= @block_age %>
             <CoreComponents.tooltip
