@@ -17,18 +17,26 @@ jobs:
     environment:
       name: testing
       url: https://testing.starkcompass.com/
-    steps:
 
+    steps:
     - name: Checkout
       uses: actions/checkout@v3.3.0
+
+    - name: Tailscale
+      uses: tailscale/github-action@v2
+      with:
+        oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+        oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+        tags: tag:ci
 
     - name: Create ssh private key file from env var
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
       run: |
-        set -ex
-        sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > id_ed25519_testing
-        chmod 400 id_ed25519_testing
+       mkdir -p ~/.ssh/
+        sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
+        chmod 400 ~/.ssh/id_ed25519
+        ssh-keyscan $HOST >> ~/.ssh/known_hosts
 
     - name: Install ansible
       run: |
@@ -48,7 +56,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ vars.AWS_REGION }}
         PROVER_STORAGE: ${{ vars.PROVER_STORAGE }}
-        ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_testing"
+        ANSIBLE_SSH_PKEY_DIR: "~/.ssh/id_ed25519"
         SSH_HOST: ${{ vars.SSH_HOST }}
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
         ANSIBLE_STDOUT_CALLBACK: "yaml"
