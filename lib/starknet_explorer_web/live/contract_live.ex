@@ -427,13 +427,14 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
           <div class="list-h">Address</div>
           <div class="block-data">
             <div class="hash flex">
+              <% token_address = token_info.address |> StarknetExplorer.Utils.trim_leading_zeroes() %>
               <a
-                href={Utils.network_path(@network, "contracts/#{token_info.address}")}
+                href={Utils.network_path(@network, "contracts/#{token_address}")}
                 class="text-hover-link"
               >
-                <%= token_info.address |> Utils.shorten_block_hash() %>
+                <%= token_address |> Utils.shorten_block_hash() %>
               </a>
-              <CoreComponents.copy_button text={token_info.address} />
+              <CoreComponents.copy_button text={token_address} />
             </div>
           </div>
           <div class="list-h">Balance</div>
