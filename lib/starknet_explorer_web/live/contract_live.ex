@@ -1,5 +1,6 @@
 defmodule StarknetExplorerWeb.ContractDetailLive do
   use StarknetExplorerWeb, :live_view
+  alias StarknetExplorer.Token
   alias StarknetExplorerWeb.{CoreComponents, Utils}
 
   @starkgate_eth_token System.get_env("ETH_BALANCE_CONTRACT") ||
@@ -78,12 +79,12 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
         Account Calls (WIP)
       </div>
       <div
-        class={"option #{if assigns.view == "portfolio", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"} !hidden"}
+        class={"option #{if assigns.view == "portfolio", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"}"}
         phx-click="select-view"
         ,
         phx-value-view="portfolio"
       >
-        Portfolio (WIP)
+        Portfolio
       </div>
       <div
         class={"option #{if assigns.view == "class-code-history", do: "lg:!border-b-se-blue text-white", else: "text-gray-400 lg:border-b-transparent"} !hidden"}
@@ -144,6 +145,8 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
             balance: balance_in_wei
           ]
       end
+
+    Process.send_after(self(), :fetch_portfolio, 100)
 
     {:ok,
      put_flash(
@@ -408,7 +411,40 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
 
   def render_info(assigns = %{contract: _contract, view: "portfolio"}) do
     ~H"""
-    <div class="text-gray-500 text-xl border-t border-t-gray-700 pt-5">In development</div>
+    <div class="table-block">
+      <div class="grid-4 table-th">
+        <div>Symbol</div>
+        <div>Name</div>
+        <div>Address</div>
+        <div>Balance</div>
+      </div>
+      <%= for {token_info, token_balance} <- @tokens do %>
+        <div class="grid-4 custom-list-item">
+          <div class="list-h">Symbol</div>
+          <div><%= token_info.symbol %></div>
+          <div class="list-h">Name</div>
+          <div class="type"><%= token_info.name %></div>
+          <div class="list-h">Address</div>
+          <div class="block-data">
+            <div class="hash flex">
+              <a
+                href={Utils.network_path(@network, "contracts/#{token_info.address}")}
+                class="text-hover-link"
+              >
+                <%= token_info.address |> Utils.shorten_block_hash() %>
+              </a>
+              <CoreComponents.copy_button text={token_info.address} />
+            </div>
+          </div>
+          <div class="list-h">Balance</div>
+          <div>
+            <span class="info-label cash-label">
+              <%= Utils.hex_wei_to_eth(token_balance) %> <%= token_info.symbol %>
+            </span>
+          </div>
+        </div>
+      <% end %>
+    </div>
     """
   end
 
@@ -428,6 +464,17 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
     ~H"""
     <div class="text-gray-500 text-xl border-t border-t-gray-700 pt-5">In development</div>
     """
+  end
+
+  @impl true
+  def handle_info(:fetch_portfolio, socket) do
+    tokens = Token.contract_portfolio(socket.assigns.contract.address, socket.assigns.network)
+
+    assigns = [
+      tokens: tokens
+    ]
+
+    {:noreply, assign(socket, assigns)}
   end
 
   def handle_event("dec_txs", _value, socket) do
@@ -505,6 +552,31 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
       view: "events",
       page: page,
       active_pagination_id: "events"
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event(
+        "select-view",
+        %{"view" => "portfolio"},
+        %{assigns: %{tokens: _tokens}} = socket
+      ) do
+    assigns = [
+      view: "portfolio"
+    ]
+
+    {:noreply, assign(socket, assigns)}
+  end
+
+  @impl true
+  def handle_event("select-view", %{"view" => "portfolio"}, socket) do
+    tokens = Token.contract_portfolio(socket.assigns.contract.address, socket.assigns.network)
+
+    assigns = [
+      view: "portfolio",
+      tokens: tokens
     ]
 
     {:noreply, assign(socket, assigns)}
