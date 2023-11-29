@@ -39,4 +39,8 @@ defmodule StarknetExplorer.Utils do
   def listener_atom(network) do
     String.to_atom("listener_#{network}")
   end
+
+  def trim_leading_zeroes(address) do
+    String.replace(address, ~r/(0x)0+/, "\\1")
+  end
 end
