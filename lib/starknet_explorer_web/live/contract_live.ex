@@ -138,6 +138,8 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
               [contract.address]
             )
 
+          Process.send_after(self(), :fetch_portfolio, 100)
+
           [
             contract: contract,
             view: "overview",
@@ -145,8 +147,6 @@ defmodule StarknetExplorerWeb.ContractDetailLive do
             balance: balance_in_wei
           ]
       end
-
-    Process.send_after(self(), :fetch_portfolio, 100)
 
     {:ok,
      put_flash(

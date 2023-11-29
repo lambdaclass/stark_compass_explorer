@@ -236,7 +236,7 @@ defmodule StarknetExplorerWeb.SearchLive do
                 result_item: query,
                 result: "Contract",
                 loading: false,
-                path: "contracts/#{query}"
+                path: "contracts/#{query |> StarknetExplorer.Utils.trim_leading_zeroes()}"
               )
             end
 
@@ -246,7 +246,7 @@ defmodule StarknetExplorerWeb.SearchLive do
                 result_item: query,
                 result: "Class",
                 loading: false,
-                path: "classes/#{query}"
+                path: "classes/#{query |> StarknetExplorer.Utils.trim_leading_zeroes()}"
               )
             end
 
@@ -256,7 +256,7 @@ defmodule StarknetExplorerWeb.SearchLive do
                 result_item: query,
                 result: "Transaction",
                 loading: false,
-                path: "transactions/#{query}"
+                path: "transactions/#{query |> StarknetExplorer.Utils.trim_leading_zeroes()}"
               )
             end
 
@@ -266,7 +266,7 @@ defmodule StarknetExplorerWeb.SearchLive do
                 result_item: block,
                 result: "Block",
                 loading: false,
-                path: "blocks/#{get_hash(block)}"
+                path: "blocks/#{get_hash(block |> StarknetExplorer.Utils.trim_leading_zeroes())}"
               )
             end
 
@@ -306,7 +306,7 @@ defmodule StarknetExplorerWeb.SearchLive do
 
   defp try_search(query, network) do
     case infer_query(query) do
-      :hex -> try_by_hash(query, network)
+      :hex -> try_by_hash(query |> StarknetExplorer.Utils.trim_leading_zeroes(), network)
       {:number, number} -> try_by_number(number, network)
       :uuid -> try_by_uuid(query, network)
       :noquery -> :noquery
