@@ -19,10 +19,68 @@ defmodule StarknetExplorerWeb.BlockIndexLive do
       </div>
       <div class="table-block">
         <div class="grid-6 table-th">
-          <div>Number</div>
+          <div>
+            Number
+            <form phx-submit="filter-blocks-by-number">
+              <div class="relative z-20">
+                From
+                <.input
+                  type="number"
+                  name="block-number-input"
+                  value={}
+                  id={"page-number-input-#{Ecto.UUID.generate()}"}
+                  class="page-number"
+                  placeholder={@page.page_number}
+                  phx-click={
+                    JS.dispatch("phx:select", to: "#page-number-input-#{Ecto.UUID.generate()}")
+                  }
+                /> To
+                <.input
+                  type="number"
+                  name="block-number-input"
+                  value={}
+                  id={"page-number-input-#{Ecto.UUID.generate()}"}
+                  class="page-number"
+                  placeholder={@page.page_number}
+                  phx-click={
+                    JS.dispatch("phx:select", to: "#page-number-input-#{Ecto.UUID.generate()}")
+                  }
+                />
+              </div>
+            </form>
+          </div>
           <div class="col-span-2">Block Hash</div>
           <div class="col-span-2">Status</div>
-          <div>Age</div>
+          <div>
+            Age
+            <form phx-submit="filter-blocks-by-date">
+            <div class="flex">
+              From
+              <.input
+                type="time"
+                name="block-number-input"
+                value={}
+                id={"page-number-input-#{Ecto.UUID.generate()}"}
+                class="page-number"
+                placeholder={@page.page_number}
+                phx-click={
+                  JS.dispatch("phx:select", to: "#page-number-input-#{Ecto.UUID.generate()}")
+                }
+              /> To
+              <.input
+                type="date"
+                name="block-number-input"
+                value={}
+                id={"page-number-input-#{Ecto.UUID.generate()}"}
+                class="page-number"
+                placeholder={@page.page_number}
+                phx-click={
+                  JS.dispatch("phx:select", to: "#page-number-input-#{Ecto.UUID.generate()}")
+                }
+              />
+            </div>
+          </form>
+          </div>
         </div>
         <%= for block <- @page.entries do %>
           <div id={"block-#{block.number}"} class="grid-6 custom-list-item">
