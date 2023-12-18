@@ -3,10 +3,10 @@ import Config
 # Configure your database
 if System.get_env("DB_TYPE") == "postgresql" do
   config :starknet_explorer, StarknetExplorer.Repo,
-    database: System.get_env("DB_NAME"),
-    username: System.get.env("DB_USER"),
-    password: System.get.env("DB_PASS"),
-    hostname: System.get.env("DB_HOST"),
+    database: System.get_env("DB_NAME", "madaraexplorer_dev"),
+    username: System.get_env("DB_USER", "madaraexplorer_user"),
+    password: System.get_env("DB_PASS", "madaraexplorerlambda"),
+    hostname: System.get_env("DB_HOST", "localhost"),
     port: 5432
 else
   config :starknet_explorer, StarknetExplorer.Repo,
