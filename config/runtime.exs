@@ -118,7 +118,9 @@ if config_env() == :prod do
       "https://www.starkcompass.com",
       "https://testing.starkcompass.com",
       "https://#{host}:#{port}",
-      "http://#{host}:#{port}"
+      "http://#{host}:#{port}",
+      "http://#{host}",
+      "https://#{host}"
     ],
     http: [
       # Enable IPv6 and bind on all interfaces.
