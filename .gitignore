@@ -40,6 +40,9 @@ npm-debug.log
 # Ignore docker volumes
 .volumes
 
+# Ignore .env
+.env
+
 # Ignore juno files
 juno_files
 
