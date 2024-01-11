@@ -69,7 +69,7 @@
     ansible.builtin.copy:
       remote_src: true
       src: /home/dev/tmp/stark_compass_explorer
-      dest: /home/dev/stark_compass_explorer
+      dest: /home/dev/
 
   - name: Create .env file
     ansible.builtin.template:
