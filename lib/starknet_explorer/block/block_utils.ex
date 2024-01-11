@@ -190,7 +190,6 @@ defmodule StarknetExplorer.BlockUtils do
     |> Enum.map(fn
       %{"execution_resources" => %{"steps" => steps}} ->
         steps
-        |> StarknetExplorerWeb.Utils.hex_to_integer()
 
       _ ->
         nil
