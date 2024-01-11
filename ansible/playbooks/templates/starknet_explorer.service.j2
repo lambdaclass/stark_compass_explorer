@@ -1,15 +1,15 @@
 [Unit]
-Description=Madara Explorer
+Description=StarkCompass Explorer
 
 [Service]
-WorkingDirectory=/home/starknet_explorer/madara_explorer
+WorkingDirectory=/home/dev/stark_compass_explorer
 Restart=on-failure
-ExecStart=/home/starknet_explorer/madara_explorer/entrypoint.sh
+ExecStart=/home/dev/stark_compass_explorer/entrypoint.sh
 ExecReload=/bin/kill -HUP
 KillSignal=SIGTERM
-EnvironmentFile=/home/starknet_explorer/.env
-StandardOutput=append:/home/starknet_explorer/logs/starknet_explorer.log
-StandardError=append:/home/starknet_explorer/logs/starknet_explorer.log
+EnvironmentFile=/home/dev/.env
+StandardOutput=append:/home/dev/logs/starknet_explorer.log
+StandardError=append:/home/dev/logs/starknet_explorer.log
 
 [Install]
 WantedBy=multi-user.target

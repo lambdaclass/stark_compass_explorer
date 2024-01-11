@@ -4,22 +4,22 @@
   gather_facts: false
   any_errors_fatal: true
   become: true
-  become_user: starknet_explorer
+  become_user: dev
 
   pre_tasks:
 
   - name: Delete tmp repo
     file:
       state: absent
-      path: /home/starknet_explorer/tmp/madara_explorer
+      path: /home/dev/tmp/madara_explorer
 
   - name: Clone repo in tmp dir
     ansible.builtin.git:
       repo: git@github.com:lambdaclass/stark_compass_explorer.git
       version: "{{ lookup('ansible.builtin.env', 'GIT_BRANCH') }}"
-      dest: /home/starknet_explorer/tmp/madara_explorer
+      dest: /home/dev/tmp/stark_compass_explorer
       ssh_opts: "-o StrictHostKeyChecking=no"
-      key_file: /home/starknet_explorer/.ssh/id_ed25519
+      key_file: /home/dev/.ssh/id_ed25519
     register: clone_output
 
   - name: Print clone repo output
@@ -28,7 +28,7 @@
   - name: Build
     ansible.builtin.shell: |
       set -ex
-      export PATH=${PATH}:/home/starknet_explorer/.cargo/bin
+      export PATH=${PATH}:/home/dev/.cargo/bin
       mix local.hex --force
       mix local.rebar --force
       mix deps.get --only $MIX_ENV
@@ -55,7 +55,7 @@
       ENABLE_TESTNET_SYNC: "{{ lookup('ansible.builtin.env', 'ENABLE_TESTNET_SYNC') }}"
       ENABLE_GATEWAY_DATA: "{{ lookup('ansible.builtin.env', 'ENABLE_GATEWAY_DATA') }}"
     args:
-      chdir: /home/starknet_explorer/tmp/madara_explorer
+      chdir: /home/dev/tmp/stark_compass_explorer
     register: build_output
 
   - debug: msg="{{ build_output.stdout_lines + [ build_output.stderr_lines ] }}"
@@ -63,18 +63,18 @@
   - name: Delete old repo
     ansible.builtin.file:
       state: absent
-      path: /home/starknet_explorer/madara_explorer
+      path: /home/dev/stark_compass_explorer
 
   - name: Copy repo from tmp dir
     ansible.builtin.copy:
       remote_src: true
-      src: /home/starknet_explorer/tmp/madara_explorer
-      dest: /home/starknet_explorer/
+      src: /home/dev/tmp/stark_compass_explorer
+      dest: /home/dev/stark_compass_explorer
 
   - name: Create .env file
     ansible.builtin.template:
       src: .env.j2
-      dest: /home/starknet_explorer/.env
+      dest: /home/dev/.env
     vars:
       phx_host: "{{ lookup('ansible.builtin.env', 'PHX_HOST') }}"
       secret_key_base: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
@@ -97,12 +97,12 @@
   - name: Create user systemd directory
     ansible.builtin.file:
       state: directory
-      path: /home/starknet_explorer/.config/systemd/user
+      path: /home/dev/.config/systemd/user
 
   - name: Install systemd service
     ansible.builtin.template:
       src: starknet_explorer.service.j2
-      dest: /home/starknet_explorer/.config/systemd/user/starknet_explorer.service
+      dest: /home/dev/.config/systemd/user/starknet_explorer.service
 
   - name: Restart starknet_explorer service
     ansible.builtin.systemd:

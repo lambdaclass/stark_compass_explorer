@@ -32,12 +32,12 @@ jobs:
     - name: Create ssh private key file from env var
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
-        HOST: ${{ vars.SSH_HOST }}
+        TS_HOST: ${{ vars.TS_HOST }}
       run: |
         mkdir -p ~/.ssh/
         sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
         chmod 400 ~/.ssh/id_ed25519
-        ssh-keyscan $HOST >> ~/.ssh/known_hosts
+        ssh-keyscan $TS_HOST >> ~/.ssh/known_hosts
 
     - name: Install ansible
       run: |
@@ -58,7 +58,7 @@ jobs:
         AWS_REGION: ${{ vars.AWS_REGION }}
         PROVER_STORAGE: ${{ vars.PROVER_STORAGE }}
         ANSIBLE_SSH_PKEY_DIR: "~/.ssh/id_ed25519"
-        SSH_HOST: ${{ vars.SSH_HOST }}
+        TS_HOST: ${{ vars.TS_HOST }}
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
         ANSIBLE_STDOUT_CALLBACK: "yaml"
         ENABLE_MAINNET_SYNC: "true"

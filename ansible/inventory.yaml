@@ -1,7 +1,7 @@
 webservers:
   hosts:
     starknet_testing:
-      ansible_host: "{{ lookup('ansible.builtin.env', 'SSH_HOST') }}"
+      ansible_host: "{{ lookup('ansible.builtin.env', 'TS_HOST') }}"
       ansible_user: starknet_explorer
       ansible_python_interpreter: /usr/bin/python3
       ansible_ssh_private_key_file: "{{ lookup('ansible.builtin.env', 'ANSIBLE_SSH_PKEY_DIR') }}"
