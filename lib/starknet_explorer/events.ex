@@ -204,18 +204,18 @@ defmodule StarknetExplorer.Events do
       Enum.flat_map_reduce(1..1000, nil, fn _, acc ->
         if acc == "last_page_reached" do
           {:halt, acc}
-        end
+        else
+          case try_fetch_next_page(block_hash, network, acc) do
+            {:ok, %{"events" => events, "continuation_token" => continuation_token}} ->
+              {events, continuation_token}
 
-        case try_fetch_next_page(block_hash, network, acc) do
-          {:ok, %{"events" => events, "continuation_token" => continuation_token}} ->
-            {events, continuation_token}
+            # when no continuation token is present, this means that we reached the end of the events.
+            {:ok, %{"events" => events}} ->
+              {events, "last_page_reached"}
 
-          # when no continuation token is present, this means that we reached the end of the events.
-          {:ok, %{"events" => events}} ->
-            {events, "last_page_reached"}
-
-          _err ->
-            {:halt, acc}
+            _err ->
+              {:halt, acc}
+          end
         end
       end)
 
