@@ -93,7 +93,7 @@ defmodule StarknetExplorer.TransactionReceipt do
   schema "transaction_receipts" do
     belongs_to :transaction, Transaction, references: :hash
     field :type, :string
-    field :actual_fee, :string
+    field :actual_fee, :map
     field :finality_status, :string
     field :execution_status, :string
     field :block_hash, :string

@@ -8,7 +8,7 @@ defmodule StarknetExplorer.Repo.Migrations.TransactionReceipts do
 
       add :transaction_hash, :string, primary_key: true
       add :type, :string
-      add :actual_fee, :string
+      add :actual_fee, :map
       add :finality_status, :string
       add :execution_status, :string
       add :block_hash, :string

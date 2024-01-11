@@ -392,7 +392,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="block-label">Actual Fee</div>
       <div class="col-span-3">
         <span class="info-label cash-label">
-          <%= Utils.hex_wei_to_eth(@transaction_receipt.actual_fee) %> ETH
+          <%= Utils.hex_wei_to_eth(@transaction_receipt.actual_fee["amount"]) %> ETH
         </span>
       </div>
     </div>
