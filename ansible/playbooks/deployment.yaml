@@ -17,9 +17,9 @@
     ansible.builtin.git:
       repo: git@github.com:lambdaclass/stark_compass_explorer.git
       version: "{{ lookup('ansible.builtin.env', 'GIT_BRANCH') }}"
-      dest: /home/dev/tmp/stark_compass_explorer
+      dest: "/home/{{ lookup('ansible.builtin.env', 'TS_USER') }}/tmp/stark_compass_explorer"
       ssh_opts: "-o StrictHostKeyChecking=no"
-      key_file: /home/dev/.ssh/id_ed25519
+      key_file: "/home/{{ lookup('ansible.builtin.env', 'TS_USER') }}/.ssh/id_ed25519"
     register: clone_output
 
   - name: Print clone repo output
@@ -28,7 +28,7 @@
   - name: Build
     ansible.builtin.shell: |
       set -ex
-      export PATH=${PATH}:/home/dev/.cargo/bin
+      export PATH=${PATH}:/home/{{ lookup('ansible.builtin.env', 'TS_USER') }}/.cargo/bin
       mix local.hex --force
       mix local.rebar --force
       mix deps.get --only $MIX_ENV
@@ -55,7 +55,7 @@
       ENABLE_TESTNET_SYNC: "{{ lookup('ansible.builtin.env', 'ENABLE_TESTNET_SYNC') }}"
       ENABLE_GATEWAY_DATA: "{{ lookup('ansible.builtin.env', 'ENABLE_GATEWAY_DATA') }}"
     args:
-      chdir: /home/dev/tmp/stark_compass_explorer
+      chdir: "/home/{{ lookup('ansible.builtin.env', 'TS_USER') }}/tmp/stark_compass_explorer"
     register: build_output
 
   - debug: msg="{{ build_output.stdout_lines + [ build_output.stderr_lines ] }}"
@@ -63,18 +63,18 @@
   - name: Delete old repo
     ansible.builtin.file:
       state: absent
-      path: /home/dev/stark_compass_explorer
+      path: "/home/{{ lookup('ansible.builtin.env', 'TS_USER') }}/stark_compass_explorer"
 
   - name: Copy repo from tmp dir
     ansible.builtin.copy:
       remote_src: true
-      src: /home/dev/tmp/stark_compass_explorer
-      dest: /home/dev/
+      src: "/home/{{ lookup('ansible.builtin.env', 'TS_USER') }}/tmp/stark_compass_explorer"
+      dest: "/home/{{ lookup('ansible.builtin.env', 'TS_USER') }}/"
 
   - name: Create .env file
     ansible.builtin.template:
       src: .env.j2
-      dest: /home/dev/.env
+      dest: "/home/{{ lookup('ansible.builtin.env', 'TS_USER') }}/.env"
     vars:
       phx_host: "{{ lookup('ansible.builtin.env', 'PHX_HOST') }}"
       secret_key_base: "{{ lookup('ansible.builtin.env', 'SECRET_KEY_BASE') }}"
@@ -97,12 +97,12 @@
   - name: Create user systemd directory
     ansible.builtin.file:
       state: directory
-      path: /home/dev/.config/systemd/user
+      path: "/home/{{ lookup('ansible.builtin.env', 'TS_USER') }}/.config/systemd/user"
 
   - name: Install systemd service
     ansible.builtin.template:
       src: starknet_explorer.service.j2
-      dest: /home/dev/.config/systemd/user/starknet_explorer.service
+      dest: "/home/{{ lookup('ansible.builtin.env', 'TS_USER') }}/.config/systemd/user/starknet_explorer.service"
 
   - name: Restart starknet_explorer service
     ansible.builtin.systemd:
