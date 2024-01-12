@@ -15,11 +15,9 @@
 
   - name: Clone repo in tmp dir
     ansible.builtin.git:
-      repo: git@github.com:lambdaclass/stark_compass_explorer.git
+      repo: https://github.com/lambdaclass/stark_compass_explorer.git
       version: "{{ lookup('ansible.builtin.env', 'GIT_BRANCH') }}"
       dest: "/home/{{ lookup('ansible.builtin.env', 'TS_USER') }}/tmp/stark_compass_explorer"
-      ssh_opts: "-o StrictHostKeyChecking=no"
-      key_file: "/home/{{ lookup('ansible.builtin.env', 'TS_USER') }}/.ssh/id_ed25519"
     register: clone_output
 
   - name: Print clone repo output
