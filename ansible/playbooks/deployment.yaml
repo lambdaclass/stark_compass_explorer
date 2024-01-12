@@ -4,7 +4,7 @@
   gather_facts: false
   any_errors_fatal: true
   become: true
-  become_user: dev
+  become_user: "{{ lookup('ansible.builtin.env', 'TS_USER') }}"
 
   pre_tasks:
 
