@@ -4,14 +4,14 @@
   gather_facts: false
   any_errors_fatal: true
   become: true
-  become_user: dev
+  become_user: "{{ lookup('ansible.builtin.env', 'TS_USER') }}"
 
   pre_tasks:
 
   - name: Delete tmp repo
     file:
       state: absent
-      path: /home/dev/tmp/stark_compass_explorer
+      path: "/home/{{ lookup('ansible.builtin.env', 'TS_USER') }}/tmp/stark_compass_explorer"
 
   - name: Clone repo in tmp dir
     ansible.builtin.git:

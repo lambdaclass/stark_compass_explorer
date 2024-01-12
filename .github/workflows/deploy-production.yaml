@@ -49,6 +49,7 @@ jobs:
         PROVER_STORAGE: ${{ vars.PROVER_STORAGE }}
         ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_production"
         TS_HOST: ${{ vars.SSH_HOST }}
+        TS_USER: ${{ vars.TS_USER }}
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
         ANSIBLE_STDOUT_CALLBACK: "yaml"
         NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
