@@ -5,3 +5,4 @@ webservers:
       ansible_user: "{{ lookup('ansible.builtin.env', 'TS_USER') }}"
       ansible_python_interpreter: /usr/bin/python3
       ansible_ssh_private_key_file: "{{ lookup('ansible.builtin.env', 'ANSIBLE_SSH_PKEY_DIR') }}"
+      ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'
