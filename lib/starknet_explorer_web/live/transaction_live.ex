@@ -392,7 +392,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
       <div class="block-label">Actual Fee</div>
       <div class="col-span-3">
         <span class="info-label cash-label">
-          <%= Utils.hex_wei_to_eth(@transaction_receipt.actual_fee) %> ETH
+          <%= Utils.hex_wei_to_eth(@transaction_receipt.actual_fee["amount"]) %> ETH
         </span>
       </div>
     </div>
@@ -539,10 +539,10 @@ defmodule StarknetExplorerWeb.TransactionLive do
         </div>
         <div class="flex flex-col lg:flex-row items-center gap-5 px-5 md:p-0">
           <div class="flex flex-col justify-center items-center gap-2">
-            <span class="blue-label py-1 px-2 rounded-lg">STEPS</span> <%= "#{Utils.hex_to_integer(@transaction_receipt.execution_resources["steps"])}" %>
+            <span class="blue-label py-1 px-2 rounded-lg">STEPS</span> <%= "#{@transaction_receipt.execution_resources["steps"]}" %>
           </div>
           <div class="flex flex-col justify-center items-center gap-2">
-            <span class="green-label py-1 px-2 rounded-lg">MEMORY HOLES</span> <%= "#{Utils.hex_to_integer(@transaction_receipt.execution_resources["memory_holes"])}" %>
+            <span class="green-label py-1 px-2 rounded-lg">MEMORY HOLES</span> <%= "#{@transaction_receipt.execution_resources["memory_holes"]}" %>
           </div>
           <%= for {builtin_name, resources} <- @transaction_receipt.execution_resources do %>
             <%= if String.ends_with?(builtin_name, "_applications") and resources != "0x0" do %>
@@ -551,7 +551,7 @@ defmodule StarknetExplorerWeb.TransactionLive do
                 <span class={"#{Utils.builtin_color(temp_name)} py-1 px-2 rounded-lg"}>
                   <%= Utils.builtin_name(temp_name) %>
                 </span>
-                <%= Utils.hex_to_integer(resources) %>
+                <%= resources %>
               </div>
             <% end %>
           <% end %>
