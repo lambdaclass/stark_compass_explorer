@@ -28,6 +28,7 @@ jobs:
         set -ex
         sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > id_ed25519_production
         chmod 400 id_ed25519_production
+        retries=5; until ssh-keyscan $TS_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
 
     - name: Install ansible
       run: |
