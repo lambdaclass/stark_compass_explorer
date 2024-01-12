@@ -243,7 +243,8 @@ defmodule StarknetExplorer.Transaction do
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "INVOKE"}) do
     changeset
-    |> validate_required(@invoke_v0_tx_fields)
+    # Skip required fields check because of Juno0.9.2 breaking changes
+    # |> validate_required(@invoke_v0_tx_fields)
   end
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "DEPLOY", "max_fee" => _}) do
