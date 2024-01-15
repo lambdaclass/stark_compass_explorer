@@ -56,7 +56,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ vars.AWS_REGION }}
         PROVER_STORAGE: ${{ vars.PROVER_STORAGE }}
-        ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_production"
+        ANSIBLE_SSH_PKEY_DIR: "~/.ssh/id_ed25519"
         TS_HOST: ${{ vars.TS_HOST }}
         TS_USER: ${{ vars.TS_USER }}
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
