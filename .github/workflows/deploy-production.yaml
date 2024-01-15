@@ -21,14 +21,21 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3.3.0
 
+    - name: Tailscale
+      uses: tailscale/github-action@v2
+      with:
+        oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+        oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+        tags: tag:server
+
     - name: Create ssh private key file from env var
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
         TS_HOST: ${{ vars.TS_HOST }}
       run: |
-        set -ex
-        sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > id_ed25519_production
-        chmod 400 id_ed25519_production
+        mkdir -p ~/.ssh/
+        sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
+        chmod 400 ~/.ssh/id_ed25519
         retries=5; until ssh-keyscan $TS_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
 
     - name: Install ansible
@@ -50,7 +57,7 @@ jobs:
         AWS_REGION: ${{ vars.AWS_REGION }}
         PROVER_STORAGE: ${{ vars.PROVER_STORAGE }}
         ANSIBLE_SSH_PKEY_DIR: "./id_ed25519_production"
-        TS_HOST: ${{ vars.SSH_HOST }}
+        TS_HOST: ${{ vars.TS_HOST }}
         TS_USER: ${{ vars.TS_USER }}
         GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
         ANSIBLE_STDOUT_CALLBACK: "yaml"
