@@ -71,7 +71,7 @@ defmodule StarknetExplorer.Transaction do
             @deploy_account_tx_fields ++
             [:network, :nonce]
 
-  @networks [:mainnet, :testnet]
+  @networks [:mainnet, :testnet, :sepolia]
 
   @primary_key {:hash, :string, []}
   schema "transactions" do

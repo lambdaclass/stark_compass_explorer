@@ -32,9 +32,16 @@ testnet_rpc_host =
     environment variable for testnet is missing.
     """
 
+sepolia_rpc_host =
+  System.get_env("SEPOLIA_RPC_API_HOST") ||
+    raise """
+    environment variable for sepolia is missing.
+    """
+
 config :starknet_explorer,
   rpc_host: rpc_host,
-  testnet_host: testnet_rpc_host
+  testnet_host: testnet_rpc_host,
+  sepolia_host: sepolia_rpc_host
 
 config :starknet_explorer, rpc_host: rpc_host
 
