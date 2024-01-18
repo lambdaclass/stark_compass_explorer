@@ -60,14 +60,6 @@ export TESTNET_RPC_API_HOST=testnet_rpc_hostname
 export SEPOLIA_RPC_API_HOST=sepolia_rpc_hostname
 ```
 
-If you want to use Lambda Juno v0.9.2 nodes you can:
-
-```bash
-export RPC_API_HOST=https://mainnet.juno.internal.lambdaclass.com
-export TESTNET_RPC_API_HOST=https://goerli.juno.internal.lambdaclass.com
-export SEPOLIA_RPC_API_HOST=https://sepolia.juno.internal.lambdaclass.com
-```
-
 ### RPC with Juno
 
 ```bash
