@@ -54,7 +54,7 @@ defmodule StarknetExplorer.Class do
     ]
   }
 
-  @networks [:mainnet, :testnet]
+  @networks [:mainnet, :testnet, :sepolia]
 
   @fields [
     :declared_by_address,

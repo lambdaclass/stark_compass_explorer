@@ -57,6 +57,7 @@ Set the following environment variables:
 ```bash
 export RPC_API_HOST=your_rpc_hostname
 export TESTNET_RPC_API_HOST=testnet_rpc_hostname
+export SEPOLIA_RPC_API_HOST=sepolia_rpc_hostname
 ```
 
 ### RPC with Juno
@@ -100,6 +101,7 @@ The synchronization process is activated by default, you can turn it off by conf
 ```bash
 export DISABLE_MAINNET_SYNC=true
 export DISABLE_TESTNET_SYNC=true
+export DISABLE_SEPOLIA_SYNC=true
 ```
 
 It's worth noting that you have the flexibility to select which networks you want to synchronize by adjusting these environment variables.

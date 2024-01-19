@@ -4,7 +4,7 @@ defmodule StarknetExplorer.Contract do
   import Ecto.Query
   alias StarknetExplorer.Repo
 
-  @networks [:mainnet, :testnet]
+  @networks [:mainnet, :testnet, :sepolia]
   @fields [
     :address,
     :deployed_by_address,
