@@ -249,7 +249,7 @@ defmodule StarknetExplorer.Transaction do
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "DEPLOY", "max_fee" => _}) do
     changeset
-    |> validate_required(@deploy_account_tx_fields)
+    # |> validate_required(@deploy_account_tx_fields)
   end
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "DEPLOY_ACCOUNT"}) do
@@ -259,17 +259,17 @@ defmodule StarknetExplorer.Transaction do
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "DEPLOY"}) do
     changeset
-    |> validate_required(@deploy_contract_tx_fields)
+    # |> validate_required(@deploy_contract_tx_fields)
   end
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "DECLARE"}) do
     changeset
-    |> validate_required(@declare_tx_fields)
+    # |> validate_required(@declare_tx_fields)
   end
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "L1_HANDLER"}) do
     changeset
-    |> validate_required(@l1_handler_tx_fields)
+    # |> validate_required(@l1_handler_tx_fields)
   end
 
   def get_total_count(network) do
