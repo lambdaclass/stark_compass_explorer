@@ -254,7 +254,7 @@ defmodule StarknetExplorer.Transaction do
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "DEPLOY_ACCOUNT"}) do
     changeset
-    |> validate_required(@deploy_account_tx_fields)
+    # |> validate_required(@deploy_account_tx_fields)
   end
 
   defp validate_according_to_tx_type(changeset, _tx = %{"type" => "DEPLOY"}) do
