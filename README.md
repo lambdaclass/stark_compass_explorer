@@ -49,7 +49,7 @@ You now have the choice of connecting the explorer to an RPC API provider of you
 
 To fully utilize the capabilities of the explorer, it is crucial to connect it to an RPC provider that is compatible with the [starknet-specs v0.6.0](https://github.com/starkware-libs/starknet-specs/tree/v0.6.0).
 
-In case your RPC provider only support [starknet-specs v0.5.0](https://github.com/starkware-libs/starknet-specs/tree/v0.5.0) yo can use the [Stark Compass Explorer v0.2.34.3](https://github.com/lambdaclass/stark_compass_explorer/releases/tag/0.2.34.3)
+In case your RPC provider only supports [starknet-specs v0.5.0](https://github.com/starkware-libs/starknet-specs/tree/v0.5.0) yo can use the [Stark Compass Explorer v0.2.34.3](https://github.com/lambdaclass/stark_compass_explorer/releases/tag/0.2.34.3)
 
 
 To run it locally, you'll need to set the RPC API url of the network. If you're using a provider like Infura, this will look something like this: `https://starknet-mainnet.infura.io/v3/your_api_key`
