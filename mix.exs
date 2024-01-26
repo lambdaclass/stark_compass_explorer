@@ -19,7 +19,7 @@ defmodule StarknetExplorer.MixProject do
   def application do
     [
       mod: {StarknetExplorer.Application, []},
-      extra_applications: [:logger, :runtime_tools, :observer]
+      extra_applications: [:logger, :runtime_tools]
     ]
   end
 
