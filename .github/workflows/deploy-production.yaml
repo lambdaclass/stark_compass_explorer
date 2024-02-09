@@ -26,14 +26,14 @@ jobs:
       with:
         oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
         oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-        tags: tag:server
+        tags: tag:ci
 
     - name: Create ssh private key file from env var
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
         TS_HOST: ${{ vars.TS_HOST }}
       run: |
-        mkdir -p ~/.ssh/
+        mkdir ~/.ssh/
         sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
         chmod 400 ~/.ssh/id_ed25519
         retries=5; until ssh-keyscan $TS_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
