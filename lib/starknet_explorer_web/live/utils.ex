@@ -3,6 +3,7 @@ defmodule StarknetExplorerWeb.Utils do
   alias StarknetExplorer.DateUtils
   use StarknetExplorerWeb, :verified_routes
 
+  def hex_to_integer(nil), do: 0
   def hex_to_integer(hex_value) do
     hex_value
     |> String.trim_leading("0x")
