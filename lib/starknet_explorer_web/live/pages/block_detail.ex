@@ -124,6 +124,48 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
     end
   end
 
+  defp assign_block_data(socket, block) do
+    socket = assign(socket, :block, block)
+
+    extra_assings =
+      if connected?(socket) do
+        transactions = block_transactions(socket)
+
+        # note: most transactions receipt do not contain messages
+        l1_to_l2_messages =
+          transactions |> Enum.map(&Message.from_transaction/1) |> Enum.reject(&is_nil/1)
+
+        messages =
+          (transactions
+           |> Enum.map(fn tx -> tx.receipt end)
+           |> Enum.flat_map(&Message.from_transaction_receipt/1)) ++ l1_to_l2_messages
+
+        [
+          transactions_count: length(transactions),
+          messages_count: length(messages),
+          events_count: Events.get_count_by_block(block.number, socket.assigns.network),
+          transactions: transactions,
+          messages: messages
+        ]
+      else
+        []
+      end
+
+    assigns =
+      [
+        gas_price: Utils.hex_wei_to_eth(block.gas_fee_in_wei),
+        execution_resources: block.execution_resources,
+        block: block,
+        view: "overview",
+        verification: "Pending",
+        block_age: Utils.get_block_age(block),
+        tabs?: connected?(socket),
+        active_pagination_id: ""
+      ] ++ extra_assings
+
+    assign(socket, assigns)
+  end
+
   defp tab_name("transactions"), do: "Transactions"
   defp tab_name("messages"), do: "Messages"
   defp tab_name("events"), do: "Events"
@@ -208,49 +250,16 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   @impl true
   def mount(_params = %{"number_or_hash" => param}, _session, socket) do
-    block_id = parse_block_id(param)
-
-    {:ok, block} = get_block(block_id, socket)
-
-    socket = assign(socket, :block, block)
-
-    extra_assings =
-      if connected?(socket) do
-        transactions = block_transactions(socket)
-
-        # note: most transactions receipt do not contain messages
-        l1_to_l2_messages =
-          transactions |> Enum.map(&Message.from_transaction/1) |> Enum.reject(&is_nil/1)
-
-        messages =
-          (transactions
-           |> Enum.map(fn tx -> tx.receipt end)
-           |> Enum.flat_map(&Message.from_transaction_receipt/1)) ++ l1_to_l2_messages
-
-        [
-          transactions_count: length(transactions),
-          messages_count: length(messages),
-          events_count: Events.get_count_by_block(block.number, socket.assigns.network),
-          transactions: transactions,
-          messages: messages
-        ]
+    socket =
+      with {_, _} = block_id <- parse_block_id(param),
+           {:ok, block} <-
+             get_block(block_id, socket) do
+        assign_block_data(socket, block)
       else
-        []
+        _ -> assign(socket, :block, :error)
       end
 
-    assigns =
-      [
-        gas_price: Utils.hex_wei_to_eth(block.gas_fee_in_wei),
-        execution_resources: block.execution_resources,
-        block: block,
-        view: "overview",
-        verification: "Pending",
-        block_age: Utils.get_block_age(block),
-        tabs?: connected?(socket),
-        active_pagination_id: ""
-      ] ++ extra_assings
-
-    {:ok, assign(socket, assigns)}
+    {:ok, socket}
   end
 
   @impl true
@@ -484,9 +493,13 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   def render(assigns) do
     ~H"""
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
-      <%= block_detail_header(assigns) %>
-      <%= if @view == "transactions", do: render_tx_filter(assigns) %>
-      <%= render_info(assigns) %>
+      <%= if @block == :error do %>
+        <h2 class="text-center">Block Not Found</h2>
+      <% else %>
+        <%= block_detail_header(assigns) %>
+        <%= if @view == "transactions", do: render_tx_filter(assigns) %>
+        <%= render_info(assigns) %>
+      <% end %>
     </div>
     """
   end
