@@ -492,15 +492,17 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
-      <%= if @block == :error do %>
-        <h2 class="text-center">Block Not Found</h2>
-      <% else %>
+    <%= if @block == :error do %>
+      <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
+        <h3 class="text-center">Error: Block Not Found</h3>
+      </div>
+    <% else %>
+      <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
         <%= block_detail_header(assigns) %>
         <%= if @view == "transactions", do: render_tx_filter(assigns) %>
         <%= render_info(assigns) %>
-      <% end %>
-    </div>
+      </div>
+    <% end %>
     """
   end
 
