@@ -9,8 +9,16 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorer.Transaction
   alias StarknetExplorer.Events
 
-  defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
-  defp num_or_hash(_num), do: :num
+  defp parse_block_id(block_id)
+
+  defp parse_block_id(<<"0x", _::binary>> = hash), do: {:hash, hash}
+
+  defp parse_block_id(number?) do
+    case Integer.parse(number?) do
+      {number, ""} -> {:num, number}
+      _ -> :error
+    end
+  end
 
   defp get_block_proof(block_hash) do
     try do
@@ -159,15 +167,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   @impl true
   def mount(_params = %{"number_or_hash" => param}, _session, socket) do
-    {type, param} =
-      case num_or_hash(param) do
-        :hash ->
-          {:hash, param}
-
-        :num ->
-          {num, ""} = Integer.parse(param)
-          {:num, num}
-      end
+    {type, param} = parse_block_id(param)
 
     {:ok, block} =
       case :timer.tc(fn ->
