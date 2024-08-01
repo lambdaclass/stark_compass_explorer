@@ -499,19 +499,24 @@ defmodule StarknetExplorer.Block do
   end
 
   def get_by_num(num, network, preload_transactions \\ true) do
-    query =
-      from b in Block,
-        where: b.number == ^num and b.network == ^network
+    try do
+      query =
+        from b in Block,
+          where: b.number == ^num and b.network == ^network
 
-    block = Repo.one(query)
+      block = Repo.one(query)
 
-    if preload_transactions and not is_nil(block) do
-      preload_query =
-        from tx in Transaction, where: tx.block_number == ^block.number and tx.network == ^network
+      if preload_transactions and not is_nil(block) do
+        preload_query =
+          from tx in Transaction,
+            where: tx.block_number == ^block.number and tx.network == ^network
 
-      Repo.preload(block, transactions: preload_query)
-    else
-      block
+        Repo.preload(block, transactions: preload_query)
+      else
+        block
+      end
+    rescue
+      DBConnection.EncodeError -> nil
     end
   end
 
