@@ -15,7 +15,7 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   defp parse_block_id(number?) do
     case Integer.parse(number?) do
-      {number, ""} -> {:num, number}
+      {number, ""} -> {:number, number}
       _ -> :error
     end
   end
@@ -111,12 +111,12 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
             res
 
-          :num ->
+          :number ->
             {query_time, res} =
               :timer.tc(fn -> Data.block_by_number(block_id, socket.assigns.network, false) end)
 
             Logger.debug(
-              "[Block Detail] Fetched block #{block_id} in #{query_time} microseconds, query took #{time} microsecond, using :num"
+              "[Block Detail] Fetched block #{block_id} in #{query_time} microseconds, query took #{time} microsecond, using :number"
             )
 
             res
