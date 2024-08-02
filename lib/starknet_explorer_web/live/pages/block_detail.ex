@@ -490,19 +490,36 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   end
 
   @impl true
+  def render(assigns)
+
+  def render(%{block: :error} = assigns) do
+    ~H"""
+    <div class="z-10 flex flex-col gap-2 justify-start items-center mt-9">
+      <div class="text-se-blue bg-se-blue/10 px-3 py-1 rounded-lg mb-2">404</div>
+      <h1>Block Not Found</h1>
+      <h2>The block you are looking could not be found or is invalid</h2>
+      <a
+        href="/"
+        class="flex gap-2 items-center mt-2 border-b border-b-transparent hover:border-b-se-link text-se-link text-lg transition-all duration-200"
+      >
+        Go home <img alt="Go home" src={~p"/images/arrow-right.svg"} />
+      </a>
+    </div>
+    <img
+      alt="Error image"
+      src={~p"/images/error.svg"}
+      class="-z-10 absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 w-2/3 max-w-xl h-auto opacity-30"
+    />
+    """
+  end
+
   def render(assigns) do
     ~H"""
-    <%= if @block == :error do %>
-      <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
-        <h3 class="text-center">Error: Block Not Found</h3>
-      </div>
-    <% else %>
-      <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
-        <%= block_detail_header(assigns) %>
-        <%= if @view == "transactions", do: render_tx_filter(assigns) %>
-        <%= render_info(assigns) %>
-      </div>
-    <% end %>
+    <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
+      <%= block_detail_header(assigns) %>
+      <%= if @view == "transactions", do: render_tx_filter(assigns) %>
+      <%= render_info(assigns) %>
+    </div>
     """
   end
 
