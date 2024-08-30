@@ -77,7 +77,7 @@ defmodule StarknetExplorer.Events do
     field :data, {:array, :string}
     field :index_in_block, :integer
     field :transaction_hash, :string
-    field :network, Ecto.Enum, values: [:mainnet, :testnet, :sepolia]
+    field :network, Ecto.Enum, values: [:mainnet, :sepolia]
     timestamps()
   end
 

@@ -6,7 +6,7 @@ defmodule StarknetExplorer.Cache.BlockWarmer do
   def interval, do: @interval
 
   def execute(%{network: network})
-      when network in [:mainnet, :testnet, :sepolia] do
+      when network in [:mainnet, :sepolia] do
     Logger.debug("Warming cache for #{network}")
     # Try/Rescue is not really an elixir/erlang thing to do, but
     # I think this is the most simple way to do this, since

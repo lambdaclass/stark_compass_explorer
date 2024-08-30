@@ -163,15 +163,10 @@ defmodule StarknetExplorerWeb.Utils do
 
   # This case is for mainnet
   def network_path(:mainnet), do: "/"
-  def network_path(:testnet), do: "/testnet/"
   def network_path(:sepolia), do: "/sepolia/"
 
   def network_path(:mainnet, remaining_path) do
     "/#{remaining_path}"
-  end
-
-  def network_path(:testnet, remaining_path) do
-    "/testnet/#{remaining_path}"
   end
 
   def network_path(:sepolia, remaining_path) do

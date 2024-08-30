@@ -26,9 +26,9 @@
 
 ## Local development
 
-If you run `make` it will print out the available targets: 
+If you run `make` it will print out the available targets:
 ```
-% make            
+% make
 Usage:
     run   : Starts the Elixir backend server.
     setup : Sets up everything necessary to build and run the explorer.
@@ -37,7 +37,7 @@ Usage:
 ```
 
 ### Setup
-Once you have the requirements installed and set up, you can proceed to building and running the project. 
+Once you have the requirements installed and set up, you can proceed to building and running the project.
 
 ```bash
 make setup
@@ -58,7 +58,6 @@ Set the following environment variables:
 
 ```bash
 export RPC_API_HOST=your_rpc_hostname
-export TESTNET_RPC_API_HOST=testnet_rpc_hostname
 export SEPOLIA_RPC_API_HOST=sepolia_rpc_hostname
 ```
 
@@ -102,7 +101,6 @@ The synchronization process is activated by default, you can turn it off by conf
 
 ```bash
 export DISABLE_MAINNET_SYNC=true
-export DISABLE_TESTNET_SYNC=true
 export DISABLE_SEPOLIA_SYNC=true
 ```
 
@@ -114,7 +112,7 @@ There are 3 things to keep in mind here:
 1. Amount of requests:
    If you have any constraint on how many requests you can make: keep an eye on that,
    because the State Synchronization System can do a lot of requests per second.
-2. Disk Usage: We're still measuring it, but we expect it to be considerable 
+2. Disk Usage: We're still measuring it, but we expect it to be considerable
    after running it for a couple of days.
 3. If you are going to sync a large amount of blocks, we *strongly* suggest to use PostgreSQL instead of SQLite. You can check how to swap the DB in [this section](#using-stark-compass-with-postgresql).
 
@@ -156,7 +154,7 @@ docker-compose up postgres
 
 ## Contributing
 
-We appreciate your interest in contributing to the Stark Compass Explorer! Your contributions can help make this project even better. 
+We appreciate your interest in contributing to the Stark Compass Explorer! Your contributions can help make this project even better.
 
 PRs are more than welcome if you want to collaborate to the project. If you don't know how to implement a feature, you are still welcome to create an issue!
 

@@ -36,7 +36,7 @@ defmodule StarknetExplorer.Message do
         :l1_to_l2_cancelled_on_l1
       ]
 
-    field :network, Ecto.Enum, values: [:mainnet, :testnet, :sepolia]
+    field :network, Ecto.Enum, values: [:mainnet, :sepolia]
     # belongs_to :transaction, Transaction, foreign_key: :transaction_hash, references: :hash
     timestamps()
   end
