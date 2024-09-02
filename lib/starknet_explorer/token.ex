@@ -40,47 +40,12 @@ defmodule StarknetExplorer.Token do
     }
   }
 
-  @whitelisted_tokens_testnet %{
-    "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7" => %{
-      address: "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
-      name: "StarkGate: ETH",
-      symbol: "ETH"
-    },
-    "0x03e85bfbb8e2a42b7bead9e88e9a1b19dbccf661471061807292120462396ec9" => %{
-      address: "0x03e85bfbb8e2a42b7bead9e88e9a1b19dbccf661471061807292120462396ec9",
-      name: "StarkGate: DAI",
-      symbol: "DAI"
-    },
-    "0x005a643907b9a4bc6a55e9069c4fd5fd1f5c79a22470690f75556c4736e34426" => %{
-      address: "0x005a643907b9a4bc6a55e9069c4fd5fd1f5c79a22470690f75556c4736e34426",
-      name: "StarkGate: USDC",
-      symbol: "USDC"
-    },
-    "0x0386e8d061177f19b3b485c20e31137e6f6bc497cc635ccdfcab96fadf5add6a" => %{
-      address: "0x0386e8d061177f19b3b485c20e31137e6f6bc497cc635ccdfcab96fadf5add6a",
-      name: "StarkGate: USDT",
-      symbol: "USDT"
-    },
-    "0x012d537dc323c439dc65c976fad242d5610d27cfb5f31689a0a319b8be7f3d56" => %{
-      address: "0x012d537dc323c439dc65c976fad242d5610d27cfb5f31689a0a319b8be7f3d56",
-      name: "StarkGate: wBTC",
-      symbol: "WBTC"
-    },
-    "0x002133188109385fedaac0b1bf9de1134e271b88efcd21e2ea0dac460639fbe2" => %{
-      address: "0x002133188109385fedaac0b1bf9de1134e271b88efcd21e2ea0dac460639fbe2",
-      name: "StarkGate: rETH",
-      symbol: "rETH"
-    }
-  }
-
+  # @networks [:mainnet, :sepolia]
   # starknet_keccak("balanceOf")
   @balanceOf_selector "0x2e4263afad30923c891518314c3c95dbe830a16874e8abc5777a9a20b54c76e"
 
   def contract_portfolio(address, :mainnet),
     do: fetch_portfolio(address, :mainnet, @whitelisted_tokens_mainnet)
-
-  def contract_portfolio(address, :testnet),
-    do: fetch_portfolio(address, :testnet, @whitelisted_tokens_testnet)
 
   def contract_portfolio(_, _), do: []
 

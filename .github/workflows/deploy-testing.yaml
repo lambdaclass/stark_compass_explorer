@@ -10,7 +10,6 @@ on:
   workflow_dispatch:
 
 jobs:
-
   build-deploy:
     name: Build and deploy to testing
     runs-on: ubuntu-latest
@@ -19,57 +18,55 @@ jobs:
       url: https://testing.starkcompass.com/
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3.3.0
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
 
-    - name: Tailscale
-      uses: tailscale/github-action@v2
-      with:
-        oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-        oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-        tags: tag:ci
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
 
-    - name: Create ssh private key file from env var
-      env:
-        SSH_KEY: ${{ secrets.SSH_KEY }}
-        TS_HOST: ${{ vars.TS_HOST }}
-      run: |
-        mkdir ~/.ssh/
-        sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
-        chmod 400 ~/.ssh/id_ed25519
-        retries=5; until ssh-keyscan $TS_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
+      - name: Create ssh private key file from env var
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          TS_HOST: ${{ vars.TS_HOST }}
+        run: |
+          mkdir ~/.ssh/
+          sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 400 ~/.ssh/id_ed25519
+          retries=5; until ssh-keyscan $TS_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
 
-    - name: Install ansible
-      run: |
-        pip install ansible
+      - name: Install ansible
+        run: |
+          pip install ansible
 
-    - name: "Deploy with ansible"
-      env:
-        MIX_ENV: ${{ vars.MIX_ENV }}
-        DB_TYPE: ${{ vars.DB_TYPE }}
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
-        PHX_HOST: ${{ vars.PHX_HOST }}
-        PHX_SERVER: ${{ vars.PHX_SERVER }}
-        RPC_API_HOST: ${{ secrets.RPC_API_HOST }}
-        TESTNET_RPC_API_HOST: ${{ secrets.TESTNET_RPC_API_HOST }}
-        SEPOLIA_RPC_API_HOST: ${{ secrets.SEPOLIA_RPC_API_HOST }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ${{ vars.AWS_REGION }}
-        PROVER_STORAGE: ${{ vars.PROVER_STORAGE }}
-        ANSIBLE_SSH_PKEY_DIR: "~/.ssh/id_ed25519"
-        TS_HOST: ${{ vars.TS_HOST }}
-        TS_USER: ${{ vars.TS_USER }}
-        GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
-        ANSIBLE_STDOUT_CALLBACK: "yaml"
-        ENABLE_MAINNET_SYNC: "true"
-        ENABLE_TESTNET_SYNC: "true"
-        ENABLE_SEPOLIA_SYNC: "true"
-        ENABLE_GATEWAY_DATA: "true"
-        NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
-        NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
-        SENTRY_ENV: "testing"
-        SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-      run: |
-        ansible-playbook -i ansible/inventory.yaml ansible/playbooks/deployment.yaml
+      - name: "Deploy with ansible"
+        env:
+          MIX_ENV: ${{ vars.MIX_ENV }}
+          DB_TYPE: ${{ vars.DB_TYPE }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+          PHX_HOST: ${{ vars.PHX_HOST }}
+          PHX_SERVER: ${{ vars.PHX_SERVER }}
+          RPC_API_HOST: ${{ secrets.RPC_API_HOST }}
+          SEPOLIA_RPC_API_HOST: ${{ secrets.SEPOLIA_RPC_API_HOST }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          PROVER_STORAGE: ${{ vars.PROVER_STORAGE }}
+          ANSIBLE_SSH_PKEY_DIR: "~/.ssh/id_ed25519"
+          TS_HOST: ${{ vars.TS_HOST }}
+          TS_USER: ${{ vars.TS_USER }}
+          GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
+          ANSIBLE_STDOUT_CALLBACK: "yaml"
+          ENABLE_MAINNET_SYNC: "true"
+          ENABLE_SEPOLIA_SYNC: "true"
+          ENABLE_GATEWAY_DATA: "true"
+          NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
+          NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
+          SENTRY_ENV: "testing"
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          ansible-playbook -i ansible/inventory.yaml ansible/playbooks/deployment.yaml

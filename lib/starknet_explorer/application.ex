@@ -21,20 +21,6 @@ defmodule StarknetExplorer.Application do
         ]
       end
 
-    testnet_state_sync =
-      if System.get_env("DISABLE_TESTNET_SYNC") == "true" do
-        []
-      else
-        # Start the State Sync System server for testnet.
-        [
-          Supervisor.child_spec(
-            {StarknetExplorer.Blockchain.StateSyncSystem,
-             [network: :testnet, name: :testnet_state_sync]},
-            id: :testnet_state_sync
-          )
-        ]
-      end
-
     sepolia_state_sync =
       if System.get_env("DISABLE_SEPOLIA_SYNC") == "true" do
         []
@@ -64,7 +50,7 @@ defmodule StarknetExplorer.Application do
         # Start a worker by calling: StarknetExplorer.Worker.start_link(arg)
         # {StarknetExplorer.Worker, arg}
         StarknetExplorer.IndexCache
-      ] ++ sepolia_state_sync ++ testnet_state_sync ++ mainnet_state_sync
+      ] ++ sepolia_state_sync ++ mainnet_state_sync
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

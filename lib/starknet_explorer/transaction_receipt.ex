@@ -84,7 +84,7 @@ defmodule StarknetExplorer.TransactionReceipt do
   #   :contract_address
   # ]
 
-  @networks [:mainnet, :testnet, :sepolia]
+  @networks [:mainnet, :sepolia]
 
   @fields @invoke_tx_receipt_fields ++
             @l1_receipt_handler ++
