@@ -2,6 +2,7 @@
 ![image](./priv/static/images/explorer_preview.png)
 
 - [StarkCompass](#starkcompass)
+  - [Archival Notice](#archival-notice)
   - [Requirements](#requirements)
   - [Local development](#local-development)
     - [Setup](#setup)
@@ -16,6 +17,11 @@
     - [Long Term Goals:](#long-term-goals)
   - [Contributing](#contributing)
     - [Get in Touch](#get-in-touch)
+
+## Archival Notice
+
+**StarkCompass is now archived.**
+This repository has been archived and is no longer actively maintained. StarkCompass remains functional and supports Starknet up to version 0.13.2. However, maintaining and updating this project requires significant effort, and we no longer have the time to dedicate to it. We have chosen to prioritize other Starknet-related projects, such as [Cairo VM](https://github.com/lambdaclass/cairo-vm) and [Cairo Native](https://github.com/lambdaclass/cairo_native).
 
 ## Requirements
 - SQLite
