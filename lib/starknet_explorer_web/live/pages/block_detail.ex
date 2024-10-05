@@ -9,8 +9,16 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   alias StarknetExplorer.Transaction
   alias StarknetExplorer.Events
 
-  defp num_or_hash(<<"0x", _rest::binary>>), do: :hash
-  defp num_or_hash(_num), do: :num
+  defp parse_block_id(block_id)
+
+  defp parse_block_id(<<"0x", _::binary>> = hash), do: {:hash, hash}
+
+  defp parse_block_id(number?) do
+    case Integer.parse(number?) do
+      {number, ""} -> {:number, number}
+      _ -> :error
+    end
+  end
 
   defp get_block_proof(block_hash) do
     try do
@@ -73,6 +81,89 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
       _ ->
         :not_found
     end
+  end
+
+  defp get_block({type, block_id}, socket) do
+    case :timer.tc(fn ->
+           Enum.find(
+             StarknetExplorer.IndexCache.latest_blocks(socket.assigns.network),
+             fn block ->
+               block.number == block_id or block.hash == block_id
+             end
+           )
+         end) do
+      {time, block} = {_, %StarknetExplorer.Block{}} ->
+        Logger.debug(
+          "[Block Detail] Found block #{block.number} in cache in #{time} microseconds"
+        )
+
+        {:ok, block}
+
+      {time, _} ->
+        case type do
+          :hash ->
+            {query_time, res} =
+              :timer.tc(fn -> Data.block_by_hash(block_id, socket.assigns.network, false) end)
+
+            Logger.debug(
+              "[Block Detail] Fetched block #{block_id} in #{query_time} microseconds, query took #{time} microseconds, using :hash"
+            )
+
+            res
+
+          :number ->
+            {query_time, res} =
+              :timer.tc(fn -> Data.block_by_number(block_id, socket.assigns.network, false) end)
+
+            Logger.debug(
+              "[Block Detail] Fetched block #{block_id} in #{query_time} microseconds, query took #{time} microsecond, using :number"
+            )
+
+            res
+        end
+    end
+  end
+
+  defp assign_block_data(socket, block) do
+    socket = assign(socket, :block, block)
+
+    extra_assings =
+      if connected?(socket) do
+        transactions = block_transactions(socket)
+
+        # note: most transactions receipt do not contain messages
+        l1_to_l2_messages =
+          transactions |> Enum.map(&Message.from_transaction/1) |> Enum.reject(&is_nil/1)
+
+        messages =
+          (transactions
+           |> Enum.map(fn tx -> tx.receipt end)
+           |> Enum.flat_map(&Message.from_transaction_receipt/1)) ++ l1_to_l2_messages
+
+        [
+          transactions_count: length(transactions),
+          messages_count: length(messages),
+          events_count: Events.get_count_by_block(block.number, socket.assigns.network),
+          transactions: transactions,
+          messages: messages
+        ]
+      else
+        []
+      end
+
+    assigns =
+      [
+        gas_price: Utils.hex_wei_to_eth(block.gas_fee_in_wei),
+        execution_resources: block.execution_resources,
+        block: block,
+        view: "overview",
+        verification: "Pending",
+        block_age: Utils.get_block_age(block),
+        tabs?: connected?(socket),
+        active_pagination_id: ""
+      ] ++ extra_assings
+
+    assign(socket, assigns)
   end
 
   defp tab_name("transactions"), do: "Transactions"
@@ -159,95 +250,16 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
 
   @impl true
   def mount(_params = %{"number_or_hash" => param}, _session, socket) do
-    {type, param} =
-      case num_or_hash(param) do
-        :hash ->
-          {:hash, param}
-
-        :num ->
-          {num, ""} = Integer.parse(param)
-          {:num, num}
-      end
-
-    {:ok, block} =
-      case :timer.tc(fn ->
-             Enum.find(
-               StarknetExplorer.IndexCache.latest_blocks(socket.assigns.network),
-               fn block ->
-                 block.number == param or block.hash == param
-               end
-             )
-           end) do
-        {time, block} = {_, %StarknetExplorer.Block{}} ->
-          Logger.debug(
-            "[Block Detail] Found block #{block.number} in cache in #{time} microseconds"
-          )
-
-          {:ok, block}
-
-        {time, _} ->
-          case type do
-            :hash ->
-              {query_time, res} =
-                :timer.tc(fn -> Data.block_by_hash(param, socket.assigns.network, false) end)
-
-              Logger.debug(
-                "[Block Detail] Fetched block #{param} in #{query_time} microseconds, query took #{time} microseconds, using :hash"
-              )
-
-              res
-
-            :num ->
-              {query_time, res} =
-                :timer.tc(fn -> Data.block_by_number(param, socket.assigns.network, false) end)
-
-              Logger.debug(
-                "[Block Detail] Fetched block #{param} in #{query_time} microseconds, query took #{time} microsecond, using :num"
-              )
-
-              res
-          end
-      end
-
-    socket = assign(socket, :block, block)
-
-    extra_assings =
-      if connected?(socket) do
-        transactions = block_transactions(socket)
-
-        # note: most transactions receipt do not contain messages
-        l1_to_l2_messages =
-          transactions |> Enum.map(&Message.from_transaction/1) |> Enum.reject(&is_nil/1)
-
-        messages =
-          (transactions
-           |> Enum.map(fn tx -> tx.receipt end)
-           |> Enum.flat_map(&Message.from_transaction_receipt/1)) ++ l1_to_l2_messages
-
-        [
-          transactions_count: length(transactions),
-          messages_count: length(messages),
-          events_count: Events.get_count_by_block(block.number, socket.assigns.network),
-          transactions: transactions,
-          messages: messages
-        ]
+    socket =
+      with {_, _} = block_id <- parse_block_id(param),
+           {:ok, block} <-
+             get_block(block_id, socket) do
+        assign_block_data(socket, block)
       else
-        []
+        _ -> assign(socket, :block, :error)
       end
 
-    assigns =
-      [
-        gas_price: Utils.hex_wei_to_eth(block.gas_fee_in_wei),
-        execution_resources: block.execution_resources,
-        block: block,
-        view: "overview",
-        verification: "Pending",
-        block_age: Utils.get_block_age(block),
-        tabs?: connected?(socket),
-        active_pagination_id: ""
-      ] ++ extra_assings
-
-    {:ok, assign(socket, assigns)}
+    {:ok, socket}
   end
 
   @impl true
@@ -478,6 +490,29 @@ defmodule StarknetExplorerWeb.BlockDetailLive do
   end
 
   @impl true
+  def render(assigns)
+
+  def render(%{block: :error} = assigns) do
+    ~H"""
+    <div class="z-10 flex flex-col gap-2 justify-start items-center mt-9">
+      <div class="text-se-blue bg-se-blue/10 px-3 py-1 rounded-lg mb-2">404</div>
+      <h1>Block Not Found</h1>
+      <h2>The block you are looking could not be found or is invalid</h2>
+      <a
+        href="/"
+        class="flex gap-2 items-center mt-2 border-b border-b-transparent hover:border-b-se-link text-se-link text-lg transition-all duration-200"
+      >
+        Go home <img alt="Go home" src={~p"/images/arrow-right.svg"} />
+      </a>
+    </div>
+    <img
+      alt="Error image"
+      src={~p"/images/error.svg"}
+      class="-z-10 absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 w-2/3 max-w-xl h-auto opacity-30"
+    />
+    """
+  end
+
   def render(assigns) do
     ~H"""
     <div class="max-w-7xl mx-auto bg-container p-4 md:p-6 rounded-md">
